@@ -1,20 +1,12 @@
-/* Art Deco-inspired CSS with custom font */
-@font-face {
-    font-family: 'Cheshire Initials';
-    src: url('../fonts/CheshireInitials.woff2') format('woff2'),
-         url('../fonts/CheshireInitials.woff') format('woff');
-    font-weight: normal;
-    font-style: normal;
-}
-
+/* Art Deco-inspired CSS with updated zinc color */
 :root {
     --color-black: #000000;
     --color-white: #ffffff;
-    --color-zinc: #71797E;
+    --color-zinc: #6EBF7E;  /* Updated zinc color */
 }
 
 body {
-    font-family: 'Futura', 'Century Gothic', sans-serif;
+    font-family: 'Georgia', serif;  /* Using a web-safe font as fallback */
     background-color: var(--color-black);
     color: var(--color-white);
     line-height: 1.6;
@@ -29,7 +21,7 @@ header {
 }
 
 .site-title {
-    font-family: 'Cheshire Initials', serif;
+    font-family: 'Georgia', serif;  /* Using a web-safe font as fallback */
     font-size: 4rem;
     color: var(--color-zinc);
     margin: 0;
@@ -73,7 +65,7 @@ main {
 }
 
 h2, h3, h4, h5, h6 {
-    font-family: 'Rockwell', 'Playfair Display', serif;
+    font-family: 'Georgia', serif;
     color: var(--color-white);
 }
 
@@ -84,7 +76,7 @@ h2, h3, h4, h5, h6 {
 }
 
 article {
-    background-color: rgba(113, 121, 126, 0.1);
+    background-color: rgba(110, 191, 126, 0.1);  /* Semi-transparent zinc */
     border: 2px solid var(--color-zinc);
     padding: 1.5rem;
 }
