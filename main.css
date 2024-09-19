@@ -1,12 +1,13 @@
-/* Art Deco-inspired CSS with updated zinc color */
+
+/* Art Deco-inspired CSS with media queries and serif font */
 :root {
     --color-black: #000000;
     --color-white: #ffffff;
-    --color-zinc: #6EBF7E;  /* Updated zinc color */
+    --color-zinc: #6EBF7E;
 }
 
 body {
-    font-family: 'Georgia', serif;  /* Using a web-safe font as fallback */
+    font-family: serif;
     background-color: var(--color-black);
     color: var(--color-white);
     line-height: 1.6;
@@ -21,12 +22,13 @@ header {
 }
 
 .site-title {
-    font-family: 'Georgia', serif;  /* Using a web-safe font as fallback */
+    font-family: serif;
     font-size: 4rem;
     color: var(--color-zinc);
     margin: 0;
     text-transform: lowercase;
     letter-spacing: 0.1em;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 nav {
@@ -51,11 +53,12 @@ nav a {
     text-decoration: none;
     font-weight: bold;
     text-transform: uppercase;
-    transition: color 0.3s ease;
+    transition: color 0.3s ease, transform 0.3s ease;
 }
 
 nav a:hover {
     color: var(--color-white);
+    transform: scale(1.1);
 }
 
 main {
@@ -65,8 +68,10 @@ main {
 }
 
 h2, h3, h4, h5, h6 {
-    font-family: 'Georgia', serif;
-    color: var(--color-white);
+    font-family: serif;
+    color: var(--color-zinc);
+    border-bottom: 2px solid var(--color-zinc);
+    padding-bottom: 0.5rem;
 }
 
 .post-grid {
@@ -76,9 +81,14 @@ h2, h3, h4, h5, h6 {
 }
 
 article {
-    background-color: rgba(110, 191, 126, 0.1);  /* Semi-transparent zinc */
+    background-color: rgba(110, 191, 126, 0.1);
     border: 2px solid var(--color-zinc);
     padding: 1.5rem;
+    transition: transform 0.3s ease;
+}
+
+article:hover {
+    transform: translateY(-5px);
 }
 
 .read-more {
@@ -128,4 +138,46 @@ article::before {
     text-align: center;
     color: var(--color-zinc);
     margin-bottom: 1rem;
+}
+
+/* Media Queries for Responsive Design */
+@media screen and (max-width: 768px) {
+    .site-title {
+        font-size: 3rem;
+    }
+
+    nav ul li {
+        display: block;
+        margin: 0.5rem 0;
+    }
+
+    .post-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .site-title {
+        font-size: 2.5rem;
+    }
+
+    article {
+        padding: 1rem;
+    }
+}
+
+/* Print styles */
+@media print {
+    body {
+        background-color: white;
+        color: black;
+    }
+
+    .site-title, h2, h3, h4, h5, h6 {
+        color: black;
+    }
+
+    nav, .read-more {
+        display: none;
+    }
 }
