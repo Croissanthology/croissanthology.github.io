@@ -1,1 +1,139 @@
+/* Art Deco-inspired CSS with custom font */
+@font-face {
+    font-family: 'Cheshire Initials';
+    src: url('../fonts/CheshireInitials.woff2') format('woff2'),
+         url('../fonts/CheshireInitials.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
 
+:root {
+    --color-black: #000000;
+    --color-white: #ffffff;
+    --color-zinc: #71797E;
+}
+
+body {
+    font-family: 'Futura', 'Century Gothic', sans-serif;
+    background-color: var(--color-black);
+    color: var(--color-white);
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    background-color: var(--color-black);
+    padding: 2rem 0;
+    text-align: center;
+}
+
+.site-title {
+    font-family: 'Cheshire Initials', serif;
+    font-size: 4rem;
+    color: var(--color-zinc);
+    margin: 0;
+    text-transform: lowercase;
+    letter-spacing: 0.1em;
+}
+
+nav {
+    background-color: var(--color-zinc);
+    padding: 1rem 0;
+}
+
+nav ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    text-align: center;
+}
+
+nav ul li {
+    display: inline;
+    margin: 0 1rem;
+}
+
+nav a {
+    color: var(--color-black);
+    text-decoration: none;
+    font-weight: bold;
+    text-transform: uppercase;
+    transition: color 0.3s ease;
+}
+
+nav a:hover {
+    color: var(--color-white);
+}
+
+main {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+h2, h3, h4, h5, h6 {
+    font-family: 'Rockwell', 'Playfair Display', serif;
+    color: var(--color-white);
+}
+
+.post-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+article {
+    background-color: rgba(113, 121, 126, 0.1);
+    border: 2px solid var(--color-zinc);
+    padding: 1.5rem;
+}
+
+.read-more {
+    display: inline-block;
+    background-color: var(--color-zinc);
+    color: var(--color-black);
+    padding: 0.5rem 1rem;
+    text-decoration: none;
+    font-weight: bold;
+    text-transform: uppercase;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.read-more:hover {
+    background-color: var(--color-white);
+    color: var(--color-black);
+}
+
+footer {
+    background-color: var(--color-zinc);
+    color: var(--color-black);
+    text-align: center;
+    padding: 1rem;
+    position: relative;
+    bottom: 0;
+    width: 100%;
+}
+
+/* Art Deco-inspired decorative elements */
+nav::before, nav::after {
+    content: '';
+    display: block;
+    height: 5px;
+    background: repeating-linear-gradient(
+        45deg,
+        var(--color-black),
+        var(--color-black) 5px,
+        var(--color-zinc) 5px,
+        var(--color-zinc) 10px
+    );
+}
+
+article::before {
+    content: '✦';
+    font-size: 2rem;
+    display: block;
+    text-align: center;
+    color: var(--color-zinc);
+    margin-bottom: 1rem;
+}
