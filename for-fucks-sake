@@ -1,1 +1,63 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Motherfucking LLMs</title>
+    <style>
+   
+        body {
+            font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+            background-color: black;
+            color: white;
+            line-height: 1.6;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .title-white {
+            color: white;
+        }
+        .title-green {
+            color: #4A9C6D; /* Copper green color */
+        }
+        p {
+            font-size: 1em;
+            margin-bottom: 30px;
+            text-align: left;
+        }
+        .read-section {
+            border-top: 1px solid white;
+            padding-top: 20px;
+            margin-top: 40px;
+        }
+        a {
+            color: #4A9C6D;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <p>
+        Hello there! <br> 
+<a href="https://www.lesswrong.com/users/croissanthology"> 
+<br> Light Mode</a> <br> Twitter: x.com/croissanthology  </p>
+    <div class="read-section">
+        <h2>Read</h2>
+        <p><a href="gell-mann.html">Gell-Mann checks</a></p>
+        <p><a href="https://www.paulgrahamcrackers.com">Paul Graham Crackers</a></p>
+        <p><a href="for-fucks-sake.html">Just use a goddamn LLM already</a></p>
+
+    </div>
+</body>
+</html>
+
