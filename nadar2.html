@@ -74,7 +74,51 @@
             background-color: #f1c40f;
             color: #2c3e50;
         }
-     
+
+         .art-deco-expandable {
+            width: 100%;
+            margin: 20px auto;
+            box-sizing: border-box;
+        }
+        .art-deco-expandable .toggle {
+            background-color: #808080; /* Grey */
+            color: #FFF;
+            padding: 10px 20px;
+            cursor: pointer;
+            border: 2px solid #800000; /* Bordeaux red */
+            width: 100%;
+            text-align: left;
+            outline: none;
+            font-size: 18px;
+            transition: 0.4s;
+            position: relative;
+            font-family: Cambria, Georgia, serif;
+        }
+        .art-deco-expandable .toggle:after {
+            content: '\002B';
+            color: #FFF;
+            font-weight: bold;
+            float: right;
+            margin-left: 5px;
+        }
+        .art-deco-expandable .toggle.active:after {
+            content: "\2212";
+        }
+        .art-deco-expandable .content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.2s ease-out;
+            background-color: #800000; /* Bordeaux red */
+            color: #FFF;
+            border-left: 2px solid #800000;
+            border-right: 2px solid #800000;
+            border-bottom: 2px solid #800000;
+        }
+        .art-deco-expandable .inner-content {
+            padding: 20px;
+            font-family: Cambria, Georgia, serif;
+            line-height: 1.6;
+        }
             
     </style>
 </head>
@@ -83,6 +127,10 @@
         <h1>Nadar : miroir de son temps</h1>
         <p class="subtitle">par Neil</p>
 
+         <div class="red-lined image">
+        <img src="https://github.com/AlabasterMongelbrock/alabastermongelbrock.github.io/blob/main/images/Paul%20Graham%20Crackers%20(1).png?raw=true" alt="Paul Graham Crackers" class="cracker-image">    </div>
+</body>
+        
         <h2>Nadar, l'artiste</h2>
         <h3>La photographie</h3>
         <ul>
@@ -99,7 +147,14 @@
             <li>Soutien aux artistes impressionnistes</li>
             <li>Organisation de la première exposition impressionniste</li>
         </ul>
-
+ 
+    <div class="art-deco-expandable">
+        <button class="toggle">Lire plus</button>
+        <div class="content">
+            <div class="inner-content">
+                <p>Nadar était</p>
+                <p> C'est ca</p>
+                
         <h2>Nadar, l'inventeur</h2>
         <h3>Innovations photographiques</h3>
         <ul>
