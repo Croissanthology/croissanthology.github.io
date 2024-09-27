@@ -50,7 +50,32 @@
         li::before {
             content: "• ";
             color: #8b0000;
-      
+        }
+        .button-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .art-deco-button {
+            padding: 10px 20px;
+            font-size: 18px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+                  }
+        .luxurious {
+            background-color: #2c3e50;
+            color: #f1c40f;
+            border: 2px solid #f1c40f;
+            border-radius: 0;
+        }
+        .luxurious:hover {
+            background-color: #f1c40f;
+            color: #2c3e50;
+        }
+     
+            
     </style>
 </head>
 <body>
@@ -98,8 +123,11 @@
             <li>Utilisation de la photographie comme outil de critique</li>
             <li>Documentation des transformations de Paris</li>
         </ul>
+        
+ <div class="button-container">
+        <button class="art-deco-button luxurious">La présentation</button>
+        
 
-     
     </div>
 </body>
 </html>
