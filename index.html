@@ -43,6 +43,48 @@
         a:hover {
             text-decoration: underline;
         }
+
+    
+            <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Croissanthology</title>
+    <style>
+        /* ... (previous styles remain the same) ... */
+        
+        
+        a {
+            color: #4A9C6D;
+            text-decoration: none;
+            background-image: linear-gradient(to right, #888 50%, transparent 50%);
+            background-size: 4px 1px;
+            background-position: 0 100%;
+            background-repeat: repeat-x;
+        }
+        
+        a:hover {
+            text-decoration: none;
+            background-image: linear-gradient(to right, #4A9C6D 50%, transparent 50%);
+        }
+        
+        a[href^="https://www.lesswrong.com"],
+        a[href^="https://lesswrong.com"] {
+            color: #00FF00;
+            text-shadow: 0 0 5px #00FF00, 0 0 10px #00FF00;
+            background-image: none;
+        }
+        
+        a[href^="https://www.lesswrong.com"]:hover,
+        a[href^="https://lesswrong.com"]:hover {
+            text-decoration: none;
+            animation: pulse 1s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { text-shadow: 0 0 5px #00FF00, 0 0 10px #00FF00; }
+            50% { text-shadow: 0 0 20px #00FF00, 0 0 30px #00FF00; }
+            100% { text-shadow: 0 0 5px #00FF00, 0 0 10px #00FF00; }
+        }
+        
     </style>
 </head>
 <body>
