@@ -207,8 +207,22 @@
         </p>
     </div>
 
-    <script>
-        // ... your existing random image script ...
-    </script>
+   <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const refs = document.querySelectorAll('.footnote-ref');
+        refs.forEach(ref => {
+            const footnoteId = 'footnote-' + ref.dataset.footnote;
+            const footnote = document.getElementById(footnoteId);
+            
+            ref.addEventListener('mouseenter', () => {
+                footnote.style.display = 'block';
+            });
+            
+            ref.addEventListener('mouseleave', () => {
+                footnote.style.display = 'none';
+            });
+        });
+    });
+    </script>   
 </body>
 </html>
