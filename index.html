@@ -6,6 +6,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Croissanthology</title>
     <style>
+
+
+                }
+        .footnote-ref {
+            cursor: pointer;
+            color: #4CAF50;
+            text-decoration: none;
+            vertical-align: super;
+            font-size: smaller;
+        }
+        .footnote {
+            position: absolute;
+            right: -220px;
+            width: 200px;
+            font-size: 0.9em;
+            color: #cccccc;
+            display: none;
+        }
+        @media (max-width: 1024px) {
+            .footnote {
+                position: static;
+                width: auto;
+                margin-top: 10px;
+                border-top: 1px solid #4CAF50;
+                padding-top: 10px;
+            }
+        }
+
+        
         @import url('https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&display=swap');
         
         :root {
@@ -162,6 +191,9 @@
         </div>
         
         <div class="dotted-box">
+                       <p>This is a sample text with a footnote<span class="footnote-ref" data-footnote="1">1</span>. You can hover over the footnote number to see the content.</p>
+            <div class="footnote" id="footnote-1">
+                1. This is the content of the footnote. It appears in the margin on desktop and below the text on mobile.
             <div class="essays-title">Essays</div>
             <p><a href="gell-mann.html">Gell-Mann checks</a></p>
             <p><a href="https://www.paulgrahamcrackers.com">Paul Graham Crackers</a></p>
