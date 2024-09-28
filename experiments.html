@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -37,6 +38,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            overflow: hidden;
         }
 
         .title {
@@ -44,6 +46,7 @@
             transition: opacity 0.3s ease;
             text-align: center;
             margin: 0;
+            z-index: 2;
         }
 
         .title-white { color: white; }
@@ -56,9 +59,9 @@
             width: 100%;
             height: 100%;
             background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transform: skewX(-20deg);
-            transition: all 0.3s ease;
-            opacity: 0;
+            transform: skewX(-20deg) translateX(-100%);
+            transition: transform 0.3s ease;
+            z-index: 1;
         }
 
         .title-container:hover .title {
@@ -66,7 +69,6 @@
         }
 
         .title-container:hover .shine-effect {
-            opacity: 1;
             transform: skewX(-20deg) translateX(200%);
         }
 
@@ -80,19 +82,19 @@
             justify-content: center;
             align-items: center;
             opacity: 0;
-            transform: scale(0.9);
-            transition: all 0.3s ease;
+            transition: opacity 0.3s ease;
+            z-index: 0;
+        }
+
+        .image-replacement img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
         }
 
         .title-container:hover .image-replacement {
             opacity: 1;
-            transform: scale(1);
-        }
-
-        .image-replacement img {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
         }
 
         .dotted-box {
@@ -103,7 +105,79 @@
             box-sizing: border-box;
         }
 
-        /* ... rest of your existing styles ... */
+
+                    a {
+            color: #CCCCCC;
+            text-decoration: none;
+            position: relative;
+        }
+
+        a::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 1px;
+            bottom: 0;
+            left: 0;
+            background-color: white;
+            transform: scaleX(0);
+            transform-origin: bottom right;
+            transition: transform 0.3s ease;
+        }
+
+        a:hover::after {
+            transform: scaleX(1);
+            transform-origin: bottom left;
+        }
+
+        a[href^="https://www.lesswrong.com"]::after,
+        a[href^="https://lesswrong.com"]::after {
+            background-color: #4A9C6D;
+        }
+
+
+    </style>
+</head>
+<body>
+    <div class="content-wrapper">
+        <div class="title-container">
+            <h1 class="title">
+                <span class="title-white">Croiss</span><span class="title-green">anthology</span>
+            </h1>
+            <div class="shine-effect"></div>
+            <div class="image-replacement">
+                <img src="https://github.com/Croissanthology/croissanthology.github.io/blob/main/images/croissanthology%20image%201.png?raw=true" alt="Badoom badoom hello">
+            </div>
+        </div>
+        
+        <div class="dotted-box">
+            <p>I'm not quite sure what I do, but I certainly do things. Email me at croissanthology [at] gmail for literally anything. I would be delighted to receive any email of any kind; ask for whatever you want, do whatever you want, does it look like I care?</p>
+        </div>
+        
+        <div class="dotted-box">
+            <div class="essays-title">Essays</div>
+            <p><a href="gell-mann.html">Gell-Mann checks</a></p>
+            <p><a href="https://www.paulgrahamcrackers.com">Paul Graham Crackers</a></p>
+            <p><a href="for-fucks-sake.html">Just use a goddamn LLM already</a></p>
+        </div>
+        
+        <p>
+            Hello there! <br>
+            <a href="https://www.lesswrong.com/users/croissanthology">Light Mode</a> <br>
+            Twitter: <a href="https://x.com/croissanthology">x.com/croissanthology</a>
+        </p>
+    </div>
+
+    <script>
+        // ... your existing random image script ...
+    </script>
+</body>
+</html>
+
+
+
+
+
 
     </style>
 </head>
