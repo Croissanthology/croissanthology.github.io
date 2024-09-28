@@ -1,0 +1,224 @@
+
+
+
+@import url('https://fonts.googleapis.com/css2?family=Poiret+One&display=swap');
+
+
+        
+    .sidenote {
+            float: right;
+            clear: right;
+            margin-right: -33%;
+            width: 30%;
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 0.3rem;
+            position: relative;
+        }
+        @media (max-width: 1000px) {
+            .sidenote {
+                float: none;
+                margin: 1em 0;
+                width: 100%;
+            }
+        }
+
+        
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Poiret One', cursive;
+    text-transform: uppercase;
+    color: #ffffff;
+    letter-spacing: 2px;
+    margin: 1.5em 0 0.5em;
+    position: relative;
+    padding-bottom: 0.5em;
+}
+
+h1::after, h2::after, h3::after, h4::after, h5::after, h6::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 1px;
+    background-color: #ffffff;
+}
+
+h1 { font-size: 2.5em; }
+h2 { font-size: 2em; }
+h3 { font-size: 1.75em; }
+h4 { font-size: 1.5em; }
+h5 { font-size: 1.25em; }
+h6 { font-size: 1em; }
+
+@media (max-width: 768px) {
+    h1 { font-size: 2em; }
+    h2 { font-size: 1.75em; }
+    h3 { font-size: 1.5em; }
+    h4 { font-size: 1.25em; }
+    h5, h6 { font-size: 1em; }
+}
+                }
+        .footnote-ref {
+            cursor: pointer;
+            color: #4CAF50;
+            text-decoration: none;
+            vertical-align: super;
+            font-size: smaller;
+        }
+        .footnote {
+            position: absolute;
+            right: -220px;
+            width: 200px;
+            font-size: 0.9em;
+            color: #cccccc;
+            display: none;
+        }
+        @media (max-width: 1024px) {
+            .footnote {
+                position: static;
+                width: auto;
+                margin-top: 10px;
+                border-top: 1px solid #4CAF50;
+                padding-top: 10px;
+            }
+        }
+
+        
+        @import url('https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&display=swap');
+        
+        :root {
+            --main-width: min(800px, 90vw);
+            --title-height: 100px;
+        }
+        
+        body {
+            font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+            background-color: black;
+            color: white;
+            line-height: 1.6;
+            padding: 20px;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .content-wrapper {
+            width: var(--main-width);
+            max-width: 100%;
+        }
+
+        .title-container {
+            position: relative;
+            width: 100%;
+            height: var(--title-height);
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .title {
+            font-size: clamp(1.5em, 5vw, 2.5em);
+            transition: opacity 0.3s ease;
+            text-align: center;
+            margin: 0;
+            z-index: 2;
+        }
+
+        .title-white { color: white; }
+        .title-green { color: #4A9C6D; }
+
+             .shine-effect-double {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.4s ease;
+            z-index: 1;
+        }
+        .shine-effect-double::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.4s ease 0.2s;
+        }
+        .title-container:hover .shine-effect-double,
+        .title-container:hover .shine-effect-double::after {
+            transform: translateX(100%);
+        }
+
+        .image-replacement {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 0;
+        }
+
+        .image-replacement img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+        }
+
+        .title-container:hover .image-replacement {
+            opacity: 1;
+        }
+
+        .dotted-box {
+            border: 1px dotted #808080;
+            padding: 15px;
+            margin-bottom: 20px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+
+                    a {
+            color: #CCCCCC;
+            text-decoration: none;
+            position: relative;
+        }
+
+        a::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 1px;
+            bottom: 0;
+            left: 0;
+            background-color: white;
+            transform: scaleX(0);
+            transform-origin: bottom right;
+            transition: transform 0.3s ease;
+        }
+
+        a:hover::after {
+            transform: scaleX(1);
+            transform-origin: bottom left;
+        }
+
+        a[href^="https://www.lesswrong.com"]::after,
+        a[href^="https://lesswrong.com"]::after {
+            background-color: #4A9C6D;
+        }
+
+
