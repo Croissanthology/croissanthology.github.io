@@ -8,9 +8,9 @@
     <style>
 
 
-        @import url('https://fonts.googleapis.com/css2?family=Poiret+One&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poiret+One&display=swap');
 
-h1 {
+h1, h2, h3, h4, h5, h6 {
     font-family: 'Poiret One', cursive;
     text-transform: uppercase;
     color: #ffffff;
@@ -20,7 +20,7 @@ h1 {
     padding-bottom: 0.5em;
 }
 
-h1::after {
+h1::after, h2::after, h3::after, h4::after, h5::after, h6::after {
     content: '';
     position: absolute;
     left: 0;
@@ -31,12 +31,19 @@ h1::after {
 }
 
 h1 { font-size: 2.5em; }
-
+h2 { font-size: 2em; }
+h3 { font-size: 1.75em; }
+h4 { font-size: 1.5em; }
+h5 { font-size: 1.25em; }
+h6 { font-size: 1em; }
 
 @media (max-width: 768px) {
     h1 { font-size: 2em; }
- 
-
+    h2 { font-size: 1.75em; }
+    h3 { font-size: 1.5em; }
+    h4 { font-size: 1.25em; }
+    h5, h6 { font-size: 1em; }
+}
                 }
         .footnote-ref {
             cursor: pointer;
