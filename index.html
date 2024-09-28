@@ -5,6 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Croissanthology</title>
     <style>
+
+        @keyframes titleAnimation {
+    0% { transform: skew(0deg, 0deg); }
+    25% { transform: skew(5deg, 5deg); }
+    50% { transform: skew(0deg, 0deg); }
+    75% { transform: skew(-5deg, -5deg); }
+    100% { transform: skew(0deg, 0deg); }
+}
+
+h1 {
+    animation: titleAnimation 5s infinite;
+}
    
         body {
             font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
@@ -49,6 +61,13 @@
             text-decoration: underline;
         }
 
+        @import url('https://fonts.googleapis.com/css2?family=Poiret+One&display=swap');
+
+h1, h2 {
+    font-family: 'Poiret One', cursive;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
     
             <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
