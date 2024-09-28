@@ -128,3 +128,248 @@ h1, h2 {
     </div>
 </body>
 </html>
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Croissanthology</title>
+    <style>
+        body {
+            font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+            background-color: black;
+            color: white;
+            line-height: 1.6;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        h1, h2 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .title-white { color: white; }
+        .title-green { color: #4A9C6D; }
+        p {
+            font-size: 1em;
+            margin-bottom: 30px;
+            text-align: left;
+        }
+        .read-section {
+            border-top: 1px solid white;
+            padding-top: 20px;
+            margin-top: 40px;
+        }
+        
+        /* Updated LessWrong link style */
+        a[href^="https://www.lesswrong.com"],
+        a[href^="https://lesswrong.com"] {
+            color: #4A9C6D;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        a[href^="https://www.lesswrong.com"]:hover,
+        a[href^="https://lesswrong.com"]:hover {
+            text-shadow: 0 0 5px #4A9C6D;
+        }
+
+        /* Link Style Showcase */
+        .link-showcase a {
+            display: inline-block;
+            margin: 10px;
+            padding: 5px 10px;
+        }
+
+        /* 1. Underline on hover */
+        .link-1 {
+            color: #4A9C6D;
+            text-decoration: none;
+            position: relative;
+        }
+        .link-1::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            bottom: 0;
+            left: 0;
+            background-color: #4A9C6D;
+            transform: scaleX(0);
+            transition: transform 0.3s ease-out;
+        }
+        .link-1:hover::after { transform: scaleX(1); }
+
+        /* 2. Gradient background on hover */
+        .link-2 {
+            color: white;
+            text-decoration: none;
+            padding: 2px 4px;
+            transition: all 0.3s ease;
+        }
+        .link-2:hover {
+            background: linear-gradient(45deg, #4A9C6D, #FFD700);
+            color: black;
+        }
+
+        /* 3. Neon glow */
+        .link-3 {
+            color: #4A9C6D;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        .link-3:hover {
+            text-shadow: 0 0 5px #4A9C6D, 0 0 10px #4A9C6D, 0 0 15px #4A9C6D;
+        }
+
+        /* 4. Strikethrough animation */
+        .link-4 {
+            color: #4A9C6D;
+            text-decoration: none;
+            position: relative;
+        }
+        .link-4::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            bottom: 50%;
+            left: 0;
+            background-color: #4A9C6D;
+            transform: scaleX(0);
+            transition: transform 0.3s ease-out;
+        }
+        .link-4:hover::before { transform: scaleX(1); }
+
+        /* 5. 3D push effect */
+        .link-5 {
+            color: #4A9C6D;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        .link-5:hover {
+            transform: translateY(2px);
+            text-shadow: 0 -2px 0 #FFD700;
+        }
+
+        /* 6. Circular background reveal */
+        .link-6 {
+            color: white;
+            text-decoration: none;
+            position: relative;
+            z-index: 1;
+        }
+        .link-6::before {
+            content: '';
+            position: absolute;
+            z-index: -1;
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            right: 50%;
+            background: #4A9C6D;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+        .link-6:hover::before {
+            left: 0;
+            right: 0;
+            border-radius: 0;
+        }
+
+        /* 7. Dotted underline */
+        .link-7 {
+            color: #4A9C6D;
+            text-decoration: none;
+            border-bottom: 1px dotted #4A9C6D;
+            transition: all 0.3s ease;
+        }
+        .link-7:hover {
+            border-bottom-style: solid;
+        }
+
+        /* 8. Bracket appear */
+        .link-8 {
+            color: #4A9C6D;
+            text-decoration: none;
+            position: relative;
+        }
+        .link-8::before, .link-8::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background-color: #4A9C6D;
+            transform: scaleY(0);
+            transition: transform 0.3s ease;
+        }
+        .link-8::before { left: -5px; }
+        .link-8::after { right: -5px; }
+        .link-8:hover::before, .link-8:hover::after { transform: scaleY(1); }
+
+        /* 9. Shine effect */
+        .link-9 {
+            color: #4A9C6D;
+            text-decoration: none;
+            position: relative;
+            overflow: hidden;
+        }
+        .link-9::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: all 0.3s ease;
+        }
+        .link-9:hover::after { left: 100%; }
+
+        /* 10. Skew transform */
+        .link-10 {
+            color: #4A9C6D;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+        .link-10:hover {
+            transform: skew(-10deg);
+        }
+    </style>
+</head>
+<body>
+    <h1>
+        <span class="title-white">Croiss</span><span class="title-green">anthology</span>
+    </h1>
+    <p>
+        Hello there! <br> 
+        <a href="https://www.lesswrong.com/users/croissanthology">Light Mode</a> <br> 
+        Twitter: x.com/croissanthology
+    </p>
+    <div class="read-section">
+        <h2>Read</h2>
+        <p><a href="gell-mann.html">Gell-Mann checks</a></p>
+        <p><a href="https://www.paulgrahamcrackers.com">Paul Graham Crackers</a></p>
+        <p><a href="for-fucks-sake.html">Just use a goddamn LLM already</a></p>
+    </div>
+
+    <h2>Link Style Showcase</h2>
+    <div class="link-showcase">
+        <a href="#" class="link-1">1. Underline on hover</a>
+        <a href="#" class="link-2">2. Gradient background</a>
+        <a href="#" class="link-3">3. Neon glow</a>
+        <a href="#" class="link-4">4. Strikethrough animation</a>
+        <a href="#" class="link-5">5. 3D push effect</a>
+        <a href="#" class="link-6">6. Circular background</a>
+        <a href="#" class="link-7">7. Dotted underline</a>
+        <a href="#" class="link-8">8. Bracket appear</a>
+        <a href="#" class="link-9">9. Shine effect</a>
+        <a href="#" class="link-10">10. Skew transform</a>
+    </div>
+</body>
+</html>
