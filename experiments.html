@@ -52,24 +52,31 @@
         .title-white { color: white; }
         .title-green { color: #4A9C6D; }
 
-        .shine-effect {
+             .shine-effect-double {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transform: skewX(-20deg) translateX(-100%);
-            transition: transform 0.3s ease;
+            transform: translateX(-100%);
+            transition: transform 0.4s ease;
             z-index: 1;
         }
-
-        .title-container:hover .title {
-            opacity: 0;
+        .shine-effect-double::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.4s ease 0.2s;
         }
-
-        .title-container:hover .shine-effect {
-            transform: skewX(-20deg) translateX(200%);
+        .title-container:hover .shine-effect-double,
+        .title-container:hover .shine-effect-double::after {
+            transform: translateX(100%);
         }
 
         .image-replacement {
