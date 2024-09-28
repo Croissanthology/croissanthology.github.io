@@ -1,1 +1,15 @@
+<head>
+    <link rel="stylesheet" href="/css/styles.css">
 
+</head>
+<body>
+    <div class="content-wrapper">
+        <div class="title-container">
+            <h1 class="title">
+                <span class="title-white">Master </span><span class="title-green">Plan</span>
+            </h1>
+            <div class="shine-effect"></div>
+            <div class="image-replacement">
+                <img src="https://github.com/Croissanthology/croissanthology.github.io/blob/main/images/croissanthology%20image%201.png?raw=true" alt="Badoom badoom hello">
+            </div>
+        </div>
