@@ -250,9 +250,6 @@ a[href^="https://lesswrong.com"]::after {
     padding-right: 250px;
 }
 
-.main-content {
-    margin-right: 200px;
-}
 
 .footnote-ref {
     display: inline;
@@ -273,12 +270,14 @@ a[href^="https://lesswrong.com"]::after {
     font-weight: bold;
     color: #4A9C6D;
 }
+.main-content {
+    margin-right: 200px;
+    position: relative;
+}
 
 .footnote {
-    /* ... other properties ... */
-    position: static;
-    float: right;
-    clear: right;
+    position: absolute;
+    right: -250px;
     margin-right: -50px;
     margin-top: 0;
 }
