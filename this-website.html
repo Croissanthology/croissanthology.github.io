@@ -3,26 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Croissanthology</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poiret+One&family=Source+Serif+Pro:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles CSS croissanthology 2.css">
-    <style>
-        body {
-            padding-top: 30px; /* Add space for the fixed header */
-        }
-        .mobile-header {
-            display: block;
-            transform: translateY(0);
-        }
-    </style>
+    <title>This Website</title>
+    <link rel="stylesheet" href="CSS/styles.css">
+    <script src="javascript/javaventuraayayay.js"></script>
 </head>
 <body>
     <div class="mobile-header">
-        <h1 class="mobile-header-title">Croissanthology</h1>
-        <div class="progress-bar" id="progressBar"></div>
+        <h1 class="mobile-header-title">About this website</h1>
+        <div class="progress-bar"></div>
     </div>
 
     <div class="content-wrapper">
+        <div class="title-container">
+            <h1 id="croissanthology" class="title"><span class="title-white">Croiss</span><span class="title-green">anthology</span></h1>
+            <div class="shine-effect-double"></div>
+            <div class="image-replacement">
+                <img src="https://github.com/Croissanthology/croissanthology.github.io/blob/main/images/croissanthology%20image%201.png?raw=true" alt="Badoom badoom hello">
+            </div>
+        </div>
+
         <div class="main-content">
             <p>This website was designed in two days, and heavily inspired by <a href="https://gwern.net">gwern.net</a><sup class="footnote-ref" id="fnref1"><a href="#fn1">1</a></sup>. With time though, I plan to change little things from time to time until I have something totally unique and interesting. Sorry Gwern, just borrowing for now.</p>
 
@@ -43,18 +42,17 @@
             <p>That's what I'm doing here with web dev. As I continue actively messing around with the site, maybe read a few wikipedia articles and Claude's explanations, I hope to inch from 0.5 to 1.</p>
 
             <p>I ask you now: do you have a personal website? Why not? All you need is a GitHub account and Claude. Get a Claude Pro subscription for at least 1 month, or don't, and deal with the consequences. But get a website done. Please don't linger at 0 for much longer. The view is nicer from 0.5.</p>
+        </div>
 
-            <div class="footnotes">
-                <hr>
-                <ol>
-                    <li id="fn1">
-                        <p>Indeed, the original point of the project was to reverse-engineer gwern.net! <a href="https://x.com/croissanthology/status/1839793248023314745">Surely, the task couldn't be that difficult, right?</a>. Actually, certain features like a minimalistic monochrome progress bar at the top of each post for scrolling on mobile were surprisingly easy to implement, as were side-notes like this one. Even with zero web dev experience, there's a lot you can do when your civilisation allows you to buy sparks of AGI for ~ 10 coffees / 2 domain names / 1.5 books a month. <a href="#fnref1" class="footnote-backref">↩</a></p>
-                    </li>
-                    <li id="fn2">
-                        <p>If you know a very good reason not to do this, email me at croissanthology [at] gmail.com and I'll pay you 10 bucks if I believe this could plausibly Be Worth It (as defined by "worth >10 euros of value"). <a href="#fnref2" class="footnote-backref">↩</a></p>
-                    </li>
-                </ol>
-            </div>
+        <div class="footnotes">
+            <ol>
+                <li id="fn1">
+                    <p>Indeed, the original point of the project was to reverse-engineer gwern.net! <a href="https://x.com/croissanthology/status/1839793248023314745">Surely, the task couldn't be that difficult, right?</a>. Actually, certain features like a minimalistic monochrome progress bar at the top of each post for scrolling on mobile were surprisingly easy to implement, as were side-notes like this one. Even with zero web dev experience, there's a lot you can do when your civilisation allows you to buy sparks of AGI for ~ 10 coffees / 2 domain names / 1.5 books a month.</p>
+                </li>
+                <li id="fn2">
+                    <p>If you know a very good reason not to do this, email me at croissanthology [at] gmail.com and I'll pay you 10 bucks if I believe this could plausibly Be Worth It (as defined by "worth >10 euros of value").</p>
+                </li>
+            </ol>
         </div>
     </div>
 
@@ -63,7 +61,13 @@
         var winScroll = document.body.scrollTop || document.documentElement.scrollTop;
         var height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
         var scrolled = (winScroll / height) * 100;
-        document.getElementById("progressBar").style.width = scrolled + "%";
+        document.querySelector('.progress-bar').style.width = scrolled + '%';
+
+        if (winScroll > 50) {
+            document.querySelector('.mobile-header').style.transform = 'translateY(0)';
+        } else {
+            document.querySelector('.mobile-header').style.transform = 'translateY(-100%)';
+        }
     });
     </script>
 </body>
