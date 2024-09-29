@@ -245,3 +245,84 @@ a[href^="https://lesswrong.com"]::after {
                 display: none;
             }
         }
+
+.footnote-ref {
+    font-family: 'Poiret One', cursive;
+    font-weight: bold;
+    color: #4A9C6D;
+    cursor: pointer;
+    font-size: 1em;
+    vertical-align: baseline;
+}
+
+.footnote {
+    position: absolute;
+    right: -220px;
+    width: 200px;
+    font-size: 0.9em;
+    color: #cccccc;
+    background-color: #333333;
+    border: 1px solid #4A9C6D;
+    padding: 15px 10px 10px;
+    margin-top: 10px;
+    box-sizing: border-box;
+}
+
+.footnote-number {
+    position: absolute;
+    top: -10px;
+    left: -1px;
+    background-color: black;
+    padding: 0 5px;
+    font-family: 'Poiret One', cursive;
+    font-weight: bold;
+    color: #4A9C6D;
+}
+
+@media (max-width: 768px) {
+    .footnote {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) scale(0.9);
+        width: 80%;
+        max-width: 280px;
+        opacity: 0;
+        pointer-events: none;
+        z-index: 1000;
+        transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    .footnote.active {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+        pointer-events: auto;
+    }
+}
+
+.footnote-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    z-index: 999;
+}
+
+.footnote-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+@keyframes footnoteRefBounce {
+    0%, 100% { transform: scale(1); color: #4A9C6D; }
+    50% { transform: scale(1.2); color: white; }
+}
+
+.footnote-ref.animate {
+    animation: footnoteRefBounce 0.5s ease;
+}
