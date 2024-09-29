@@ -58,31 +58,7 @@ h6 { font-size: 1em; }
     h4 { font-size: 1.25em; }
     h5, h6 { font-size: 1em; }
 }
-                }
-        .footnote-ref {
-            cursor: pointer;
-            color: #4CAF50;
-            text-decoration: none;
-            vertical-align: super;
-            font-size: smaller;
-        }
-        .footnote {
-            position: absolute;
-            right: -220px;
-            width: 200px;
-            font-size: 0.9em;
-            color: #cccccc;
-            display: none;
-        }
-        @media (max-width: 1024px) {
-            .footnote {
-                position: static;
-                width: auto;
-                margin-top: 10px;
-                border-top: 1px solid #4CAF50;
-                padding-top: 10px;
-            }
-        }
+
 
 :root {
     --background-color: #1a1a1a;
