@@ -296,3 +296,8 @@ a[href^="https://lesswrong.com"]::after {
     padding-left: 20px;
     margin-bottom: 10px;
 }
+
+                .footnote-ref {
+    display: inline;
+    /* other styles remain the same */
+}
