@@ -21,3 +21,32 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    const footnoteRefs = document.querySelectorAll('.footnote-ref');
+    const overlay = document.createElement('div');
+    overlay.className = 'footnote-overlay';
+    document.body.appendChild(overlay);
+
+    footnoteRefs.forEach(ref => {
+        ref.addEventListener('click', (e) => {
+            e.preventDefault();
+            const footnoteId = ref.getAttribute('data-footnote');
+            const footnote = document.getElementById(`footnote-${footnoteId}`);
+            
+            if (window.innerWidth <= 768) {
+                footnote.classList.add('active');
+                overlay.classList.add('active');
+            }
+            
+            ref.classList.add('animate');
+            setTimeout(() => ref.classList.remove('animate'), 500);
+        });
+    });
+
+    overlay.addEventListener('click', () => {
+        document.querySelectorAll('.footnote').forEach(footnote => footnote.classList.remove('active'));
+        overlay.classList.remove('active');
+    });
+});
