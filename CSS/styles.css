@@ -84,25 +84,31 @@ h6 { font-size: 1em; }
             }
         }
 
-        
-        @import url('https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&display=swap');
-        
-        :root {
-            --main-width: min(800px, 90vw);
-            --title-height: 100px;
-        }
-        
-        body {
-            font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
-            background-color: black;
-            color: white;
-            line-height: 1.6;
-            padding: 20px;
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+:root {
+    --background-color: #1a1a1a;
+    --text-color: #e0e0e0;
+    --accent-color: #4A9C6D;
+    --link-color: #cccccc;
+    --main-width: min(800px, 90vw);
+    --title-height: 100px;
+}
+
+
+
+body {
+    font-family: 'Source Serif Pro', serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    line-height: 1.6;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+   
+
 
         .content-wrapper {
             width: var(--main-width);
@@ -193,7 +199,7 @@ h6 { font-size: 1em; }
 
 
   a {
-    color: #CCCCCC;
+    color: var(--text-color);
     text-decoration: none;
     position: relative;
 }
