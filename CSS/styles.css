@@ -279,6 +279,6 @@ a[href^="https://lesswrong.com"]::after {
     position: static;
     float: right;
     clear: right;
-    margin-right: -210px;
-    margin-top: 0;
+    margin-left: 5px;
+    margin-top: 20;
 }
