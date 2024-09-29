@@ -23,6 +23,8 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
+
+
 document.addEventListener('DOMContentLoaded', () => {
     const footnoteRefs = document.querySelectorAll('.footnote-ref');
     const overlay = document.createElement('div');
