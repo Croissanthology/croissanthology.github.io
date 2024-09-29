@@ -1,6 +1,5 @@
 <head>
     <link rel="stylesheet" href="CSS/styles.css">
-
 </head>
 <body>
     <div class="content-wrapper">
@@ -37,22 +36,13 @@
         </p>
     </div>
 
-   <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const refs = document.querySelectorAll('.footnote-ref');
-        refs.forEach(ref => {
-            const footnoteId = 'footnote-' + ref.dataset.footnote;
-            const footnote = document.getElementById(footnoteId);
-            
-            ref.addEventListener('mouseenter', () => {
-                footnote.style.display = 'block';
-            });
-            
-            ref.addEventListener('mouseleave', () => {
-                footnote.style.display = 'none';
-            });
-        });
-    });
-    </script>   
+            <div class="mobile-header">
+        <h1 class="mobile-header-title">Croissanthology</h1>
+        <div class="progress-bar"></div>
+    </div>
+
+             <script src="/js/script.js"></script>
+
+
 </body>
 </html>
