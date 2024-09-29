@@ -245,33 +245,40 @@ a[href^="https://lesswrong.com"]::after {
             }
 .content-wrapper {
     position: relative;
-    max-width: 800px;
+    max-width: 900px;
     margin: 0 auto;
-    padding-right: 250px; /* Make room for footnotes */
+    padding-right: 300px;
+}
+
+.main-content {
+    margin-right: 20px;
 }
 
 .footnote-ref {
+    display: inline;
     font-family: 'Poiret One', cursive;
     font-weight: bold;
     color: #4A9C6D;
     cursor: pointer;
+    position: relative; /* Add this */
 }
 
 .footnote {
-    position: relative;
-    right: -220px;
-    width: 200px;
+    position: absolute;
+    right: -270px;
+    width: 250px;
     font-size: 0.9em;
     color: #cccccc;
     background-color: #333333;
     border: 1px solid #808080;
     padding: 15px 10px 10px;
-    margin-top: 10px;
     box-sizing: border-box;
+    top: 0; /* Add this */
+    margin-top: 0; /* Change this */
 }
 
 .footnote-number {
-    position: relative;
+    position: absolute;
     top: -10px;
     left: -1px;
     background-color: #333333;
@@ -281,23 +288,4 @@ a[href^="https://lesswrong.com"]::after {
     color: #4A9C6D;
 }
 
-/* Ensure footnote content is styled properly */
-.footnote h1, .footnote h2, .footnote h3, .footnote h4, .footnote h5, .footnote h6 {
-    font-size: 1.1em;
-    margin-top: 10px;
-    margin-bottom: 5px;
-}
-
-.footnote p {
-    margin-bottom: 10px;
-}
-
-.footnote ul, .footnote ol {
-    padding-left: 20px;
-    margin-bottom: 10px;
-}
-
-.footnote-ref {
-    display: inline;
-    /* other styles remain the same */
-}
+/* Other styles remain the same */
