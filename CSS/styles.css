@@ -314,4 +314,37 @@ font-family: 'Source Serif Pro', serif;
             padding: 10px 5px 5px;
             border-top: 1px solid #e0e0e0;
         }
-                
+/* Vinque Regular font import */
+@import url('https://fonts.googleapis.com/css2?family=Vinque&display=swap');
+
+/* Drop Cap styles */
+.dropcap {
+    float: left;
+    font-family: 'Vinque', cursive;
+    font-size: 5em;
+    line-height: 0.8;
+    padding-top: 0.1em;
+    padding-right: 0.1em;
+    padding-left: 0;
+    color: #4A9C6D; /* Croissanthology logo green */
+}
+
+.dropcap::before {
+    content: '';
+    display: inline-block;
+    width: 0.1em;
+    height: 0.1em;
+}
+
+/* Ensure paragraphs with drop caps have no margin and justified text */
+p.has-dropcap {
+    margin: 0;
+    text-align: justify;
+}
+
+/* Optional: Style for the rest of the first line */
+p.has-dropcap::first-line {
+    font-variant: small-caps;
+    letter-spacing: 0.05em;
+}
+
