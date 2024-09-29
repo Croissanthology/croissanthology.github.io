@@ -271,7 +271,7 @@ a[href^="https://lesswrong.com"]::after {
 }
 
 .footnote-number {
-    position: absolute;
+    position: relative;
     top: -10px;
     left: -1px;
     background-color: #333333;
