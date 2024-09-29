@@ -245,13 +245,13 @@ a[href^="https://lesswrong.com"]::after {
             }
 .content-wrapper {
     position: relative;
-    max-width: 900px;
+    max-width: 1200px;
     margin: 0 auto;
     padding-right: 250px;
 }
 
 .main-content {
-    margin-right: 20px;
+    margin-right: 5px;
 }
 
 .footnote-ref {
@@ -262,8 +262,6 @@ a[href^="https://lesswrong.com"]::after {
     cursor: pointer;
     position: relative;
 }
-
-
 
 .footnote-number {
     position: absolute;
