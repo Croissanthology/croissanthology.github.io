@@ -243,41 +243,47 @@ a[href^="https://lesswrong.com"]::after {
             .mobile-header {
                 display: none;
             }
-.content-wrapper {
-    position: relative;
-    max-width: 900px;
-    margin: 0 auto;
-    padding-right: 250px;
-}
-
-
-.footnote-ref {
-    display: inline;
-    font-family: 'Poiret One', cursive;
-    font-weight: bold;
-    color: #4A9C6D;
-    cursor: pointer;
-    position: relative;
-}
-
-.footnote-number {
-    position: absolute;
-    top: -10px;
-    left: -1px;
-    background-color: #333333;
-    padding: 0 5px;
-    font-family: 'Poiret One', cursive;
-    font-weight: bold;
-    color: #4A9C6D;
-}
-.main-content {
-    margin-right: 200px;
-    position: relative;
-}
-
-.footnote {
-    position: absolute;
-    right: -250px;
-    margin-right: -50px;
-    margin-top: 0;
-}
+     .footnote-ref {
+            display: inline;
+            font-family: 'Times New Roman', serif;
+            font-weight: bold;
+            color: #4A9C6D;
+            cursor: pointer;
+            position: relative;
+        }
+        .footnote-number {
+            position: absolute;
+            top: -10px;
+            left: -1px;
+            background-color: #333333;
+            padding: 0 5px;
+            font-family: 'Times New Roman', serif;
+            font-weight: bold;
+            color: #4A9C6D;
+        }
+        .footnotes {
+            position: absolute;
+            top: 0;
+            right: 20px;
+            width: 230px;
+        }
+        .footnote {
+            font-size: 0.9em;
+            color: #CCCCCC;
+            position: absolute;
+            width: 230px;
+            background-color: #333333; /* Changed to match body background */
+            border: 1px solid #FFFFFF; /* Changed to white */
+            padding: 10px;
+            box-sizing: border-box;
+        }
+        .footnote::before {
+            content: attr(data-number);
+            position: absolute;
+            top: -10px;
+            left: -1px;
+            background-color: #333333;
+            color: #4A9C6D;
+            padding: 0 5px;
+            font-weight: bold;
+        }
