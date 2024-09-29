@@ -287,3 +287,31 @@ a[href^="https://lesswrong.com"]::after {
             padding: 0 5px;
             font-weight: bold;
         }
+font-family: 'Source Serif Pro', serif;
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        .image-container {
+            background-color: #1a1a1a;
+            border: 1px solid white;
+            padding: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            max-width: 100%;
+        }
+        .image-container img {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
+        .image-caption {
+            font-family: Arial, sans-serif;
+            font-size: 0.9em;
+            color: #e0e0e0;
+            text-align: center;
+            padding: 10px 5px 5px;
+            border-top: 1px solid #e0e0e0;
+        }
+                
