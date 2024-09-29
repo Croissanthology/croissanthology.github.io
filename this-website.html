@@ -3,45 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>This Website - Croissanthology</title>
-    <link rel="stylesheet" href="CSS/styles.css">
-    <script src="javascript/javaventuraayayay.js" defer></script>
+    <title>Croissanthology</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poiret+One&family=Source+Serif+Pro:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles CSS croissanthology 2.css">
+    <style>
+        body {
+            padding-top: 30px; /* Add space for the fixed header */
+        }
+        .mobile-header {
+            display: block;
+            transform: translateY(0);
+        }
+    </style>
 </head>
 <body>
     <div class="mobile-header">
-        <h1 class="mobile-header-title">This Website</h1>
-        <div class="progress-bar"></div>
+        <h1 class="mobile-header-title">Croissanthology</h1>
+        <div class="progress-bar" id="progressBar"></div>
     </div>
-    
+
     <div class="content-wrapper">
-        <article class="post">
-            <h1>This Website</h1>
-            
-            <p>This website was designed in two days, and heavily inspired by <a href="https://gwern.net">gwern.net</a>
-                <aside class="sidenote">Indeed, the original point of the project was to reverse-engineer gwern.net! <a href="https://x.com/croissanthology/status/1839793248023314745">Surely, the task couldn't be that difficult, right?</a>. Actually, certain features like a minimalistic monochrome progress bar at the top of each post for scrolling on mobile were surprisingly easy to implement, as were side-notes like this one. Even with zero web dev experience, there's a lot you can do when your civilisation allows you to buy sparks of AGI for ~ 10 coffees / 2 domain names / 1.5 books a month.</aside>. 
-                With time though, I plan to change little things from time to time until I have something totally unique and interesting. Sorry Gwern, just borrowing for now.</p>
-            
+        <div class="main-content">
+            <p>This website was designed in two days, and heavily inspired by <a href="https://gwern.net">gwern.net</a><sup class="footnote-ref" id="fnref1"><a href="#fn1">1</a></sup>. With time though, I plan to change little things from time to time until I have something totally unique and interesting. Sorry Gwern, just borrowing for now.</p>
+
             <p>The site is on a public GitHub repository and uses GitHub Pages, because why the hell not. If I ever get rate limited, I'll just buy myself out of them; in this respect our civilisation is rather <a href="https://equilibriabook.com">adequate</a> I think. You can avoid a lot of hassle on the internet if you're willing to pay just a little bit.</p>
-            
-            <p>The compiler / search engine / pair programmer I use is <a href="https://claude.ai">Claude 3.5 Sonnet</a>. I'm not sure why I would bother with anything else; LLMs are incredibly capable at generalization already. I won't switch from Claude For Everything unless there's a very good reason to.
-                <aside class="sidenote">If you know a very good reason not to do this, email me at croissanthology [at] gmail.com and I'll pay you 10 bucks if I believe this could plausibly Be Worth It (as defined by "worth >10 euros of value").</aside></p>
-            
+
+            <p>The compiler / search engine / pair programmer I use is <a href="https://claude.ai">Claude 3.5 Sonnet</a>. I'm not sure why I would bother with anything else; LLMs are incredibly capable at generalization already. I won't switch from Claude For Everything unless there's a very good reason to.<sup class="footnote-ref" id="fnref2"><a href="#fn2">2</a></sup></p>
+
             <p>There's one aspect in which I have a slightly suboptimal <a href="https://www.lesswrong.com/posts/B7P97C27rvHPz3s9B/gears-in-understanding">gears-level understanding</a> of my own website. I'm not sure to what extent that's true, or to what extent that's even a problem.</p>
-            
-            <p>Had Claude not been around, I don't think I would have had the courage to learn html/css/javascript from scratch<div class="footnote-ref">[1]</div>. I know that sounds ridiculous, but it's true: the <a href="https://www.lesswrong.com/posts/reitXJgJXFzKpdKyd/beware-trivial-inconveniences">trivial inconvenience</a> of this task, even <em>despite my knowing how important it is,</em> would have probably delegated croissanthology.com to months or years into the future.</p>
-            
+
+            <p>Had Claude not been around, I don't think I would have had the courage to learn html/css/javascript from scratch. I know that sounds ridiculous, but it's true: the <a href="https://www.lesswrong.com/posts/reitXJgJXFzKpdKyd/beware-trivial-inconveniences">trivial inconvenience</a> of this task, even <em>despite my knowing how important it is,</em> would have probably delegated croissanthology.com to months or years into the future.</p>
+
             <p>Had Claude not been around to lower the floor, I don't think I'd know <em>anything</em> about web dev. As it turns out, I now do; I debug my code on my own, and have a gears-level understanding of it that's at least as good as I had for my projects when I was a kid coding on <a href="https://scratch.mit.edu">Scratch</a>.</p>
-            
+
             <p>Plants are good for your living space. If you don't trust yourself to not-kill your plant, then a plastic plant is better than no plant at all. Seriously. Don't just dodge the question because you're squeezed between the idea that you're Not Good Enough For The Real Thing (Yet) and the fact that the Approximate Thing is Embarrassing and Suboptimal.</p>
-            
+
             <p>Pick 1 and hassle, or pick 0.5 and relax in the spirit of "good enough" but <em>don't</em> pick 0.</p>
-            
+
             <p>That's what I'm doing here with web dev. As I continue actively messing around with the site, maybe read a few wikipedia articles and Claude's explanations, I hope to inch from 0.5 to 1.</p>
-            
+
             <p>I ask you now: do you have a personal website? Why not? All you need is a GitHub account and Claude. Get a Claude Pro subscription for at least 1 month, or don't, and deal with the consequences. But get a website done. Please don't linger at 0 for much longer. The view is nicer from 0.5.</p>
-        </article>
+
+            <div class="footnotes">
+                <hr>
+                <ol>
+                    <li id="fn1">
+                        <p>Indeed, the original point of the project was to reverse-engineer gwern.net! <a href="https://x.com/croissanthology/status/1839793248023314745">Surely, the task couldn't be that difficult, right?</a>. Actually, certain features like a minimalistic monochrome progress bar at the top of each post for scrolling on mobile were surprisingly easy to implement, as were side-notes like this one. Even with zero web dev experience, there's a lot you can do when your civilisation allows you to buy sparks of AGI for ~ 10 coffees / 2 domain names / 1.5 books a month. <a href="#fnref1" class="footnote-backref">↩</a></p>
+                    </li>
+                    <li id="fn2">
+                        <p>If you know a very good reason not to do this, email me at croissanthology [at] gmail.com and I'll pay you 10 bucks if I believe this could plausibly Be Worth It (as defined by "worth >10 euros of value"). <a href="#fnref2" class="footnote-backref">↩</a></p>
+                    </li>
+                </ol>
+            </div>
+        </div>
     </div>
 
-
+    <script>
+    window.addEventListener('scroll', function() {
+        var winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+        var height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        var scrolled = (winScroll / height) * 100;
+        document.getElementById("progressBar").style.width = scrolled + "%";
+    });
+    </script>
 </body>
 </html>
