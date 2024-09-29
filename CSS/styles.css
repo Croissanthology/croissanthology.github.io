@@ -273,7 +273,7 @@ a[href^="https://lesswrong.com"]::after {
     border: 1px solid #808080;
     padding: 15px 10px 10px;
     box-sizing: border-box;
-    margin-top: -1.5em;
+    margin-top: -2.5em;
 }
 
 .footnote-number {
