@@ -1,185 +1,109 @@
 
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Croissanthology</title>
+    <link rel="stylesheet" href="CSS/styles.css">
+    <script src="javascript/javaventuraayayay.js" defer></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&display=swap');
-        
-        :root {
-            --main-width: min(800px, 90vw);
-            --title-height: 100px;
-        }
-        
-        body {
-            font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
-            background-color: black;
-            color: white;
-            line-height: 1.6;
-            padding: 20px;
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .content-wrapper {
-            width: var(--main-width);
-            max-width: 100%;
-        }
-
-        .title-container {
-            position: relative;
-            width: 100%;
-            height: var(--title-height);
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-        }
-
-        .title {
-            font-size: clamp(1.5em, 5vw, 2.5em);
-            transition: opacity 0.3s ease;
-            text-align: center;
-            margin: 0;
-            z-index: 2;
-        }
-
-        .title-white { color: white; }
-        .title-green { color: #4A9C6D; }
-
-             .shine-effect-double {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transform: translateX(-100%);
-            transition: transform 0.4s ease;
-            z-index: 1;
-        }
-        .shine-effect-double::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
-            transform: translateX(-100%);
-            transition: transform 0.4s ease 0.2s;
-        }
-        .title-container:hover .shine-effect-double,
-        .title-container:hover .shine-effect-double::after {
-            transform: translateX(100%);
-        }
-
-        .image-replacement {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            z-index: 0;
-        }
-
-        .image-replacement img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            object-position: center;
-        }
-
-        .title-container:hover .image-replacement {
-            opacity: 1;
-        }
-
-        .dotted-box {
-            border: 1px dotted #808080;
-            padding: 15px;
-            margin-bottom: 20px;
-            width: 100%;
-            box-sizing: border-box;
-        }
+    
 
 
-                    a {
-            color: #CCCCCC;
+        .footnote-ref {
+            cursor: pointer;
+            color: var(--accent-color);
             text-decoration: none;
-            position: relative;
+            vertical-align: super;
+            font-size: smaller;
         }
 
-        a::after {
-            content: '';
+        .footnote {
+            display: none;
             position: absolute;
-            width: 100%;
-            height: 1px;
-            bottom: 0;
-            left: 0;
-            background-color: white;
-            transform: scaleX(0);
-            transform-origin: bottom right;
-            transition: transform 0.3s ease;
+            right: -250px;
+            width: 200px;
+            background-color: var(--background-color);
+            border: 1px solid var(--accent-color);
+            box-shadow: 0 0 0 1px var(--background-color), 0 0 0 3px var(--accent-color);
+            padding: 10px;
+            font-size: 0.9em;
+            color: var(--text-color);
+            z-index: 100;
         }
 
-        a:hover::after {
-            transform: scaleX(1);
-            transform-origin: bottom left;
+        .footnote-close {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            cursor: pointer;
+            color: var(--accent-color);
         }
 
-        a[href^="https://www.lesswrong.com"]::after,
-        a[href^="https://lesswrong.com"]::after {
-            background-color: #4A9C6D;
+        @media (max-width: 1200px) {
+            .footnote {
+                position: fixed;
+                right: 20px;
+                left: 20px;
+                bottom: 20px;
+                width: auto;
+                max-width: 600px;
+                margin: auto;
+            }
         }
-
-
     </style>
 </head>
 <body>
-    <div class="content-wrapper">
-        <div class="title-container">
-            <h1 class="title">
-                <span class="title-white">Croiss</span><span class="title-green">anthology</span>
-            </h1>
-            <div class="shine-effect"></div>
-            <div class="image-replacement">
-                <img src="https://github.com/Croissanthology/croissanthology.github.io/blob/main/images/croissanthology%20image%201.png?raw=true" alt="Badoom badoom hello">
-            </div>
+    <div class="content">
+        <h1>Elegant Footnotes Demo</h1>
+        <p>Welcome to the world of elegant footnotes<sup class="footnote-ref" data-footnote="1">1</sup>. These footnotes are designed to be both functional and stylish<sup class="footnote-ref" data-footnote="2">2</sup>.</p>
+        <p>On desktop, they appear to the right of the text, just like sidenotes. On mobile, they pop up when you click on them<sup class="footnote-ref" data-footnote="3">3</sup>.</p>
+
+        <div id="footnote-1" class="footnote">
+            <span class="footnote-close">&times;</span>
+            <p>1. Welcome to the footnote zone. It's cooler down here.</p>
         </div>
-        
-        <div class="dotted-box">
-            <p>I'm not quite sure what I do, but I certainly do things. Email me at croissanthology [at] gmail for literally anything. I would be delighted to receive any email of any kind; ask for whatever you want, do whatever you want, does it look like I care?</p>
+        <div id="footnote-2" class="footnote">
+            <span class="footnote-close">&times;</span>
+            <p>2. These footnotes are so stylish, they make Comic Sans jealous.</p>
         </div>
-        
-        <div class="dotted-box">
-            <div class="essays-title">Essays</div>
-            <p><a href="gell-mann.html">Gell-Mann checks</a></p>
-            <p><a href="https://www.paulgrahamcrackers.com">Paul Graham Crackers</a></p>
-            <p><a href="for-fucks-sake.html">Just use a goddamn LLM already</a></p>
+        <div id="footnote-3" class="footnote">
+            <span class="footnote-close">&times;</span>
+            <p>3. If you're seeing this on mobile, congratulations! Your thumb is magic.</p>
         </div>
-        
-        <p>
-            Hello there! <br>
-            <a href="https://www.lesswrong.com/users/croissanthology">Light Mode</a> <br>
-            Twitter: <a href="https://x.com/croissanthology">x.com/croissanthology</a>
-        </p>
     </div>
 
     <script>
-        // ... your existing random image script ...
+        document.addEventListener('DOMContentLoaded', (event) => {
+            const footnoteRefs = document.querySelectorAll('.footnote-ref');
+            const footnotes = document.querySelectorAll('.footnote');
+            const closeButtons = document.querySelectorAll('.footnote-close');
+
+            footnoteRefs.forEach(ref => {
+                ref.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const footnoteId = `footnote-${ref.dataset.footnote}`;
+                    const footnote = document.getElementById(footnoteId);
+                    footnotes.forEach(fn => fn.style.display = 'none');
+                    footnote.style.display = 'block';
+                });
+            });
+
+            closeButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    button.closest('.footnote').style.display = 'none';
+                });
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.footnote') && !e.target.classList.contains('footnote-ref')) {
+                    footnotes.forEach(fn => fn.style.display = 'none');
+                }
+            });
+        });
     </script>
 </body>
 </html>
-
-
-
