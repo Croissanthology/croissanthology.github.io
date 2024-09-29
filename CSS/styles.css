@@ -315,12 +315,12 @@ font-family: 'Source Serif Pro', serif;
             border-top: 1px solid #e0e0e0;
         }
 /* Vinque Regular font import */
-@import url('https://fonts.googleapis.com/css2?family=Serendior&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Biffur&display=swap');
 
 /* Drop Cap styles */
 .dropcap {
     float: left;
-    font-family: 'Serendior', cursive;
+    font-family: 'Biffur', cursive;
     font-size: 5em;
     line-height: 0.8;
     padding-top: 0.1em;
