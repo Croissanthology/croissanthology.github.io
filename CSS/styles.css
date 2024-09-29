@@ -263,18 +263,7 @@ a[href^="https://lesswrong.com"]::after {
     position: relative;
 }
 
-.footnote {
-    position: absolute;
-    right: -250px;
-    width: 220px;
-    font-size: 0.9em;
-    color: #cccccc;
-    background-color: #333333;
-    border: 1px solid #808080;
-    padding: 15px 10px 10px;
-    box-sizing: border-box;
-    margin-top: 3em;
-}
+
 
 .footnote-number {
     position: absolute;
@@ -285,4 +274,13 @@ a[href^="https://lesswrong.com"]::after {
     font-family: 'Poiret One', cursive;
     font-weight: bold;
     color: #4A9C6D;
+}
+
+.footnote {
+    /* ... other properties ... */
+    position: static;
+    float: right;
+    clear: right;
+    margin-right: -210px;
+    margin-top: 0;
 }
