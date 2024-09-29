@@ -5,23 +5,6 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Source+Serif+Pro:wght@400;700&display=swap');
         
-    .sidenote {
-            float: right;
-            clear: right;
-            margin-right: -33%;
-            width: 30%;
-            font-size: 0.9em;
-            color: #666;
-            margin-top: 0.3rem;
-            position: relative;
-        }
-        @media (max-width: 1000px) {
-            .sidenote {
-                float: none;
-                margin: 1em 0;
-                width: 100%;
-            }
-        }
 
         
 h1, h2, h3, h4, h5, h6 {
