@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         progressBar.style.width = `${scrollPercentage}%`;
 
-                    header.style.transform = scrollPosition > showHeaderThreshold ? 'translateY(0)' : 'translateY(-100%)';
+        header.style.transform = scrollPosition > showHeaderThreshold ? 'translateY(0)' : 'translateY(-100%)';
 
      
 
