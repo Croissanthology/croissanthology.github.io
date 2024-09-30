@@ -1,107 +1,38 @@
-
-/* le fonction para el desktop amigo: */ 
-
-document.addEventListener('DOMContentLoaded', () => {
-    // Check if we're on desktop
-    const isDesktop = window.matchMedia('(min-width: 769px)').matches;
-
-    if (isDesktop) {
-        // Create the side title element
-        const sideTitle = document.createElement('div');
-        sideTitle.classList.add('side-title');
-        document.body.appendChild(sideTitle);
-
-        // Create the progress bar
-        const progressBar = document.createElement('div');
-        progressBar.classList.add('side-progress-bar');
-        sideTitle.appendChild(progressBar);
-
-        // Function to find the title
-        const findTitle = () => {
-            const titleSelectors = [
-                'h1.title',
-                'h1.mobile-header',
-                '.title h1',
-                '.mobile-header h1',
-                'h1',  // Fallback to any h1
-            ];
-
-            for (const selector of titleSelectors) {
-                const element = document.querySelector(selector);
-                if (element) {
-                    return element.textContent.trim();
-                }
-            }
-
-            return 'Page Title'; // Default fallback
-        };
-
-        // Get the main title
-        const pageTitle = findTitle();
-        sideTitle.innerHTML += `<h2>${pageTitle}</h2>`;
-
-        // Throttle function to limit update frequency
-        const throttle = (func, limit) => {
-            let inThrottle;
-            return function() {
-                const args = arguments;
-                const context = this;
-                if (!inThrottle) {
-                    func.apply(context, args);
-                    inThrottle = true;
-                    setTimeout(() => inThrottle = false, limit);
-                }
-            };
-        };
-
-        // Update progress and title position
-        const updateProgress = throttle(() => {
-            const scrollPosition = window.pageYOffset;
-            const pageHeight = document.documentElement.scrollHeight - window.innerHeight;
-            const scrollPercentage = (scrollPosition / pageHeight) * 100;
-
-            progressBar.style.height = `${scrollPercentage}%`;
-
-            // Parallax effect for the title
-            sideTitle.style.transform = `translateY(${scrollPosition * 0.1}px)`;
-        }, 10); // Throttle to 10ms
-
-        window.addEventListener('scroll', updateProgress);
-        window.addEventListener('resize', updateProgress);
-
-        // Initial update
-        updateProgress();
-    }
-});
-
-
-
-
-`;
-
-const styleSheet = document.createElement("style");
-styleSheet.innerText = styles;
-document.head.appendChild(styleSheet);
-
-/* this function is for mobile */ 
 document.addEventListener('DOMContentLoaded', () => {
     const header = document.querySelector('.mobile-header');
     const progressBar = document.querySelector('.progress-bar');
-    const showHeaderThreshold = 100; // Pixels scrolled before showing header
+    const headerTitle = document.querySelector('.mobile-header-title');
+    const showHeaderThreshold = 100;
+    const isMobile = () => window.innerWidth < 768;
 
-    window.addEventListener('scroll', () => {
+    // Set the header title
+    headerTitle.textContent = document.title;
+
+    function updateProgressBar() {
         const scrollPosition = window.pageYOffset;
         const pageHeight = document.documentElement.scrollHeight - window.innerHeight;
         const scrollPercentage = (scrollPosition / pageHeight) * 100;
 
         progressBar.style.width = `${scrollPercentage}%`;
 
-        if (scrollPosition > showHeaderThreshold) {
-            header.style.transform = 'translateY(0)';
+        if (isMobile()) {
+            header.style.transform = scrollPosition > showHeaderThreshold ? 'translateY(0)' : 'translateY(-100%)';
         } else {
-            header.style.transform = 'translateY(-100%)';
+            header.style.position = 'fixed';
+            header.style.top = '10px';
+            header.style.left = '10px';
+            header.style.width = 'calc(100% - 20px)';
+            header.style.transform = 'translateY(0)';
+            header.style.opacity = scrollPosition > showHeaderThreshold ? '1' : '0';
+            header.style.transition = 'opacity 0.3s ease-in-out';
         }
-    });
+    }
+
+    window.addEventListener('scroll', updateProgressBar);
+    window.addEventListener('resize', updateProgressBar);
+
+    // Initial update
+    updateProgressBar();
 });
 
 
