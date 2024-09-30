@@ -315,6 +315,12 @@ font-family: 'Source Serif Pro', serif;
             border-top: 1px solid #e0e0e0;
         }
 
+@media screen and (min-width: 1200px) {
+    .image-container {
+        max-width: 50%; /* Even smaller on very large screens */
+    }
+}
+
 /* FORGOTTEN DROPCAP ADVENTURE
 
 @font-face {
@@ -358,6 +364,5 @@ p.has-dropcap::first-line {
     font-variant: small-caps;
     letter-spacing: 0.05em; */ 
 } 
-
 
 
