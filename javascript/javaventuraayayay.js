@@ -17,14 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (isMobile()) {
             header.style.transform = scrollPosition > showHeaderThreshold ? 'translateY(0)' : 'translateY(-100%)';
-        } else {
-            header.style.position = 'fixed';
-            header.style.top = '10px';
-            header.style.left = '10px';
-            header.style.width = 'calc(100% - 20px)';
-            header.style.transform = 'translateY(0)';
-            header.style.opacity = scrollPosition > showHeaderThreshold ? '1' : '0';
-            header.style.transition = 'opacity 0.3s ease-in-out';
+      
         }
     }
 
