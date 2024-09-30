@@ -508,7 +508,6 @@ p.has-dropcap::first-line {
 
 /* in the name of the scrolling header!*/ 
 
-// Add this to your CSS file or <style> tag
 const styles = `
 @media (min-width: 769px) {
     .side-title {
