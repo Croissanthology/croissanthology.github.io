@@ -329,9 +329,9 @@ font-family: 'Source Serif Pro', serif;
 
 
 /* Drop Cap styles */
-/* .dropcap {
+.dropcap {
     float: left;
-    font-family: 'Onamura', cursive;
+    font-family: 'Poiret', cursive;
     font-size: 5em;
     line-height: 0.8;
     padding-top: 0.1em;
@@ -340,7 +340,7 @@ font-family: 'Source Serif Pro', serif;
     color: #4A9C6D; /* Croissanthology logo green */
 }
 
-/* .dropcap::before {
+.dropcap::before {
     content: '';
     display: inline-block;
     width: 0.1em;
@@ -348,13 +348,13 @@ font-family: 'Source Serif Pro', serif;
 }
 
 /* Ensure paragraphs with drop caps have no margin and justified text */
-/* p.has-dropcap {
+ p.has-dropcap {
     margin: 0;
     text-align: justify;
 }
 
 /* Optional: Style for the rest of the first line */
-/* p.has-dropcap::first-line {
+p.has-dropcap::first-line {
     font-variant: small-caps;
     letter-spacing: 0.05em; */ 
 } 
