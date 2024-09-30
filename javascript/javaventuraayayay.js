@@ -15,11 +15,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         progressBar.style.width = `${scrollPercentage}%`;
 
-        if (isMobile()) {
-            header.style.transform = scrollPosition > showHeaderThreshold ? 'translateY(0)' : 'translateY(-100%)';
-      
-        }
-    }
+                    header.style.transform = scrollPosition > showHeaderThreshold ? 'translateY(0)' : 'translateY(-100%)';
+
+     
 
     window.addEventListener('scroll', updateProgressBar);
     window.addEventListener('resize', updateProgressBar);
