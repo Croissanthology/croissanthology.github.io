@@ -317,8 +317,8 @@ font-family: 'Source Serif Pro', serif;
 
 @font-face {
     font-family: 'Onamura';
-    src: url('fonts/onamura.woff') format('woff'),
-         url('fonts/onamura.woff2') format('woff2');
+    src: url('/fonts/onamura.woff') format('woff'),
+         url('/fonts/onamura.woff2') format('woff2');
     font-weight: normal;
     font-style: normal;
     font-display: swap;
@@ -328,7 +328,7 @@ font-family: 'Source Serif Pro', serif;
 /* Drop Cap styles */
 .dropcap {
     float: left;
-    font-family: 'Onamura'
+    font-family: 'Onamura', cursive;
     font-size: 5em;
     line-height: 0.8;
     padding-top: 0.1em;
