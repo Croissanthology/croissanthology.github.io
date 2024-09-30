@@ -317,8 +317,8 @@ font-family: 'Source Serif Pro', serif;
 
 @font-face {
     font-family: 'Onamura';
-    src: url('/fonts/onamura.woff') format('woff'),
-         url('/fonts/onamura.woff2') format('woff2');
+    src: url('../croissanthology.github.io/fonts/onamura.woff') format('woff'),
+         url('../croissanthology.github.io/fonts/onamura.woff2') format('woff2');
     font-weight: normal;
     font-style: normal;
     font-display: swap;
