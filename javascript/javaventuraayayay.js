@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-
+/*
         function positionFootnotes() {
             const footnoteRefs = document.querySelectorAll('.footnote-ref');
             const footnotes = document.querySelectorAll('.footnote');
@@ -61,4 +61,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Run on load and resize
         window.addEventListener('load', positionFootnotes);
-        window.addEventListener('resize', positionFootnotes);
+        window.addEventListener('resize', positionFootnotes); /* 
