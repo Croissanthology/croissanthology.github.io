@@ -438,6 +438,56 @@ p.has-dropcap::first-line {
             z-index: 1;
         }
 
+
+        .quote-box {
+            max-width: 600px;
+            padding: 40px;
+            background-color: #2a2a2a;
+            position: relative;
+            border: 2px solid #FFD700;
+            overflow: hidden;
+        }
+        .quote-box::before {
+            content: '';
+            position: absolute;
+            top: -100px;
+            left: -100px;
+            width: 200px;
+            height: 200px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Ccircle cx='100' cy='100' r='80' fill='none' stroke='%23FFD700' stroke-width='2'/%3E%3Cpath fill='none' stroke='%23FFD700' stroke-width='2' d='M20,100 Q60,60 100,100 T180,100'/%3E%3Ccircle cx='100' cy='100' r='20' fill='%23FFD700'/%3E%3C/svg%3E");
+            background-size: contain;
+            background-repeat: no-repeat;
+            opacity: 0.3;
+        }
+        .quote-box::after {
+            content: '';
+            position: absolute;
+            bottom: -50px;
+            right: -50px;
+            width: 150px;
+            height: 150px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='none' stroke='%23FFD700' stroke-width='2' d='M10,50 Q30,0 50,50 T90,50'/%3E%3C/svg%3E");
+            background-size: contain;
+            background-repeat: no-repeat;
+            transform: rotate(45deg);
+            opacity: 0.3;
+        }
+        .quote-text {
+            font-style: italic;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+        .quote-author {
+            text-align: right;
+            font-weight: bold;
+            color: #FFD700;
+            position: relative;
+            z-index: 1;
+        }
+
 /* QUOTE BOX DONE */
 
 
