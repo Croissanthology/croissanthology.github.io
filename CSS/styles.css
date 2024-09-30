@@ -328,7 +328,7 @@ font-family: 'Source Serif Pro', serif;
 /* Drop Cap styles */
 .dropcap {
     float: left;
-    font-family: 'Onamura', cursive;
+    font-family: 'Onamura'
     font-size: 5em;
     line-height: 0.8;
     padding-top: 0.1em;
