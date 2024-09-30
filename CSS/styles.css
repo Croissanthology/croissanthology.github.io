@@ -210,6 +210,22 @@ a[href^="https://lesswrong.com"]::after {
     background-color: #4A9C6D;
 }
 
+
+/* Desktop hover styles */
+@media (hover: hover) and (pointer: fine) {
+    a:hover::after {
+        transform: scaleX(1);
+        transform-origin: bottom left;
+    }
+}
+
+/* Mobile styles */
+@media (hover: none) and (pointer: coarse) {
+    a::after {
+        display: none;
+    }
+}
+
         .mobile-header {
             position: fixed;
             top: 0;
