@@ -1,7 +1,6 @@
 
 /* le fonction para el desktop amigo: */ 
 
-
 document.addEventListener('DOMContentLoaded', () => {
     // Check if we're on desktop
     const isDesktop = window.matchMedia('(min-width: 769px)').matches;
@@ -17,11 +16,29 @@ document.addEventListener('DOMContentLoaded', () => {
         progressBar.classList.add('side-progress-bar');
         sideTitle.appendChild(progressBar);
 
+        // Function to find the title
+        const findTitle = () => {
+            const titleSelectors = [
+                'h1.title',
+                'h1.mobile-header',
+                '.title h1',
+                '.mobile-header h1',
+                'h1',  // Fallback to any h1
+            ];
+
+            for (const selector of titleSelectors) {
+                const element = document.querySelector(selector);
+                if (element) {
+                    return element.textContent.trim();
+                }
+            }
+
+            return 'Page Title'; // Default fallback
+        };
+
         // Get the main title
-        const mainTitle = document.querySelector('h1');
-        if (mainTitle) {
-            sideTitle.innerHTML += `<h2>${mainTitle.textContent}</h2>`;
-        }
+        const pageTitle = findTitle();
+        sideTitle.innerHTML += `<h2>${pageTitle}</h2>`;
 
         // Throttle function to limit update frequency
         const throttle = (func, limit) => {
