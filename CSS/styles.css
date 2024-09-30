@@ -319,6 +319,7 @@ font-family: 'Source Serif Pro', serif;
     font-family: 'Onamura';
     src: url('../croissanthology.github.io/fonts/onamura.woff') format('woff'),
          url('../croissanthology.github.io/fonts/onamura.woff2') format('woff2');
+         url('../croissanthology.github.io/fonts/onamura.otf') format('otf');
     font-weight: normal;
     font-style: normal;
     font-display: swap;
