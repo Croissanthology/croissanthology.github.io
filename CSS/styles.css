@@ -314,8 +314,16 @@ font-family: 'Source Serif Pro', serif;
             padding: 10px 5px 5px;
             border-top: 1px solid #e0e0e0;
         }
-/* Vinque Regular font import */
-@import url('https://fonts.googleapis.com/css2?family=Biffur&display=swap');
+
+@font-face {
+    font-family: 'Biffur';
+    src: url('fonts/onamura.woff') format('woff'),
+         url('fonts/onamura.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
 
 /* Drop Cap styles */
 .dropcap {
@@ -347,4 +355,6 @@ p.has-dropcap::first-line {
     font-variant: small-caps;
     letter-spacing: 0.05em;
 }
+
+
 
