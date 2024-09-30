@@ -330,6 +330,19 @@ font-family: 'Source Serif Pro', serif;
     }
 }
 
+}
+
+/* If you still have .image-container inside .dotted-box, ensure it's responsive */
+.dotted-box .image-container {
+    max-width: 100%;
+}
+
+.dotted-box .image-container img {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
 /* FORGOTTEN DROPCAP ADVENTURE
 
 @font-face {
