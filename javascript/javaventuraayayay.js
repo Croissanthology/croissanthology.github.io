@@ -35,30 +35,3 @@ document.addEventListener('DOMContentLoaded', () => {
     updateProgressBar();
 });
 
-
-
-/*
-        function positionFootnotes() {
-            const footnoteRefs = document.querySelectorAll('.footnote-ref');
-            const footnotes = document.querySelectorAll('.footnote');
-            const footnotesContainer = document.querySelector('.footnotes');
-            const containerTop = footnotesContainer.getBoundingClientRect().top;
-
-            let lastBottom = 0;
-
-            footnoteRefs.forEach((ref, index) => {
-                const footnote = footnotes[index];
-                const refRect = ref.getBoundingClientRect();
-                const footnoteHeight = footnote.offsetHeight;
-
-                let top = Math.max(refRect.top - containerTop, lastBottom);
-
-                footnote.style.top = `${top}px`;
-
-                lastBottom = top + footnoteHeight + 10; // 10px gap between footnotes
-            });
-        }
-
-        // Run on load and resize
-        window.addEventListener('load', positionFootnotes);
-        window.addEventListener('resize', positionFootnotes); /* 
