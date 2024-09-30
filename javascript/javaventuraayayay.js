@@ -76,10 +76,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-const styleSheet = document.createElement("style");
-styleSheet.innerText = styles;
-document.head.appendChild(styleSheet);
-
 
 `;
 
