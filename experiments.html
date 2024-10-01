@@ -3,91 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Side Title Test</title>
+    <title>The Trap of Planning: A Childhood Obsession</title>
+    <link rel="stylesheet" href="CSS/styles.css">
 </head>
 <body>
-    <h1 class="title">Test Title</h1>
-    <div style="height: 2000px;">Scroll me</div>
-    <script>
-document.addEventListener('DOMContentLoaded', () => {
-    // Check if we're on desktop
-    const isDesktop = window.matchMedia('(min-width: 769px)').matches;
+    <div class="content-wrapper">
+        <div class="auto-toc"></div>
+        
+        <h1>The Trap of Planning: A Childhood Obsession</h1>
 
-    if (isDesktop) {
-        // Create the side title element
-        const sideTitle = document.createElement('div');
-        sideTitle.classList.add('side-title');
-        document.body.appendChild(sideTitle);
+        <p>I spent most of my childhood planning. I wanted to save the world. Whenever I got interested in a new thing, I made it a Solution for saving the world. This got to the point where I was coming up with a new Master Plan every two days or so, and logging in my progress, strategy, and research onto a Google doc which now reaches nearly 2 million words. <sup class="footnote-ref" id="fnref:1"><a href="#fn:1">1</a></sup></p>
 
-        // Create the progress bar
-        const progressBar = document.createElement('div');
-        progressBar.classList.add('side-progress-bar');
-        sideTitle.appendChild(progressBar);
+        <p>I had a social life, but it was confined to school: the instant I got back home it was write write write think research plan. My meta- Master Plan then was to divide my life into Eras: Era 1 is the planning phase (childhood), Era 2 is the acting/saving the world phase and Era 3 is glorious retirement as Hero of Humanity phase.</p>
 
-        // Function to find the title
-        const findTitle = () => {
-            const titleSelectors = [
-                'h1.title',
-                'h1.mobile-header',
-                '.title h1',
-                '.mobile-header h1',
-                'h1',  // Fallback to any h1
-            ];
+        <p>The biggest mistake in my entire life thus far was this division into 3 parts. "Era 1" is a myth. A trap. A rationalization. It ruined years of life I could have spent <em>doing things, being human, existing</em>. Instead, I was locked up in an obsession for strategy, shiny new things, imagined social validation. <sup class="footnote-ref" id="fnref:2"><a href="#fn:2">2</a></sup> <a href="https://eristicstest.com/the_dragon_slayer/#:~:text=The%20Dragon%20Slayer%20is%20named%20for%20his/her%20tendency%20to%20daydream.%20Their%20imaginative%20capabilities%20and%20lack%20of%20societal%20rewards%20mean%20that%20daydreaming%20is%20pretty%20close%20to%20the%20real%20thing%2C%20at%20least%20in%20terms%20of%20emotional%20feedback.">I'm not sure how much I endorse this test, but it's at the very least interesting</a></p>
 
-            for (const selector of titleSelectors) {
-                const element = document.querySelector(selector);
-                if (element) {
-                    return element.textContent.trim();
-                }
-            }
+        <p>I will not make this mistake again. Ever. I will burn any distance between me and Doing Things as I can. I will destroy anything which drags me further away from reality. I will unmake every atom of the word that is structured in a way that is not Unabashedly Good.</p>
 
-            return 'Page Title'; // Default fallback
-        };
+        <p>My kids will not make the same mistake, either.</p>
 
-        // Get the main title
-        const pageTitle = findTitle();
-        sideTitle.innerHTML += `<h2>${pageTitle}</h2>`;
+        <figure>
+            <img src="https://images.fineartamerica.com/images/artworkimages/mediumlarge/3/the-same-mistakes-asher-perlman.jpg" alt="Comic by Asher Perlman about making the same mistakes">
+            <figcaption>Asher Perlman</figcaption>
+        </figure>
 
-        // Throttle function to limit update frequency
-        const throttle = (func, limit) => {
-            let inThrottle;
-            return function() {
-                const args = arguments;
-                const context = this;
-                if (!inThrottle) {
-                    func.apply(context, args);
-                    inThrottle = true;
-                    setTimeout(() => inThrottle = false, limit);
-                }
-            };
-        };
+        <p>This is what mainly motivates me.</p>
 
-        // Update progress and title position
-        const updateProgress = throttle(() => {
-            const scrollPosition = window.pageYOffset;
-            const pageHeight = document.documentElement.scrollHeight - window.innerHeight;
-            const scrollPercentage = (scrollPosition / pageHeight) * 100;
+        <div class="footnotes">
+            <hr>
+            <ol>
+                <li id="fn:1">
+                    <p>For those wondering, you cannot put this many words in a Google doc. The limit is somewhere around the word count of <em>Dune</em>. So what this really is is ~ 8 or so continuous docs and dozens of annexes. <a href="#fnref:1" class="footnote-backref">↩</a></p>
+                </li>
+                <li id="fn:2">
+                    <p>[Content of footnote 2 goes here] <a href="#fnref:2" class="footnote-backref">↩</a></p>
+                </li>
+            </ol>
+        </div>
+    </div>
 
-            progressBar.style.height = `${scrollPercentage}%`;
-
-            // Parallax effect for the title
-            sideTitle.style.transform = `translateY(${scrollPosition * 0.1}px)`;
-        }, 10); // Throttle to 10ms
-
-        window.addEventListener('scroll', updateProgress);
-        window.addEventListener('resize', updateProgress);
-
-        // Initial update
-        updateProgress();
-    }
-});
-
-
-
-        const styleSheet = document.createElement("style");
-styleSheet.innerText = styles;
-document.head.appendChild(styleSheet);
-        </script>
-    
+    <script src="javascript/javaventuraayayay.js"></script>
 </body>
 </html>
