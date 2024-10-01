@@ -210,18 +210,12 @@ a[href^="https://lesswrong.com"]::after {
     background-color: #4A9C6D;
 }
 
-}
+/* New rules for Twitter and X.com links */
 a[href^="https://www.twitter.com"]::after,
-a[href^="https://twitter.com"]::after {
-    background-color: #1DA1F2
-;
-}
-
-}
+a[href^="https://twitter.com"]::after,
 a[href^="https://www.x.com"]::after,
 a[href^="https://x.com"]::after {
-    background-color: #1DA1F2
-;
+    background-color: #1DA1F2;
 }
 
 /* there's gotta be a way to reduce this code */
@@ -230,6 +224,7 @@ a[href="https://youtu.be/qQzdAsjWGPg"] {
     color: inherit;
     text-decoration: none;
     position: static;
+    background-color: none;
 }
 a[href="https://www.youtube.com/watch?v=qQzdAsjWGPg"]::before,
 a[href="https://www.youtube.com/watch?v=qQzdAsjWGPg"]::after,
