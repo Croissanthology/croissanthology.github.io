@@ -558,3 +558,38 @@ styleSheet.innerText = styles;
 document.head.appendChild(styleSheet);
 
 
+/* table of contents */
+.auto-toc {
+  background: #f8f8f8;
+  border: 1px solid #e8e8e8;
+  border-radius: 5px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.toc-nav ul {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+.toc-item {
+  margin-bottom: 10px;
+}
+
+.toc-item a {
+  color: #333;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.toc-item a:hover {
+  color: #007bff;
+}
+
+.toc-h2 { margin-left: 0; }
+.toc-h3 { margin-left: 20px; }
+.toc-h4 { margin-left: 40px; }
+.toc-h5 { margin-left: 60px; }
+.toc-h6 { margin-left: 80px; }
+
+
