@@ -218,28 +218,6 @@ a[href^="https://x.com"]::after {
     background-color: #1DA1F2;
 }
 
-/* there's gotta be a way to reduce this code */
-a[href="https://www.youtube.com/watch?v=qQzdAsjWGPg"],
-a[href="https://youtu.be/qQzdAsjWGPg"] {
-    color: inherit;
-    text-decoration: none;
-    position: static;
-    background-color: none;
-}
-a[href="https://www.youtube.com/watch?v=qQzdAsjWGPg"]::before,
-a[href="https://www.youtube.com/watch?v=qQzdAsjWGPg"]::after,
-a[href="https://youtu.be/qQzdAsjWGPg"]::before,
-a[href="https://youtu.be/qQzdAsjWGPg"]::after {
-    content: none;
-}
-a[href="https://www.youtube.com/watch?v=qQzdAsjWGPg"]:hover,
-a[href="https://youtu.be/qQzdAsjWGPg"]:hover {
-    color: inherit;
-    text-decoration: none;
-}
-
-
-
 /* Desktop hover styles */
 @media (hover: hover) and (pointer: fine) {
     a:hover::after {
