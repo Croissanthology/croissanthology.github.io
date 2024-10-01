@@ -210,6 +210,14 @@ a[href^="https://lesswrong.com"]::after {
     background-color: #4A9C6D;
 }
 
+}
+a[href^="https://www.twitter.com"]::after,
+a[href^="https://twitter.com"]::after {
+    background-color: #1DA1F2
+;
+}
+
+
 
 /* Desktop hover styles */
 @media (hover: hover) and (pointer: fine) {
