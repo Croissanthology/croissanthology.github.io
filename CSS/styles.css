@@ -177,6 +177,9 @@ body {
     color: var(--text-color);
     text-decoration: none;
     position: relative;
+    border-bottom: 1px dotted #CCCCCC;
+
+/*
 }
 a::before {
     content: '';
@@ -187,7 +190,7 @@ a::before {
     left: 0;
     background-image: linear-gradient(to right, #CCCCCC 50%, transparent 50%);
     background-size: 4px 1px;
-    background-repeat: repeat-x;
+    background-repeat: repeat-x; */ 
 }
 a::after {
     content: '';
