@@ -217,6 +217,32 @@ a[href^="https://twitter.com"]::after {
 ;
 }
 
+}
+a[href^="https://www.x.com"]::after,
+a[href^="https://x.com"]::after {
+    background-color: #1DA1F2
+;
+}
+
+/* there's gotta be a way to reduce this code */
+a[href="https://www.youtube.com/watch?v=qQzdAsjWGPg"],
+a[href="https://youtu.be/qQzdAsjWGPg"] {
+    color: inherit;
+    text-decoration: none;
+    position: static;
+}
+a[href="https://www.youtube.com/watch?v=qQzdAsjWGPg"]::before,
+a[href="https://www.youtube.com/watch?v=qQzdAsjWGPg"]::after,
+a[href="https://youtu.be/qQzdAsjWGPg"]::before,
+a[href="https://youtu.be/qQzdAsjWGPg"]::after {
+    content: none;
+}
+a[href="https://www.youtube.com/watch?v=qQzdAsjWGPg"]:hover,
+a[href="https://youtu.be/qQzdAsjWGPg"]:hover {
+    color: inherit;
+    text-decoration: none;
+}
+
 
 
 /* Desktop hover styles */
@@ -558,29 +584,4 @@ const styleSheet = document.createElement("style");
 styleSheet.innerText = styles;
 document.head.appendChild(styleSheet);
 
-/* Hover shine link */ 
-.shine-link {
-  position: relative;
-  overflow: hidden;
-  display: inline-block;
-  color: #0000EE; /* Standard link color */
-  text-decoration: none;
-  cursor: pointer;
-}
-.shine-link::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.8), transparent);
-  transition: 0.5s;
-}
-.shine-link:hover::before {
-  left: 100%;
-}
-.shine-link:hover {
-  text-decoration: underline;
-} 
 
