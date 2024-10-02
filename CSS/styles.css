@@ -172,14 +172,11 @@ body {
             box-sizing: border-box;
         }
 
-a::before {
-    content: '';
-    position: absolute;
-    width: 100%;
-    height: 1px;
-    bottom: 0;
-    left: 0;
-    border-bottom: 1px dotted #FFFFFF;
+a {
+    color: var(--text-color);
+    text-decoration: none;
+    position: relative;
+    border-bottom: 1px dotted #CCCCCC;  /* Keep this line */
 }
 
 a::after {
@@ -187,9 +184,9 @@ a::after {
     position: absolute;
     width: 100%;
     height: 1px;
-    bottom: 0;
+    bottom: -2px;  /* Keep this line to maintain distance */
     left: 0;
-    background-color: #FFFFFF;
+    background-color: white;  /* Default color for most links */
     transform: scaleX(0);
     transform-origin: bottom right;
     transition: transform 0.3s ease;
@@ -200,13 +197,13 @@ a:hover::after {
     transform-origin: bottom left;
 }
 
-/* LessWrong links */
+/* Modify these selectors */
 a[href^="https://www.lesswrong.com"]:hover::after,
 a[href^="https://lesswrong.com"]:hover::after {
     background-color: #4A9C6D;
 }
 
-/* Twitter and X.com links */
+/* Add these selectors */
 a[href^="https://www.twitter.com"]:hover::after,
 a[href^="https://twitter.com"]:hover::after,
 a[href^="https://www.x.com"]:hover::after,
