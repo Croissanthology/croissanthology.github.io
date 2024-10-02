@@ -175,12 +175,18 @@ body {
 
   a {
     color: var(--text-color);
-    text-decoration: none;
+    text-decoration: underline dotted;
     position: relative;
-    border-bottom: 1px dotted #CCCCCC;
+
 
 /*
 }
+    a {
+    color: var(--text-color);
+    text-decoration: none;
+    position: relative;
+    border-bottom: 1px dotted #CCCCCC;
+   
 a::before {
     content: '';
     position: absolute;
