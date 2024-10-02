@@ -209,7 +209,7 @@ a:hover::after {
 /* LessWrong links */
 a[href^="https://www.lesswrong.com"]::before,
 a[href^="https://lesswrong.com"]::before {
-    border-bottom-color: #4A9C6D;
+    background-color: #4A9C6D;
 }
 
 
@@ -218,7 +218,7 @@ a[href^="https://www.twitter.com"]::before,
 a[href^="https://twitter.com"]::before,
 a[href^="https://www.x.com"]::before,
 a[href^="https://x.com"]::before {
-    border-bottom-color: #1DA1F2;
+    background-color: #1DA1F2;
 }
 
 
