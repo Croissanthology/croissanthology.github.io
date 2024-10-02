@@ -184,9 +184,9 @@ a::after {
     position: absolute;
     width: 100%;
     height: 1px;
-    bottom: -2px;  /* Keep this line to maintain distance */
+    bottom: 0;  /* Keep this line to maintain distance */
     left: 0;
-    background-color: white;  /* Default color for most links */
+    background-color: #CCCCCC;  /* Default color for most links */
     transform: scaleX(0);
     transform-origin: bottom right;
     transition: transform 0.3s ease;
