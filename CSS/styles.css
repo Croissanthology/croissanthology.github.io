@@ -621,3 +621,10 @@ document.head.appendChild(styleSheet);
     width: 100%;
   }
 }
+
+@media (min-width: 1200px) {
+  .essay-lists-container {
+    width: 100%;
+    max-width: none;
+  }
+}
