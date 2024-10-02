@@ -173,60 +173,67 @@ body {
         }
 
 
-  a {
-    color: var(--text-color);
-    text-decoration: underline dotted;
-    position: relative;
-
-
-/*
-}
-    a {
+a {
     color: var(--text-color);
     text-decoration: none;
     position: relative;
-    border-bottom: 1px dotted #CCCCCC;
-   
+    display: inline-block;
+    padding-bottom: 1px;
+}
+
 a::before {
     content: '';
     position: absolute;
     width: 100%;
     height: 1px;
-    bottom: -2px;
+    bottom: -1px;
     left: 0;
-    background-image: linear-gradient(to right, #CCCCCC 50%, transparent 50%);
-    background-size: 4px 1px;
-    background-repeat: repeat-x; */ 
+    border-bottom: 1px dotted #CCCCCC;
 }
+
 a::after {
     content: '';
     position: absolute;
     width: 100%;
     height: 1px;
-    bottom: -2px;
+    bottom: -1px;
     left: 0;
     background-color: white;
     transform: scaleX(0);
     transform-origin: bottom right;
     transition: transform 0.3s ease;
 }
+
 a:hover::after {
     transform: scaleX(1);
     transform-origin: bottom left;
 }
+
+/* LessWrong links */
+a[href^="https://www.lesswrong.com"]::before,
+a[href^="https://lesswrong.com"]::before {
+    border-bottom-color: #4A9C6D;
+}
+
 a[href^="https://www.lesswrong.com"]::after,
 a[href^="https://lesswrong.com"]::after {
     background-color: #4A9C6D;
 }
 
-/* New rules for Twitter and X.com links */
+/* Twitter links */
+a[href^="https://www.twitter.com"]::before,
+a[href^="https://twitter.com"]::before,
+a[href^="https://www.x.com"]::before,
+a[href^="https://x.com"]::before {
+    border-bottom-color: #1DA1F2;
+}
+
 a[href^="https://www.twitter.com"]::after,
 a[href^="https://twitter.com"]::after,
 a[href^="https://www.x.com"]::after,
 a[href^="https://x.com"]::after {
     background-color: #1DA1F2;
 }
-
         .mobile-header {
             position: fixed;
             top: 0;
