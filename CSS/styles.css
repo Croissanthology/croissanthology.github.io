@@ -585,4 +585,39 @@ document.head.appendChild(styleSheet);
 .toc-h5 { margin-left: 60px; }
 .toc-h6 { margin-left: 80px; }
 
+.essay-lists-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  margin: 2em 0;
+}
 
+.essay-list {
+  flex: 1;
+  min-width: 300px;
+  margin-bottom: 1em;
+}
+
+.essay-list h2 {
+  font-size: 1.2em;
+  margin-bottom: 0.5em;
+}
+
+.essay-list ul {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+.essay-list li {
+  margin-bottom: 0.5em;
+}
+
+@media (max-width: 768px) {
+  .essay-lists-container {
+    flex-direction: column;
+  }
+  
+  .essay-list {
+    width: 100%;
+  }
+}
