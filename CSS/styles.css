@@ -17,7 +17,7 @@
         }
         @media (max-width: 1000px) {
             .sidenote {
-                float: none;
+                float: none; 
                 margin: 1em 0;
                 width: 100%;
             }
