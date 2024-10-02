@@ -172,12 +172,6 @@ body {
             box-sizing: border-box;
         }
 
-a {
-    color: var(--text-color);
-    text-decoration: none;
-    position: relative;
-}
-
 a::before {
     content: '';
     position: absolute;
@@ -207,20 +201,18 @@ a:hover::after {
 }
 
 /* LessWrong links */
-a[href^="https://www.lesswrong.com"]::before,
-a[href^="https://lesswrong.com"]::before {
+a[href^="https://www.lesswrong.com"]:hover::after,
+a[href^="https://lesswrong.com"]:hover::after {
     background-color: #4A9C6D;
 }
 
-
 /* Twitter and X.com links */
-a[href^="https://www.twitter.com"]::before,
-a[href^="https://twitter.com"]::before,
-a[href^="https://www.x.com"]::before,
-a[href^="https://x.com"]::before {
+a[href^="https://www.twitter.com"]:hover::after,
+a[href^="https://twitter.com"]:hover::after,
+a[href^="https://www.x.com"]:hover::after,
+a[href^="https://x.com"]:hover::after {
     background-color: #1DA1F2;
 }
-
 
         .mobile-header {
             position: fixed;
