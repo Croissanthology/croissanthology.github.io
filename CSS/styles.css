@@ -178,7 +178,7 @@ a {
     text-decoration: none;
     position: relative;
     display: inline-block;
-    padding-bottom: 1px;
+    padding-bottom: 0.25px;
 }
 
 a::before {
