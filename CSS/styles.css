@@ -624,7 +624,7 @@ document.head.appendChild(styleSheet);
 
 @media (min-width: 1200px) {
   .essay-lists-container {
-    width: 90%;
+    width: 700%;
   }
 }
 
