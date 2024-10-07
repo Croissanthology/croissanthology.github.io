@@ -672,4 +672,7 @@ a[href$="under-construction.html"]:hover::after {
     transform-origin: bottom left;
 }
 
-
+/* New rule to remove any potential whitespace */
+a[href$="under-construction.html"] .soon-prefix::after {
+    content: "\00a0"; /* Non-breaking space */
+}
