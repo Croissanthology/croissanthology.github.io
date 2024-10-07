@@ -608,7 +608,7 @@ document.head.appendChild(styleSheet);
 }
 
 .essay-list li {
-  margin-bottom: 0.5em;
+  margin-bottom: 0.1em;
 }
 
 @media (max-width: 768px) {
