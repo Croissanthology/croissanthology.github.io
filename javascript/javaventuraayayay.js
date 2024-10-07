@@ -46,12 +46,14 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
-
 document.addEventListener('DOMContentLoaded', () => {
     const links = document.querySelectorAll('a[href$="under-construction.html"]');
     links.forEach(link => {
-        if (!link.textContent.startsWith('[SOON]')) {
-            link.textContent = `[SOON] ${link.textContent}`;
+        if (!link.querySelector('.soon-prefix')) {
+            const prefix = document.createElement('span');
+            prefix.className = 'soon-prefix';
+            prefix.textContent = '[SOON] ';
+            link.insertBefore(prefix, link.firstChild);
         }
     });
 });
