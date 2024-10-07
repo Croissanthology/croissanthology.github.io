@@ -634,7 +634,7 @@ document.head.appendChild(styleSheet);
 a[href$="under-construction.html"] {
     position: relative;
     display: inline-block;
-    padding-left: 4.5em; /* Make room for [SOON] */
+    padding-left: 3.5em; /* Make room for [SOON] */
 }
 
 a[href$="under-construction.html"] .soon-prefix {
