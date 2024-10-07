@@ -596,6 +596,10 @@ document.head.appendChild(styleSheet);
   flex: 1;
   min-width: 300px;
   margin-bottom: 1em;
+  padding: 0.5em 0; /* Add this line */
+  border-bottom: 1px solid #333; /* And this line */
+}
+
 }
 
 .essay-list h2 {
