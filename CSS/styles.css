@@ -584,7 +584,6 @@ document.head.appendChild(styleSheet);
 .toc-h4 { margin-left: 40px; }
 .toc-h5 { margin-left: 60px; }
 .toc-h6 { margin-left: 80px; }
-
 .essay-lists-container {
   display: flex;
   flex-wrap: wrap;
@@ -596,14 +595,6 @@ document.head.appendChild(styleSheet);
   flex: 1;
   min-width: 300px;
   margin-bottom: 1em;
-
-}
-
-.essay-list {
-  position: relative;
-  padding-top: 30px;  /* Adjust as needed */
-}
-
 }
 
 .essay-list h2 {
@@ -635,21 +626,6 @@ document.head.appendChild(styleSheet);
     width: 70%;
   }
 }
-
-.essay-list::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 5%;
-  right: 5%;
-  height: 1px;
-  background: linear-gradient(to right, 
-    #333 0%, #333 45%, 
-    transparent 45%, transparent 55%, 
-    #333 55%, #333 100%
-  );
-}
-/* Existing styles remain unchanged */
 
 /* New styles specifically for under-construction links */
 a[href$="under-construction.html"] {
