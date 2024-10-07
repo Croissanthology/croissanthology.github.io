@@ -596,34 +596,12 @@ document.head.appendChild(styleSheet);
   flex: 1;
   min-width: 300px;
   margin-bottom: 1em;
-  padding: 0.5em 0; /* Add this line */
-  border-bottom: 1px solid #333; /* And this line */
+
 }
 
 .essay-list {
   position: relative;
   padding-top: 30px;  /* Adjust as needed */
-}
-
-.essay-list::before {
-  content: '';
-  position: absolute;
-  top: 15px;  /* Half of padding-top */
-  left: 5%;
-  right: 5%;
-  height: 1px;
-  background: #333;
-}
-
-.essay-list::after {
-  content: '';
-  position: absolute;
-  top: 15px;  /* Same as ::before */
-  left: 50%;
-  width: 30%;  /* Adjust for gap size */
-  height: 1px;
-  background: #1a1a1a;  /* Should match your background color */
-  transform: translateX(-50%);
 }
 
 }
@@ -658,6 +636,19 @@ document.head.appendChild(styleSheet);
   }
 }
 
+.essay-list::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 5%;
+  right: 5%;
+  height: 1px;
+  background: linear-gradient(to right, 
+    #333 0%, #333 45%, 
+    transparent 45%, transparent 55%, 
+    #333 55%, #333 100%
+  );
+}
 /* Existing styles remain unchanged */
 
 /* New styles specifically for under-construction links */
