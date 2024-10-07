@@ -600,6 +600,32 @@ document.head.appendChild(styleSheet);
   border-bottom: 1px solid #333; /* And this line */
 }
 
+.essay-list {
+  position: relative;
+  padding-top: 30px;  /* Adjust as needed */
+}
+
+.essay-list::before {
+  content: '';
+  position: absolute;
+  top: 15px;  /* Half of padding-top */
+  left: 5%;
+  right: 5%;
+  height: 1px;
+  background: #333;
+}
+
+.essay-list::after {
+  content: '';
+  position: absolute;
+  top: 15px;  /* Same as ::before */
+  left: 50%;
+  width: 30%;  /* Adjust for gap size */
+  height: 1px;
+  background: #1a1a1a;  /* Should match your background color */
+  transform: translateX(-50%);
+}
+
 }
 
 .essay-list h2 {
