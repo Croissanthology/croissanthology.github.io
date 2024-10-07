@@ -46,4 +46,12 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
-  
+
+document.addEventListener('DOMContentLoaded', () => {
+    const links = document.querySelectorAll('a[href$="under-construction.html"]');
+    links.forEach(link => {
+        if (!link.textContent.startsWith('[SOON]')) {
+            link.textContent = `[SOON] ${link.textContent}`;
+        }
+    });
+});
