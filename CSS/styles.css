@@ -604,12 +604,11 @@ document.head.appendChild(styleSheet);
   font-size: 1.2em;
   margin-bottom: 0.5em;
 }
-
 .essay-list ul {
-  margin-bottom: 0.5em;!important;
+  list-style-type: none;
   padding-left: 0;
+  margin: 0;
 }
-
 .essay-list li {
   margin-bottom: 0.1em; 
 }
