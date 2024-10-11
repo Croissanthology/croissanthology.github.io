@@ -611,6 +611,7 @@ document.head.appendChild(styleSheet);
 }
 .essay-list li {
   margin-bottom: 0.1em; 
+   line-height: 1.6;           
 }
 
 @media (max-width: 768px) {
