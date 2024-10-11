@@ -589,7 +589,7 @@ document.head.appendChild(styleSheet);
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
-  margin: 2em 0;
+  margin: 0.5em 0;
 }
 
 .essay-list {
