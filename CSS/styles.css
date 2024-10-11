@@ -590,6 +590,7 @@ document.head.appendChild(styleSheet);
   flex-wrap: wrap;
   justify-content: space-between;
   margin: 0.5em 0;
+  width: 100%; /* Ensure it takes full width */
 }
 
 .essay-list {
@@ -597,38 +598,55 @@ document.head.appendChild(styleSheet);
   min-width: 300px;
   margin-bottom: 0.5em;
   margin-right: 20px; /* Adds space between lists */
-
 }
 
 .essay-list h2 {
   font-size: 1.2em;
   margin-bottom: 0.5em;
 }
+
 .essay-list ul {
   list-style-type: none;
   padding-left: 0;
   margin: 0;
 }
+
 .essay-list li {
   margin-bottom: 0.1em; 
-   line-height: 1.6;           
+  line-height: 1.6;           
 }
 
 @media (max-width: 768px) {
   .essay-lists-container {
     flex-direction: column;
+    margin: 0.5em -20px; /* Negative margin to counteract body padding */
+    width: calc(100% + 40px); /* Compensate for the negative margin */
   }
   
   .essay-list {
     width: 100%;
+    margin-right: 0; /* Remove right margin on mobile */
+    padding: 0 20px; /* Add padding to align with body content */
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1199px) {
+  .essay-lists-container {
+    width: 100%; /* Full width for medium screens */
   }
 }
 
 @media (min-width: 1200px) {
   .essay-lists-container {
     width: 70%;
+    margin: 0.5em auto; /* Center on large screens */
   }
 }
+
+
+
+
+
 
 /* New styles specifically for under-construction links */
 a[href$="under-construction.html"] {
