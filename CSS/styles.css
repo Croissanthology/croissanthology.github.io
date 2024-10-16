@@ -643,6 +643,26 @@ document.head.appendChild(styleSheet);
   }
 }
 
+@media (max-width: 768px) {
+  .essay-lists-container {
+    flex-direction: column;
+    margin: 0.5em -20px; /* Negative margin to counteract body padding */
+    width: calc(100% + 40px); /* Compensate for the negative margin */
+  }
+  
+  .essay-list {
+    width: 100%;
+    margin-right: 0; /* Remove right margin on mobile */
+    padding: 0 20px; /* Add padding to align with body content */
+  }
+
+  /* This is the new part */
+  .essay-list h2::after {
+    width: calc(100% - 40px); /* Adjust the line to match the content width */
+    left: 20px; /* Align with the padding */
+  }
+}
+
 
 
 
