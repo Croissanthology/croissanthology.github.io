@@ -714,3 +714,10 @@ a[href$="under-construction.html"]:hover::after {
 a[href$="under-construction.html"] .soon-prefix::after {
     content: "\00a0"; /* Non-breaking space */
 }
+
+/* Claude giving me link addition thing */
+a[href]:not([href^="javascript:"]):not([href^="#"])::before,
+a[href]:not([href^="javascript:"]):not([href^="#"])::after {
+    content: '';
+    /* ... rest of your existing styles ... */
+}
