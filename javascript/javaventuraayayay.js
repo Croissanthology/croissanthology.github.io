@@ -1,19 +1,48 @@
+document.addEventListener('DOMContentLoaded', () => {
+            // Create the popup elements once
+            const popup = document.createElement('div');
+            popup.className = 'feedback-popup';
+            
+            const button = document.createElement('button');
+            button.className = 'feedback-button';
+            button.innerHTML = '💭 Share feedback';
+            
+            popup.appendChild(button);
+            document.body.appendChild(popup);
 
-    // Handle feedback button click
-    button.addEventListener('click', () => {
-        const text = window.getSelection().toString().trim();
-        const postTitle = document.title || 'Croissanthology Post';
-        window.location.href = `mailto:croissanthology@gmail.com?subject=Thoughts about ${postTitle}&body=${encodeURIComponent(`"${text}"\n\nMy thoughts:\n`)}`;
-        popup.classList.remove('visible');
-    });
+            // Handle text selection
+            document.addEventListener('mouseup', () => {
+                const selection = window.getSelection();
+                const text = selection.toString().trim();
+                
+                if (text) {
+                    const range = selection.getRangeAt(0);
+                    const rect = range.getBoundingClientRect();
+                    
+                    // Position the popup
+                    popup.style.left = `${rect.left + (rect.width / 2)}px`;
+                    popup.style.top = `${rect.bottom + window.scrollY + 10}px`;
+                    popup.classList.add('visible');
+                } else {
+                    popup.classList.remove('visible');
+                }
+            });
 
-    // Hide popup when clicking outside
-    document.addEventListener('mousedown', (e) => {
-        if (!popup.contains(e.target)) {
-            popup.classList.remove('visible');
-        }
-    });
-});
+            // Handle feedback button click
+button.addEventListener('click', () => {
+                const text = window.getSelection().toString().trim();
+                const postTitle = document.title || 'Demo Post';
+                window.location.href = `mailto:croissanthology@gmail.com?subject=Thoughts about ${postTitle}&body=${encodeURIComponent(`"${text}"\n\nMy thoughts:\n`)}`;
+                popup.classList.remove('visible');
+            });
+
+            // Hide popup when clicking outside
+document.addEventListener('mousedown', (e) => {
+                if (!popup.contains(e.target)) {
+                    popup.classList.remove('visible');
+                }
+            });
+        });
 
 document.addEventListener('DOMContentLoaded', () => {
     const header = document.querySelector('.mobile-header');
