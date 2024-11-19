@@ -729,10 +729,9 @@ a[href]:not([href^="javascript:"]):not([href^="#"])::after {
     background-color: var(--background-color);
     border: 1px solid var(--accent-color);
     border-radius: 4px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
     transform: translateX(-50%);
-    pointer-events: none;
     opacity: 0;
+    pointer-events: none;
     transition: opacity 0.2s ease;
 }
 
@@ -741,20 +740,16 @@ a[href]:not([href^="javascript:"]):not([href^="#"])::after {
     pointer-events: all;
 }
 
-.feedback-button {
+.feedback-popup a {
     color: var(--text-color);
     padding: 6px 12px;
+    display: block;
+    text-decoration: none;
     font-family: 'Source Serif Pro', serif;
     font-size: 14px;
-    background: none;
-    border: none;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    transition: color 0.2s ease;
 }
 
-.feedback-button:hover {
+.feedback-popup a:hover {
     color: var(--accent-color);
 }
+
