@@ -1,45 +1,32 @@
+ const popup = document.createElement('div');
+        popup.className = 'feedback-popup';
 
-// ===== FEEDBACK SYSTEM =====
-const popup = document.createElement('div');
-popup.className = 'feedback-popup';
+        document.addEventListener('mouseup', () => {
+            const selection = window.getSelection();
+            const text = selection.toString().trim();
+            
+            if (text) {
+                const range = selection.getRangeAt(0);
+                const rect = range.getBoundingClientRect();
+                
+                // Just set the innerHTML to a proper mailto link!
+                popup.innerHTML = `<a href="mailto:croissanthology@gmail.com?subject=Thoughts&body=${encodeURIComponent(`"${text}"\n\nMy thoughts:\n`)}">💭 Share feedback</a>`;
+                
+                popup.style.left = `${rect.left + (rect.width / 2)}px`;
+                popup.style.top = `${rect.bottom + window.scrollY + 10}px`;
+                popup.classList.add('visible');
+            } else {
+                popup.classList.remove('visible');
+            }
+        });
 
-const button = document.createElement('button');
-button.className = 'feedback-button';
-button.innerHTML = '💭 Share feedback';
+        // Still need this to hide popup when clicking outside
+        document.addEventListener('mousedown', (e) => {
+            if (!popup.contains(e.target)) {
+                popup.classList.remove('visible');
+            }
+        });
 
-popup.appendChild(button);
-document.body.appendChild(popup);
-
-// SELECTION HANDLER
-document.addEventListener('mouseup', () => {
-    const selection = window.getSelection();
-    const text = selection.toString().trim();
-    
-    if (text) {
-        const range = selection.getRangeAt(0);
-        const rect = range.getBoundingClientRect();
-        popup.style.left = `${rect.left + (rect.width / 2)}px`;
-        popup.style.top = `${rect.bottom + window.scrollY + 10}px`;
-        popup.classList.add('visible');
-    } else {
-        popup.classList.remove('visible');
-    }
-});
-
-// THIS IS THE IMPORTANT PART - THE CLICK HANDLER
-button.addEventListener('click', () => {
-    const text = window.getSelection().toString().trim();
-    const postTitle = document.title || 'Croissanthology Post';
-    window.location.href = `mailto:croissanthology@gmail.com?subject=Thoughts about ${postTitle}&body=${encodeURIComponent(`"${text}"\n\nMy thoughts:\n`)}`;
-    popup.classList.remove('visible');
-});
-
-// Hide popup when clicking outside
-document.addEventListener('mousedown', (e) => {
-    if (!popup.contains(e.target)) {
-        popup.classList.remove('visible');
-    }
-});
 
 
     // ===== HEADING LINKS =====
