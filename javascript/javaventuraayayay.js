@@ -1,3 +1,20 @@
+
+    // Handle feedback button click
+    button.addEventListener('click', () => {
+        const text = window.getSelection().toString().trim();
+        const postTitle = document.title || 'Croissanthology Post';
+        window.location.href = `mailto:croissanthology@gmail.com?subject=Thoughts about ${postTitle}&body=${encodeURIComponent(`"${text}"\n\nMy thoughts:\n`)}`;
+        popup.classList.remove('visible');
+    });
+
+    // Hide popup when clicking outside
+    document.addEventListener('mousedown', (e) => {
+        if (!popup.contains(e.target)) {
+            popup.classList.remove('visible');
+        }
+    });
+});
+
 document.addEventListener('DOMContentLoaded', () => {
     const header = document.querySelector('.mobile-header');
     const progressBar = document.querySelector('.progress-bar');
@@ -88,18 +105,3 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Handle feedback button click
-    button.addEventListener('click', () => {
-        const text = window.getSelection().toString().trim();
-        const postTitle = document.title || 'Croissanthology Post';
-        window.location.href = `mailto:croissanthology@gmail.com?subject=Thoughts about ${postTitle}&body=${encodeURIComponent(`"${text}"\n\nMy thoughts:\n`)}`;
-        popup.classList.remove('visible');
-    });
-
-    // Hide popup when clicking outside
-    document.addEventListener('mousedown', (e) => {
-        if (!popup.contains(e.target)) {
-            popup.classList.remove('visible');
-        }
-    });
-});
