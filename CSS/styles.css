@@ -241,7 +241,7 @@ a[href^="https://x.com"]::after {
         }
 
         .progress-bar {
-            height: 2px;
+            height: 1.5px;
             background-color: #ffffff;
             width: 0;
             transition: width 0.2s ease-out;
