@@ -721,8 +721,6 @@ a[href]:not([href^="javascript:"]):not([href^="#"])::after {
     content: '';
     /* ... rest of your existing styles ... */
 }
-
-/* we playing with new feedback function now: */
 .feedback-popup {
     position: fixed;
     z-index: 9999;
@@ -747,9 +745,15 @@ a[href]:not([href^="javascript:"]):not([href^="#"])::after {
     text-decoration: none;
     font-family: 'Source Serif Pro', serif;
     font-size: 14px;
+    transition: all 0.2s ease;
 }
 
 .feedback-popup a:hover {
     color: var(--accent-color);
+    background-color: rgba(74, 156, 109, 0.1); /* Your accent color with opacity */
 }
 
+.feedback-popup a.active {
+    transform: scale(0.98);
+    background-color: rgba(74, 156, 109, 0.2);
+}
