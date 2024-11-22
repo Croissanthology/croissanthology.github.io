@@ -720,7 +720,6 @@ a[href]:not([href^="javascript:"]):not([href^="#"])::before,
 a[href]:not([href^="javascript:"]):not([href^="#"])::after {
     content: '';
     /* ... rest of your existing styles ... */
-}
 .feedback-popup {
     position: fixed;
     z-index: 9999;
@@ -738,19 +737,25 @@ a[href]:not([href^="javascript:"]):not([href^="#"])::after {
     pointer-events: all;
 }
 
+/* Override default link styles specifically for feedback popup */
 .feedback-popup a {
     color: var(--text-color);
     padding: 6px 12px;
     display: block;
-    text-decoration: none;
+    text-decoration: none !important;
     font-family: 'Source Serif Pro', serif;
     font-size: 14px;
     transition: all 0.2s ease;
 }
 
+.feedback-popup a::before,
+.feedback-popup a::after {
+    display: none !important; /* Kill those underline effects */
+}
+
 .feedback-popup a:hover {
     color: var(--accent-color);
-    background-color: rgba(74, 156, 109, 0.1); /* Your accent color with opacity */
+    background-color: rgba(74, 156, 109, 0.1);
 }
 
 .feedback-popup a.active {
