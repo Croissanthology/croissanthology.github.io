@@ -241,12 +241,11 @@ a[href^="https://x.com"]::after {
         }
 
         .progress-bar {
-            height: 1.5px;
+            height: 1px;
             background-color: #ffffff;
             width: 0;
             transition: width 0.2s ease-out;
-            box-shadow: 0 0 10px #ffffff, 0 0 20px #ffffff;
-        }
+            box-shadow: 0 0 4px rgba(255, 255, 255, 0.3);        }
 
         @media (min-width: 768px) {
             .mobile-header {
