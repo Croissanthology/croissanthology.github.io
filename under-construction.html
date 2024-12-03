@@ -4,25 +4,40 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Under Construction</title>
-     <link rel="stylesheet" href="CSS/styles.css">
+    <link rel="stylesheet" href="CSS/styles.css">
     <script src="javascript/javaventuraayayay.js" defer></script>
 </head>
-<body>
-  <body class="index">
-       <div class="mobile-header">
+<body class="index">
+    <div class="mobile-header">
         <h1 class="mobile-header-title">Under Construction</h1>
         <div class="progress-bar"></div>
     </div>
-    <div class="content-wrapper">
-        <h1>Under Construction</h1>
-        
-        <div class="dotted-box">
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-        </div>
-        
-        <div class="image-container">
-            <img src="https://raw.githubusercontent.com/Croissanthology/croissanthology.github.io/refs/heads/main/images/over%20the%20garden%20wall%20ship.webp" alt="Fall at Over the Garden Wall" style="width: 100%; max-width: 800px; height: auto;">
-            <div class="image-caption">Fall at Over the Garden Wall</div>
+
+    <div id="markdownBody"> <!-- Added this wrapper for sidenotes -->
+        <div class="content-wrapper">
+            <div id="sidenote-column-left" class="footnotes"></div>
+            <div id="sidenote-column-right" class="footnotes"></div>
+            
+            <h1>Under Construction</h1>
+            
+            <div class="dotted-box">
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit<a href="#fn1" class="footnote-ref" id="fnref1">[1]</a>. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat<a href="#fn2" class="footnote-ref" id="fnref2">[2]</a>.</p>
+            </div>
+            
+            <div class="image-container">
+                <img src="https://raw.githubusercontent.com/Croissanthology/croissanthology.github.io/refs/heads/main/images/over%20the%20garden%20wall%20ship.webp" alt="Fall at Over the Garden Wall" style="width: 100%; max-width: 800px; height: auto;">
+                <div class="image-caption">Fall at Over the Garden Wall</div>
+            </div>
+
+            <!-- Hidden footnotes storage -->
+            <div class="footnotes">
+                <div id="fn1">
+                    <p>This is a fascinating sidenote about Lorem ipsum. Did you know that Lorem ipsum text has been used as placeholder text since the 1500s? It's derived from sections of Cicero's "De finibus bonorum et malorum" written in 45 BC. The standard passage has been modified over the centuries, but its core remains largely unchanged.</p>
+                </div>
+                <div id="fn2">
+                    <p>Here's another intriguing sidenote discussing the history of placeholder text in design. The practice of using nonsense text to demonstrate layout dates back to typesetters in the printing industry. They needed text that wouldn't distract from the visual elements while still providing a realistic sense of how the final product would look.</p>
+                </div>
+            </div>
         </div>
     </div>
 </body>
