@@ -761,3 +761,113 @@ a[href]:not([href^="javascript:"]):not([href^="#"])::after {
     transform: scale(0.98);
     background-color: rgba(74, 156, 109, 0.2);
 }
+/* Sidenote columns */
+#sidenote-column-left,
+#sidenote-column-right {
+    position: absolute;
+    top: 0;
+    width: 300px;
+    height: 100%;
+    pointer-events: none;
+}
+
+#sidenote-column-left {
+    left: -320px;
+}
+
+#sidenote-column-right {
+    right: -320px;
+}
+
+/* Sidenote styling */
+.sidenote {
+    position: absolute;
+    width: 100%;
+    background-color: var(--background-color);
+    border: 1px dotted #808080;
+    padding: 15px;
+    margin-bottom: 20px;
+    font-family: 'Source Serif Pro', serif;
+    color: var(--text-color);
+    font-size: 0.9em;
+    pointer-events: auto;
+    transition: transform 0.3s ease;
+}
+
+.sidenote-outer-wrapper {
+    max-height: 300px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #4A9C6D var(--background-color);
+}
+
+.sidenote-inner-wrapper {
+    padding-right: 10px;
+}
+
+/* Sidenote number */
+.sidenote-self-link {
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    background-color: #4A9C6D;
+    color: var(--background-color);
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    font-family: 'Poiret One', cursive;
+    font-weight: bold;
+}
+
+.sidenote-self-link:hover {
+    background-color: var(--text-color);
+}
+
+/* Citations */
+.footnote-ref {
+    color: #4A9C6D;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.footnote-ref.highlighted {
+    color: var(--text-color);
+}
+
+/* Hide sidenotes on mobile */
+@media (max-width: 1760px) {
+    #sidenote-column-left,
+    #sidenote-column-right {
+        display: none;
+    }
+}
+
+/* Scrollbar styling */
+.sidenote-outer-wrapper::-webkit-scrollbar {
+    width: 6px;
+}
+
+.sidenote-outer-wrapper::-webkit-scrollbar-track {
+    background: var(--background-color);
+}
+
+.sidenote-outer-wrapper::-webkit-scrollbar-thumb {
+    background-color: #4A9C6D;
+    border-radius: 3px;
+}
+
+/* Animations */
+.sidenote.displaced {
+    transition: transform 0.3s ease;
+}
+
+/* Dark theme compatibility */
+@media (prefers-color-scheme: dark) {
+    .sidenote {
+        border-color: #4A9C6D;
+    }
+}
