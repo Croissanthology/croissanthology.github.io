@@ -4,7 +4,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Poiret+One&display=swap');
 
 @import url('https://fonts.googleapis.com/css2?family=Source+Serif+Pro:wght@400;700&display=swap');
-        
+
+body { overflow-x: hidden; }
+
 .sidenote {
             float: left;
             clear: left;
