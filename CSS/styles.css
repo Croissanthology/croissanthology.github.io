@@ -230,7 +230,7 @@ a[href^="https://x.com"]::after {
             
             transform: translateY(-100%);
             transition: transform 0.3s ease-in-out;
-            z-index: 1000;
+            z-index: 1000;<
         }
 
         .mobile-header-title {
@@ -244,10 +244,10 @@ a[href^="https://x.com"]::after {
 
         .progress-bar {
             height: 0.75px;
-            background-color: #ffffff;
+            background-color: #808080;
             width: 0;
             transition: width 0.2s ease-out;
-            box-shadow: 0 0 4px rgba(255, 255, 255, 0.3);        }
+        }
 
         @media (min-width: 768px) {
             .mobile-header {
