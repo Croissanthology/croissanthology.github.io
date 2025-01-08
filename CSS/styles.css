@@ -55,7 +55,7 @@ h6 { font-size: 1em; }
 }
 
 /* And the underline effect */
-h1::after, h2::after, h3::after, h4::after, h5::after, h6::after {
+h1::after, h2::after, h3::after, h4::after, h5::after {
     content: '';
     position: absolute;
     left: 0;
@@ -234,21 +234,19 @@ a[href^="https://x.com"]::after {
             
             transform: translateY(-100%);
             transition: transform 0.3s ease-in-out;
-            z-index: 1000;<
+            z-index: 75;<
         }
-
         .mobile-header-title {
             font-family: 'Poiret One', cursive;
             font-size: 13px;
             text-align: center;
             padding: 8px 0;
             margin: 0;
-            text-transform: uppercase;
         }
 
         .progress-bar {
-            height: 0.75px;
-            background-color: #808080;
+            height: 2px;
+            background-color: #ffffff;
             width: 0;
             transition: width 0.2s ease-out;
         }
@@ -257,6 +255,9 @@ a[href^="https://x.com"]::after {
             .mobile-header {
                 display: none;
             }
+
+
+
      .footnote-ref {
             display: inline;
             font-family: 'Times New Roman', serif;
@@ -301,6 +302,7 @@ a[href^="https://x.com"]::after {
             padding: 0 5px;
             font-weight: bold;
         }
+        
 font-family: 'Source Serif Pro', serif;
             background-color: #1a1a1a;
             color: #e0e0e0;
