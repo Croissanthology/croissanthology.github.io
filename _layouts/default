@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ page.title }} | Croissanthology</title>
+    
+    <!-- Your existing font imports -->
+    <link href="https://fonts.googleapis.com/css2?family=Poiret+One&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Source+Serif+Pro:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- Your CSS -->
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <div class="mobile-header">
+        <h6 class="mobile-header-title">{{ page.title }}</h6>
+        <div class="progress-bar"></div>
+    </div>
+
+    <div class="content-wrapper">
+        {{ content }}
+    </div>
+
+    <!-- Your existing JavaScript -->
+    <script src="/javaventuraayayay.js"></script>
+</body>
+</html>
