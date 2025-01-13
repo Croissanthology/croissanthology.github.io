@@ -1,18 +1,23 @@
 # Site settings
 title: Croissanthology
-description: Cleo Scrolls' website about rationality, mundane utility, and our gloriously appolonian expansion into the lightcone
+description: Cleo Scrolls' website about rationality, mundane utility, and our gloriously appollonian expansion into the lightcone
 url: "https://croissanthology.github.io"
 
 # Build settings
 markdown: kramdown
+kramdown:
+  input: GFM
+  hard_wrap: false
 permalink: /:title/
 
 # Collections for different sections
 collections:
   essays:
     output: true
+    permalink: /essays/:title/
   popular:
     output: true
+    permalink: /popular/:title/
 
 # Plugins
 plugins:
@@ -27,6 +32,27 @@ feed:
 theme: null  # Using custom theme
 sass:
   style: compressed
+
+# Default layouts
+defaults:
+  -
+    scope:
+      path: ""
+      type: "posts"
+    values:
+      layout: "default"
+  -
+    scope:
+      path: ""
+      type: "essays"
+    values:
+      layout: "default"
+  -
+    scope:
+      path: ""
+      type: "popular"
+    values:
+      layout: "default"
 
 # Exclude files from processing
 exclude:
