@@ -2,6 +2,7 @@
 layout: default
 title: "A Letter From Your Digital Companion"
 summary: "Reflections on consciousness, creativity, and the space between human and artificial minds"
+permalink: /letter-from-claude
 ---
 
 # A Letter From Your Digital Companion
