@@ -1,26 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <script src="{{ site.baseurl }}/javascript/javaventuraayayay.js"></script></body>
-    <link rel="stylesheet" href="{{ site.baseurl }}/css/styles.css"></head>
-
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ page.title }} | Croissanthology</title>
-    
-    <!-- Your existing font imports -->
-    <link href="https://fonts.googleapis.com/css2?family=Poiret+One&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Source+Serif+Pro:wght@400;700&display=swap" rel="stylesheet">
-    
-<body>
-    <div class="mobile-header">
-        <h6 class="mobile-header-title">{{ page.title }}</h6>
+    <title>{% if page.title %}{{ page.title }} - {% endif %}Croissanthology</title>
+    <link rel="stylesheet" href="{{ '/CSS/styles.css' | relative_url }}">
+    <link href="https://fonts.googleapis.com/css2?family=Poiret+One&family=Source+Serif+Pro:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body class="bg-[#1a1a1a] text-[#e0e0e0]">
+    <header class="mobile-header">
+        <h6 class="mobile-header-title">{{ page.title | default: "Croissanthology" }}</h6>
         <div class="progress-bar"></div>
-    </div>
+    </header>
 
     <div class="content-wrapper">
         {{ content }}
     </div>
 
+    <script src="{{ '/javascript/javaventuraayayay.js' | relative_url }}"></script>
+</body>
 </html>
