@@ -1,0 +1,19 @@
+---
+layout: default
+---
+<article class="post">
+    <header class="title-container">
+        <h1 class="title">
+            <span class="title-white">{{ page.title | split: ' ' | first }}</span><span class="title-green">{{ page.title | split: ' ' | shift | join: ' ' }}</span>
+        </h1>
+        <div class="shine-effect"></div>
+    </header>
+
+    <div class="dotted-box">
+        {{ page.excerpt }}
+    </div>
+
+    <div class="post-content">
+        {{ content }}
+    </div>
+</article>
