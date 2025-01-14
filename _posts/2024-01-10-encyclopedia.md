@@ -1,9 +1,6 @@
-
 ---
 layout: default
-title: "Encyclopedia"
-summary: "A brief exploration of knowledge categorization systems, from ancient libraries to modern wikis. This text appears in the dotted box at the top."
-permalink: /encyclopedia
+title: "Your Title"
 ---
 
 # The Encyclopedia Project
