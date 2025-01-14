@@ -1,7 +1,8 @@
 ---
-layout: posts
+layout: "post"
 title: "Your Title"
 ---
+
 
 # The Encyclopedia Project
 
