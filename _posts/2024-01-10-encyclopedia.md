@@ -1,6 +1,6 @@
 ---
 layout: "post"
-title: "Your Title"
+title: "Encyclopedias were our dignity"
 ---
 
 
