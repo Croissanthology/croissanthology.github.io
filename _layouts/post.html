@@ -2,18 +2,25 @@
 layout: default
 ---
 <article class="post">
-    <header class="title-container">
-        <h1 class="title">
-            <span class="title-white">{{ page.title | split: ' ' | first }}</span><span class="title-green">{{ page.title | split: ' ' | shift | join: ' ' }}</span>
+    <header style="margin-top: 4em;">
+        <h1 style="text-align: center; font-family: 'Poiret One', cursive; color: #ffffff; letter-spacing: 2px; text-transform: uppercase;">
+            {{ page.title }}
         </h1>
-        <div class="shine-effect"></div>
+        <div style="text-align: center; margin-top: 0.5em; color: #808080; font-style: italic;">
+            {{ page.date | date: "%B %d %Y" }}
+        </div>
     </header>
 
-    <div class="dotted-box">
-        {{ page.excerpt }}
-    </div>
+    <div class="post-content" style="margin-top: 3em;">
+        {% assign paragraphs = content | split: site.excerpt_separator %}
+        {% assign first_paragraph = paragraphs | first %}
+        {% assign rest_content = paragraphs | shift | join: site.excerpt_separator %}
+        
+        <p class="has-dropcap">
+            <span class="dropcap">{{ first_paragraph | strip | slice: 0 }}</span>
+            {{ first_paragraph | strip | slice: 1, first_paragraph.size }}
+        </p>
 
-    <div class="post-content">
-        {{ content }}
+        {{ rest_content }}
     </div>
 </article>
