@@ -1,6 +1,7 @@
 ---
 layout: "post"
 title: "Encyclopedias were our dignity"
+date: 2024-10-11
 ---
 
 
