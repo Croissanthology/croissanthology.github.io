@@ -1,9 +1,41 @@
 document.addEventListener('DOMContentLoaded', () => {
-  // just the mobile header stuff, not the feedback popup
-  const header = document.querySelector('.mobile-header');
-  // whatever header functionality you had
+    // ===== FEEDBACK SYSTEM =====
+    const popup = document.createElement('div');
+    popup.className = 'feedback-popup';
+    document.body.appendChild(popup);
+
+    document.addEventListener('mouseup', (e) => {
+        const selection = window.getSelection();
+        const text = selection.toString().trim();
+        
+        if (text) {
+            const range = selection.getRangeAt(0);
+            const rect = range.getBoundingClientRect();
+            
+            const subject = encodeURIComponent(`Thoughts about ${document.title}`);
+            const body = encodeURIComponent(`"${text}"\n\nMy thoughts:\n`);
+            
+            popup.innerHTML = `<a 
+                href="mailto:croissanthology@gmail.com?subject=${subject}&body=${body}"
+                class="feedback-link"
+            >💭 Share feedback</a>`;
+            
+            popup.style.left = `${rect.left + (rect.width / 2)}px`;
+            popup.style.top = `${rect.bottom + window.scrollY + 10}px`;
+            popup.classList.add('visible');
+        } else {
+            popup.classList.remove('visible');
+        }
+    });
+
+    document.addEventListener('mousedown', (e) => {
+        if (!popup.contains(e.target)) {
+            popup.classList.remove('visible');
+        }
+    });
 
     // ===== HEADER & PROGRESS BAR =====
+    const header = document.querySelector('.mobile-header');
     const progressBar = document.querySelector('.progress-bar');
     const showHeaderThreshold = 100;
 
@@ -15,9 +47,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     window.addEventListener('scroll', updateProgressBar);
     updateProgressBar();
-
-  });
-
 
     // ===== HEADING LINKS =====
     const headings = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
