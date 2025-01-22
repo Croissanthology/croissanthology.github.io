@@ -225,6 +225,10 @@ a[href^="https://www.x.com"]::after,
 a[href^="https://x.com"]::after {
     background-color: #1DA1F2;
 }
+
+            .mobile-header.visible {
+  transform: translateY(0);  // shows header
+}
         .mobile-header {
             position: fixed;
             top: 0;
