@@ -1,4 +1,8 @@
-
+document.addEventListener('DOMContentLoaded', () => {
+  // just the mobile header stuff, not the feedback popup
+  const header = document.querySelector('.mobile-header');
+  // whatever header functionality you had
+});
 
     // ===== HEADER & PROGRESS BAR =====
     const header = document.querySelector('.mobile-header');
