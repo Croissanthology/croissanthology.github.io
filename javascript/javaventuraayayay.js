@@ -2,10 +2,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // just the mobile header stuff, not the feedback popup
   const header = document.querySelector('.mobile-header');
   // whatever header functionality you had
-});
 
     // ===== HEADER & PROGRESS BAR =====
-    const header = document.querySelector('.mobile-header');
     const progressBar = document.querySelector('.progress-bar');
     const showHeaderThreshold = 100;
 
@@ -17,6 +15,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     window.addEventListener('scroll', updateProgressBar);
     updateProgressBar();
+
+  });
+
 
     // ===== HEADING LINKS =====
     const headings = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
