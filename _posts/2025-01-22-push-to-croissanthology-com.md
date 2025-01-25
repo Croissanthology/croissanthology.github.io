@@ -8,4 +8,3 @@ permalink: push-to-croissanthology-com
 How do you fellow kids?
 
 Man, life is so cool.
-
