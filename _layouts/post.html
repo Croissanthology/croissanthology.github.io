@@ -10,17 +10,15 @@ layout: default
             {{ page.date | date: "%B %d %Y" }}
         </div>
     </header>
-
     <div class="post-content" style="margin-top: 3em;">
-        {% assign paragraphs = content | split: site.excerpt_separator %}
-        {% assign first_paragraph = paragraphs | first %}
-        {% assign rest_content = paragraphs | shift | join: site.excerpt_separator %}
+        {% assign paragraphs = content | split: "\n\n" %}
+        {% assign first_paragraph = paragraphs | first | strip %}
+        {% assign rest_content = paragraphs | shift | join: "\n\n" %}
         
         <p class="has-dropcap">
             <span class="dropcap">{{ first_paragraph | strip | slice: 0 }}</span>
             {{ first_paragraph | strip | slice: 1, first_paragraph.size }}
         </p>
-
-        {{ rest_content }}
+        {{ rest_content | markdownify }}
     </div>
 </article>
