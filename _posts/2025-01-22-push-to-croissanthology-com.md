@@ -11,6 +11,6 @@ Man, life is so cool.
 
 Well anyway, back to business making more of these docs. How can I apply this to more of these I wonder.
 
-# So yeah this is pretty cool
+## So yeah this is pretty cool
 
 I must admit it fully.
