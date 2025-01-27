@@ -20,6 +20,7 @@ layout: default
     max-width: 800px;
     margin-left: auto;
     margin-right: auto;
+    text-align: center; /* Added for backup centering */
 }
 
 .post-title {
@@ -28,8 +29,9 @@ layout: default
     letter-spacing: 2px;
     text-transform: uppercase;
     text-align: center;
-    margin-bottom: 0.5em;
+    margin: 0 auto 0.5em;
     line-height: 1.2;
+    max-width: 90%;
 }
 
 .post-meta {
@@ -37,7 +39,6 @@ layout: default
     color: #808080;
     font-style: italic;
     margin-top: 0.5em;
-    text-align: center;
 }
 
 .post-content {
@@ -46,30 +47,47 @@ layout: default
     padding: 0 1em;
 }
 
-/* Dropcap implementation */
+/* Unified paragraph styling */
+.post-content p {
+    margin: 1.5em 0;
+    line-height: 1.6;
+    text-align: left;
+}
+
+/* Dropcap adjustments */
 .post-content > p:first-of-type {
-    position: relative;
-    margin-left: -0.5em;
+    margin-left: 0;
+    text-indent: 0;
 }
 
 .post-content > p:first-of-type .dropcap {
     float: left;
     font-size: 4.5em;
     line-height: 0.8;
-    margin-right: 0.1em;
+    margin-right: 0.15em;
     position: relative;
-    top: 0.05em;
+    top: 0.2em;
 }
 </style>
 
 <script>
-// Add dropcap element safely after DOM load
 document.addEventListener('DOMContentLoaded', function() {
     const firstParagraph = document.querySelector('.post-content > p:first-of-type');
     if (firstParagraph) {
-        const text = firstParagraph.innerHTML.trim();
-        firstParagraph.classList.add('has-dropcap');
-        firstParagraph.innerHTML = `<span class="dropcap">${text[0]}</span>${text.slice(1)}`;
+        // Create temporary element to strip any existing HTML tags
+        const temp = document.createElement('div');
+        temp.innerHTML = firstParagraph.innerHTML;
+        const text = temp.textContent.trim();
+        
+        // Preserve existing classes
+        const classList = firstParagraph.classList.toString();
+        
+        // Rebuild paragraph with dropcap
+        firstParagraph.outerHTML = `
+            <p class="${classList} has-dropcap">
+                <span class="dropcap">${text[0]}</span>${text.slice(1)}
+            </p>
+        `;
     }
 });
 </script>
