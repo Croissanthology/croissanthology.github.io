@@ -11,14 +11,19 @@ layout: default
         </div>
     </header>
    <div class="post-content" style="margin-top: 3em;">
-    {% assign paragraphs = content | strip_html | split: "\n\n" %}
-    {% assign first_paragraph = paragraphs | first | strip %}
-    {% assign rest_content = paragraphs | shift | join: "\n\n" %}
+    {% assign paragraphs = content | split: "\n\n" %}
+    {% assign first_para = paragraphs | first | strip %}
+    {% if first_para | slice: 0, 1 == "<" %}
+        {% assign first_para_clean = first_para | replace: "<", "&lt;" | replace: ">", "&gt;" %}
+    {% else %}
+        {% assign first_para_clean = first_para %}
+    {% endif %}
+    {% assign rest_content = paragraphs | shift | join: "\n\n" | markdownify %}
     
     <p class="has-dropcap">
-        <span class="dropcap">{{ first_paragraph | strip | slice: 0 }}</span>
-        {{ first_paragraph | strip | slice: 1, first_paragraph.size }}
+        <span class="dropcap">{{ first_para_clean | slice: 0 }}</span>
+        {{ first_para_clean | slice: 1, first_para_clean.size }}
     </p>
-    {{ rest_content | markdownify }}
-</div>
+    {{ rest_content }}
+   </div>
 </article>
