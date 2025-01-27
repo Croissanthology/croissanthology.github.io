@@ -1,7 +1,7 @@
 ---
 layout: default
 ---
-<article class="🔥">
+<article class="📜">
     <header>
         <h1>{{ page.title }}</h1>
         <time datetime="{{ page.date | date_to_xmlschema }}">
@@ -12,17 +12,19 @@ layout: default
 </article>
 
 <style>
-.🔥 {
-    --glow: #fff;
-    --smoke: #808080;
+.📜 {
+    --venom: #32CD32; /* Lime green */
+    --parchment: #fff;
+    --dust: #808080;
     max-width: 70ch;
     margin: 3em auto;
+    font: 1.2em/1.6 Georgia;
 }
 
 h1 {
     font: 400 2.5em/1 'Poiret One';
     text-align: center;
-    color: var(--glow);
+    color: var(--parchment);
     letter-spacing: 0.1em;
     text-transform: uppercase;
     margin: 0 0 0.5em;
@@ -30,26 +32,30 @@ h1 {
 
 time {
     display: block;
-    color: var(--smoke);
+    color: var(--dust);
     font-style: italic;
     text-align: center;
 }
 
-/* Nuclear-powered dropcap */
-article > p:first-of-type:first-letter {
-    font: 4em/0.8 'Poiret One';
-    float: left;
-    margin: 0 0.1em 0 -0.1em;
-    text-transform: uppercase;
-    shape-outside: ellipse();
+/* First paragraph intimacy */
+article > p:first-of-type {
+    font: 1.4em/1.5 'Merriweather';
+    color: var(--parchment);
+    margin: 3em 0;
 }
 
-/* Brutalist content styling */
-article > *:not(header) {
-    font: 1.2em/1.6 serif;
-    margin: 3em auto;
-    width: 90%;
-    hyphens: auto;
-    text-rendering: optimizeLegibility;
+/* Surgical dropcap engineering */
+article > p:first-of-type:first-letter {
+    font: 400 4.5em/0.7 'Poiret One';
+    color: var(--venom);
+    float: left;
+    margin: 0.15em 0.1em -0.1em -0.05em;
+    shape-outside: polygon(0 0, 100% 0, 75% 100%, 0 100%);
+    text-indent: -0.05em;
+}
+
+/* Baseline grid enforcer */
+article > *:not(header):not(p:first-of-type) {
+    margin: 1.6em auto;
 }
 </style>
