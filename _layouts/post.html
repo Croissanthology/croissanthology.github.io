@@ -40,15 +40,16 @@ layout: default
 .post-content {
     margin-top: 3em;
 }
+.post-content p:first-of-type {
+    display: flex;
+    align-items: flex-start;
+}
 
-/* Robust CSS-based dropcap */
 .post-content p:first-of-type::first-letter {
     font-size: 4em;
-    float: left;
-    line-height: 0.8;
     margin-right: 0.1em;
     text-transform: uppercase;
     font-family: 'Poiret One', cursive;
-    display: flex; align-items: flex-start
+    line-height: 0.8;
 }
 </style>
