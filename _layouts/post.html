@@ -21,9 +21,9 @@ layout: default
    {% assign rest_content = paragraphs | shift | join: "\n\n" | markdownify %}
    
    <p class="has-dropcap">
-       <span class="dropcap">{{ first_para_clean | strip | slice: 0 }}</span>
-       {{ first_para_clean | strip | slice: 1, first_para_clean.size }}
-   </p>
+    <span class="dropcap">{{ first_para_clean | strip | slice: 0 | raw }}</span>
+    {{ first_para_clean | strip | slice: 1, first_para_clean.size | raw }}
+</p>
    {{ rest_content | raw }}
   </div>
 </article>
