@@ -1,64 +1,55 @@
 ---
 layout: default
 ---
-<article class="post-architecture">
-    <header class="title-cockpit">
+<article class="🔥">
+    <header>
         <h1>{{ page.title }}</h1>
-        <div class="date-display">{{ page.date | date: "%B %d %Y" }}</div>
+        <time datetime="{{ page.date | date_to_xmlschema }}">
+            {{ page.date | date: "%B %d, %Y" | upcase }}
+        </time>
     </header>
-
-    <div class="content-core">
-        {{ content }}
-    </div>
+    {{ content }}
 </article>
 
 <style>
-/* Title treatment from your original DNA */
-.title-cockpit {
-    margin: 3em 0 0 4vw;
+.🔥 {
+    --glow: #fff;
+    --smoke: #808080;
+    max-width: 70ch;
+    margin: 3em auto;
 }
 
-.title-cockpit h1 {
-    font: 400 2.7em 'Poiret One';
-    color: #FFFFFF;
-    letter-spacing: 2px;
+h1 {
+    font: 400 2.5em/1 'Poiret One';
+    text-align: center;
+    color: var(--glow);
+    letter-spacing: 0.1em;
     text-transform: uppercase;
-    margin: 0;
-    text-align: left; /* Left-angled predator */
+    margin: 0 0 0.5em;
 }
 
-.date-display {
-    color: #808080;
+time {
+    display: block;
+    color: var(--smoke);
     font-style: italic;
-    margin-top: 0.5em;
+    text-align: center;
 }
 
-/* Your original first-line sorcery */
-.content-core p:first-child {
-    font-family: 'Your-Special-Font', serif; /* Replace with actual font */
-    position: relative;
-}
-
-/* Nuclear dropcap replication */
-.has-dropcap .dropcap {
+/* Nuclear-powered dropcap */
+article > p:first-of-type:first-letter {
     font: 4em/0.8 'Poiret One';
     float: left;
-    margin-right: 0.1em;
+    margin: 0 0.1em 0 -0.1em;
     text-transform: uppercase;
+    shape-outside: ellipse();
+}
+
+/* Brutalist content styling */
+article > *:not(header) {
+    font: 1.2em/1.6 serif;
+    margin: 3em auto;
+    width: 90%;
+    hyphens: auto;
+    text-rendering: optimizeLegibility;
 }
 </style>
-
-<script>
-// JS compatibility layer
-document.addEventListener('DOMContentLoaded', () => {
-    const firstPara = document.querySelector('.content-core p:first-child');
-    if (firstPara && !firstPara.querySelector('.dropcap')) {
-        const text = firstPara.innerHTML.trim();
-        firstPara.innerHTML = `
-            <span class="dropcap">${text[0]}</span>
-            ${text.slice(1)}
-        `;
-        firstPara.classList.add('has-dropcap');
-    }
-});
-</script>
