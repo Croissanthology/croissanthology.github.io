@@ -1,51 +1,64 @@
 ---
 layout: default
 ---
-<article class="post">
-    <header class="post-header">
-        <h1 class="post-title">{{ page.title }}</h1>
-        <time class="post-date" datetime="{{ page.date | date_to_xmlschema }}">
-            {{ page.date | date: "%B %d, %Y" }}
-        </time>
+<article class="post-architecture">
+    <header class="title-cockpit">
+        <h1>{{ page.title }}</h1>
+        <div class="date-display">{{ page.date | date: "%B %d %Y" }}</div>
     </header>
 
-    <div class="post-content">
+    <div class="content-core">
         {{ content }}
     </div>
 </article>
 
 <style>
-.post-header {
-    margin-top: 3em;
-    text-align: center;
+/* Title treatment from your original DNA */
+.title-cockpit {
+    margin: 3em 0 0 4vw;
 }
 
-.post-title {
-    font-family: 'Poiret One', cursive;
-    color: #ffffff;
+.title-cockpit h1 {
+    font: 400 2.7em 'Poiret One';
+    color: #FFFFFF;
     letter-spacing: 2px;
     text-transform: uppercase;
-    margin-bottom: 0.5em;
+    margin: 0;
+    text-align: left; /* Left-angled predator */
 }
 
-.post-date {
-    display: block;
+.date-display {
     color: #808080;
     font-style: italic;
     margin-top: 0.5em;
 }
 
-.post-content {
-    margin-top: 3em;
+/* Your original first-line sorcery */
+.content-core p:first-child {
+    font-family: 'Your-Special-Font', serif; /* Replace with actual font */
+    position: relative;
 }
 
-/* Robust CSS-based dropcap */
-.post-content p:first-of-type::first-letter {
-    font-size: 4em;
+/* Nuclear dropcap replication */
+.has-dropcap .dropcap {
+    font: 4em/0.8 'Poiret One';
     float: left;
-    line-height: 0.8;
     margin-right: 0.1em;
     text-transform: uppercase;
-    font-family: 'Poiret One', cursive;
 }
 </style>
+
+<script>
+// JS compatibility layer
+document.addEventListener('DOMContentLoaded', () => {
+    const firstPara = document.querySelector('.content-core p:first-child');
+    if (firstPara && !firstPara.querySelector('.dropcap')) {
+        const text = firstPara.innerHTML.trim();
+        firstPara.innerHTML = `
+            <span class="dropcap">${text[0]}</span>
+            ${text.slice(1)}
+        `;
+        firstPara.classList.add('has-dropcap');
+    }
+});
+</script>
