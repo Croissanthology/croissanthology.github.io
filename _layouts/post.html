@@ -2,28 +2,50 @@
 layout: default
 ---
 <article class="post">
-   <header style="margin-top: 3em;">
-       <h1 style="text-align: center; font-family: 'Poiret One', cursive; color: #ffffff; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 0.5em;">
-           {{ page.title }}
-       </h1>
-       <div style="text-align: left; margin-top: 0.5em; color: #808080; font-style: italic;">
-           {{ page.date | date: "%B %d %Y" }}
-       </div>
-   </header>
-  <div class="post-content" style="margin-top: 3em;">
-   {% assign paragraphs = content | split: "\n\n" %}
-   {% assign first_para = paragraphs | first | strip %}
-   {% if first_para | slice: 0, 1 == "<" %}
-       {% assign first_para_clean = first_para | replace: "<", "&lt;" | replace: ">", "&gt;" %}
-   {% else %}
-       {% assign first_para_clean = first_para %}
-   {% endif %}
-   {% assign rest_content = paragraphs | shift | join: "\n\n" | markdownify %}
-   
-   <p class="has-dropcap">
-    <span class="dropcap">{{ first_para_clean | strip | slice: 0 | raw }}</span>
-    {{ first_para_clean | strip | slice: 1, first_para_clean.size | raw }}
-</p>
-   {{ rest_content | raw }}
-  </div>
+    <header class="post-header">
+        <h1 class="post-title">{{ page.title }}</h1>
+        <time class="post-date" datetime="{{ page.date | date_to_xmlschema }}">
+            {{ page.date | date: "%B %d, %Y" }}
+        </time>
+    </header>
+
+    <div class="post-content">
+        {{ content }}
+    </div>
 </article>
+
+<style>
+.post-header {
+    margin-top: 3em;
+    text-align: center;
+}
+
+.post-title {
+    font-family: 'Poiret One', cursive;
+    color: #ffffff;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 0.5em;
+}
+
+.post-date {
+    display: block;
+    color: #808080;
+    font-style: italic;
+    margin-top: 0.5em;
+}
+
+.post-content {
+    margin-top: 3em;
+}
+
+/* Robust CSS-based dropcap */
+.post-content p:first-of-type::first-letter {
+    font-size: 4em;
+    float: left;
+    line-height: 0.8;
+    margin-right: 0.1em;
+    text-transform: uppercase;
+    font-family: 'Poiret One', cursive;
+}
+</style>
