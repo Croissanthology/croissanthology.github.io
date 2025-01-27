@@ -77,8 +77,8 @@ h1::after, h2::after, h3::after, h4::after, h5::after {
 
 
 body {
-    font-family: 'Source Serif Pro', serif;
-    background-color: var(--background-color);
+
+font-family: 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;    background-color: var(--background-color);
     color: var(--text-color);
     line-height: 1.6;
     margin: 0;
