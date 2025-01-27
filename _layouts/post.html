@@ -1,61 +1,51 @@
 ---
 layout: default
 ---
-<article class="📜">
-    <header>
-        <h1>{{ page.title }}</h1>
-        <time datetime="{{ page.date | date_to_xmlschema }}">
-            {{ page.date | date: "%B %d, %Y" | upcase }}
+<article class="post">
+    <header class="post-header">
+        <h1 class="post-title">{{ page.title }}</h1>
+        <time class="post-date" datetime="{{ page.date | date_to_xmlschema }}">
+            {{ page.date | date: "%B %d, %Y" }}
         </time>
     </header>
-    {{ content }}
+
+    <div class="post-content">
+        {{ content }}
+    </div>
 </article>
 
 <style>
-.📜 {
-    --venom: #32CD32; /* Lime green */
-    --parchment: #fff;
-    --dust: #808080;
-    max-width: 70ch;
-    margin: 3em auto;
-    font: 1.2em/1.6 Georgia;
+.post-header {
+    margin-top: 3em;
+    text-align: center;
 }
 
-h1 {
-    font: 400 2.5em/1 'Poiret One';
-    text-align: center;
-    color: var(--parchment);
-    letter-spacing: 0.1em;
+.post-title {
+    font-family: 'Poiret One', cursive;
+    color: #ffffff;
+    letter-spacing: 2px;
     text-transform: uppercase;
-    margin: 0 0 0.5em;
+    margin-bottom: 0.5em;
 }
 
-time {
+.post-date {
     display: block;
-    color: var(--dust);
+    color: #808080;
     font-style: italic;
-    text-align: center;
+    margin-top: 0.5em;
 }
 
-/* First paragraph intimacy */
-article > p:first-of-type {
-    font: 1.4em/1.5 'Merriweather';
-    color: var(--parchment);
-    margin: 3em 0;
+.post-content {
+    margin-top: 3em;
 }
 
-/* Surgical dropcap engineering */
-article > p:first-of-type:first-letter {
-    font: 400 4.5em/0.7 'Poiret One';
-    color: var(--venom);
+/* Robust CSS-based dropcap */
+.post-content p:first-of-type::first-letter {
+    font-size: 4em;
     float: left;
-    margin: 0.15em 0.1em -0.1em -0.05em;
-    shape-outside: polygon(0 0, 100% 0, 75% 100%, 0 100%);
-    text-indent: -0.05em;
-}
-
-/* Baseline grid enforcer */
-article > *:not(header):not(p:first-of-type) {
-    margin: 1.6em auto;
+    line-height: 0.8;
+    margin-right: 0.1em;
+    text-transform: uppercase;
+    font-family: 'Poiret One', cursive;
 }
 </style>
