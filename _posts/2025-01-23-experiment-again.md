@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Experiment again"
+title: "In honor of Chloe R"
 date: 2025-01-23
 permalink: experiment-again
 ---
