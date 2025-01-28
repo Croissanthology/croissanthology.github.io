@@ -5,7 +5,7 @@ date: 2025-01-23
 permalink: experiment-again
 ---
 
-Mucho yes. Now! Hell yeah.Une relation particuli?re avec l'?conomiste Schumpeter. Viennois (uh oh if she doesn't like austrian economics I have to carry a heavy asterisk with me everywhere I go in class). Le but n'est pas que toutes les princesses puissent s'offrir des bas de soie; c'est que toutes les femmes puissent s'offrir des bas de soie. Votre but quand vous faites de l'?conomie, c'est ?a: am?liorer la condition humaine. 
+Mucho yes. Now! Hell yeah.Une relation particuli?re avec l'?conomiste Schumpeter. Viennois (uh oh if she doesn't like austrian economics I have to carry a heavy asterisk with me everywhere I go in class). Le but n?est pas que toutes les princesses puissent s?offrir des bas de soie; c?est que toutes les femmes puissent s?offrir des bas de soie. Votre but quand vous faites de l??conomie, c?est ?a: am?liorer la condition humaine. 
 
 
 
@@ -21,7 +21,7 @@ So yeah we doing the deepseek usage.
 
 
 
-Une relation particuli?re avec l'?conomiste Schumpeter. Viennois (uh oh if she doesn't like austrian economics I have to carry a heavy asterisk with me everywhere I go in class). Le but n'est pas que toutes les princesses puissent s'offrir des bas de soie; c'est que toutes les femmes puissent s'offrir des bas de soie. Votre but quand vous faites de l'?conomie, c'est ?a: am?liorer la condition humaine. 
+Une relation particuli?re avec l'?conomiste Schumpeter. Viennois (uh oh if she doesn't like austrian economics I have to carry a heavy asterisk with me everywhere I go in class). Le but n?est pas que toutes les princesses puissent s?offrir des bas de soie; c?est que toutes les femmes puissent s?offrir des bas de soie. Votre but quand vous faites de l??conomie, c?est ?a: am?liorer la condition humaine. 
 
 
 
@@ -33,7 +33,7 @@ Concevoir des mod?les th?oriques ou sugg?rez des politiques pour am?liorer la vi
 
 
 
-Une relation particuli?re avec l'?conomiste Schumpeter. Viennois (uh oh if she doesn't like austrian economics I have to carry a heavy asterisk with me everywhere I go in class). Le but n'est pas que toutes les princesses puissent s'offrir des bas de soie; c'est que toutes les femmes puissent s'offrir des bas de soie. Votre but quand vous faites de l'?conomie, c'est ?a: am?liorer la condition humaine. 
+Une relation particuli?re avec l'?conomiste Schumpeter. Viennois (uh oh if she doesn't like austrian economics I have to carry a heavy asterisk with me everywhere I go in class). Le but n?est pas que toutes les princesses puissent s?offrir des bas de soie; c?est que toutes les femmes puissent s?offrir des bas de soie. Votre but quand vous faites de l??conomie, c?est ?a: am?liorer la condition humaine. 
 
 
 
@@ -41,7 +41,7 @@ Concevoir des mod?les th?oriques ou sugg?rez des politiques pour am?liorer la vi
 
 
 
-Une relation particuli?re avec l'?conomiste Schumpeter. Viennois (uh oh if she doesn't like austrian economics I have to carry a heavy asterisk with me everywhere I go in class). Le but n'est pas que toutes les princesses puissent s'offrir des bas de soie; c'est que toutes les femmes puissent s'offrir des bas de soie. Votre but quand vous faites de l'?conomie, c'est ?a: am?liorer la condition humaine. 
+Une relation particuli?re avec l'?conomiste Schumpeter. Viennois (uh oh if she doesn't like austrian economics I have to carry a heavy asterisk with me everywhere I go in class). Le but n?est pas que toutes les princesses puissent s?offrir des bas de soie; c?est que toutes les femmes puissent s?offrir des bas de soie. Votre but quand vous faites de l??conomie, c?est ?a: am?liorer la condition humaine. 
 
 
 
@@ -49,7 +49,7 @@ Concevoir des mod?les th?oriques ou sugg?rez des politiques pour am?liorer la vi
 
 
 
-Une relation particuli?re avec l'?conomiste Schumpeter. Viennois (uh oh if she doesn't like austrian economics I have to carry a heavy asterisk with me everywhere I go in class). Le but n'est pas que toutes les princesses puissent s'offrir des bas de soie; c'est que toutes les femmes puissent s'offrir des bas de soie. Votre but quand vous faites de l'?conomie, c'est ?a: am?liorer la condition humaine. 
+Une relation particuli?re avec l'?conomiste Schumpeter. Viennois (uh oh if she doesn't like austrian economics I have to carry a heavy asterisk with me everywhere I go in class). Le but n?est pas que toutes les princesses puissent s?offrir des bas de soie; c?est que toutes les femmes puissent s?offrir des bas de soie. Votre but quand vous faites de l??conomie, c?est ?a: am?liorer la condition humaine. 
 
 
 
