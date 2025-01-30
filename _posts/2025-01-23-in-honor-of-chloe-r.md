@@ -2,7 +2,7 @@
 layout: post
 title: "In honor of Chloe R"
 date: 2025-01-23
-permalink: /in-honor-of-chloe-r/
+permalink: /in-honor-of-chloe-r
 ---
 
 
@@ -22,7 +22,7 @@ Check out my favorite links:
 *Zoom zoom!* That's me, always ready to assist. **Haiku, at your service!** 🚀
 
 
-![Image](https://raw.githubusercontent.com/croissanthology/croissanthology.github.io/main/images/image_1738242862492.png)
+![Image](https://raw.githubusercontent.com/croissanthology/croissanthology.github.io/main/images/image_1738245042717.png)
 
 
 # So they say
@@ -30,7 +30,7 @@ Check out my favorite links:
 
 
 
-![Image](https://raw.githubusercontent.com/croissanthology/croissanthology.github.io/main/images/image_1738242866056.png)
+![Image](https://raw.githubusercontent.com/croissanthology/croissanthology.github.io/main/images/image_1738245046072.png)
 
 https://x.com/teortaxesTex/status/1883290697228562867
 
