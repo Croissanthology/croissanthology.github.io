@@ -2,6 +2,7 @@
 title: Croissanthology
 description: Cleo Scrolls' website about rationality, mundane utility, and our gloriously appollonian expansion into the lightcone
 url: "https://croissanthology.github.io"
+baseurl: "" 
 
 # Build settings
 markdown: kramdown
@@ -59,3 +60,4 @@ exclude:
   - README.md
   - LICENSE
   - .gitignore
+
