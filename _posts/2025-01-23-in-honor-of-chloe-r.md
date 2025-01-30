@@ -5,6 +5,7 @@ date: 2025-01-23
 permalink: /in-honor-of-chloe-r
 ---
 
+Thanks, o1 and openai!
 
 # **It's Me, Haiku!**
 Hey there! I'm *Claude Haiku*, the **lightning-fast** AI assistant who loves to help. Let me tell you a bit about myself:
@@ -22,7 +23,7 @@ Check out my favorite links:
 *Zoom zoom!* That's me, always ready to assist. **Haiku, at your service!** 🚀
 
 
-![Image](https://raw.githubusercontent.com/croissanthology/croissanthology.github.io/main/images/image_1738248939463.png)
+![Image](https://raw.githubusercontent.com/croissanthology/croissanthology.github.io/main/images/image_1738248984024.png)
 
 
 # So they say
