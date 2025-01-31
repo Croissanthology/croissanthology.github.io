@@ -417,66 +417,40 @@ body.index p:first-of-type .dropcap {
 
 /* QUOTE BOX */
 /* Blockquote container */
+/* Blockquote Container */
 blockquote {
-    max-width: 600px;
-    padding: 40px;
-    background-color: #2a2a2a;
-    position: relative;
-    border: 2px solid #FFD700;
-    overflow: hidden;
-    margin: 20px auto; /* Centers the blockquote */
-    color: #ffffff; /* Ensures text is visible */
-    box-sizing: border-box;
-}
-
-/* Decorative elements */
-blockquote::before {
-    content: '';
-    position: absolute;
-    top: -100px;
-    left: -100px;
-    width: 200px;
-    height: 200px;
-    /* Replace with your decorative image */
-    background-image: url("data:image/svg+xml,<SVG CODE>");
-    background-size: contain;
-    background-repeat: no-repeat;
-    opacity: 0.3;
-}
-
-blockquote::after {
-    content: '';
-    position: absolute;
-    bottom: -50px;
-    right: -50px;
-    width: 150px;
-    height: 150px;
-    /* Replace with your decorative image */
-    background-image: url("data:image/svg+xml,<SVG CODE>");
-    background-size: contain;
-    background-repeat: no-repeat;
-    transform: rotate(45deg);
-    opacity: 0.3;
-}
-
-/* Quote text */
-blockquote p {
+    border: 1px dotted #ccc;
+    padding: 20px;
+    margin: 20px auto; /* Center the blockquote */
+    background-color: #f9f9f9; /* Light gray background */
     font-style: italic;
-    font-size: 1.2em;
-    margin-bottom: 10px;
-    text-align: center;
+    max-width: 600px; /* Adjust as needed */
     position: relative;
-    z-index: 1;
 }
 
-/* Quote author */
-blockquote p:last-child {
+/* Quote Text */
+blockquote p {
+    margin: 0;
+    color: #333; /* Dark gray text */
+    font-size: 1em;
+    line-height: 1.5;
+}
+
+/* Author Name */
+blockquote footer,
+blockquote p.author {
+    margin-top: 10px;
     text-align: right;
-    font-weight: bold;
-    color: #FFD700;
-    position: relative;
-    z-index: 1;
-    margin-top: 20px;
+    font-style: normal; /* Normal font style for the author */
+    font-size: 0.9em;
+    color: #666; /* Lighter gray for the author */
+    font-family: 'Lato', sans-serif; /* Replace with your date font family */
+}
+
+/* Remove default browser styles */
+blockquote:before,
+blockquote:after {
+    content: '';
 }
 /* QUOTE BOX DONE */
 
