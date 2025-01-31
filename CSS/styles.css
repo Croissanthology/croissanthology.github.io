@@ -408,7 +408,7 @@ p.has-dropcap::first-line {
 
 
 /* New selector for index.html */
-body.index .dropcap {
+body.index p:first-of-type .dropcap { 
     background-image: url('https://github.com/Croissanthology/croissanthology.github.io/blob/main/images/croissanthologyattempt2.png?raw=true');
     shape-outside: url('https://github.com/Croissanthology/croissanthology.github.io/blob/main/images/croissanthologyattempt2.png?raw=true');
 }
