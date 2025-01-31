@@ -401,7 +401,9 @@ font-family: 'Source Serif Pro', serif;
 }
 
 /* Optional: Style for the rest of the first line */
-p.has-dropcap::first-line {
+/* Target the first paragraph in a container */
+.content p:first-of-type:first-letter {
+  /* dropcap styles */
     font-variant: small-caps;
     letter-spacing: 0.05em; */ 
 } 
