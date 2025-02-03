@@ -414,43 +414,34 @@ body.index p:first-of-type .dropcap {
     background-image: url('https://github.com/Croissanthology/croissanthology.github.io/blob/main/images/croissanthologyattempt2.png?raw=true');
     shape-outside: url('https://github.com/Croissanthology/croissanthology.github.io/blob/main/images/croissanthologyattempt2.png?raw=true');
 }
-
 /* QUOTE BOX */
-/* Blockquote container */
-/* Blockquote Container */
+/* Inline blockquote styling */
 blockquote {
-    border: 1px dotted #ccc;
-    padding: 20px;
-    margin: 20px auto; /* Center the blockquote */
-    background-color: #f9f9f9; /* Light gray background */
-    font-style: italic;
-    max-width: 600px; /* Adjust as needed */
+    display: inline-block;        /* Make the blockquote inline with text */
+    border: 1px dotted #ccc;      /* Small dotted border */
+    padding: 5px 10px;            /* Smaller padding */
+    margin: 0;                    /* Remove default margins */
+    background-color: #f0f0f0;    /* Slightly different shade of grey */
+    font-style: italic;           /* Italicize the quote text */
     position: relative;
+    vertical-align: baseline;     /* Align with the baseline of text */
 }
 
-/* Quote Text */
-blockquote p {
-    margin: 0;
-    color: #333; /* Dark gray text */
-    font-size: 1em;
-    line-height: 1.5;
-}
-
-/* Author Name */
-blockquote footer,
-blockquote p.author {
-    margin-top: 10px;
-    text-align: right;
-    font-style: normal; /* Normal font style for the author */
-    font-size: 0.9em;
-    color: #666; /* Lighter gray for the author */
-    font-family: 'Lato', sans-serif; /* Replace with your date font family */
-}
-
-/* Remove default browser styles */
+/* Remove default browser quotation marks */
 blockquote:before,
 blockquote:after {
     content: '';
+}
+
+/* Styling for the quote origin */
+.quote-origin {
+    display: block;               /* Ensure it starts on a new line */
+    margin-top: 5px;              /* Small space above the origin */
+    margin-left: 0;               /* Align with the left edge */
+    font-style: normal;           /* Normal font style */
+    font-size: 0.9em;             /* Slightly smaller font size */
+    color: #666;                  /* Lighter grey color */
+    font-family: 'Lato', sans-serif; /* Your preferred font family */
 }
 /* QUOTE BOX DONE */
 
