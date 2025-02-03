@@ -9,6 +9,11 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
 
+.post-content blockquote {
+    color: #a0a0a0;  /* Darker grey */
+    font-style: italic;
+    font-family: 'Source Serif Pro', serif;
+}
 
 
 body { overflow-x: hidden; }
