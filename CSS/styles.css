@@ -409,30 +409,6 @@ font-family: 'Source Serif Pro', serif;
 } 
 
 
-/* New selector for index.html */
-body.index p:first-of-type .dropcap { 
-    background-image: url('https://github.com/Croissanthology/croissanthology.github.io/blob/main/images/croissanthologyattempt2.png?raw=true');
-    shape-outside: url('https://github.com/Croissanthology/croissanthology.github.io/blob/main/images/croissanthologyattempt2.png?raw=true');
-}
-blockquote {
-    border-left: 2px solid #e5e7eb;
-    margin: 1.5em 0;
-    padding-left: 1em;
-    color: #c0c0c0;
-}
-
-/* Reset browser defaults */
-blockquote:before,
-blockquote:after {
-    content: none;
-}
-
-/* Optional: Reset to normal style if you have quote origins */
-.quote-origin {
-    color: inherit;
-    font-style: normal;
-    margin-top: 0.5em;
-}
 
 /* in the name of the scrolling header!*/ 
 
