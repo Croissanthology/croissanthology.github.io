@@ -421,7 +421,6 @@ blockquote {
     border: 1px dotted #ccc;      /* Small dotted border */
     padding: 5px 10px;            /* Smaller padding */
     margin: 0;                    /* Remove default margins */
-    background-color: #f0f0f0;    /* Slightly different shade of grey */
     font-style: italic;           /* Italicize the quote text */
     position: relative;
     vertical-align: baseline;     /* Align with the baseline of text */
