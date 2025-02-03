@@ -414,35 +414,25 @@ body.index p:first-of-type .dropcap {
     background-image: url('https://github.com/Croissanthology/croissanthology.github.io/blob/main/images/croissanthologyattempt2.png?raw=true');
     shape-outside: url('https://github.com/Croissanthology/croissanthology.github.io/blob/main/images/croissanthologyattempt2.png?raw=true');
 }
-/* QUOTE BOX */
-/* Inline blockquote styling */
 blockquote {
-    display: inline-block;        /* Make the blockquote inline with text */
-    border: 1px dotted #ccc;      /* Small dotted border */
-    padding: 5px 10px;            /* Smaller padding */
-    margin: 0;                    /* Remove default margins */
-    font-style: italic;           /* Italicize the quote text */
-    position: relative;
-    vertical-align: baseline;     /* Align with the baseline of text */
+    border-left: 2px solid #e5e7eb;
+    margin: 1.5em 0;
+    padding-left: 1em;
+    color: #4b5563;
 }
 
-/* Remove default browser quotation marks */
+/* Reset browser defaults */
 blockquote:before,
 blockquote:after {
-    content: '';
+    content: none;
 }
 
-/* Styling for the quote origin */
+/* Optional: Reset to normal style if you have quote origins */
 .quote-origin {
-    display: block;               /* Ensure it starts on a new line */
-    margin-top: 5px;              /* Small space above the origin */
-    margin-left: 0;               /* Align with the left edge */
-    font-style: normal;           /* Normal font style */
-    font-size: 0.9em;             /* Slightly smaller font size */
-    color: #666;                  /* Lighter grey color */
-    font-family: 'Lato', sans-serif; /* Your preferred font family */
+    color: inherit;
+    font-style: normal;
+    margin-top: 0.5em;
 }
-/* QUOTE BOX DONE */
 
 /* in the name of the scrolling header!*/ 
 
