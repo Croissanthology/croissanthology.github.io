@@ -45,16 +45,24 @@ layout: default
     font-family: 'Poiret One', cursive;
 }
 
-/* Force override blockquote styling */
-.post-content blockquote {
+.post-content blockquote,
+.post-content blockquote p {
     all: unset;
     display: block;
     margin: 2em 0;
     padding: 1em 1.5em;
     background: rgba(255, 255, 255, 0.05);
     border-left: 3px solid #808080;
-    font-style: normal;
-    color: #a0a0a0;
+    font-style: italic !important;  /* Force italics */
+    color: #a0a0a0 !important;     /* Darker gray with !important */
+}
+
+/* Extra specific selectors to ensure override */
+.post-content blockquote *,
+.post-content blockquote p,
+.post-content blockquote span {
+    color: #a0a0a0 !important;
+    font-style: italic !important;
 }
 
 .post-content blockquote::before,
