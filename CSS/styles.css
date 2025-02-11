@@ -187,12 +187,21 @@ body {
     color: #e0e0e0;
     line-height: 1.6;
     padding: 20px;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
 }
 
-        .content-wrapper {
-            width: var(--main-width);
-            max-width: 100%;
-        }
+.content-wrapper {
+    width: var(--main-width);
+    max-width: 100%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
 
         .title-container {
             position: relative;
@@ -494,11 +503,14 @@ font-family: 'Source Serif Pro', serif;
     float: left;
     font-family: 'Poiret One', cursive;
     font-size: 5em;
-    line-height: 0.8;
-    padding-top: 0.1em;
-    padding-right: 0.1em;
-    padding-left: 0;
-    color: #4A9C6D; /* Croissanthology logo green */
+    line-height: 1;
+    padding: 0.1em 0.1em 0 0;
+    margin-right: 0.1em;
+    margin-top: -0.1em;
+    color: #4A9C6D;
+    height: 0.8em;
+    position: relative;
+    z-index: 1;
 }
 
 .dropcap::before {
@@ -512,6 +524,20 @@ font-family: 'Source Serif Pro', serif;
  p.has-dropcap {
     margin: 0;
     text-align: justify;
+    clear: both;
+    display: flow-root;
+    position: relative;
+}
+
+p.has-dropcap::first-line {
+    line-height: 1.5;
+    vertical-align: text-top;
+}
+
+/* Container for dropcap paragraphs */
+.dotted-box p.has-dropcap {
+    padding-top: 0.5em;
+    margin-bottom: 1em;
 }
 
 /* Optional: Style for the rest of the first line */
