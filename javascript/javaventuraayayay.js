@@ -46,6 +46,22 @@ document.addEventListener('DOMContentLoaded', () => {
         toc.className = 'toc-nav';
         // Your TOC code here
     }
+
+    // ===== SIDE NOTES =====
+    window.sidenotes = new Sidenotes();
+
+    // Process footnotes for sidenotes
+    const footnotes = document.querySelectorAll('.footnotes li');
+    const sidenotes = document.querySelectorAll('.sidenote');
+    
+    sidenotes.forEach((sidenote, index) => {
+        if (footnotes[index]) {
+            const content = footnotes[index].innerHTML;
+            // Remove the backlink
+            const cleanContent = content.replace(/<a class="reversefootnote".*?<\/a>/, '');
+            sidenote.setAttribute('data-footnote-content', cleanContent);
+        }
+    });
 });
 
 class Sidenotes {
@@ -276,22 +292,4 @@ class Sidenotes {
         }
     }
 }
-
-// Initialize when DOM is ready
-document.addEventListener('DOMContentLoaded', () => {
-    window.sidenotes = new Sidenotes();
-});
-
-document.addEventListener('DOMContentLoaded', function() {
-    const footnotes = document.querySelectorAll('.footnotes li');
-    const sidenotes = document.querySelectorAll('.sidenote');
-    
-    sidenotes.forEach((sidenote, index) => {
-        if (footnotes[index]) {
-            const content = footnotes[index].innerHTML;
-            // Remove the backlink
-            const cleanContent = content.replace(/<a class="reversefootnote".*?<\/a>/, '');
-            sidenote.setAttribute('data-footnote-content', cleanContent);
-        }
-    });
 
