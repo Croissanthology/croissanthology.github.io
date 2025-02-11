@@ -280,4 +280,4 @@ document.addEventListener('DOMContentLoaded', function() {
             sidenote.setAttribute('data-footnote-content', cleanContent);
         }
     });
-});
+
