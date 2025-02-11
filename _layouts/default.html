@@ -25,20 +25,14 @@
 
 
 <div class="content-wrapper">
-    {{ content | replace: '<div class="footnotes" role="doc-endnotes">', '<div class="sidenotes">' | 
-                replace: '<sup id="fnref:', '<span class="sidenote" id="sidenote-' |
-                replace: '</sup>', '</span>' }}
+    {{ content }}
 </div>
 
-<script src="/assets/js/sidenotes.js"></script>
+<footer>
+    <a href="{{ '/feed.xml' | relative_url }}" target="_blank">RSS Feed</a>
+</footer>
 
-<!-- And add this before the closing </body> tag: -->
-<script src="/assets/js/sidenotes.js"></script>    </div>
-
-    <footer>
-        <a href="{{ '/feed.xml' | relative_url }}" target="_blank">RSS Feed</a>
-    </footer>
-
-    <script src="{{ '/javascript/javaventuraayayay.js' | relative_url }}"></script>
+<!-- Load sidenotes script -->
+<script src="{{ '/javascript/javaventuraayayay.js' | relative_url }}"></script>
 </body>
 </html>

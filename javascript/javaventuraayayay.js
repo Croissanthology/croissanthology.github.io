@@ -54,6 +54,7 @@ class Sidenotes {
             minWidth: '1761px',
             spacing: 60,
             padding: 13,
+            contentSelector: '.content-wrapper',
             selectors: {
                 potentialOverlap: [
                     '.width-full img',
@@ -84,7 +85,20 @@ class Sidenotes {
     init() {
         this.setupMediaQueries();
         this.constructSidenotes();
-        this.bindEvents();
+        
+        // Bind scroll event for position updates
+        window.addEventListener('scroll', () => this.updatePositions());
+        
+        // Bind resize event
+        window.addEventListener('resize', () => {
+            if (!this.state.updateQueued) {
+                window.requestAnimationFrame(() => {
+                    this.updatePositions();
+                    this.state.updateQueued = false;
+                });
+                this.state.updateQueued = true;
+            }
+        });
     }
 
     setupMediaQueries() {
@@ -93,8 +107,8 @@ class Sidenotes {
     }
 
     constructSidenotes() {
-        const markdownBody = document.querySelector('#markdownBody');
-        if (!markdownBody) return;
+        const content = document.querySelector(this.config.contentSelector);
+        if (!content) return;
 
         // Clear existing
         this.cleanup();
@@ -104,7 +118,7 @@ class Sidenotes {
         this.state.columns.right = this.createColumn('right');
         this.state.storage = this.createHiddenStorage();
 
-        markdownBody.append(
+        content.append(
             this.state.columns.left, 
             this.state.columns.right,
             this.state.storage
