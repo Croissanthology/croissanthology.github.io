@@ -825,3 +825,29 @@ a[href]:not([href^="javascript:"]):not([href^="#"])::after {
     margin-left: 0.5em !important;
     float: none !important;
 }
+
+/* end removal of custom overrides */
+ 
+/* 1) Remove dropcap styling within sidenotes */
+.sidenote .dropcap {
+    float: none !important;
+    font-family: inherit !important;
+    font-size: inherit !important;
+    line-height: normal !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    color: inherit !important;
+}
+
+/* Insert tufte-inspired sidenote numbering */
+.sidenote:before {
+    content: counter(sidenote-counter) " ";
+    font-size: 1rem;
+    top: -0.5rem;
+    position: absolute;
+}
+
+/* Ensure the body resets the sidenote counter */
+body {
+    counter-reset: sidenote-counter;
+}
