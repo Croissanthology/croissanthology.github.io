@@ -1,6 +1,3 @@
-
-
-
 @import url('https://fonts.googleapis.com/css2?family=Poiret+One&display=swap');
 
 @import url('https://fonts.googleapis.com/css2?family=Source+Serif+Pro:wght@400;700&display=swap');
@@ -21,38 +18,116 @@ body { overflow-x: hidden; }
 /* Simple, minimal sidenotes */
 .sidenote {
     position: absolute;
-    width: 12em;
-    margin-left: -13em;
-    font-size: 0.85em;
-    color: #999;
-    padding: 0.5em;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 3px;
-    line-height: 1.4;
+    width: 100%;
+    background-color: var(--background-color, #1a1a1a);
+    border: 1px dotted #808080;
+    padding: 15px;
+    margin-bottom: 20px;
+    font-family: 'Source Serif Pro', serif;
+    font-size: 0.9em;
+    pointer-events: auto;
+    transition: transform 0.3s ease;
+    box-sizing: border-box;
 }
 
-/* Make the footnote content appear in the sidenote */
-.sidenote::after {
-    content: attr(data-footnote-content);
-    display: block;
-    margin-top: 0.3em;
+/* Sidenote columns */
+.sidenote-columns {
+    position: relative;
+    width: 100%;
 }
 
-/* alternate sides */
-.sidenote:nth-child(2n) {
-    left: unset;
-    right: -13em;
-    margin-left: 0;
+#sidenote-column-left,
+#sidenote-column-right {
+    position: absolute;
+    top: 0;
+    width: 300px;
+    height: 100%;
+    pointer-events: none;
 }
 
-/* stack on mobile */
-@media (max-width: 1200px) {
-    .sidenote {
-        position: static;
-        width: 100%;
-        margin: 0.5em 0;
-        box-sizing: border-box;
+#sidenote-column-left {
+    left: -320px;
+}
+
+#sidenote-column-right {
+    right: -320px;
+}
+
+/* Sidenote wrappers */
+.sidenote-outer-wrapper {
+    max-height: 300px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #4A9C6D var(--background-color, #1a1a1a);
+}
+
+.sidenote-inner-wrapper {
+    padding-right: 10px;
+}
+
+/* Sidenote numbering */
+.sidenote-self-link {
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    background-color: #4A9C6D;
+    color: var(--background-color, #1a1a1a);
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.sidenote-self-link:hover {
+    background-color: var(--text-color, #e0e0e0);
+}
+
+/* Footnote references */
+.footnote-ref {
+    color: #4A9C6D;
+    text-decoration: none;
+    transition: color 0.3s ease;
+    cursor: pointer;
+}
+
+.footnote-ref.highlighted {
+    color: var(--text-color, #e0e0e0);
+}
+
+/* Responsive behavior */
+@media (max-width: 1760px) {
+    #sidenote-column-left,
+    #sidenote-column-right {
+        display: none;
     }
+    
+    .footnotes {
+        display: block !important;
+    }
+}
+
+@media (min-width: 1761px) {
+    .footnotes {
+        display: none;
+    }
+}
+
+/* Scrollbar styling */
+.sidenote-outer-wrapper::-webkit-scrollbar {
+    width: 6px;
+}
+
+.sidenote-outer-wrapper::-webkit-scrollbar-track {
+    background: var(--background-color, #1a1a1a);
+}
+
+.sidenote-outer-wrapper::-webkit-scrollbar-thumb {
+    background-color: #4A9C6D;
+    border-radius: 3px;
 }
 
         
@@ -709,114 +784,4 @@ a[href]:not([href^="javascript:"]):not([href^="#"])::after {
 .feedback-popup a.active {
     transform: scale(0.98);
     background-color: rgba(74, 156, 109, 0.2);
-}
-/* Sidenote columns */
-#sidenote-column-left,
-#sidenote-column-right {
-    position: absolute;
-    top: 0;
-    width: 300px;
-    height: 100%;
-    pointer-events: none;
-}
-
-#sidenote-column-left {
-    left: -320px;
-}
-
-#sidenote-column-right {
-    right: -320px;
-}
-
-/* Sidenote styling */
-.sidenote {
-    position: absolute;
-    width: 100%;
-    background-color: var(--background-color);
-    border: 1px dotted #808080;
-    padding: 15px;
-    margin-bottom: 20px;
-    font-family: 'Source Serif Pro', serif;
-    color: var(--text-color);
-    font-size: 0.9em;
-    pointer-events: auto;
-    transition: transform 0.3s ease;
-}
-
-.sidenote-outer-wrapper {
-    max-height: 300px;
-    overflow-y: auto;
-    scrollbar-width: thin;
-    scrollbar-color: #4A9C6D var(--background-color);
-}
-
-.sidenote-inner-wrapper {
-    padding-right: 10px;
-}
-
-/* Sidenote number */
-.sidenote-self-link {
-    position: absolute;
-    top: -10px;
-    left: -10px;
-    background-color: #4A9C6D;
-    color: var(--background-color);
-    border-radius: 50%;
-    width: 24px;
-    height: 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-decoration: none;
-    font-family: 'Poiret One', cursive;
-    font-weight: bold;
-}
-
-.sidenote-self-link:hover {
-    background-color: var(--text-color);
-}
-
-/* Citations */
-.footnote-ref {
-    color: #4A9C6D;
-    text-decoration: none;
-    transition: color 0.3s ease;
-}
-
-.footnote-ref.highlighted {
-    color: var(--text-color);
-}
-
-/* Hide sidenotes on mobile */
-@media (max-width: 1760px) {
-    #sidenote-column-left,
-    #sidenote-column-right {
-        display: none;
-    }
-}
-
-/* Scrollbar styling */
-.sidenote-outer-wrapper::-webkit-scrollbar {
-    width: 6px;
-}
-
-.sidenote-outer-wrapper::-webkit-scrollbar-track {
-    background: var(--background-color);
-}
-
-.sidenote-outer-wrapper::-webkit-scrollbar-thumb {
-    background-color: #4A9C6D;
-    border-radius: 3px;
-}
-
-/* Animations */
-.sidenote.displaced {
-    transition: transform 0.3s ease;
-}
-
-/* Dark theme compatibility */
-@media (prefers-color-scheme: dark) {
-    .sidenote {
-        border-color: #4A9C6D;
-    }
 }
