@@ -18,23 +18,43 @@
 
 body { overflow-x: hidden; }
 
+/* Simple, minimal sidenotes */
 .sidenote {
-            float: left;
-            clear: left;
-            margin-left: -33%;
-            width: 30%;
-            font-size: 0.9em;
-            color: #666;
-            margin-top: 0.3rem;
-            position: relative;
-        }
-        @media (max-width: 1000px) {
-            .sidenote {
-                float: none; 
-                margin: 1em 0;
-                width: 100%;
-            }
-        }
+    position: absolute;
+    width: 12em;
+    margin-left: -13em;
+    font-size: 0.85em;
+    color: #999;
+    padding: 0.5em;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
+    line-height: 1.4;
+}
+
+/* Make the footnote content appear in the sidenote */
+.sidenote::after {
+    content: attr(data-footnote-content);
+    display: block;
+    margin-top: 0.3em;
+}
+
+/* alternate sides */
+.sidenote:nth-child(2n) {
+    left: unset;
+    right: -13em;
+    margin-left: 0;
+}
+
+/* stack on mobile */
+@media (max-width: 1200px) {
+    .sidenote {
+        position: static;
+        width: 100%;
+        margin: 0.5em 0;
+        box-sizing: border-box;
+    }
+}
+
         
 h1, h2, h3, h4, h5, h6 {
     font-family: 'Poiret One', cursive;
