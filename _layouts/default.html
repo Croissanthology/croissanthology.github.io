@@ -23,9 +23,13 @@
         <div class="progress-bar"></div>
     </header>
 
-    <div class="content-wrapper">
-        {{ content }}
-    </div>
+
+<div class="content-wrapper">
+    {{ content | replace: '<div class="footnotes" role="doc-endnotes">', '<div class="sidenotes">' | replace: '<sup class="footnote-ref">', '<span class="sidenote">' | replace: '</sup>', '</span>' }}
+</div>
+
+<!-- And add this before the closing </body> tag: -->
+<script src="/assets/js/sidenotes.js"></script>    </div>
 
     <footer>
         <a href="{{ '/feed.xml' | relative_url }}" target="_blank">RSS Feed</a>
