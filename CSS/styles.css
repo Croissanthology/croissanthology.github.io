@@ -15,73 +15,54 @@
 
 body { overflow-x: hidden; }
 
-/* Simple, minimal sidenotes */
+/* Tufte-style sidenotes */
+body {
+    counter-reset: sidenote-counter;
+}
+
 .sidenote {
-    float: right !important;                /* push the sidenote to the side */
-    max-width: 30% !important;              /* restrict width so it doesn't span the whole line */
-    font-size: 0.85em !important;           /* smaller font */
-    color: #666 !important;                 /* a subdued grey color */
-    margin-left: 1em !important;            /* spacing to the left */
-    margin-bottom: 0.5em !important;        /* a bit of space below */
-    background: none !important;            /* no background */
-    border: none !important;                /* no borders */
-    text-align: left !important;            /* left align text */
-}
-
-/* Sidenote columns */
-.sidenote-columns {
+    float: right;
+    clear: right;
+    margin-right: -60%;
+    width: 50%;
+    margin-top: 0;
+    margin-bottom: 0;
+    font-size: 0.85em;
+    color: #666;
     position: relative;
-    width: 100%;
+    vertical-align: baseline;
 }
 
-#sidenote-column-left,
-#sidenote-column-right {
-    position: absolute;
-    top: 0;
-    width: 300px;
-    height: 100%;
-    pointer-events: none;
+.sidenote:before {
+    content: counter(sidenote-counter);
+    counter-increment: sidenote-counter;
+    position: relative;
+    vertical-align: baseline;
+    font-size: 0.9em;
+    top: -0.5em;
+    left: -0.3em;
 }
 
-#sidenote-column-left {
-    left: -320px;
+/* Keep one copy of the dropcap override */
+.sidenote .dropcap {
+    float: none !important;
+    font-family: inherit !important;
+    font-size: inherit !important;
+    line-height: normal !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    color: inherit !important;
 }
 
-#sidenote-column-right {
-    right: -320px;
-}
-
-/* Sidenote wrappers */
-.sidenote-outer-wrapper {
-    max-height: 300px;
-    overflow-y: auto;
-    scrollbar-width: thin;
-    scrollbar-color: #4A9C6D var(--background-color, #1a1a1a);
-}
-
-.sidenote-inner-wrapper {
-    padding-right: 10px;
-}
-
-/* Sidenote numbering */
-.sidenote-self-link {
-    position: absolute;
-    top: -10px;
-    left: -10px;
-    background-color: #4A9C6D;
-    color: var(--background-color, #1a1a1a);
-    border-radius: 50%;
-    width: 24px;
-    height: 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-decoration: none;
-    font-weight: bold;
-}
-
-.sidenote-self-link:hover {
-    background-color: var(--text-color, #e0e0e0);
+/* Responsive behavior */
+@media (max-width: 1760px) {
+    .sidenote {
+        float: none;
+        clear: both;
+        margin: 1em 0;
+        width: 100%;
+        position: relative;
+    }
 }
 
 /* Footnote references */
@@ -94,24 +75,6 @@ body { overflow-x: hidden; }
 
 .footnote-ref.highlighted {
     color: var(--text-color, #e0e0e0);
-}
-
-/* Responsive behavior */
-@media (max-width: 1760px) {
-    #sidenote-column-left,
-    #sidenote-column-right {
-        display: none;
-    }
-    
-    .footnotes {
-        display: block !important;
-    }
-}
-
-@media (min-width: 1761px) {
-    .footnotes {
-        display: none;
-    }
 }
 
 /* Scrollbar styling */
