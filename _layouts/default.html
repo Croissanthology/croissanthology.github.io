@@ -55,13 +55,11 @@
       footnotesMap[noteId] = cleanHtml;
     });
 
-    // find each footnote reference in the document. kramdown outputs these usually with an id like "fnref:1"
-    var footnoteRefs = document.querySelectorAll('sup[id^="fnref"]');
+    // find each footnote reference in the document (now targeting the updated <a> tags)
+    var footnoteRefs = document.querySelectorAll('.footnote-ref');
     footnoteRefs.forEach(function(ref) {
-      var a = ref.querySelector('a');
-      if (!a) return;
       // the href should be something like "#fn:1"
-      var footnoteId = a.getAttribute('href').substring(1);
+      var footnoteId = ref.getAttribute('href').substring(1);
       var noteContent = footnotesMap[footnoteId];
       if (!noteContent) return;
 

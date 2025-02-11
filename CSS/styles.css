@@ -17,17 +17,15 @@ body { overflow-x: hidden; }
 
 /* Simple, minimal sidenotes */
 .sidenote {
-    position: absolute;
-    width: 100%;
-    background-color: var(--background-color, #1a1a1a);
-    border: 1px dotted #808080;
-    padding: 15px;
-    margin-bottom: 20px;
-    font-family: 'Source Serif Pro', serif;
-    font-size: 0.9em;
-    pointer-events: auto;
-    transition: transform 0.3s ease;
-    box-sizing: border-box;
+    float: right;                /* push the sidenote to the side */
+    max-width: 30%;              /* restrict width so it doesn't span the whole line */
+    font-size: 0.85em;           /* smaller font */
+    color: #666;                 /* a subdued grey color */
+    margin-left: 1em;            /* spacing to the left so it doesn't stick to main text */
+    margin-bottom: 0.5em;        /* a bit of space below */
+    background: none;            /* remove any background color */
+    border: none;                /* remove borders */
+    text-align: left;            /* left align the sidenote text for readability */
 }
 
 /* Sidenote columns */
