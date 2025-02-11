@@ -25,8 +25,10 @@
 
 
 <div class="content-wrapper">
-    {% assign content_with_sidenotes = content | replace: '<sup id="fnref:', '<a class="footnote-ref" id="fnref' | replace: '</sup>', '</a>' %}
-    {% assign content_with_sidenotes = content_with_sidenotes | replace: '<div class="footnotes" role="doc-endnotes">', '<div class="footnotes">' %}
+    {% assign content_with_sidenotes = content 
+        | replace: '<sup id="fnref:', '<a class="footnote-ref" id="fnref'
+        | replace: '</sup>', '</a>'
+    %}
     {{ content_with_sidenotes }}
 </div>
 
