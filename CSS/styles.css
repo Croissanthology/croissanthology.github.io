@@ -21,11 +21,11 @@ body { overflow-x: hidden; }
     max-width: 30% !important;              /* restrict width so it doesn't span the whole line */
     font-size: 0.85em !important;           /* smaller font */
     color: #666 !important;                 /* a subdued grey color */
-    margin-left: 1em !important;            /* spacing to the left so it doesn't stick to main text */
+    margin-left: 1em !important;            /* spacing to the left */
     margin-bottom: 0.5em !important;        /* a bit of space below */
-    background: none !important;            /* remove any background color */
-    border: none !important;                /* remove borders */
-    text-align: left !important;            /* left align the sidenote text for readability */
+    background: none !important;            /* no background */
+    border: none !important;                /* no borders */
+    text-align: left !important;            /* left align text */
 }
 
 /* Sidenote columns */
@@ -794,4 +794,34 @@ a[href]:not([href^="javascript:"]):not([href^="#"])::after {
 .feedback-popup a.active {
     transform: scale(0.98);
     background-color: rgba(74, 156, 109, 0.2);
+}
+
+/* 1) Remove dropcap styling within sidenotes */
+.sidenote .dropcap {
+    float: none !important;
+    font-family: inherit !important;
+    font-size: inherit !important;
+    line-height: normal !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    color: inherit !important;
+}
+
+/* 2) Minimal decoration for footnote numbers */
+.footnote-ref {
+    text-decoration: underline !important;
+    background: none !important;
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    position: relative !important;
+}
+
+/* 3) Position sidenotes so they stay level with the reference */
+.footnote-ref + .sidenote {
+    position: absolute !important;
+    left: 100% !important;
+    top: 0 !important;
+    margin-left: 0.5em !important;
+    float: none !important;
 }
