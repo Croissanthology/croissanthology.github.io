@@ -39,5 +39,42 @@
 <!-- Load scripts -->
 <script src="{{ '/javascript/javaventuraayayay.js' | relative_url }}"></script>
 <script src="{{ '/javascript/side-title.js' | relative_url }}"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    // locate the footnotes container. kramdown conventionally wraps these in an element with class "footnotes"
+    var footnotesContainer = document.querySelector('.footnotes');
+    if (!footnotesContainer) return; // no footnotes? then nothing to do
+
+    // build a dictionary of footnote id to its HTML content
+    var footnotesList = footnotesContainer.querySelectorAll('li[id^="fn"]');
+    var footnotesMap = {};
+    footnotesList.forEach(function(li) {
+      // sometimes the innerHTML includes a backreference; we remove it for cleaner sidenotes
+      var cleanHtml = li.innerHTML.replace(/\s*<a href="#fnref:\d+"[^>]*>.*?<\/a>\s*/, '');
+      var noteId = li.getAttribute('id'); // e.g. "fn:1"
+      footnotesMap[noteId] = cleanHtml;
+    });
+
+    // find each footnote reference in the document. kramdown outputs these usually with an id like "fnref:1"
+    var footnoteRefs = document.querySelectorAll('sup[id^="fnref"]');
+    footnoteRefs.forEach(function(ref) {
+      var a = ref.querySelector('a');
+      if (!a) return;
+      // the href should be something like "#fn:1"
+      var footnoteId = a.getAttribute('href').substring(1);
+      var noteContent = footnotesMap[footnoteId];
+      if (!noteContent) return;
+
+      // create a sidenote element and insert it after the footnote reference
+      var sidenote = document.createElement('span');
+      sidenote.className = 'sidenote';
+      sidenote.innerHTML = noteContent;
+      ref.parentNode.insertBefore(sidenote, ref.nextSibling);
+    });
+
+    // optionally, remove the original footnotes container as the notes are now inline
+    footnotesContainer.parentNode.removeChild(footnotesContainer);
+  });
+</script>
 </body>
 </html>
