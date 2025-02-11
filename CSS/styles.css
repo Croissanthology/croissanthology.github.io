@@ -15,7 +15,7 @@
 
 body { overflow-x: hidden; }
 
-/* Tufte-style sidenotes */
+/* Tufte-style sidenotes - FINAL VERSION 2024-03-20 */
 body {
     counter-reset: sidenote-counter;
 }
@@ -31,6 +31,8 @@ body {
     color: #666;
     position: relative;
     vertical-align: baseline;
+    line-height: 1.4;        /* better readability */
+    padding-right: 1em;      /* prevent text from hitting the edge */
 }
 
 .sidenote:before {
@@ -43,7 +45,7 @@ body {
     left: -0.3em;
 }
 
-/* Keep one copy of the dropcap override */
+/* Prevent dropcap styling in sidenotes */
 .sidenote .dropcap {
     float: none !important;
     font-family: inherit !important;
