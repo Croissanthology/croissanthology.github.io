@@ -19,9 +19,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% if page.title %}{{ page.title }} - {% endif %}Croissanthology</title>
     
-    <!-- Styles and Assets -->
+    <!-- Styles -->
     <link rel="stylesheet" href="{{ '/CSS/styles.css' | relative_url }}">
     <link rel="icon" type="image/svg+xml" href="{{ '/images/green favicon.svg' | relative_url }}">
+
+    <style>
+        @media (min-width: 768px) {
+            .mobile-header {
+                display: none;
+            }
+        }
+    </style>
 </head>
 <body class="bg-[#1a1a1a] text-[#e0e0e0]">
     <header class="mobile-header">
