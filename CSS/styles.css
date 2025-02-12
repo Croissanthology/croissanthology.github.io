@@ -90,11 +90,46 @@ h1::after, h2::after, h3::after, h4::after, h5::after {
     h4 { font-size: 1.25em; }
     h5, h6 { font-size: 1em; }
 
-/* Sidenote essentials */
+/* Tufte-style sidenotes */
+.content-wrapper {
+    position: relative;
+    width: 55%;
+    margin-left: 12.5%;
+    padding-right: 33%;
+}
+
+.sidenote {
+    position: absolute;
+    right: 0;
+    width: 50%;
+    margin-right: -50%;
+    clear: right;
+    margin-top: 0;
+    font-size: 0.8em;
+    line-height: 1.3;
+    color: #666;
+}
+
 .sidenote-number {
     counter-increment: sidenote-counter;
+    text-decoration: none;
+    border: none;
+}
+
+.sidenote-number:after {
+    content: counter(sidenote-counter);
+    font-size: 0.7em;
+    top: -0.5em;
     position: relative;
-    vertical-align: baseline;
+    color: var(--accent-color);
+}
+
+/* Exception for sidenote links */
+.sidenote-number::before,
+.sidenote-number::after {
+    border: none !important;
+    background: none !important;
+    height: auto !important;
 }
 
 .sidenote-number:after {
