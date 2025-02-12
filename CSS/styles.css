@@ -15,6 +15,24 @@
 
 body { overflow-x: hidden; }
 
+/* Base typography */
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    /* keep your existing body styles */
+}
+
+/* Keep special fonts for headings */
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Poiret One', cursive;
+    /* keep your existing heading styles */
+}
+
+/* Override sidenotes to use Inter too */
+.sidenote {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    /* keep other sidenote styles */
+}
+
 
 /* Minimal Tufte-style sidenotes */
 body {
