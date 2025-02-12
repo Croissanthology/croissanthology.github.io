@@ -11,6 +11,10 @@
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
+.title {
+    font-family: 'Poiret One', cursive !important;
+}
+
 /* Use stronger selector to ensure it overrides */
 body, p, div, span, .sidenote, .marginnote {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
