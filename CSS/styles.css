@@ -15,6 +15,63 @@
 
 body { overflow-x: hidden; }
 
+
+/* Clean sidenote implementation 2024 */
+body {
+    counter-reset: sidenote-counter;
+}
+
+.sidenote {
+    float: right;
+    clear: right;
+    margin-right: -60%;
+    width: 50%;
+    margin-top: 0.3rem;
+    margin-bottom: 0;
+    font-size: 0.85em;
+    line-height: 1.4;
+    vertical-align: baseline;
+    position: relative;
+    background: none;
+    border: none;
+    color: #666;
+}
+
+/* Sidenote numbers */
+.sidenote::before {
+    content: counter(sidenote-counter);
+    counter-increment: sidenote-counter;
+    position: relative;
+    vertical-align: baseline;
+    font-size: 0.9em;
+    color: #4A9C6D;  /* matches your theme */
+    top: -0.5em;
+    left: -0.3em;
+}
+
+/* Prevent ANY styling inheritance */
+.sidenote * {
+    font-size: inherit !important;
+    font-family: inherit !important;
+    line-height: inherit !important;
+    color: inherit !important;
+    float: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: none !important;
+    border: none !important;
+}
+
+/* Responsive behavior */
+@media (max-width: 1760px) {
+    .sidenote {
+        float: none;
+        clear: both;
+        margin: 1em 0;
+        width: 100%;
+        position: relative;
+    }
+}
         
 h1, h2, h3, h4, h5, h6 {
     font-family: 'Poiret One', cursive;
