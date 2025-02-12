@@ -15,7 +15,7 @@
 
 body { overflow-x: hidden; }
 
-/* Tufte-style sidenotes - FINAL VERSION 2024-03-20 */
+/* Clean sidenote implementation 2024 */
 body {
     counter-reset: sidenote-counter;
 }
@@ -25,35 +25,40 @@ body {
     clear: right;
     margin-right: -60%;
     width: 50%;
-    margin-top: 0;
+    margin-top: 0.3rem;
     margin-bottom: 0;
     font-size: 0.85em;
-    color: #666;
-    position: relative;
+    line-height: 1.4;
     vertical-align: baseline;
-    line-height: 1.4;        /* better readability */
-    padding-right: 1em;      /* prevent text from hitting the edge */
+    position: relative;
+    background: none;
+    border: none;
+    color: #666;
 }
 
-.sidenote:before {
+/* Sidenote numbers */
+.sidenote::before {
     content: counter(sidenote-counter);
     counter-increment: sidenote-counter;
     position: relative;
     vertical-align: baseline;
     font-size: 0.9em;
+    color: #4A9C6D;  /* matches your theme */
     top: -0.5em;
     left: -0.3em;
 }
 
-/* Prevent dropcap styling in sidenotes */
-.sidenote .dropcap {
-    float: none !important;
-    font-family: inherit !important;
+/* Prevent ANY styling inheritance */
+.sidenote * {
     font-size: inherit !important;
-    line-height: normal !important;
+    font-family: inherit !important;
+    line-height: inherit !important;
+    color: inherit !important;
+    float: none !important;
     margin: 0 !important;
     padding: 0 !important;
-    color: inherit !important;
+    background: none !important;
+    border: none !important;
 }
 
 /* Responsive behavior */
@@ -66,33 +71,6 @@ body {
         position: relative;
     }
 }
-
-/* Footnote references */
-.footnote-ref {
-    color: #4A9C6D;
-    text-decoration: none;
-    transition: color 0.3s ease;
-    cursor: pointer;
-}
-
-.footnote-ref.highlighted {
-    color: var(--text-color, #e0e0e0);
-}
-
-/* Scrollbar styling */
-.sidenote-outer-wrapper::-webkit-scrollbar {
-    width: 6px;
-}
-
-.sidenote-outer-wrapper::-webkit-scrollbar-track {
-    background: var(--background-color, #1a1a1a);
-}
-
-.sidenote-outer-wrapper::-webkit-scrollbar-thumb {
-    background-color: #4A9C6D;
-    border-radius: 3px;
-}
-
         
 h1, h2, h3, h4, h5, h6 {
     font-family: 'Poiret One', cursive;
