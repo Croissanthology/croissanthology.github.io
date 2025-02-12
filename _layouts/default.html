@@ -7,7 +7,6 @@
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-
       gtag('config', 'G-VVQGCQMB02');
     </script>
     <meta charset="UTF-8">
@@ -22,57 +21,20 @@
         <h6 class="mobile-header-title">{{ page.title | default: "Croissanthology" }}</h6>
         <div class="progress-bar"></div>
     </header>
-
-
-<div class="content-wrapper">
-    {% assign content_with_sidenotes = content 
-        | replace: '<sup id="fnref:', '<a class="footnote-ref" id="fnref'
-        | replace: '</sup>', '</a>'
-    %}
-    {{ content_with_sidenotes }}
-</div>
-
-<footer>
-    <a href="{{ '/feed.xml' | relative_url }}" target="_blank">RSS Feed</a>
-</footer>
-
-<!-- Load scripts -->
-<script src="{{ '/javascript/javaventuraayayay.js' | relative_url }}"></script>
-<script src="{{ '/javascript/side-title.js' | relative_url }}"></script>
-<script>
-  document.addEventListener("DOMContentLoaded", function() {
-    // locate the footnotes container. kramdown conventionally wraps these in an element with class "footnotes"
-    var footnotesContainer = document.querySelector('.footnotes');
-    if (!footnotesContainer) return; // no footnotes? then nothing to do
-
-    // build a dictionary of footnote id to its HTML content
-    var footnotesList = footnotesContainer.querySelectorAll('li[id^="fn"]');
-    var footnotesMap = {};
-    footnotesList.forEach(function(li) {
-      // sometimes the innerHTML includes a backreference; we remove it for cleaner sidenotes
-      var cleanHtml = li.innerHTML.replace(/\s*<a href="#fnref:\d+"[^>]*>.*?<\/a>\s*/, '');
-      var noteId = li.getAttribute('id'); // e.g. "fn:1"
-      footnotesMap[noteId] = cleanHtml;
-    });
-
-    // find each footnote reference in the document (now targeting the updated <a> tags)
-    var footnoteRefs = document.querySelectorAll('.footnote-ref');
-    footnoteRefs.forEach(function(ref) {
-      // the href should be something like "#fn:1"
-      var footnoteId = ref.getAttribute('href').substring(1);
-      var noteContent = footnotesMap[footnoteId];
-      if (!noteContent) return;
-
-      // create a sidenote element and insert it after the footnote reference
-      var sidenote = document.createElement('span');
-      sidenote.className = 'sidenote';
-      sidenote.innerHTML = noteContent;
-      ref.parentNode.insertBefore(sidenote, ref.nextSibling);
-    });
-
-    // optionally, remove the original footnotes container as the notes are now inline
-    footnotesContainer.parentNode.removeChild(footnotesContainer);
-  });
-</script>
+    <div class="content-wrapper">
+        {% assign content_with_sidenotes = content 
+            | replace: '<sup id="fnref:', '<label for="sn-' 
+            | replace: '" class="footnote-ref">', '" class="sidenote-number">'
+            | replace: '</sup>', '</label><input type="checkbox" id="sn-' 
+            | replace: '<div class="footnotes">', '<div class="sidenotes">'
+            | replace: '<p class="footnote">', '<span class="sidenote">'
+        %}
+        {{ content_with_sidenotes }}
+    </div>
+    <footer>
+        <a href="{{ '/feed.xml' | relative_url }}" target="_blank">RSS Feed</a>
+    </footer>
+    <script src="{{ '/javascript/javaventuraayayay.js' | relative_url }}"></script>
+    <script src="{{ '/javascript/side-title.js' | relative_url }}"></script>
 </body>
 </html>
