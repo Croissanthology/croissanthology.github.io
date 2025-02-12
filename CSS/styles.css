@@ -6,6 +6,16 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
 
+/* Base typography with Inter */
+:root {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* Use stronger selector to ensure it overrides */
+body, p, div, span, .sidenote, .marginnote {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+}
+
 .post-content blockquote {
     color: #a0a0a0;  /* Darker grey */
     font-style: italic;
@@ -167,7 +177,7 @@ h1::after, h2::after, h3::after, h4::after, h5::after {
 
 
 body {
-    font-family: 'Source Serif Pro', serif;
+    font-family: 'Inter', sans;
     background-color: #1a1a1a;
     color: #e0e0e0;
     line-height: 1.6;
@@ -366,50 +376,6 @@ blockquote:after {
     margin-top: 0.5em;
 }
 
-     .footnote-ref {
-            display: inline;
-            font-family: 'Times New Roman', serif;
-            font-weight: bold;
-            color: #4A9C6D;
-            cursor: pointer;
-            position: relative;
-        }
-        .footnote-number {
-            position: absolute;
-            top: -10px;
-            left: -1px;
-            background-color: #333333;
-            padding: 0 5px;
-            font-family: 'Times New Roman', serif;
-            font-weight: bold;
-            color: #4A9C6D;
-        }
-        .footnotes {
-            position: absolute;
-            top: 0;
-            right: 20px;
-            width: 230px;
-        }
-        .footnote {
-            font-size: 0.9em;
-            color: #CCCCCC;
-            position: absolute;
-            width: 230px;
-            background-color: #333333; /* Changed to match body background */
-            border: 1px solid #FFFFFF; /* Changed to white */
-            padding: 10px;
-            box-sizing: border-box;
-        }
-        .footnote::before {
-            content: attr(data-number);
-            position: absolute;
-            top: -10px;
-            left: -1px;
-            background-color: #333333;
-            color: #4A9C6D;
-            padding: 0 5px;
-            font-weight: bold;
-        }
         
 font-family: 'Source Serif Pro', serif;
             background-color: #1a1a1a;
