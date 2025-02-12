@@ -34,7 +34,8 @@ layout: default
 .post-content {
     margin-top: 3em;
 }
-.post-content p:first-of-type::first-letter {
+/* Dropcaps ONLY on main content first paragraphs */
+.post-content > p:first-of-type:not(:has(.sidenote)):not(:has(.sidenote-number))::first-letter {
     font-size: 4em;
     float: left;
     line-height: 0.8;
@@ -45,6 +46,17 @@ layout: default
     font-family: 'Poiret One', cursive;
 }
 
+/* Explicitly prevent dropcaps in sidenotes */
+.sidenote p::first-letter,
+.sidenote-number + p::first-letter {
+    font-size: inherit !important;
+    float: none !important;
+    line-height: inherit !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    text-transform: none !important;
+    font-family: inherit !important;
+}
 /* Override for paragraphs with sidenotes */
 .post-content p.has-sidenote::first-letter {
     font-size: inherit !important;
