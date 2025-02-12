@@ -24,11 +24,12 @@
         <div class="progress-bar"></div>
     </header>
     <div class="content-wrapper">
-       {% assign content_with_sidenotes = content 
-    | replace: '<sup id="fnref:', '<span class="sidenote-ref" id="' 
-    | replace: '" class="footnote-ref">', '">'
-    | replace: '</sup>', '</span>'
+      {% assign content_with_sidenotes = content 
+    | replace: '<sup id="fnref:', '<label for="sn-'
+    | replace: '" class="footnote-ref">', '" class="margin-toggle sidenote-number">'
+    | replace: '</sup>', '</label><input type="checkbox" id="sn-'
     | replace: '<div class="footnotes">', '<div class="sidenotes">'
+    | replace: '<p class="footnote">', '<span class="sidenote">'
 %}
         {{ content_with_sidenotes }}
     </div>
