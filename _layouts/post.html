@@ -46,26 +46,43 @@ layout: default
     font-family: 'Poiret One', cursive, !important;
 }
 
-/* Explicitly prevent dropcaps in sidenotes */
-.sidenote p::first-letter,
-.sidenote-number + p::first-letter {
-    font-size: inherit !important;
-    float: none !important;
-    line-height: inherit !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    text-transform: none !important;
-    font-family: inherit !important;
+/* Simplified sidenotes */
+.sidenote {
+    float: right;
+    clear: right;
+    margin-right: -60%;
+    width: 50%;
+    margin-top: 0.3rem;
+    font-size: 0.9em;
+    color: #666;
+    position: relative;
 }
-/* Override for paragraphs with sidenotes */
-.post-content p.has-sidenote::first-letter {
-    font-size: inherit !important;
-    float: none !important;
-    line-height: inherit !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    text-transform: none !important;
-    font-family: inherit !important;
+
+/* Just the number, no checkbox */
+.sidenote:before {
+    content: counter(sidenote-counter);
+    font-size: 0.9em;
+    position: relative;
+    vertical-align: baseline;
+    padding-right: 0.5em;
+}
+
+/* Reset the link styling */
+.sidenote-number {
+    text-decoration: none;
+    border: none;
+    color: inherit;
+}
+
+.sidenote-number:before,
+.sidenote-number:after {
+    display: none;
+}
+
+/* Remove the checkbox stuff */
+input.margin-toggle,
+label.margin-toggle {
+    display: none;
 }
 
 /* Add via JS */
