@@ -20,37 +20,41 @@ body { overflow-x: hidden; }
 body {
     counter-reset: sidenote-counter;
 }
-
-.sidenote {
-    float: right;
-    clear: right;
-    margin-right: -60%;
-    width: 50%;
-    margin-top: 0.3rem;
-    margin-bottom: 0;
-    font-size: 0.85em;
-    line-height: 1.4;
-    vertical-align: baseline;
-    position: relative;
-    background: none;
-    border: none;
-    color: #666;
+/* Clean footnote implementation 2024 */
+body {
+    counter-reset: footnote-counter;
 }
 
-/* Sidenote numbers */
-.sidenote::before {
-    content: counter(sidenote-counter);
-    counter-increment: sidenote-counter;
-    position: relative;
-    vertical-align: baseline;
-    font-size: 0.9em;
-    color: #4A9C6D;  /* matches your theme */
-    top: -0.5em;
-    left: -0.3em;
+.footnote {
+    float: right !important;
+    clear: right !important;
+    margin-right: -60% !important;
+    width: 50% !important;
+    margin-top: 0.3rem !important;
+    margin-bottom: 0 !important;
+    font-size: 0.85em !important;
+    line-height: 1.4 !important;
+    vertical-align: baseline !important;
+    position: relative !important;
+    background: none !important;
+    border: none !important;
+    color: #666 !important;
+}
+
+/* Footnote numbers */
+.footnote::before {
+    content: counter(footnote-counter) !important;
+    counter-increment: footnote-counter !important;
+    position: relative !important;
+    vertical-align: baseline !important;
+    font-size: 0.9em !important;
+    color: #4A9C6D !important;
+    top: -0.5em !important;
+    left: -0.3em !important;
 }
 
 /* Prevent ANY styling inheritance */
-.sidenote * {
+.footnote * {
     font-size: inherit !important;
     font-family: inherit !important;
     line-height: inherit !important;
@@ -64,12 +68,12 @@ body {
 
 /* Responsive behavior */
 @media (max-width: 1760px) {
-    .sidenote {
-        float: none;
-        clear: both;
-        margin: 1em 0;
-        width: 100%;
-        position: relative;
+    .footnote {
+        float: none !important;
+        clear: both !important;
+        margin: 1em 0 !important;
+        width: 100% !important;
+        position: relative !important;
     }
 }
         
