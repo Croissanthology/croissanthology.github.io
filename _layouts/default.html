@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head> 
+    <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap" rel="stylesheet">
-
-    <!-- Google tag (gtag.js) -->
+    <link href="https://fonts.googleapis.com/css2?family=Poiret+One&display=swap" rel="stylesheet">
+    
+    <!-- Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-VVQGCQMB02"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
@@ -11,11 +13,14 @@
       gtag('js', new Date());
       gtag('config', 'G-VVQGCQMB02');
     </script>
+    
+    <!-- Meta -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% if page.title %}{{ page.title }} - {% endif %}Croissanthology</title>
+    
+    <!-- Styles and Assets -->
     <link rel="stylesheet" href="{{ '/CSS/styles.css' | relative_url }}">
-    <link href="https://fonts.googleapis.com/css2?family=Poiret+One&family=Source+Serif+Pro:wght@400;700&display=swap" rel="stylesheet">
     <link rel="icon" type="image/svg+xml" href="{{ '/images/green favicon.svg' | relative_url }}">
 </head>
 <body class="bg-[#1a1a1a] text-[#e0e0e0]">
@@ -23,19 +28,25 @@
         <h6 class="mobile-header-title">{{ page.title | default: "Croissanthology" }}</h6>
         <div class="progress-bar"></div>
     </header>
+
     <div class="content-wrapper">
-      {% assign content_with_sidenotes = content 
-    | replace: '<sup id="fnref:', '<label for="sn-'
-    | replace: '" class="footnote-ref">', '" class="margin-toggle sidenote-number">'
-    | replace: '</sup>', '</label><input type="checkbox" id="sn-'
-    | replace: '<div class="footnotes">', '<div class="sidenotes">'
-    | replace: '<p class="footnote">', '<span class="sidenote">'
-%}
+        {% assign content_with_sidenotes = content 
+            | replace: '<sup id="fnref:', '<label for="sn-'
+            | replace: '" class="footnote-ref">', '" class="sidenote-number">'
+            | replace: '</sup>', '</label><input type="checkbox" class="margin-toggle" id="sn-'
+            | replace: '<div class="footnotes">', '<div class="sidenotes">'
+            | replace: '<p class="footnote">', '<span class="sidenote">'
+            | replace: '↩', ''
+            | replace: '&nbsp;', ' '
+        %}
         {{ content_with_sidenotes }}
     </div>
+
     <footer>
         <a href="{{ '/feed.xml' | relative_url }}" target="_blank">RSS Feed</a>
     </footer>
+
+    <!-- Scripts -->
     <script src="{{ '/javascript/javaventuraayayay.js' | relative_url }}"></script>
     <script src="{{ '/javascript/side-title.js' | relative_url }}"></script>
 </body>
