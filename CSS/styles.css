@@ -1,125 +1,42 @@
+/* Font imports */
 @import url('https://fonts.googleapis.com/css2?family=Poiret+One&display=swap');
-
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Source+Serif+Pro:wght@400;700&display=swap');
 
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap');
-
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
-
-/* Base typography with Inter */
+/* Root variables */
 :root {
+    --background-color: #1a1a1a;
+    --text-color: #e0e0e0;
+    --accent-color: #4A9C6D;
+    --link-color: #cccccc;
+    --main-width: min(800px, 90vw);
+    --title-height: 100px;
+}
+
+/* Base styles */
+body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-}
-
-/* Use stronger selector to ensure it overrides */
-body, p, div, span, .sidenote, .marginnote {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
-}
-
-.post-content blockquote {
-    color: #a0a0a0;  /* Darker grey */
-    font-style: italic;
-    font-family: 'Source Serif Pro', serif;
-}
-
-
-body { overflow-x: hidden; }
-
-/* Base typography */
-body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    /* keep your existing body styles */
-}
-
-/* Override sidenotes to use Inter too */
-.sidenote {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    /* keep other sidenote styles */
-}
-
-
-/* Container setup for sidenotes */
-body {
-    counter-reset: sidenote-counter;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    line-height: 1.6;
+    margin: 0;
+    padding: 20px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-x: hidden;
+    /* Tufte-style layout */
     width: 87.5%;
     margin-left: auto;
     margin-right: auto;
     padding-left: 12.5%;
     max-width: 1400px;
+    /* Sidenote counter */
+    counter-reset: sidenote-counter;
 }
 
-/* Core sidenote styles */
-.sidenote,
-.marginnote {
-    float: right;
-    clear: right;
-    margin-right: -60%;
-    width: 50%;
-    margin-top: 0.3rem;
-    margin-bottom: 0;
-    font-size: 1.1rem;
-    line-height: 1.3;
-    vertical-align: baseline;
-    position: relative;
-    color: #666;
-}
-
-/* Numbering system */
-.sidenote-number {
-    counter-increment: sidenote-counter;
-}
-
-.sidenote-number:after {
-    content: counter(sidenote-counter);
-    font-size: 1rem;
-    top: -0.5rem;
-    left: 0.1rem;
-}
-
-.sidenote:before {
-    content: counter(sidenote-counter) " ";
-    font-size: 1rem;
-    top: -0.5rem;
-}
-
-/* Toggle system for mobile */
-label.margin-toggle:not(.sidenote-number) {
-    display: none;
-}
-
-input.margin-toggle {
-    display: none;
-}
-
-/* Mobile/responsive behavior */
-@media (max-width: 760px) {
-    body {
-        width: 84%;
-        padding-left: 8%;
-        padding-right: 8%;
-    }
-
-    label.margin-toggle:not(.sidenote-number) {
-        display: inline;
-    }
-
-    .sidenote,
-    .marginnote {
-        display: none;
-    }
-
-    .margin-toggle:checked + .sidenote,
-    .margin-toggle:checked + .marginnote {
-        display: block;
-        float: left;
-        left: 1rem;
-        clear: both;
-        width: 95%;
-        margin: 1rem 2.5%;
-        vertical-align: baseline;
-        position: relative;
-    }
-}
+/* Typography */
 h1, h2, h3, h4, h5, h6 {
     font-family: 'Poiret One', cursive;
     text-transform: uppercase;
@@ -128,11 +45,11 @@ h1, h2, h3, h4, h5, h6 {
     margin: 1.5em 0 0.5em;
     position: relative;
     padding-bottom: 0.5em;
-    display: inline-block;  /* Our new fix */
-    width: auto;           /* Our new fix */
+    display: inline-block;
+    width: auto;
 }
 
-/* Keep your individual heading sizes */
+/* Heading sizes */
 h1 { font-size: 2.5em; }
 h2 { font-size: 2em; }
 h3 { font-size: 1.75em; }
@@ -140,16 +57,7 @@ h4 { font-size: 1.5em; }
 h5 { font-size: 1.25em; }
 h6 { font-size: 1em; }
 
-/* Keep your media queries for responsive sizing */
-@media (max-width: 768px) {
-    h1 { font-size: 2em; }
-    h2 { font-size: 1.75em; }
-    h3 { font-size: 1.5em; }
-    h4 { font-size: 1.25em; }
-    h5, h6 { font-size: 1em; }
-}
-
-/* And the underline effect */
+/* Heading underlines */
 h1::after, h2::after, h3::after, h4::after, h5::after {
     content: '';
     position: absolute;
@@ -160,27 +68,75 @@ h1::after, h2::after, h3::after, h4::after, h5::after {
     background-color: #ffffff;
 }
 
-:root {
-    --background-color: #1a1a1a;
-    --text-color: #e0e0e0;
-    --accent-color: #4A9C6D;
-    --link-color: #cccccc;
-    --main-width: min(800px, 90vw);
-    --title-height: 100px;
+/* Blockquotes */
+.post-content blockquote {
+    color: #a0a0a0;
+    font-style: italic;
+    font-family: 'Source Serif Pro', serif;
 }
 
+/* Sidenotes */
+.sidenote,
+.marginnote {
+    float: right;
+    clear: right;
+    margin-right: -60%;
+    width: 50%;
+    margin-top: 0.3rem;
+    margin-bottom: 0;
+    font-size: 0.9rem;
+    line-height: 1.3;
+    vertical-align: baseline;
+    position: relative;
+    color: #666;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
 
-body {
-    font-family: 'Inter', sans;
-    background-color: #1a1a1a;
-    color: #e0e0e0;
-    line-height: 1.6;
-    margin: 0;
-    padding: 20px;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+.sidenote-number {
+    counter-increment: sidenote-counter;
+}
+
+.sidenote-number:after {
+    content: counter(sidenote-counter);
+    font-size: 0.9rem;
+    top: -0.5rem;
+    left: 0.1rem;
+}
+
+.sidenote:before {
+    content: counter(sidenote-counter) " ";
+    font-size: 0.9rem;
+    top: -0.5rem;
+}
+
+/* Hide toggle controls */
+label.margin-toggle:not(.sidenote-number),
+input.margin-toggle {
+    display: none;
+}
+
+/* Mobile styles */
+@media (max-width: 768px) {
+    body {
+        width: 84%;
+        padding-left: 8%;
+        padding-right: 8%;
+    }
+
+    h1 { font-size: 2em; }
+    h2 { font-size: 1.75em; }
+    h3 { font-size: 1.5em; }
+    h4 { font-size: 1.25em; }
+    h5, h6 { font-size: 1em; }
+
+    .sidenote,
+    .marginnote {
+        margin-right: 0;
+        float: none;
+        clear: both;
+        width: 100%;
+        margin: 1em 0;
+    }
 }
 
 .content-wrapper {
