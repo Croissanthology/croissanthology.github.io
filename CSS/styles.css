@@ -76,7 +76,7 @@ h1::after, h2::after, h3::after, h4::after, h5::after {
 
 /* keep your original body styles exactly as they were */
 body {
-    font-family: 'Source Serif Pro', serif;
+    font-family: 'Inter', sans;
     background-color: #1a1a1a;
     color: #e0e0e0;
     line-height: 1.6;
@@ -707,4 +707,11 @@ a[href]:not([href^="javascript:"]):not([href^="#"])::after {
     margin-bottom: 0;
     font-size: 0.9rem;
     color: #888; /* or your preferred grey */
+}
+
+    blockquote {
+    margin-left: auto;
+    margin-right: auto;
+    width: fit-content; /* or a specific width */
+    text-align: left; /* keep text aligned left within centered box */
 }
