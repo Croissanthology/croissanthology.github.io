@@ -6,6 +6,11 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
 
+/* with your other h2 styles */
+h2#allowed {
+    text-align: left !important;  /* !important because we're tired and dgaf about css best practices rn */
+}
+
 .post-content blockquote {
     color: #a0a0a0;  /* Darker grey */
     font-style: italic;
