@@ -12,6 +12,11 @@
     font-family: 'Inter', sans;
 }
 
+.content-wrapper {
+    width: var(--main-width);
+    max-width: 100%;
+    margin: 0 auto;
+}
 
 body { overflow-x: hidden; }
 
