@@ -689,3 +689,14 @@ a[href]:not([href^="javascript:"]):not([href^="#"])::after {
     transform: scale(0.98);
     background-color: rgba(74, 156, 109, 0.2);
 }
+
+.sidenote {
+    float: right;
+    clear: right;
+    margin-right: -60%;
+    width: 50%;
+    margin-top: 0;
+    margin-bottom: 0;
+    font-size: 0.9rem;
+    color: #888; /* or your preferred grey */
+}
