@@ -113,11 +113,7 @@ body {
     top: -0.5rem;
 }
 
-.content-wrapper {
-    width: var(--main-width);
-    max-width: 100%;
-    margin: 0 auto;
-}
+
 
 .container {
     position: relative;
