@@ -36,11 +36,22 @@
         <div class="progress-bar"></div>
     </header>
 
-   {% if page.layout == 'post' %}
-    {{ content_with_sidenotes }}
-{% else %}
-    {{ content }}
-{% endif %}
+    <div class="content-wrapper">
+        {% if page.layout == 'post' %}
+            {% assign content_with_sidenotes = content 
+                | replace: '<sup id="fnref:', '<label for="sn-'
+                | replace: '" class="footnote-ref">', '" class="sidenote-number">'
+                | replace: '</sup>', '</label><input type="checkbox" class="margin-toggle" id="sn-'
+                | replace: '<div class="footnotes">', '<div class="sidenotes">'
+                | replace: '<p class="footnote">', '<span class="sidenote">'
+                | replace: '↩', ''
+                | replace: '&nbsp;', ' '
+            %}
+            {{ content_with_sidenotes }}
+        {% else %}
+            {{ content }}
+        {% endif %}
+    </div>
 
     <footer>
         <a href="{{ '/feed.xml' | relative_url }}" target="_blank">RSS Feed</a>
