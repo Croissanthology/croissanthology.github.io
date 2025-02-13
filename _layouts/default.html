@@ -22,7 +22,6 @@
     <!-- Styles -->
     <link rel="stylesheet" href="{{ '/CSS/styles.css' | relative_url }}">
     <link rel="icon" type="image/svg+xml" href="{{ '/images/green favicon.svg' | relative_url }}">
-
     <style>
         @media (min-width: 768px) {
             .mobile-header {
@@ -32,15 +31,13 @@
     </style>
 </head>
 <body class="bg-[#1a1a1a] text-[#e0e0e0]">
-    <div class="container">
-  
-</div>
+    {% if page.layout == 'post' %}
+    <!-- tufte layout for posts -->
     <header class="mobile-header">
         <h6 class="mobile-header-title">{{ page.title | default: "Croissanthology" }}</h6>
         <div class="progress-bar"></div>
     </header>
-
-    <div class="content-wrapper">
+    <section>
         {% assign content_with_sidenotes = content 
             | replace: '<sup id="fnref:', '<label for="sn-'
             | replace: '" class="footnote-ref">', '" class="sidenote-number">'
@@ -51,16 +48,26 @@
             | replace: '&nbsp;', ' '
         %}
         {{ content_with_sidenotes }}
+    </section>
+    {% else %}
+    <!-- original layout for index -->
+    <div class="container">
+        <header class="mobile-header">
+            <h6 class="mobile-header-title">{{ page.title | default: "Croissanthology" }}</h6>
+            <div class="progress-bar"></div>
+        </header>
+        <div class="content-wrapper">
+            {{ content }}
+        </div>
     </div>
+    {% endif %}
 
     <footer>
         <a href="{{ '/feed.xml' | relative_url }}" target="_blank">RSS Feed</a>
     </footer>
-
+    
     <!-- Scripts -->
     <script src="{{ '/javascript/javaventuraayayay.js' | relative_url }}"></script>
     <script src="{{ '/javascript/side-title.js' | relative_url }}"></script>
-    </div>
-
 </body>
 </html>
