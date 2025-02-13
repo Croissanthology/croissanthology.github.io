@@ -225,12 +225,12 @@ body {
         }
 
         .dotted-box {
-            border: 1px dotted #808080;
-            padding: 15px;
-            margin-bottom: 20px;
-            width: 100%;
-            box-sizing: border-box;
-        }
+    border: 1px dotted #808080;
+    padding: 15px;
+    margin: 0 auto 20px;  /* center it */
+    width: var(--main-width);  /* use your root variable */
+    box-sizing: border-box;
+}
 
 a {
     color: var(--text-color);
