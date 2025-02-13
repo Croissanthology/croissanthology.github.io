@@ -9,7 +9,7 @@
 .post-content blockquote {
     color: #a0a0a0;  /* Darker grey */
     font-style: italic;
-    font-family: 'Source Serif Pro', serif;
+    font-family: 'Inter', sans;
 }
 
 
@@ -310,19 +310,6 @@ a[href^="https://x.com"]::after {
                 display: none;
             }
 
-blockquote {
-    border-left: 2px solid #e5e7eb;
-    margin: 1.5em 0;
-    padding-left: 1em;
-    color: #dcdcdc;
-    color: #c0c0c0;
-}
-
-/* Reset browser defaults */
-blockquote:before,
-blockquote:after {
-    content: none;
-}
 
 /* Optional: Reset to normal style if you have quote origins */
 .quote-origin {
@@ -709,9 +696,12 @@ a[href]:not([href^="javascript:"]):not([href^="#"])::after {
     color: #888; /* or your preferred grey */
 }
 
-    blockquote {
-    margin-left: auto;
-    margin-right: auto;
-    width: fit-content; /* or a specific width */
-    text-align: left; /* keep text aligned left within centered box */
+  blockquote {
+    width: var(--main-width);
+    margin: 1.5em auto;  /* auto margins for centering */
+    padding: 15px;
+    color: #c0c0c0;
+    font-family: 'Inter', sans-serif;
+    border-left: 2px solid #e5e7eb;
+    padding-left: 1em;
 }
