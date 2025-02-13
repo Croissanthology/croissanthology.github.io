@@ -27,12 +27,13 @@
         }
     </style>
 </head>
-<body>
+   <body class="bg-[#1a1a1a] text-[#e0e0e0]">
     <header class="mobile-header">
         <h6 class="mobile-header-title">{{ page.title | default: "Croissanthology" }}</h6>
         <div class="progress-bar"></div>
     </header>
 
+    {% if page.layout == 'post' %}
     <section>
         {% assign content_with_sidenotes = content 
             | replace: '<sup id="fnref:', '<label for="sn-'
@@ -45,6 +46,11 @@
         %}
         {{ content_with_sidenotes }}
     </section>
+    {% else %}
+    <div class="container">
+        {{ content }}
+    </div>
+    {% endif %}
 
     <footer>
         <a href="{{ '/feed.xml' | relative_url }}" target="_blank">RSS Feed</a>
