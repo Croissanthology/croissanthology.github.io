@@ -38,6 +38,9 @@
         <div class="progress-bar"></div>
     </header>
     <section>
+
+            <pre>{{ content }}</pre>
+
         {% assign content_with_sidenotes = content 
             | replace: '<sup id="fnref:', '<label for="sn-'
             | replace: '" class="footnote-ref">', '" class="sidenote-number">'
