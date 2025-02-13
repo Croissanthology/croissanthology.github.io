@@ -61,7 +61,7 @@ h1::after, h2::after, h3::after, h4::after, h5::after {
     --text-color: #e0e0e0;
     --accent-color: #4A9C6D;
     --link-color: #cccccc;
-    --main-width: min(1200px, 90vw);   
+    --main-width: min(800px, 90vw);  /* this was your original width */
     --title-height: 100px;
 }
 
