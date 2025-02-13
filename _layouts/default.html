@@ -36,15 +36,11 @@
         <div class="progress-bar"></div>
     </header>
 
-    {% if page.layout == 'post' %}
-    <article class="content-wrapper">
-        {{ content_with_sidenotes }}
-    </article>
-    {% else %}
-    <div class="content-wrapper">
-        {{ content }}
-    </div>
-    {% endif %}
+   {% if page.layout == 'post' %}
+    {{ content_with_sidenotes }}
+{% else %}
+    {{ content }}
+{% endif %}
 
     <footer>
         <a href="{{ '/feed.xml' | relative_url }}" target="_blank">RSS Feed</a>
