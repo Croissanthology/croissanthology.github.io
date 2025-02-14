@@ -379,19 +379,6 @@ a[href^="https://x.com"]::after {
     height: auto;
 }
 
-/* FORGOTTEN DROPCAP ADVENTURE
-
-@font-face {
-    font-family: 'Onamura';
-    src: url('../croissanthology.github.io/fonts/onamura.woff') format('woff'),
-         url('../croissanthology.github.io/fonts/onamura.woff2') format('woff2');
-         url('../croissanthology.github.io/fonts/onamura.otf') format('otf');
-    font-weight: normal;
-    font-style: normal;
-    font-display: swap;
-}
-
-
 /* Drop Cap styles */
 .dropcap {
     float: left;
@@ -703,6 +690,9 @@ a[href]:not([href^="javascript:"]):not([href^="#"])::after {
     margin-top: 0;
     margin-bottom: 0;
     font-size: 0.9rem;
+    margin-top: 3em;
+    border-top: 1px solid #404040;
+    padding-top: 2em;
     color: #888; /* or your preferred grey */
 }
 
