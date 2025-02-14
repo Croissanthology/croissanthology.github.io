@@ -705,3 +705,9 @@ a[href]:not([href^="javascript:"]):not([href^="#"])::after {
     border-left: 2px solid #e5e7eb;
     padding-left: 1em;
 }
+
+.footnotes {
+    margin-top: 3em;
+    border-top: 1px solid #404040;
+    padding-top: 2em;
+}
