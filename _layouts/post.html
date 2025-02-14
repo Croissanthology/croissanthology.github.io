@@ -79,11 +79,7 @@ layout: default
     display: none;
 }
 
-    {% assign content_with_sidenotes = content 
-    | replace: '<sup id="fnref:', '<span class="sidenote-number" id="'
-    | replace: '</sup>', '</span>'
-    | replace: '<div class="footnotes">', '<div class="sidenotes">'
-%}
+   
 /* Remove the checkbox stuff */
 input.margin-toggle,
 label.margin-toggle {
