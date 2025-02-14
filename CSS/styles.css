@@ -395,7 +395,7 @@ a[href^="https://x.com"]::after {
 /* Drop Cap styles */
 .dropcap {
     float: left;
-    font-family: 'Poiret One', cursive;
+    font-family: 'Poiret One', cursive !important;
     font-size: 5em;
     line-height: 0.8;
     padding: 0.1em 0.1em 0 0;
