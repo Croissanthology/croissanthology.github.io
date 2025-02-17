@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Writing Countdown</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poiret+One&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/react@17/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      background: black;
+      color: white;
+      font-family: 'Poiret One', cursive;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .container {
+      text-align: center;
+    }
+    .line {
+      width: 256px;
+      height: 1px;
+      background: white;
+      margin: 32px auto;
+    }
+    .timer {
+      font-size: 96px;
+    }
+    .green {
+      color: #4ade80;
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    function CountdownTimer() {
+      const [daysLeft, setDaysLeft] = React.useState('29');
+
+      React.useEffect(() => {
+        const calculateDaysLeft = () => {
+          const now = new Date();
+          const parisTime = new Date(now.toLocaleString('en-US', { timeZone: 'Europe/Paris' }));
+          const startDate = new Date('2025-02-16');
+          startDate.setHours(17, 0, 0, 0);
+          const daysPassed = Math.floor((parisTime - startDate) / (1000 * 60 * 60 * 24));
+          const remaining = Math.max(29 - daysPassed, 0).toString().padStart(2, '0');
+          return remaining;
+        };
+
+        setDaysLeft(calculateDaysLeft());
+        
+        const timer = setInterval(() => {
+          setDaysLeft(calculateDaysLeft());
+        }, 1000 * 60 * 60);
+
+        return () => clearInterval(timer);
+      }, []);
+
+      return (
+        <div className="container">
+          <div className="line" />
+          <div className="timer">
+            {[...daysLeft].map((digit, idx) => (
+              <span key={idx} className={digit === '0' ? 'green' : ''}>
+                {digit}
+              </span>
+            ))}
+          </div>
+          <div className="line" />
+        </div>
+      );
+    }
+
+    ReactDOM.render(<CountdownTimer />, document.getElementById('root'));
+  </script>
+</body>
+</html>
