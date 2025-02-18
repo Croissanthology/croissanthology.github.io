@@ -1,17 +1,11 @@
-@import url('https://fonts.googleapis.com/css2?family=Poiret+One&display=swap');
 
-@import url('https://fonts.googleapis.com/css2?family=Source+Serif+Pro:wght@400;700&display=swap');
-
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap');
-
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
 
 /* with your other h2 styles */
 h2#allowed {
     text-align: left !important;  /* !important because we're tired and dgaf about css best practices rn */
 }
 
-.post-content blockquote {
+.post-content blockquote 
     color: #a0a0a0;  /* Darker grey */
     font-style: italic;
     font-family: 'Inter', sans;
@@ -223,6 +217,25 @@ body {
             z-index: 0;
         }
 
+@media (min-width: 769px) {
+    .side-title {
+        position: fixed;
+        left: 20px;
+        top: 50%;
+        transform: translateY(-50%);
+        writing-mode: vertical-rl;
+        text-orientation: mixed;
+        font-family: 'Arial', sans-serif;
+        font-size: 24px;
+        color: #fff;
+        background: rgba(0, 0, 0, 0.7);
+        padding: 20px 10px;
+        border-radius: 10px;
+        z-index: 1000;
+        transition: transform 0.1s ease-out;
+    }
+}
+
         .image-replacement img {
             width: 100%;
             height: 100%;
@@ -427,24 +440,6 @@ p.has-dropcap::first-line {
 
 /* in the name of the scrolling header!*/ 
 
-const styles = `
-@media (min-width: 769px) {
-    .side-title {
-        position: fixed;
-        left: 20px;
-        top: 50%;
-        transform: translateY(-50%);
-        writing-mode: vertical-rl;
-        text-orientation: mixed;
-        font-family: 'Arial', sans-serif;
-        font-size: 24px;
-        color: #fff;
-        background: rgba(0, 0, 0, 0.7);
-        padding: 20px 10px;
-        border-radius: 10px;
-        z-index: 1000;
-        transition: transform 0.1s ease-out;
-    }
 
     .side-title h2 {
         margin: 0;
