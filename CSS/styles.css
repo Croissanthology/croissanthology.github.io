@@ -503,11 +503,9 @@ document.head.appendChild(styleSheet);
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
-
-
-    width: var(--main-width); /* Match title container's width */
-    margin: 0 auto; /* Center like other content */
-    padding: 0; /* Remove default padding */
+    padding: 15px;
+    margin: 0 auto 20px;  /* center it */
+    width: var(--main-width);  /* use your root variable */
 }
 
 .essay-list {
@@ -555,16 +553,20 @@ document.head.appendChild(styleSheet);
 
 @media (min-width: 1200px) {
   .essay-lists-container {
-    width: 70%;
-    margin: 0.5em auto; /* Center on large screens */
+     padding: 15px;
+    margin: 0 auto 20px;  /* center it */
+    width: var(--main-width);  /* use your root variable */
+
   }
 }
 
 @media (max-width: 768px) {
   .essay-lists-container {
     flex-direction: column;
-    margin: 0.5em -20px; /* Negative margin to counteract  padding */
-    width: calc(100% + 40px); /* Compensate for the negative margin */
+     padding: 15px;
+    margin: 0 auto 20px;  /* center it */
+    width: var(--main-width);  /* use your root variable */
+
   }
   
   .essay-list {
