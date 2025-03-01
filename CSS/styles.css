@@ -533,8 +533,8 @@ document.head.appendChild(styleSheet);
 @media (max-width: 768px) {
   .essay-lists-container {
     flex-direction: column;
-    margin: 0.5em -20px; /* Negative margin to counteract body padding */
-    width: calc(100% + 40px); /* Compensate for the negative margin */
+    margin: 0 auto 20px;  /* center it */
+    width: var(--main-width);  /* use your root variable */
   }
   
   .essay-list {
