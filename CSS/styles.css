@@ -1,16 +1,18 @@
-
+/* =========================================================
+   Cleaned & Consolidated Styles (Valid CSS)
+   ========================================================= */
 
 /* with your other h2 styles */
 h2#allowed {
     text-align: left !important;  /* !important because we're tired and dgaf about css best practices rn */
 }
 
+/* Fixing the missing brace for blockquote */
 .post-content blockquote {
-    color: #a0a0a0;  /* Darker grey */
+    color: #a0a0a0; /* Darker grey */
     font-style: italic;
     font-family: 'Inter', sans;
 }
-
 
 .content-wrapper {
     width: var(--main-width);
@@ -18,9 +20,11 @@ h2#allowed {
     margin: 0 auto;
 }
 
-body { overflow-x: hidden; }
+body {
+    overflow-x: hidden;
+}
 
-        
+/* Headings */
 h1, h2, h3, h4, h5, h6 {
     font-family: 'Poiret One', cursive;
     text-transform: uppercase;
@@ -30,10 +34,10 @@ h1, h2, h3, h4, h5, h6 {
     position: relative;
     padding-bottom: 0.5em;
     display: inline-block;  /* Our new fix */
-    width: auto;           /* Our new fix */
+    width: auto;            /* Our new fix */
 }
 
-/* Keep your individual heading sizes */
+/* Individual heading sizes */
 h1 { font-size: 2.5em; }
 h2 { font-size: 2em; }
 h3 { font-size: 1.75em; }
@@ -41,7 +45,7 @@ h4 { font-size: 1.5em; }
 h5 { font-size: 1.25em; }
 h6 { font-size: 1em; }
 
-/* Keep your media queries for responsive sizing */
+/* Responsive heading sizes */
 @media (max-width: 768px) {
     h1 { font-size: 2em; }
     h2 { font-size: 1.75em; }
@@ -50,8 +54,12 @@ h6 { font-size: 1em; }
     h5, h6 { font-size: 1em; }
 }
 
-/* And the underline effect */
-h1::after, h2::after, h3::after, h4::after, h5::after {
+/* Underline effect for headings */
+h1::after,
+h2::after,
+h3::after,
+h4::after,
+h5::after {
     content: '';
     position: absolute;
     left: 0;
@@ -61,42 +69,52 @@ h1::after, h2::after, h3::after, h4::after, h5::after {
     background-color: #ffffff;
 }
 
+/* Root variables */
 :root {
     --background-color: #1a1a1a;
     --text-color: #e0e0e0;
     --accent-color: #4A9C6D;
     --link-color: #cccccc;
-    --main-width: min(800px, 90vw);  /* this was your original width */
+    --main-width: min(800px, 90vw);
     --title-height: 100px;
 }
 
-/* 1) Remove big line under post titles on front page */
+/* =========================================================
+   Front Page Overrides
+   ========================================================= */
+
+/* Remove big line under post titles on the front page */
 body.index .post-title {
-  /* If there's a border or style you need to remove, do it here. */
-  border-bottom: none; 
+    border-bottom: none;
 }
 
 body.index .post-title a {
-  /* If you want the normal link underline, ensure text-decoration: underline, 
-     and remove border if you had any: */
-  text-decoration: underline; 
-  border-bottom: none;
+    text-decoration: underline;
+    border-bottom: none;
 }
 
-/* 2) Shrink headings INSIDE post content on the front page only */
+/* Shrink headings INSIDE post content on the front page only */
 body.index .post-content h1,
 body.index .post-content h2,
 body.index .post-content h3,
 body.index .post-content h4,
 body.index .post-content h5,
 body.index .post-content h6 {
-  /* Example smaller sizes for front-page excerpt */
-  font-size: 1.1rem;
-  line-height: 1.3;
-  /* Tweak as desired */
+    font-size: 1.1rem;
+    line-height: 1.3;
 }
 
+/* If headings STILL show lines, override them again here: */
+body.index h1::after,
+body.index h2::after,
+body.index h3::after,
+body.index h4::after,
+body.index h5::after,
+body.index h6::after {
+    content: none;
+}
 
+/* Post layout container */
 .post-layout {
     width: 87.5%;
     margin-left: auto;
@@ -105,11 +123,11 @@ body.index .post-content h6 {
     max-width: 1400px;
 }
 
-/* keep your original body styles exactly as they were */
+/* Global body styles (unchanged) */
 body {
-    font-family: 'Inter', sans;
-    background-color: #1a1a1a;
-    color: #e0e0e0;
+    font-family: 'Inter', sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
     line-height: 1.6;
     margin: 0;
     padding: 20px;
@@ -119,6 +137,7 @@ body {
     align-items: center;
 }
 
+/* Sidenotes and margin notes */
 .sidenote,
 .marginnote {
     float: right;
@@ -173,6 +192,7 @@ body {
     border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+/* Sidenote numbering */
 .sidenote-number {
     counter-increment: sidenote-counter;
 }
@@ -192,26 +212,26 @@ body {
 
 /* Sidenote essentials */
 .margin-toggle {
-  display: none;
+    display: none;
 }
 
 .sidenote-number {
-  counter-increment: sidenote-counter;
+    counter-increment: sidenote-counter;
 }
 
 @media (max-width: 760px) {
-  .margin-toggle:checked + .sidenote {
-    display: block;
-    float: left;
-    left: 1rem;
-    clear: both;
-    width: 95%;
-    margin: 1rem 2.5%;
-    position: relative;
-  }
+    .margin-toggle:checked + .sidenote {
+        display: block;
+        float: left;
+        left: 1rem;
+        clear: both;
+        width: 95%;
+        margin: 1rem 2.5%;
+        position: relative;
+    }
 }
 
-
+/* Container for titles & images */
 .container {
     position: relative;
     width: var(--main-width);
@@ -219,107 +239,92 @@ body {
     padding: 0 5%;
 }
 
-        .title-container {
-            position: relative;
-            width: 100%;
-            height: var(--title-height);
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-        }
-
-        .title {
-            font-size: clamp(1.5em, 5vw, 2.5em);
-            transition: opacity 0.3s ease;
-            text-align: center;
-            margin: 0;
-            z-index: 2;
-        }
-
-        .title-white { color: white; }
-        .title-green { color: #4A9C6D; }
-
-             .shine-effect-double {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transform: translateX(-100%);
-            transition: transform 0.4s ease;
-            z-index: 1;
-        }
-        .shine-effect-double::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
-            transform: translateX(-100%);
-            transition: transform 0.4s ease 0.2s;
-        }
-        .title-container:hover .shine-effect-double,
-        .title-container:hover .shine-effect-double::after {
-            transform: translateX(100%);
-        }
-
-        .image-replacement {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            z-index: 0;
-        }
-
-@media (min-width: 769px) {
-    .side-title {
-        position: fixed;
-        left: 20px;
-        top: 50%;
-        transform: translateY(-50%);
-        writing-mode: vertical-rl;
-        text-orientation: mixed;
-        font-family: 'Arial', sans-serif;
-        font-size: 24px;
-        color: #fff;
-        background: rgba(0, 0, 0, 0.7);
-        padding: 20px 10px;
-        border-radius: 10px;
-        z-index: 1000;
-        transition: transform 0.1s ease-out;
-    }
+.title-container {
+    position: relative;
+    width: 100%;
+    height: var(--title-height);
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
 }
 
-        .image-replacement img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            object-position: center;
-        }
+.title {
+    font-size: clamp(1.5em, 5vw, 2.5em);
+    transition: opacity 0.3s ease;
+    text-align: center;
+    margin: 0;
+    z-index: 2;
+}
 
-        .title-container:hover .image-replacement {
-            opacity: 1;
-        }
+.title-white { color: white; }
+.title-green { color: #4A9C6D; }
 
-        .dotted-box {
+/* Shine effect */
+.shine-effect-double {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transform: translateX(-100%);
+    transition: transform 0.4s ease;
+    z-index: 1;
+}
+.shine-effect-double::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+    transform: translateX(-100%);
+    transition: transform 0.4s ease 0.2s;
+}
+
+.title-container:hover .shine-effect-double,
+.title-container:hover .shine-effect-double::after {
+    transform: translateX(100%);
+}
+
+.image-replacement {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 0;
+}
+
+.image-replacement img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+.title-container:hover .image-replacement {
+    opacity: 1;
+}
+
+/* dotted-box container */
+.dotted-box {
     border: 1px dotted #808080;
     padding: 15px;
-    margin: 0 auto 20px;  /* center it */
-    width: var(--main-width);  /* use your root variable */
+    margin: 0 auto 20px;
+    width: var(--main-width);
     box-sizing: border-box;
 }
 
+/* Link underline animations */
 a {
     color: var(--text-color);
     text-decoration: none;
@@ -354,12 +359,11 @@ a:hover::after {
     transform-origin: bottom left;
 }
 
-
+/* Special link color overrides */
 a[href^="https://www.lesswrong.com"]::after,
 a[href^="https://lesswrong.com"]::after {
     background-color: #4A9C6D;
 }
-
 
 a[href^="https://www.twitter.com"]::after,
 a[href^="https://twitter.com"]::after,
@@ -367,90 +371,119 @@ a[href^="https://www.x.com"]::after,
 a[href^="https://x.com"]::after {
     background-color: #1DA1F2;
 }
-        .mobile-header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            background-color: #000000;
-            
-            transform: translateY(-100%);
-            transition: transform 0.3s ease-in-out;
-            z-index: 75;
-        }
-        .mobile-header-title {
-            font-family: 'Poiret One', cursive;
-            font-size: 13px;
-            text-align: center;
-            padding: 8px 0;
-            margin: 0;
-        }
 
-        .progress-bar {
-            height: 2px;
-            background-color: #ffffff;
-            width: 0;
-            transition: width 0.2s ease-out;
-        }
-
-        @media (min-width: 768px) {
-            .mobile-header {
-                display: none;
-            }
-
-
-/* Optional: Reset to normal style if you have quote origins */
-.quote-origin {
-    color: inherit;
-    font-style: normal;
-    margin-top: 0.5em;
+/* Mobile header */
+.mobile-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: #000000;
+    transform: translateY(-100%);
+    transition: transform 0.3s ease-in-out;
+    z-index: 75;
+}
+.mobile-header-title {
+    font-family: 'Poiret One', cursive;
+    font-size: 13px;
+    text-align: center;
+    padding: 8px 0;
+    margin: 0;
 }
 
-    
-        .image-container {
-            background-color: #1a1a1a;
-            border: 1px solid white;
-            padding: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            margin-bottom: 10px;
-            max-width: 100%;
-        }
-        .image-container img {
-            display: block;
-            width: 100%;
-            height: auto;
-        }
-        .image-caption {
-            font-family: Arial, sans-serif;
-            font-size: 0.9em;
-            color: #e0e0e0;
-            text-align: center;
-            padding: 10px 5px 5px;
-            border-top: 1px solid #e0e0e0;
-        }
+.progress-bar {
+    height: 2px;
+    background-color: #ffffff;
+    width: 0;
+    transition: width 0.2s ease-out;
+}
 
-/* New media query for desktop screens */
+@media (min-width: 768px) {
+    .mobile-header {
+        display: none;
+    }
+    /* Optional: Reset to normal style if you have quote origins */
+    .quote-origin {
+        color: inherit;
+        font-style: normal;
+        margin-top: 0.5em;
+    }
+
+    /* Scrolling header side-title */
+    .side-title {
+        position: fixed;
+        left: 20px;
+        top: 50%;
+        transform: translateY(-50%);
+        writing-mode: vertical-rl;
+        text-orientation: mixed;
+        font-family: 'Arial', sans-serif;
+        font-size: 24px;
+        color: #fff;
+        background: rgba(0, 0, 0, 0.7);
+        padding: 20px 10px;
+        border-radius: 10px;
+        z-index: 1000;
+        transition: transform 0.1s ease-out;
+    }
+    .side-title h2 {
+        margin: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-height: 80vh;
+    }
+    .side-progress-bar {
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 4px;
+        background: #4CAF50;
+        transition: height 0.1s ease-out;
+    }
+}
+
+/* Image container styles */
+.image-container {
+    background-color: #1a1a1a;
+    border: 1px solid white;
+    padding: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 10px;
+    max-width: 100%;
+}
+.image-container img {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+.image-caption {
+    font-family: Arial, sans-serif;
+    font-size: 0.9em;
+    color: #e0e0e0;
+    text-align: center;
+    padding: 10px 5px 5px;
+    border-top: 1px solid #e0e0e0;
+}
+
+/* Responsive image-container widths */
 @media screen and (min-width: 768px) {
     .image-container {
-        max-width: 70%; /* Adjust this value to your preference */
+        max-width: 70%;
         margin-left: auto;
         margin-right: auto;
     }
 }
-
 @media screen and (min-width: 1200px) {
     .image-container {
-        max-width: 50%; /* Even smaller on very large screens */
+        max-width: 50%;
     }
 }
 
-}
-
-/* If you still have .image-container inside .dotted-box, ensure it's responsive */
+/* If .image-container is inside .dotted-box, ensure it's still responsive */
 .dotted-box .image-container {
     max-width: 100%;
 }
-
 .dotted-box .image-container img {
     display: block;
     width: 100%;
@@ -467,205 +500,131 @@ a[href^="https://x.com"]::after {
     margin: -0.1em 0.1em 0 0;
     color: #4A9C6D;
 }
-
 .dropcap::before {
     content: '';
     display: inline-block;
     width: 0.1em;
     height: 0.1em;
 }
-
-/* Ensure paragraphs with drop caps have no margin and justified text */
- p.has-dropcap {
+/* Ensures paragraphs with drop caps have no margin and are justified */
+p.has-dropcap {
     margin: 0;
     text-align: justify;
     clear: both;
 }
-
 p.has-dropcap::first-line {
     line-height: 1.5;
     vertical-align: text-top;
 }
-
-/* Container for dropcap paragraphs */
 .dotted-box p.has-dropcap {
     padding-top: 0.5em;
     margin-bottom: 1em;
 }
 
-/* Optional: Style for the rest of the first line */
-/* Target the first paragraph in a container */
-.content p:first-of-type:first-letter {
-  /* dropcap styles */
-    font-variant: small-caps;
-    letter-spacing: 0.05em; */ 
-} 
-
-
-
-/* in the name of the scrolling header!*/ 
-
-
-    .side-title h2 {
-        margin: 0;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        max-height: 80vh;
-    }
-
-    .side-progress-bar {
-        position: absolute;
-        left: 0;
-        bottom: 0;
-        width: 4px;
-        background: #4CAF50;
-        transition: height 0.1s ease-out;
-    }
-}
-
-
-const styleSheet = document.createElement("style");
-styleSheet.innerText = styles;
-document.head.appendChild(styleSheet);
-
-
-/* table of contents */
+/* Table of Contents */
 .auto-toc {
-  background: #f8f8f8;
-  border: 1px solid #e8e8e8;
-  border-radius: 5px;
-  padding: 20px;
-  margin-bottom: 20px;
+    background: #f8f8f8;
+    border: 1px solid #e8e8e8;
+    border-radius: 5px;
+    padding: 20px;
+    margin-bottom: 20px;
 }
-
 .toc-nav ul {
-  list-style-type: none;
-  padding-left: 0;
+    list-style-type: none;
+    padding-left: 0;
 }
-
 .toc-item {
-  margin-bottom: 10px;
+    margin-bottom: 10px;
 }
-
 .toc-item a {
-  color: #333;
-  text-decoration: none;
-  transition: color 0.3s ease;
+    color: #333;
+    text-decoration: none;
+    transition: color 0.3s ease;
 }
-
 .toc-item a:hover {
-  color: #007bff;
+    color: #007bff;
 }
-
 .toc-h2 { margin-left: 0; }
 .toc-h3 { margin-left: 20px; }
 .toc-h4 { margin-left: 40px; }
 .toc-h5 { margin-left: 60px; }
 .toc-h6 { margin-left: 80px; }
 
+/* Essay lists container */
 .essay-lists-container {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
     padding: 15px;
-    margin: 0 auto 20px;  /* center it */
-    width: var(--main-width);  /* use your root variable */
+    margin: 0 auto 20px;
+    width: var(--main-width);
 }
-
 .essay-list {
-  flex: 1;
-  min-width: 300px;
-  margin-bottom: 0.5em;
-  margin-right: 20px; /* Adds space between lists */
+    flex: 1;
+    min-width: 300px;
+    margin-bottom: 0.5em;
+    margin-right: 20px; /* Adds space between lists */
 }
-
 .essay-list h2 {
-  font-size: 1.2em;
-  margin-bottom: 0.5em;
+    font-size: 1.2em;
+    margin-bottom: 0.5em;
 }
-
 .essay-list ul {
-  list-style-type: none;
-  padding-left: 0;
-  margin: 0;
+    list-style-type: none;
+    padding-left: 0;
+    margin: 0;
 }
-
 .essay-list li {
-  margin-bottom: 0.1em; 
-  line-height: 1.6;           
+    margin-bottom: 0.1em;
+    line-height: 1.6;
 }
 
+/* Responsive essay lists */
 @media (max-width: 768px) {
-  .essay-lists-container {
-    flex-direction: column;
-    margin: 0 auto 20px;  /* center it */
-    width: var(--main-width);  /* use your root variable */
-  }
-  
-  .essay-list {
-    width: 100%;
-    margin-right: 0; /* Remove right margin on mobile */
-    padding: 0 20px; /* Add padding to align with  content */
-  }
+    .essay-lists-container {
+        flex-direction: column;
+        padding: 15px;
+        margin: 0 auto 20px;
+        width: var(--main-width);
+    }
+    .essay-list {
+        width: 100%;
+        margin-right: 0;
+        padding: 0 20px; /* Add padding to align with content */
+    }
+    /* The line under h2 for mobile */
+    .essay-list h2::after {
+        width: calc(100% - 40px); /* match content width */
+        left: 20px;
+    }
 }
 
 @media (min-width: 769px) and (max-width: 1199px) {
-  .essay-lists-container {
-    width: 100%; /* Full width for medium screens */
-  }
+    .essay-lists-container {
+        width: 100%; /* Full width for medium screens */
+    }
 }
 
 @media (min-width: 1200px) {
-  .essay-lists-container {
-     padding: 15px;
-    margin: 0 auto 20px;  /* center it */
-    width: var(--main-width);  /* use your root variable */
-
-  }
+    .essay-lists-container {
+        padding: 15px;
+        margin: 0 auto 20px;
+        width: var(--main-width);
+    }
 }
 
-@media (max-width: 768px) {
-  .essay-lists-container {
-    flex-direction: column;
-     padding: 15px;
-    margin: 0 auto 20px;  /* center it */
-    width: var(--main-width);  /* use your root variable */
-
-  }
-  
-  .essay-list {
-    width: 100%;
-    margin-right: 0; /* Remove right margin on mobile */
-    padding: 0 20px; /* Add padding to align with  content */
-  }
-
-  /* This is the new part */
-  .essay-list h2::after {
-    width: calc(100% - 40px); /* Adjust the line to match the content width */
-    left: 20px; /* Align with the padding */
-  }
-}
-
-
-
-
-
-
-/* New styles specifically for under-construction links */
+/* Special styling for under-construction links */
 a[href$="under-construction.html"] {
     position: relative;
     display: inline-block;
     padding-left: 3.5em; /* Make room for [SOON] */
 }
-
 a[href$="under-construction.html"] .soon-prefix {
     position: absolute;
     left: 0;
     color: #7a7a7a;
     font-weight: bold;
 }
-
 a[href$="under-construction.html"]::before {
     content: '';
     position: absolute;
@@ -675,7 +634,6 @@ a[href$="under-construction.html"]::before {
     left: 0;
     border-bottom: 1px dotted #FFFFFF;
 }
-
 a[href$="under-construction.html"]::after {
     content: '';
     position: absolute;
@@ -688,22 +646,22 @@ a[href$="under-construction.html"]::after {
     transform-origin: bottom right;
     transition: transform 0.3s ease;
 }
-
 a[href$="under-construction.html"]:hover::after {
     transform: scaleX(1);
     transform-origin: bottom left;
 }
-
-/* New rule to remove any potential whitespace */
 a[href$="under-construction.html"] .soon-prefix::after {
     content: "\00a0"; /* Non-breaking space */
 }
 
-/* Claude giving me link addition thing */
+/* "Link addition thing" - fully close rule */
 a[href]:not([href^="javascript:"]):not([href^="#"])::before,
 a[href]:not([href^="javascript:"]):not([href^="#"])::after {
     content: '';
-    /* ... rest of your existing styles ... */
+    /* If you had more styles, place them here. */
+}
+
+/* Feedback popup */
 .feedback-popup {
     position: fixed;
     z-index: 9999;
@@ -715,13 +673,10 @@ a[href]:not([href^="javascript:"]):not([href^="#"])::after {
     pointer-events: none;
     transition: opacity 0.2s ease;
 }
-
 .feedback-popup.visible {
     opacity: 1;
     pointer-events: all;
 }
-
-/* Override default link styles specifically for feedback popup */
 .feedback-popup a {
     color: var(--text-color);
     padding: 6px 12px;
@@ -731,39 +686,35 @@ a[href]:not([href^="javascript:"]):not([href^="#"])::after {
     font-size: 14px;
     transition: all 0.2s ease;
 }
-
 .feedback-popup a::before,
 .feedback-popup a::after {
-    display: none !important; /* Kill those underline effects */
+    display: none !important; /* Kill those custom underline effects here */
 }
-
 .feedback-popup a:hover {
     color: var(--accent-color);
     background-color: rgba(74, 156, 109, 0.1);
 }
-
 .feedback-popup a.active {
     transform: scale(0.98);
     background-color: rgba(74, 156, 109, 0.2);
 }
 
+/* Sidenote styling override */
 .sidenote {
     float: right;
     clear: right;
     margin-right: -60%;
     width: 50%;
-    margin-top: 0;
-    margin-bottom: 0;
-    font-size: 0.9rem;
     margin-top: 3em;
     border-top: 1px solid #404040;
     padding-top: 2em;
     color: #888; /* or your preferred grey */
 }
 
-  blockquote {
+/* Blockquotes */
+blockquote {
     width: var(--main-width);
-    margin: 1.5em auto;  /* auto margins for centering */
+    margin: 1.5em auto;
     padding: 15px;
     color: #c0c0c0;
     font-family: 'Inter', sans-serif;
@@ -771,8 +722,19 @@ a[href]:not([href^="javascript:"]):not([href^="#"])::after {
     padding-left: 1em;
 }
 
+/* Footnotes */
 .footnotes {
     margin-top: 3em;
     border-top: 1px solid #404040;
     padding-top: 2em;
 }
+
+/* ---------------------------------------------------------
+   The following lines are JavaScript—NOT valid CSS.
+   Keep them commented if they caused parsing errors.
+   --------------------------------------------------------- */
+/*
+const styleSheet = document.createElement("style");
+styleSheet.innerText = styles;
+document.head.appendChild(styleSheet);
+*/
