@@ -11,19 +11,57 @@
     <script src="javascript/javaventuraayayay.js" defer></script>
     <link rel="icon" type="image/svg+xml" href="green favicon.svg">
 
-  
-    
     <style>
-:root {
-    --main-width: min(800px, 90vw);
-    --padding-left: 20px;
-}
-</style>
+        :root {
+            --main-width: min(800px, 90vw);
+            --padding-left: 20px;
+        }
+        
+        /* Post styling */
+        .post-container {
+            max-width: var(--main-width);
+            margin: 0 auto;
+            margin-bottom: 4rem;
+        }
+        
+        .post-title {
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        
+        .post-title a {
+            color: #ffffff;
+            text-decoration: none;
+            border-bottom: 1px solid transparent;
+            transition: border-color 0.2s;
+        }
+        
+        .post-title a:hover {
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .post-date {
+            font-style: italic;
+            color: #888;
+            margin-bottom: 1.5rem;
+            display: block;
+        }
+        
+        .post-content {
+            margin-top: 1rem;
+        }
+        
+        .post-divider {
+            margin: 3rem 0;
+            border: 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
 </head>  
 
 <body class="index">
-       <div class="mobile-header">
-        <h6 class="mobile-header-title">Croissanthology</h1>
+    <div class="mobile-header">
+        <h6 class="mobile-header-title">Croissanthology</h6>
         <div class="progress-bar"></div>
     </div> 
   
@@ -35,76 +73,31 @@
             <div class="shine-effect"></div>
             <div class="image-replacement">
                 <img src="https://github.com/Croissanthology/croissanthology.github.io/blob/main/images/croissanthology%20image%202.png?raw=true" alt="Oh look a tiny easter egg!">
-          </div>     
+            </div>     
         </div> 
             
         <div class="dotted-box">
-            <p><span class="dropcap">I</span>write about rationality, mundane utility, and our gloriously appolonian expansion into the lightcone. Earth is currently under siege in many ways: chiefly <a href="https://en.wikipedia.org/wiki/Existential_risk_from_AI">this</a> but also <a href="https://en.wikipedia.org/wiki/Death">this</a> and even <a href="https://en.wikipedia.org/wiki/List_of_cognitive_biases">this</a>. I'm active here, <a href="https://lesswrong.com/users/croissanthology">LessWrong</a>, and  <a href="https://x.com/croissanthology">Twitter.</a></p>
+            <p><span class="dropcap">I</span>write about rationality, mundane utility, and our gloriously appolonian expansion into the lightcone. Earth is currently under siege in many ways: chiefly <a href="https://en.wikipedia.org/wiki/Existential_risk_from_AI">this</a> but also <a href="https://en.wikipedia.org/wiki/Death">this</a> and even <a href="https://en.wikipedia.org/wiki/List_of_cognitive_biases">this</a>. I'm active here, <a href="https://lesswrong.com/users/croissanthology">LessWrong</a>, and <a href="https://x.com/croissanthology">Twitter.</a></p>
             <p></a> Read an essay draft in the feedback stack and suggest stuff for credit. For free advice, try croissanthology [at] gmail.com. To increase the amount of resources under my command, send money to <a href="https://www.patreon.com/cleoscrolls">my Patreon</a>. To buy Paul Graham crack(ers) online, <a href="https://paulgrahamcrackers.com">go here</a>. About me <a href="https://croissanthology.com/about.html">page.</a></p> 
         </div>
-
     </div>
 
-     <div class="essay-lists-container">
-          <div class="essay-list">
-            <h2>New Essays</h2>
-              
-             <ul>
-<li><a href="/earring">The Whispering Earring (Scott Alexander)</a></li>
-<li><a href="/tactics">Repo of obvious life tactics</a></li>
-<li><a href="/adequate">Actually adequate civilisation</a></li>
-</ul>
-                
-          </div> 
+    <!-- Latest Posts Section -->
+    <div class="post-container">
+        {% for post in site.posts limit:5 %}
+        <article class="post">
+            <h2 class="post-title"><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h2>
+            <time class="post-date" datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: "%B %d, %Y" }}</time>
+            <div class="post-content">
+                {{ post.content }}
+            </div>
+        </article>
+        {% unless forloop.last %}
+        <hr class="post-divider">
+        {% endunless %}
+        {% endfor %}
+    </div>
 
-  
-              <div class="essay-list">
-            <h2 id="feedback">Feedback Stack</h2>
-            <ul>
-<li><a href="/finite">"the world is finite?</a></li>
-</ul>
-      </div>
-</div>
-
-
-<style>
-  .post-full {
-    margin: 2rem 0;
-  }
-  .post-divider {
-    border: 0;
-    border-top: 1px solid rgba(255,255,255,0.1);
-    margin: 2rem 0;
-  }
-</style>
-
-<!-- Dynamic approach that works with changing essay lists -->
-{% for post in site.posts %}
-  {% assign post_url = post.url | remove_first: "/" %}
-  {% assign found = false %}
-  
-  {% for link in site.html_pages %}
-    {% if link.content contains post_url and link.content contains "New Essays" %}
-      {% assign found = true %}
-      {% break %}
-    {% endif %}
-  {% endfor %}
-  
-  {% if found %}
-    <article class="post-full">
-      <h3 class="post-title">{{ post.title }}</h3>
-      <time class="post-date">{{ post.date | date: "%B %d, %Y" }}</time>
-      <div class="post-content">
-        {{ post.content }}
-      </div>
-    </article>
-    <hr class="post-divider">
-  {% endif %}
-{% endfor %}
-
-
-  
-    
-  
+ 
 </body>
 </html>
