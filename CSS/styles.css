@@ -765,3 +765,6 @@ blockquote {
   transform: scaleX(1);
   transform-origin: bottom left;
 }
+
+.post-title a { color: inherit !important; font-weight: normal !important; border-bottom: none !important; text-decoration: none !important; }
+
