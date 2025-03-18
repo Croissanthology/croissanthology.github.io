@@ -66,22 +66,32 @@
       </div>
 </div>
 
-    <div class="posts-container">
-  {% for post in site.posts limit:5 %}
-    <article class="post-preview">
-      <h3><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h3>
-      <time>{{ post.date | date: "%B %d, %Y" }}</time>
-      <div class="post-excerpt">
-        {{ post.excerpt }}
-        <a href="{{ post.url | relative_url }}" class="read-more">Read more →</a>
+    <style>
+  .post-full {
+    margin: 2rem 0;
+  }
+  .post-divider {
+    border: 0;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    margin: 2rem 0;
+  }
+</style>
+
+{% for post in site.posts %}
+  {% if post.url == "/earring" or post.url == "/tactics" or post.url == "/adequate" %}
+    <article class="post-full">
+      <h3 class="post-title">{{ post.title }}</h3>
+      <time class="post-date">{{ post.date | date: "%B %d, %Y" }}</time>
+      <div class="post-content">
+        {{ post.content }}
       </div>
     </article>
-  {% endfor %}
-</div>
+    <hr class="post-divider">
+  {% endif %}
+{% endfor %}
 
 
-    
-            
+
   
     
   
