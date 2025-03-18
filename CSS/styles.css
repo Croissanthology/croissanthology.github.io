@@ -728,36 +728,40 @@ blockquote {
     border-top: 1px solid #404040;
     padding-top: 2em;
 }
+/* === Post Title Links: Green + Animated Dotted Underline === */
 
-/* === Experimental Overrides === */
-
-/* 1) Post titles in green */
+/* 1) Make the title link text green */
 .post-title a {
-  color: #4A9C6D !important; /* Your preferred green */
-  text-decoration: underline; /* or 'none' if you want zero underline */
+  color: #4A9C6D !important; /* Your existing accent green */
+  text-decoration: none;     /* We'll rely on the dotted underline pseudo-elements */
+  position: relative;        /* So ::before and ::after can position absolutely */
 }
 
-/* 2) Remove the extra fancy link underlines for post-title links */
-.post-title a::before,
+/* 2) Replicate the global dotted underline + hover animation */
+.post-title a::before {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 1px;
+  bottom: 0;
+  left: 0;
+  border-bottom: 1px dotted #FFFFFF; /* Same dotted white as your other links */
+}
+
 .post-title a::after {
-  content: none !important;
-  display: none !important;
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 1px;
+  bottom: 0;
+  left: 0;
+  background-color: #FFFFFF;
+  transform: scaleX(0);
+  transform-origin: bottom right;
+  transition: transform 0.3s ease;
 }
 
-/* 3) Stronger, white separators */
-.post-divider {
-  margin: 3rem 0;
-  border: 0;
-  border-top: 2px solid #ffffff; /* Thicker white line */
+.post-title a:hover::after {
+  transform: scaleX(1);
+  transform-origin: bottom left;
 }
-
-
-/* ---------------------------------------------------------
-   The following lines are JavaScript—NOT valid CSS.
-   Keep them commented if they caused parsing errors.
-   --------------------------------------------------------- */
-/*
-const styleSheet = document.createElement("style");
-styleSheet.innerText = styles;
-document.head.appendChild(styleSheet);
-*/
