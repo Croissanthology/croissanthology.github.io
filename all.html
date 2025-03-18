@@ -1,0 +1,26 @@
+---
+layout: default
+title: "All Posts"
+---
+
+<!-- Optionally style the main heading -->
+<h1 style="text-align:center;">All Posts</h1>
+
+<!-- Optional image at the top -->
+<div class="image-container" style="max-width:800px; margin:0 auto;">
+  <img src="/images/scrooge.jpg" alt="Scrooge" style="width:100%;">
+</div>
+
+<!-- A simple UL of post links + date -->
+<div class="post-container" style="margin-top:2rem;">
+  <ul class="all-posts-list" style="list-style:none; margin:0; padding:0;">
+    {% for post in site.posts %}
+      <li style="margin-bottom:1em;">
+        <a href="{{ post.url }}">{{ post.title }}</a>
+        <span style="font-style:italic;">
+          ({{ post.date | date: "%B %d, %Y" }})
+        </span>
+      </li>
+    {% endfor %}
+  </ul>
+</div>
