@@ -83,20 +83,19 @@
     </div>
 
     <!-- Latest Posts Section -->
-    <div class="post-container">
-        {% for post in site.posts limit:5 %}
-        <article class="post">
-            <h2 class="post-title"><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h2>
-            <time class="post-date" datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: "%B %d, %Y" }}</time>
-            <div class="post-content">
-                {{ post.content }}
-            </div>
-        </article>
-        {% unless forloop.last %}
-        <hr class="post-divider">
-        {% endunless %}
-        {% endfor %}
-    </div>
+   <!-- After your dotted-box div -->
+<div class="post-container">
+  {% for post in site.posts limit:5 %}
+    <article class="post">
+      <h2 class="post-title"><a href="{{ post.url }}">{{ post.title }}</a></h2>
+      <time class="post-date">{{ post.date | date: "%B %d, %Y" }}</time>
+      <div class="post-content">
+        {{ post.content }}
+      </div>
+    </article>
+    {% unless forloop.last %}<hr class="post-divider">{% endunless %}
+  {% endfor %}
+</div>
 
  
 </body>
