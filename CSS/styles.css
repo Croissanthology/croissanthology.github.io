@@ -5,11 +5,12 @@ h2#allowed {
     text-align: left !important;  /* !important because we're tired and dgaf about css best practices rn */
 }
 
-.post-content blockquote 
+.post-content blockquote {
     color: #a0a0a0;  /* Darker grey */
     font-style: italic;
     font-family: 'Inter', sans;
 }
+
 
 .content-wrapper {
     width: var(--main-width);
