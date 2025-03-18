@@ -30,7 +30,7 @@
         }
     </style>
 </head>
-<body class="bg-[#1a1a1a] text-[#e0e0e0]">
+<body class="bg-[#1a1a1a] text-[#e0e0e0] {% if page.url == "/" %}index{% endif %}">
     {% if page.layout == 'post' %}
     <!-- tufte layout for posts -->
     <header class="mobile-header">
