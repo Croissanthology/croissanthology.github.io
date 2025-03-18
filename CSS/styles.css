@@ -729,6 +729,29 @@ blockquote {
     padding-top: 2em;
 }
 
+/* === Experimental Overrides === */
+
+/* 1) Post titles in green */
+.post-title a {
+  color: #4A9C6D !important; /* Your preferred green */
+  text-decoration: underline; /* or 'none' if you want zero underline */
+}
+
+/* 2) Remove the extra fancy link underlines for post-title links */
+.post-title a::before,
+.post-title a::after {
+  content: none !important;
+  display: none !important;
+}
+
+/* 3) Stronger, white separators */
+.post-divider {
+  margin: 3rem 0;
+  border: 0;
+  border-top: 2px solid #ffffff; /* Thicker white line */
+}
+
+
 /* ---------------------------------------------------------
    The following lines are JavaScript—NOT valid CSS.
    Keep them commented if they caused parsing errors.
