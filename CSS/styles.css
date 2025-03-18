@@ -767,4 +767,6 @@ blockquote {
 }
 
 .post-title a { color: inherit !important; font-weight: normal !important; border-bottom: none !important; text-decoration: none !important; }
+.post-title a { color: #4A9C6D !important; }
+
 
