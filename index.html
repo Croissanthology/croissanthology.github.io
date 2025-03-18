@@ -66,7 +66,8 @@
       </div>
 </div>
 
-    <style>
+
+<style>
   .post-full {
     margin: 2rem 0;
   }
@@ -77,8 +78,19 @@
   }
 </style>
 
+<!-- Dynamic approach that works with changing essay lists -->
 {% for post in site.posts %}
-  {% if post.url == "/earring" or post.url == "/tactics" or post.url == "/adequate" %}
+  {% assign post_url = post.url | remove_first: "/" %}
+  {% assign found = false %}
+  
+  {% for link in site.html_pages %}
+    {% if link.content contains post_url and link.content contains "New Essays" %}
+      {% assign found = true %}
+      {% break %}
+    {% endif %}
+  {% endfor %}
+  
+  {% if found %}
     <article class="post-full">
       <h3 class="post-title">{{ post.title }}</h3>
       <time class="post-date">{{ post.date | date: "%B %d, %Y" }}</time>
@@ -89,7 +101,6 @@
     <hr class="post-divider">
   {% endif %}
 {% endfor %}
-
 
 
   
