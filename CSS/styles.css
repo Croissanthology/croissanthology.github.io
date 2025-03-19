@@ -769,4 +769,9 @@ blockquote {
 .post-title a { font-weight: normal !important; border-bottom: none !important; text-decoration: none !important; }
 .post-title a { color: #4A9C6D !important; }
 
+/* disable white underline animation for index headings */
+body.index .post-title a::before,
+body.index .post-title a::after {
+  content: none;
+}
 
