@@ -88,10 +88,6 @@ body.index .post-title {
     border-bottom: none;
 }
 
-body.index .post-title a {
-    text-decoration: underline;
-    border-bottom: none;
-}
 
 /* Shrink headings INSIDE post content on the front page only */
 body.index .post-content h1,
@@ -769,9 +765,10 @@ blockquote {
 .post-title a { font-weight: normal !important; border-bottom: none !important; text-decoration: none !important; }
 .post-title a { color: #4A9C6D !important; }
 
-/* disable white underline animation for index headings */
+/* disable white underline animation for index headings - with !important */
 body.index .post-title a::before,
 body.index .post-title a::after {
-  content: none;
+  content: none !important;
+  display: none !important;
+  border-bottom: none !important;
 }
-
