@@ -772,3 +772,8 @@ body.index .post-title a::after {
   display: none !important;
   border-bottom: none !important;
 }
+
+/* hide RSS on all pages */
+.rss-link {
+  display: none;
+}
