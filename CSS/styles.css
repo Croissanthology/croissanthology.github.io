@@ -366,6 +366,12 @@ a[href^="https://twitter.com"]::after,
 a[href^="https://www.x.com"]::after,
 a[href^="https://x.com"]::after {
     background-color: #1DA1F2;
+
+a[href^="https://www.lesswrong.com"]:visited,
+a[href^="https://lesswrong.com"]:visited { color: #2a5c3d; /* darker green */ }
+
+a[href^="https://twitter.com"]:visited,
+a[href^="https://x.com"]:visited { color: #0a517a; /* darker blue */ }
 }
 
 /* Mobile header */
