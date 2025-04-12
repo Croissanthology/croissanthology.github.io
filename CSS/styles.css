@@ -131,6 +131,8 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
+    font-size: 18px; /* or 1.125rem - about 12.5% larger than default */
+
 }
 
 /* Sidenotes and margin notes */
