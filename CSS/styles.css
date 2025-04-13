@@ -1,76 +1,6 @@
 /* =========================================================
-   Cleaned & Consolidated Styles (Valid CSS)
+   Variables
    ========================================================= */
-
-/* with your other h2 styles */
-h2#allowed {
-    text-align: left !important;  /* !important because we're tired and dgaf about css best practices rn */
-}
-
-/* Fixing the missing brace for blockquote */
-.post-content blockquote {
-    color: #a0a0a0; /* Darker grey */
-    font-style: italic;
-    font-family: 'Inter', sans;
-}
-
-.content-wrapper {
-    width: var(--main-width);
-    max-width: 100%;
-    margin: 0 auto;
-}
-
-body {
-    overflow-x: hidden;
-}
-
-.post-content p {
-    font-size: 1.1rem; /* or whatever looks good */
-}
-/* Headings */
-h1, h2, h3, h4, h5, h6 {
-    font-family: 'Poiret One', cursive;
-    text-transform: uppercase;
-    color: #ffffff;
-    letter-spacing: 2px;
-    margin: 1.5em 0 0.5em;
-    position: relative;
-    padding-bottom: 0.5em;
-    display: inline-block;  /* Our new fix */
-    width: auto;            /* Our new fix */
-}
-
-/* Individual heading sizes */
-h1 { font-size: 2em; }
-h2 { font-size: 2em; }
-h3 { font-size: 1.75em; }
-h4 { font-size: 1.5em; }
-h5 { font-size: 1.25em; }
-h6 { font-size: 1em; }
-
-/* Responsive heading sizes */
-@media (max-width: 768px) {
-    h1 { font-size: 2em; }
-    h2 { font-size: 1.75em; }
-    h3 { font-size: 1.5em; }
-    h4 { font-size: 1.25em; }
-    h5, h6 { font-size: 1em; }
-}
-
-/* Underline effect for headings */
-h1::after,
-h2::after,
-h3::after,
-h4::after,
-h5::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    width: 100%;
-    height: 1px;
-    background-color: #ffffff;
-}
 
 /* Root variables */
 :root {
@@ -80,73 +10,29 @@ h5::after {
     --link-color: #cccccc;
     --main-width: min(800px, 90vw);
     --title-height: 100px;
+    --heading-color: #ffffff; 
+    --blockquote-color: #c0c0c0;
+    --sidenote-color: #888888;
+    --border-color: #404040;
 }
 
 /* Light theme variables */
 :root[data-theme="light"] {
     --background-color: #f5f5f5;
     --text-color: #333333;
-    --accent-color: #4A9C6D; /* keeping the same accent color */
+    --accent-color: #4A9C6D;
     --link-color: #555555;
-    --heading-color: #333333; /* new variable for headings */
+    --heading-color: #333333;
     --blockquote-color: #555555;
     --sidenote-color: #666666;
     --border-color: #cccccc;
 }
 
-/* Dark theme variables (your current setup) */
-:root:not([data-theme="light"]) {
-    --background-color: #1a1a1a;
-    --text-color: #e0e0e0;
-    --accent-color: #4A9C6D;
-    --link-color: #cccccc;
-    --heading-color: #ffffff; /* new variable for headings */
-    --blockquote-color: #c0c0c0;
-    --sidenote-color: #888888;
-    --border-color: #404040;
-}
-
 /* =========================================================
-   Front Page Overrides
+   Base Styles
    ========================================================= */
 
-/* Remove big line under post titles on the front page */
-body.index .post-title {
-    border-bottom: none;
-}
-
-
-/* Shrink headings INSIDE post content on the front page only */
-body.index .post-content h1,
-body.index .post-content h2,
-body.index .post-content h3,
-body.index .post-content h4,
-body.index .post-content h5,
-body.index .post-content h6 {
-    font-size: 1.1rem;
-    line-height: 1.3;
-}
-
-/* If headings STILL show lines, override them again here: */
-body.index h1::after,
-body.index h2::after,
-body.index h3::after,
-body.index h4::after,
-body.index h5::after,
-body.index h6::after {
-    content: none;
-}
-
-/* Post layout container */
-.post-layout {
-    width: 87.5%;
-    margin-left: auto;
-    margin-right: auto;
-    padding-left: 12.5%;
-    max-width: 1400px;
-}
-
-/* Global body styles (unchanged) */
+/* Global body styles */
 body {
     font-family: 'Inter', sans-serif;
     background-color: var(--background-color);
@@ -158,48 +44,248 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    font-size: 16px; /* or 1.125rem - about 12.5% larger than default */
-
+    font-size: 16px;
+    overflow-x: hidden;
 }
 
-/* Sidenotes and margin notes */
-.sidenote,
-.marginnote {
-    float: right;
-    clear: right;
-    margin-right: -60%;
-    width: 50%;
-    margin-top: 0.3rem;
-    margin-bottom: 0;
+/* Common containers */
+.container {
+    position: relative;
+    width: var(--main-width);
+    margin: 0 auto;
+    padding: 0 5%;
+}
+
+.content-wrapper {
+    width: var(--main-width);
+    max-width: 100%;
+    margin: 0 auto;
+}
+
+/* =========================================================
+   Typography
+   ========================================================= */
+
+/* Headings */
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Poiret One', cursive;
+    text-transform: uppercase;
+    color: var(--heading-color);
+    letter-spacing: 2px;
+    margin: 1.5em 0 0.5em;
+    position: relative;
+    padding-bottom: 0.5em;
+    display: inline-block;
+    width: auto;
+}
+
+/* Individual heading sizes */
+h1 { font-size: 2em; }
+h2 { font-size: 2em; }
+h3 { font-size: 1.75em; }
+h4 { font-size: 1.5em; }
+h5 { font-size: 1.25em; }
+h6 { font-size: 1em; }
+
+/* Underline effect for headings */
+h1::after, h2::after, h3::after, h4::after, h5::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 1px;
+    background-color: var(--heading-color);
+}
+
+/* Special heading styles */
+h2#allowed {
+    text-align: left !important;
+}
+
+/* Paragraph styles */
+.post-content p {
     font-size: 1.1rem;
-    line-height: 1.3;
-    vertical-align: baseline;
+}
+
+/* =========================================================
+   Links
+   ========================================================= */
+
+/* Base link styles */
+a {
+    color: var(--text-color);
+    text-decoration: none;
     position: relative;
 }
 
-/* Post styling */
+a::before {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 1px;
+    bottom: 0;
+    left: 0;
+    border-bottom: 1px dotted #FFFFFF;
+}
+
+a::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 1px;
+    bottom: 0;
+    left: 0;
+    background-color: #FFFFFF;
+    transform: scaleX(0);
+    transform-origin: bottom right;
+    transition: transform 0.3s ease;
+}
+
+a:hover::after {
+    transform: scaleX(1);
+    transform-origin: bottom left;
+}
+
+/* "Link addition thing" - fully close rule */
+a[href]:not([href^="javascript:"]):not([href^="#"])::before,
+a[href]:not([href^="javascript:"]):not([href^="#"])::after {
+    content: '';
+}
+
+/* Special link color overrides */
+a[href^="https://www.lesswrong.com"]::after,
+a[href^="https://lesswrong.com"]::after {
+    background-color: #4A9C6D;
+}
+
+a[href^="https://www.twitter.com"]::after,
+a[href^="https://twitter.com"]::after,
+a[href^="https://www.x.com"]::after,
+a[href^="https://x.com"]::after {
+    background-color: #1DA1F2;
+}
+
+a[href^="https://www.lesswrong.com"]:visited,
+a[href^="https://lesswrong.com"]:visited { 
+    color: #2a5c3d;
+}
+
+a[href^="https://twitter.com"]:visited,
+a[href^="https://x.com"]:visited { 
+    color: #0a517a;
+}
+
+/* Special styling for under-construction links */
+a[href$="under-construction.html"] {
+    position: relative;
+    display: inline-block;
+    padding-left: 3.5em;
+}
+
+a[href$="under-construction.html"] .soon-prefix {
+    position: absolute;
+    left: 0;
+    color: #7a7a7a;
+    font-weight: bold;
+}
+
+a[href$="under-construction.html"] .soon-prefix::after {
+    content: "\00a0";
+}
+
+a[href$="under-construction.html"]::before {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 1px;
+    bottom: 0;
+    left: 0;
+    border-bottom: 1px dotted #FFFFFF;
+}
+
+a[href$="under-construction.html"]::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 1px;
+    bottom: 0;
+    left: 0;
+    background-color: #FFFFFF;
+    transform: scaleX(0);
+    transform-origin: bottom right;
+    transition: transform 0.3s ease;
+}
+
+a[href$="under-construction.html"]:hover::after {
+    transform: scaleX(1);
+    transform-origin: bottom left;
+}
+
+/* =========================================================
+   Post Styles
+   ========================================================= */
+
+/* Post layout container */
+.post-layout {
+    width: 87.5%;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 12.5%;
+    max-width: 1400px;
+}
+
+/* Post container */
 .post-container {
     max-width: var(--main-width);
     margin: 0 auto;
     margin-bottom: 4rem;
 }
 
+/* Post title */
 .post-title {
     margin-bottom: 0.1rem;
     font-weight: 500;
+    color: var(--heading-color);
 }
 
 .post-title a {
-    color: #ffffff;
-    text-decoration: none;
-    border-bottom: 1px solid transparent;
-    transition: border-color 0.2s;
+    color: var(--accent-color) !important;
+    text-decoration: none !important;
+    position: relative;
+    font-weight: normal !important;
+    border-bottom: none !important;
 }
 
-.post-title a:hover {
-    border-color: rgba(255, 255, 255, 0.5);
+.post-title a::before {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 1px;
+    bottom: 0;
+    left: 0;
+    border-bottom: 1px dotted #FFFFFF;
 }
 
+.post-title a::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 1px;
+    bottom: 0;
+    left: 0;
+    background-color: #FFFFFF;
+    transform: scaleX(0);
+    transform-origin: bottom right;
+    transition: transform 0.3s ease;
+}
+
+.post-title a:hover::after {
+    transform: scaleX(1);
+    transform-origin: bottom left;
+}
+
+/* Post metadata */
 .post-date {
     font-style: italic;
     color: #888;
@@ -214,7 +300,40 @@ body {
 .post-divider {
     margin: 3rem 0;
     border: 0;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-top: 1px solid var(--border-color);
+}
+
+/* =========================================================
+   Components
+   ========================================================= */
+
+/* Blockquotes */
+.post-content blockquote {
+    color: var(--blockquote-color);
+    font-style: italic;
+    font-family: 'Inter', sans;
+    width: var(--main-width);
+    margin: 1.5em auto;
+    padding: 15px;
+    border-left: 2px solid var(--border-color);
+    padding-left: 1em;
+}
+
+/* Sidenotes and margin notes */
+.sidenote,
+.marginnote {
+    float: right;
+    clear: right;
+    margin-right: -60%;
+    width: 50%;
+    margin-top: 3em;
+    border-top: 1px solid var(--border-color);
+    padding-top: 2em;
+    color: var(--sidenote-color);
+    font-size: 1.1rem;
+    line-height: 1.3;
+    vertical-align: baseline;
+    position: relative;
 }
 
 /* Sidenote numbering */
@@ -240,30 +359,154 @@ body {
     display: none;
 }
 
-.sidenote-number {
-    counter-increment: sidenote-counter;
-}
-
-@media (max-width: 760px) {
-    .margin-toggle:checked + .sidenote {
-        display: block;
-        float: left;
-        left: 1rem;
-        clear: both;
-        width: 95%;
-        margin: 1rem 2.5%;
-        position: relative;
-    }
-}
-
-/* Container for titles & images */
-.container {
-    position: relative;
+/* Dotted-box container */
+.dotted-box {
+    border: 1px dotted #808080;
+    padding: 15px;
+    margin: 0 auto 20px;
     width: var(--main-width);
-    margin: 0 auto;
-    padding: 0 5%;
+    box-sizing: border-box;
 }
 
+/* Footnotes */
+.footnotes {
+    margin-top: 3em;
+    border-top: 1px solid var(--border-color);
+    padding-top: 2em;
+}
+
+/* Drop Cap styles */
+.dropcap {
+    float: left;
+    font-family: 'Poiret One', cursive !important;
+    font-size: 5em;
+    line-height: 0.8;
+    padding: 0.1em 0.1em 0 0;
+    margin: -0.1em 0.1em 0 0;
+    color: #4A9C6D;
+}
+
+.dropcap::before {
+    content: '';
+    display: inline-block;
+    width: 0.1em;
+    height: 0.1em;
+}
+
+/* Ensures paragraphs with drop caps have no margin and are justified */
+p.has-dropcap {
+    margin: 0;
+    text-align: justify;
+    clear: both;
+}
+
+p.has-dropcap::first-line {
+    line-height: 1.5;
+    vertical-align: text-top;
+}
+
+.dotted-box p.has-dropcap {
+    padding-top: 0.5em;
+    margin-bottom: 1em;
+}
+
+/* Image container styles */
+.image-container {
+    background-color: #1a1a1a;
+    border: 1px solid white;
+    padding: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 10px;
+    max-width: 100%;
+}
+
+.image-container img {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.image-caption {
+    font-family: Arial, sans-serif;
+    font-size: 0.9em;
+    color: #e0e0e0;
+    text-align: center;
+    padding: 10px 5px 5px;
+    border-top: 1px solid #e0e0e0;
+}
+
+/* Table of Contents */
+.auto-toc {
+    background: #f8f8f8;
+    border: 1px solid #e8e8e8;
+    border-radius: 5px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.toc-nav ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.toc-item {
+    margin-bottom: 10px;
+}
+
+.toc-item a {
+    color: #333;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.toc-item a:hover {
+    color: #007bff;
+}
+
+.toc-h2 { margin-left: 0; }
+.toc-h3 { margin-left: 20px; }
+.toc-h4 { margin-left: 40px; }
+.toc-h5 { margin-left: 60px; }
+.toc-h6 { margin-left: 80px; }
+
+/* Essay lists container */
+.essay-lists-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    padding: 15px;
+    margin: 0 auto 20px;
+    width: var(--main-width);
+}
+
+.essay-list {
+    flex: 1;
+    min-width: 300px;
+    margin-bottom: 0.5em;
+    margin-right: 20px;
+}
+
+.essay-list h2 {
+    font-size: 1.2em;
+    margin-bottom: 0.5em;
+}
+
+.essay-list ul {
+    list-style-type: none;
+    padding-left: 0;
+    margin: 0;
+}
+
+.essay-list li {
+    margin-bottom: 0.1em;
+    line-height: 1.6;
+}
+
+/* =========================================================
+   Header & Navigation
+   ========================================================= */
+
+/* Title container */
 .title-container {
     position: relative;
     width: 100%;
@@ -286,6 +529,58 @@ body {
 .title-white { color: white; }
 .title-green { color: #4A9C6D; }
 
+/* Mobile header */
+.mobile-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: var(--background-color);
+    border-bottom: 1px solid var(--border-color);
+    transform: translateY(-100%);
+    transition: transform 0.3s ease-in-out;
+    z-index: 75;
+}
+
+.mobile-header-title {
+    font-family: 'Poiret One', cursive;
+    font-size: 13px;
+    text-align: center;
+    padding: 8px 0;
+    margin: 0;
+}
+
+.progress-bar {
+    height: 2px;
+    background-color: var(--accent-color);
+    width: 0;
+    transition: width 0.2s ease-out;
+}
+
+/* Theme toggle button */
+.theme-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: var(--accent-color);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 1000;
+    font-size: 20px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+/* =========================================================
+   Visual Effects
+   ========================================================= */
+
 /* Shine effect */
 .shine-effect-double {
     position: absolute;
@@ -298,6 +593,7 @@ body {
     transition: transform 0.4s ease;
     z-index: 1;
 }
+
 .shine-effect-double::after {
     content: '';
     position: absolute;
@@ -340,106 +636,144 @@ body {
     opacity: 1;
 }
 
-/* dotted-box container */
-.dotted-box {
-    border: 1px dotted #808080;
-    padding: 15px;
-    margin: 0 auto 20px;
-    width: var(--main-width);
-    box-sizing: border-box;
-}
-
-/* Link underline animations */
-a {
-    color: var(--text-color);
-    text-decoration: none;
-    position: relative;
-}
-
-a::before {
-    content: '';
-    position: absolute;
-    width: 100%;
-    height: 1px;
-    bottom: 0;
-    left: 0;
-    border-bottom: 1px dotted #FFFFFF;
-}
-
-a::after {
-    content: '';
-    position: absolute;
-    width: 100%;
-    height: 1px;
-    bottom: 0;
-    left: 0;
-    background-color: #FFFFFF;
-    transform: scaleX(0);
-    transform-origin: bottom right;
-    transition: transform 0.3s ease;
-}
-
-a:hover::after {
-    transform: scaleX(1);
-    transform-origin: bottom left;
-}
-
-/* Special link color overrides */
-a[href^="https://www.lesswrong.com"]::after,
-a[href^="https://lesswrong.com"]::after {
-    background-color: #4A9C6D;
-}
-
-a[href^="https://www.twitter.com"]::after,
-a[href^="https://twitter.com"]::after,
-a[href^="https://www.x.com"]::after,
-a[href^="https://x.com"]::after {
-    background-color: #1DA1F2;
-
-a[href^="https://www.lesswrong.com"]:visited,
-a[href^="https://lesswrong.com"]:visited { color: #2a5c3d; /* darker green */ }
-
-a[href^="https://twitter.com"]:visited,
-a[href^="https://x.com"]:visited { color: #0a517a; /* darker blue */ }
-}
-
-/* Mobile header */
-.mobile-header {
+/* Feedback popup */
+.feedback-popup {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    background-color: #000000;
-    transform: translateY(-100%);
-    transition: transform 0.3s ease-in-out;
-    z-index: 75;
-}
-.mobile-header-title {
-    font-family: 'Poiret One', cursive;
-    font-size: 13px;
-    text-align: center;
-    padding: 8px 0;
-    margin: 0;
+    z-index: 9999;
+    background-color: var(--background-color);
+    border: 1px solid var(--accent-color);
+    border-radius: 4px;
+    transform: translateX(-50%);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
 }
 
-.progress-bar {
-    height: 2px;
-    background-color: #ffffff;
-    width: 0;
-    transition: width 0.2s ease-out;
+.feedback-popup.visible {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.feedback-popup a {
+    color: var(--text-color);
+    padding: 6px 12px;
+    display: block;
+    text-decoration: none !important;
+    font-family: 'Source Serif Pro', serif;
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+.feedback-popup a::before,
+.feedback-popup a::after {
+    display: none !important;
+}
+
+.feedback-popup a:hover {
+    color: var(--accent-color);
+    background-color: rgba(74, 156, 109, 0.1);
+}
+
+.feedback-popup a.active {
+    transform: scale(0.98);
+    background-color: rgba(74, 156, 109, 0.2);
+}
+
+/* =========================================================
+   Page-Specific Styles
+   ========================================================= */
+
+/* Front Page Overrides */
+body.index .post-title {
+    border-bottom: none;
+}
+
+body.index .post-content h1,
+body.index .post-content h2,
+body.index .post-content h3,
+body.index .post-content h4,
+body.index .post-content h5,
+body.index .post-content h6 {
+    font-size: 1.1rem;
+    line-height: 1.3;
+}
+
+body.index h1::after,
+body.index h2::after,
+body.index h3::after,
+body.index h4::after,
+body.index h5::after,
+body.index h6::after {
+    content: none;
+}
+
+/* disable white underline animation for index headings */
+body.index .post-title a::before,
+body.index .post-title a::after {
+    content: none !important;
+    display: none !important;
+    border-bottom: none !important;
+}
+
+/* hide RSS on all pages */
+.rss-link {
+    display: none;
+}
+
+/* =========================================================
+   Responsive Styles
+   ========================================================= */
+
+/* Responsive heading sizes */
+@media (max-width: 768px) {
+    h1 { font-size: 2em; }
+    h2 { font-size: 1.75em; }
+    h3 { font-size: 1.5em; }
+    h4 { font-size: 1.25em; }
+    h5, h6 { font-size: 1em; }
+    
+    .mobile-header {
+        display: block;
+    }
+    
+    .essay-lists-container {
+        flex-direction: column;
+        padding: 15px;
+        margin: 0 auto 20px;
+        width: var(--main-width);
+    }
+    
+    .essay-list {
+        width: 100%;
+        margin-right: 0;
+        padding: 0 20px;
+    }
+    
+    .essay-list h2::after {
+        width: calc(100% - 40px);
+        left: 20px;
+    }
+    
+    .theme-toggle {
+        width: 32px;
+        height: 32px;
+        font-size: 16px;
+        top: 10px;
+        right: 10px;
+    }
 }
 
 @media (min-width: 768px) {
     .mobile-header {
         display: none;
     }
-    /* Optional: Reset to normal style if you have quote origins */
+    
     .quote-origin {
         color: inherit;
         font-style: normal;
         margin-top: 0.5em;
     }
-
+    
     /* Scrolling header side-title */
     .side-title {
         position: fixed;
@@ -457,6 +791,7 @@ a[href^="https://x.com"]:visited { color: #0a517a; /* darker blue */ }
         z-index: 1000;
         transition: transform 0.1s ease-out;
     }
+    
     .side-title h2 {
         margin: 0;
         white-space: nowrap;
@@ -464,6 +799,7 @@ a[href^="https://x.com"]:visited { color: #0a517a; /* darker blue */ }
         text-overflow: ellipsis;
         max-height: 80vh;
     }
+    
     .side-progress-bar {
         position: absolute;
         left: 0;
@@ -472,167 +808,17 @@ a[href^="https://x.com"]:visited { color: #0a517a; /* darker blue */ }
         background: #4CAF50;
         transition: height 0.1s ease-out;
     }
-}
-
-/* Image container styles */
-.image-container {
-    background-color: #1a1a1a;
-    border: 1px solid white;
-    padding: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    margin-bottom: 10px;
-    max-width: 100%;
-}
-.image-container img {
-    display: block;
-    width: 100%;
-    height: auto;
-}
-.image-caption {
-    font-family: Arial, sans-serif;
-    font-size: 0.9em;
-    color: #e0e0e0;
-    text-align: center;
-    padding: 10px 5px 5px;
-    border-top: 1px solid #e0e0e0;
-}
-
-/* Responsive image-container widths */
-@media screen and (min-width: 768px) {
+    
     .image-container {
         max-width: 70%;
         margin-left: auto;
         margin-right: auto;
     }
 }
-@media screen and (min-width: 1200px) {
-    .image-container {
-        max-width: 50%;
-    }
-}
-
-/* If .image-container is inside .dotted-box, ensure it's still responsive */
-.dotted-box .image-container {
-    max-width: 100%;
-}
-.dotted-box .image-container img {
-    display: block;
-    width: 100%;
-    height: auto;
-}
-
-/* Drop Cap styles */
-.dropcap {
-    float: left;
-    font-family: 'Poiret One', cursive !important;
-    font-size: 5em;
-    line-height: 0.8;
-    padding: 0.1em 0.1em 0 0;
-    margin: -0.1em 0.1em 0 0;
-    color: #4A9C6D;
-}
-.dropcap::before {
-    content: '';
-    display: inline-block;
-    width: 0.1em;
-    height: 0.1em;
-}
-/* Ensures paragraphs with drop caps have no margin and are justified */
-p.has-dropcap {
-    margin: 0;
-    text-align: justify;
-    clear: both;
-}
-p.has-dropcap::first-line {
-    line-height: 1.5;
-    vertical-align: text-top;
-}
-.dotted-box p.has-dropcap {
-    padding-top: 0.5em;
-    margin-bottom: 1em;
-}
-
-/* Table of Contents */
-.auto-toc {
-    background: #f8f8f8;
-    border: 1px solid #e8e8e8;
-    border-radius: 5px;
-    padding: 20px;
-    margin-bottom: 20px;
-}
-.toc-nav ul {
-    list-style-type: none;
-    padding-left: 0;
-}
-.toc-item {
-    margin-bottom: 10px;
-}
-.toc-item a {
-    color: #333;
-    text-decoration: none;
-    transition: color 0.3s ease;
-}
-.toc-item a:hover {
-    color: #007bff;
-}
-.toc-h2 { margin-left: 0; }
-.toc-h3 { margin-left: 20px; }
-.toc-h4 { margin-left: 40px; }
-.toc-h5 { margin-left: 60px; }
-.toc-h6 { margin-left: 80px; }
-
-/* Essay lists container */
-.essay-lists-container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    padding: 15px;
-    margin: 0 auto 20px;
-    width: var(--main-width);
-}
-.essay-list {
-    flex: 1;
-    min-width: 300px;
-    margin-bottom: 0.5em;
-    margin-right: 20px; /* Adds space between lists */
-}
-.essay-list h2 {
-    font-size: 1.2em;
-    margin-bottom: 0.5em;
-}
-.essay-list ul {
-    list-style-type: none;
-    padding-left: 0;
-    margin: 0;
-}
-.essay-list li {
-    margin-bottom: 0.1em;
-    line-height: 1.6;
-}
-
-/* Responsive essay lists */
-@media (max-width: 768px) {
-    .essay-lists-container {
-        flex-direction: column;
-        padding: 15px;
-        margin: 0 auto 20px;
-        width: var(--main-width);
-    }
-    .essay-list {
-        width: 100%;
-        margin-right: 0;
-        padding: 0 20px; /* Add padding to align with content */
-    }
-    /* The line under h2 for mobile */
-    .essay-list h2::after {
-        width: calc(100% - 40px); /* match content width */
-        left: 20px;
-    }
-}
 
 @media (min-width: 769px) and (max-width: 1199px) {
     .essay-lists-container {
-        width: 100%; /* Full width for medium screens */
+        width: 100%;
     }
 }
 
@@ -642,254 +828,20 @@ p.has-dropcap::first-line {
         margin: 0 auto 20px;
         width: var(--main-width);
     }
+    
+    .image-container {
+        max-width: 50%;
+    }
 }
 
-/* Special styling for under-construction links */
-a[href$="under-construction.html"] {
-    position: relative;
-    display: inline-block;
-    padding-left: 3.5em; /* Make room for [SOON] */
-}
-a[href$="under-construction.html"] .soon-prefix {
-    position: absolute;
-    left: 0;
-    color: #7a7a7a;
-    font-weight: bold;
-}
-a[href$="under-construction.html"]::before {
-    content: '';
-    position: absolute;
-    width: 100%;
-    height: 1px;
-    bottom: 0;
-    left: 0;
-    border-bottom: 1px dotted #FFFFFF;
-}
-a[href$="under-construction.html"]::after {
-    content: '';
-    position: absolute;
-    width: 100%;
-    height: 1px;
-    bottom: 0;
-    left: 0;
-    background-color: #FFFFFF;
-    transform: scaleX(0);
-    transform-origin: bottom right;
-    transition: transform 0.3s ease;
-}
-a[href$="under-construction.html"]:hover::after {
-    transform: scaleX(1);
-    transform-origin: bottom left;
-}
-a[href$="under-construction.html"] .soon-prefix::after {
-    content: "\00a0"; /* Non-breaking space */
-}
-
-/* "Link addition thing" - fully close rule */
-a[href]:not([href^="javascript:"]):not([href^="#"])::before,
-a[href]:not([href^="javascript:"]):not([href^="#"])::after {
-    content: '';
-    /* If you had more styles, place them here. */
-}
-
-/* Feedback popup */
-.feedback-popup {
-    position: fixed;
-    z-index: 9999;
-    background-color: var(--background-color);
-    border: 1px solid var(--accent-color);
-    border-radius: 4px;
-    transform: translateX(-50%);
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.2s ease;
-}
-.feedback-popup.visible {
-    opacity: 1;
-    pointer-events: all;
-}
-.feedback-popup a {
-    color: var(--text-color);
-    padding: 6px 12px;
-    display: block;
-    text-decoration: none !important;
-    font-family: 'Source Serif Pro', serif;
-    font-size: 14px;
-    transition: all 0.2s ease;
-}
-.feedback-popup a::before,
-.feedback-popup a::after {
-    display: none !important; /* Kill those custom underline effects here */
-}
-.feedback-popup a:hover {
-    color: var(--accent-color);
-    background-color: rgba(74, 156, 109, 0.1);
-}
-.feedback-popup a.active {
-    transform: scale(0.98);
-    background-color: rgba(74, 156, 109, 0.2);
-}
-
-/* Sidenote styling override */
-.sidenote {
-    float: right;
-    clear: right;
-    margin-right: -60%;
-    width: 50%;
-    margin-top: 3em;
-    border-top: 1px solid #404040;
-    padding-top: 2em;
-    color: #888; /* or your preferred grey */
-}
-
-/* Blockquotes */
-blockquote {
-    width: var(--main-width);
-    margin: 1.5em auto;
-    padding: 15px;
-    color: #c0c0c0;
-    font-family: 'Inter', sans-serif;
-    border-left: 2px solid #e5e7eb;
-    padding-left: 1em;
-}
-
-/* Footnotes */
-.footnotes {
-    margin-top: 3em;
-    border-top: 1px solid #404040;
-    padding-top: 2em;
-}
-/* === Post Title Links: Green + Animated Dotted Underline === */
-
-/* 1) Make the title link text green */
-.post-title a {
-  color: #4A9C6D !important; /* Your existing accent green */
-  text-decoration: none;     /* We'll rely on the dotted underline pseudo-elements */
-  position: relative;        /* So ::before and ::after can position absolutely */
-}
-
-/* 2) Replicate the global dotted underline + hover animation */
-.post-title a::before {
-  content: '';
-  position: absolute;
-  width: 100%;
-  height: 1px;
-  bottom: 0;
-  left: 0;
-  border-bottom: 1px dotted #FFFFFF; /* Same dotted white as your other links */
-}
-
-.post-title a::after {
-  content: '';
-  position: absolute;
-  width: 100%;
-  height: 1px;
-  bottom: 0;
-  left: 0;
-  background-color: #FFFFFF;
-  transform: scaleX(0);
-  transform-origin: bottom right;
-  transition: transform 0.3s ease;
-}
-
-.post-title a:hover::after {
-  transform: scaleX(1);
-  transform-origin: bottom left;
-}
-
-.post-title a { font-weight: normal !important; border-bottom: none !important; text-decoration: none !important; }
-.post-title a { color: #4A9C6D !important; }
-
-/* disable white underline animation for index headings - with !important */
-body.index .post-title a::before,
-body.index .post-title a::after {
-  content: none !important;
-  display: none !important;
-  border-bottom: none !important;
-}
-
-/* hide RSS on all pages */
-.rss-link {
-  display: none;
-}
-
-/* Update heading colors to use variables */
-h1, h2, h3, h4, h5, h6 {
-    color: var(--heading-color);
-}
-
-/* Update heading underlines */
-h1::after, h2::after, h3::after, h4::after, h5::after {
-    background-color: var(--heading-color);
-}
-
-/* Update blockquote colors */
-.post-content blockquote {
-    color: var(--blockquote-color);
-    border-left-color: var(--border-color);
-}
-
-/* Update sidenote colors */
-.sidenote, .marginnote {
-    color: var(--sidenote-color);
-}
-
-/* Update borders and dividers */
-.post-divider {
-    border-top-color: var(--border-color);
-}
-
-.footnotes, .sidenote {
-    border-top-color: var(--border-color);
-}
-
-/* Update link colors in post titles */
-.post-title a {
-    color: var(--accent-color) !important;
-}
-
-/* Update the post title color */
-.post-title {
-    color: var(--heading-color);
-}
-
-/* Update mobile header background to be adaptive */
-.mobile-header {
-    background-color: var(--background-color);
-    border-bottom: 1px solid var(--border-color);
-}
-
-/* Update progress bar color */
-.progress-bar {
-    background-color: var(--accent-color);
-}
-
-/* Theme toggle button styles */
-.theme-toggle {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    background-color: var(--accent-color);
-    color: white;
-    border: none;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    z-index: 1000;
-    font-size: 20px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-}
-
-@media (max-width: 768px) {
-    .theme-toggle {
-        width: 32px;
-        height: 32px;
-        font-size: 16px;
-        top: 10px;
-        right: 10px;
+@media (max-width: 760px) {
+    .margin-toggle:checked + .sidenote {
+        display: block;
+        float: left;
+        left: 1rem;
+        clear: both;
+        width: 95%;
+        margin: 1rem 2.5%;
+        position: relative;
     }
 }
