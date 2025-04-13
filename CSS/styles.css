@@ -812,3 +812,84 @@ body.index .post-title a::after {
 .rss-link {
   display: none;
 }
+
+/* Update heading colors to use variables */
+h1, h2, h3, h4, h5, h6 {
+    color: var(--heading-color);
+}
+
+/* Update heading underlines */
+h1::after, h2::after, h3::after, h4::after, h5::after {
+    background-color: var(--heading-color);
+}
+
+/* Update blockquote colors */
+.post-content blockquote {
+    color: var(--blockquote-color);
+    border-left-color: var(--border-color);
+}
+
+/* Update sidenote colors */
+.sidenote, .marginnote {
+    color: var(--sidenote-color);
+}
+
+/* Update borders and dividers */
+.post-divider {
+    border-top-color: var(--border-color);
+}
+
+.footnotes, .sidenote {
+    border-top-color: var(--border-color);
+}
+
+/* Update link colors in post titles */
+.post-title a {
+    color: var(--accent-color) !important;
+}
+
+/* Update the post title color */
+.post-title {
+    color: var(--heading-color);
+}
+
+/* Update mobile header background to be adaptive */
+.mobile-header {
+    background-color: var(--background-color);
+    border-bottom: 1px solid var(--border-color);
+}
+
+/* Update progress bar color */
+.progress-bar {
+    background-color: var(--accent-color);
+}
+
+/* Theme toggle button styles */
+.theme-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: var(--accent-color);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 1000;
+    font-size: 20px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+@media (max-width: 768px) {
+    .theme-toggle {
+        width: 32px;
+        height: 32px;
+        font-size: 16px;
+        top: 10px;
+        right: 10px;
+    }
+}
