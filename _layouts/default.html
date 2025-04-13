@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-
-    <button class="theme-toggle" id="theme-toggle" title="Toggle light/dark mode">🌓</button>
+<head> 
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poiret+One&display=swap" rel="stylesheet">
@@ -75,40 +73,5 @@
     <!-- Scripts -->
     <script src="{{ '/javascript/javaventuraayayay.js' | relative_url }}"></script>
     <script src="{{ '/javascript/side-title.js' | relative_url }}"></script>
-
-<script>
-    // Theme toggling functionality
-    document.addEventListener('DOMContentLoaded', () => {
-        const themeToggle = document.getElementById('theme-toggle');
-        
-        // Check for saved theme preference or use user's system preference
-        const savedTheme = localStorage.getItem('theme');
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        
-        // Apply theme based on saved preference or system preference
-        if (savedTheme === 'light') {
-            document.documentElement.setAttribute('data-theme', 'light');
-            themeToggle.innerHTML = '🌙'; // moon icon when in light mode
-        } else if (savedTheme === 'dark' || (savedTheme === null && prefersDark)) {
-            document.documentElement.setAttribute('data-theme', 'dark');
-            themeToggle.innerHTML = '☀️'; // sun icon when in dark mode
-        }
-        
-        // Toggle theme when button is clicked
-        themeToggle.addEventListener('click', () => {
-            const currentTheme = document.documentElement.getAttribute('data-theme');
-            
-            if (currentTheme === 'light') {
-                document.documentElement.setAttribute('data-theme', 'dark');
-                localStorage.setItem('theme', 'dark');
-                themeToggle.innerHTML = '☀️';
-            } else {
-                document.documentElement.setAttribute('data-theme', 'light');
-                localStorage.setItem('theme', 'light');
-                themeToggle.innerHTML = '🌙';
-            }
-        });
-    });
-</script>
 </body>
 </html>
