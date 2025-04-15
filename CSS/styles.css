@@ -171,9 +171,10 @@ a[href^="https://lesswrong.com"]:visited {
     color: #2a5c3d;
 }
 
+/* Keep twitter links default text color */
 a[href^="https://twitter.com"]:visited,
-a[href^="https://x.com"]:visited { 
-    color: #0a517a;
+a[href^="https://x.com"]:visited {
+    /* color: #0a517a; */
 }
 
 /* Special styling for under-construction links */
