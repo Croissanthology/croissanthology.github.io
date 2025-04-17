@@ -105,6 +105,62 @@ layout: default
   {% endfor %}
 </div>
 
+        import React from 'react';
+
+const CustomSubstackEmbed = () => {
+  return (
+    <div className="substack-embed-preview" style={{
+      backgroundColor: '#1a1a1a',
+      color: '#e0e0e0',
+      padding: '20px',
+      border: '1px dotted #404040',
+      width: '100%',
+      maxWidth: '480px',
+      margin: '0 auto',
+      fontFamily: '"Inter", sans-serif',
+      position: 'relative'
+    }}>
+      <div style={{ marginBottom: '15px' }}>
+        <input
+          type="email"
+          placeholder="Email..."
+          style={{
+            width: '100%',
+            padding: '10px 12px',
+            borderRadius: '0',
+            border: '1px solid #404040',
+            backgroundColor: '#1a1a1a',
+            color: '#e0e0e0',
+            fontSize: '16px',
+            boxSizing: 'border-box',
+            fontFamily: 'inherit'
+          }}
+        />
+      </div>
+      <button
+        style={{
+          width: '100%',
+          padding: '10px 12px',
+          backgroundColor: '#4A9C6D',
+          color: '#ffffff',
+          border: 'none',
+          cursor: 'pointer',
+          fontSize: '16px',
+          fontFamily: '"Poiret One", cursive',
+          letterSpacing: '2px',
+          textTransform: 'uppercase',
+          borderRadius: '4px'
+        }}
+      >
+        Subscribe
+      </button>
+      
+
+    </div>
+  );
+};
+
+export default CustomSubstackEmbed;
  
 </body>
 </html>
