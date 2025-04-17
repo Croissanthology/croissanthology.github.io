@@ -1,10 +1,4 @@
----
-layout: default
----
-
-
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap" rel="stylesheet">
@@ -17,6 +11,25 @@ layout: default
     <link rel="icon" type="image/svg+xml" href="green favicon.svg">
 
     <style>
+        /* Custom Substack styling */
+        #custom-substack-embed {
+          margin: 20px auto 0;
+          max-width: 480px;
+        }
+
+        #custom-substack-embed input {
+          font-family: 'Inter', sans-serif !important;
+          border-radius: 0 !important;
+          border: 1px solid #404040 !important;
+        }
+
+        #custom-substack-embed button {
+          font-family: 'Poiret One', cursive !important;
+          letter-spacing: 2px !important;
+          text-transform: uppercase !important;
+          border-radius: 4px !important;
+        }
+        
         :root {
             --main-width: min(800px, 90vw);
             --padding-left: 20px;
@@ -86,7 +99,10 @@ layout: default
   <div class="dotted-box">
     <p><span class="dropcap">I</span>write about rationality, mundane utility, and our gloriously apollonian expansion into the lightcone. Earth is currently under siege: chiefly <a href="https://en.wikipedia.org/wiki/Existential_risk_from_AI">this</a> but also <a href="https://en.wikipedia.org/wiki/Death">this</a> and even <a href="https://en.wikipedia.org/wiki/List_of_cognitive_biases">this</a>. I'm active here, <a href="https://lesswrong.com/users/croissanthology">LessWrong</a>, and <a href="https://x.com/croissanthology">Twitter.</a></p>
     <p>You can email me at croissanthology [at] gmail.com. If you think I'd use your money wisely I have a <a href="https://www.patreon.com/cleoscrolls">Patreon</a>. All my writing is <a href="https://croissanthology.com/all">here</a>. I might start with <a href= "https://croissanthology.com/tactics" >this</a> or <a href= "https://croissanthology.com/allowed" >this.</a></p>
-</div>
+    
+    <!-- Substack embed goes here -->
+    <div id="custom-substack-embed"></div>
+  </div>
 
         <br>
         <br>
@@ -105,62 +121,22 @@ layout: default
   {% endfor %}
 </div>
 
-        import React from 'react';
-
-const CustomSubstackEmbed = () => {
-  return (
-    <div className="substack-embed-preview" style={{
-      backgroundColor: '#1a1a1a',
-      color: '#e0e0e0',
-      padding: '20px',
-      border: '1px dotted #404040',
-      width: '100%',
-      maxWidth: '480px',
-      margin: '0 auto',
-      fontFamily: '"Inter", sans-serif',
-      position: 'relative'
-    }}>
-      <div style={{ marginBottom: '15px' }}>
-        <input
-          type="email"
-          placeholder="Email..."
-          style={{
-            width: '100%',
-            padding: '10px 12px',
-            borderRadius: '0',
-            border: '1px solid #404040',
-            backgroundColor: '#1a1a1a',
-            color: '#e0e0e0',
-            fontSize: '16px',
-            boxSizing: 'border-box',
-            fontFamily: 'inherit'
-          }}
-        />
-      </div>
-      <button
-        style={{
-          width: '100%',
-          padding: '10px 12px',
-          backgroundColor: '#4A9C6D',
-          color: '#ffffff',
-          border: 'none',
-          cursor: 'pointer',
-          fontSize: '16px',
-          fontFamily: '"Poiret One", cursive',
-          letterSpacing: '2px',
-          textTransform: 'uppercase',
-          borderRadius: '4px'
-        }}
-      >
-        Subscribe
-      </button>
-      
-
-    </div>
-  );
+<!-- Place substack script at the bottom of body -->
+<script>
+window.CustomSubstackWidget = {
+  substackUrl: "croissanthology.substack.com",
+  placeholder: "Type your email...",
+  buttonText: "Subscribe",
+  theme: "custom",
+  colors: {
+    primary: "#4A9C6D",
+    input: "#1a1a1a",
+    email: "#e0e0e0",
+    text: "#ffffff"
+  }
 };
-
-export default CustomSubstackEmbed;
+</script>
+<script src="https://substackapi.com/widget.js" async></script>
  
 </body>
 </html>
