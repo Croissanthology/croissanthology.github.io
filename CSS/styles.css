@@ -166,7 +166,9 @@ p {
    Links
    ========================================================= */
 
-a {
+/* Only apply underlines to content links */
+.post-content a,
+.dotted-box a {
     color: var(--color-link);
     text-decoration: none;
     position: relative;
@@ -179,10 +181,18 @@ a {
     transition: color 0.2s ease, border-color 0.2s ease;
 }
 
-/* Hover state */
-a:hover {
+/* Hover state for content links */
+.post-content a:hover,
+.dotted-box a:hover {
     color: var(--color-accent);
     border-bottom-style: solid;
+}
+
+/* All other links - no underlines by default */
+a {
+    color: var(--color-link);
+    text-decoration: none;
+    transition: color 0.2s ease;
 }
 
 /* Focus state for accessibility */
@@ -191,22 +201,24 @@ a:focus {
     outline-offset: 2px;
 }
 
-/* Special link colors */
-a[href*="lesswrong.com"] {
+/* Special link colors - ONLY on hover */
+a[href*="lesswrong.com"]:hover {
     color: var(--color-accent);
 }
 
-a[href*="twitter.com"],
-a[href*="x.com"] {
+a[href*="twitter.com"]:hover,
+a[href*="x.com"]:hover {
     color: #1DA1F2;
 }
 
-/* Links without underlines */
-.no-underline,
-.post-title a,
-.theme-toggle,
-footer a {
+/* Post title links */
+.post-title a {
+    color: var(--color-heading) !important;
     border-bottom: none;
+}
+
+.post-title a:hover {
+    color: var(--color-accent) !important;
 }
 
 /* =========================================================
@@ -238,9 +250,21 @@ footer a {
 }
 
 /* First paragraph drop cap */
+.dropcap {
+    font-family: var(--font-display);
+    font-size: 4em;
+    font-weight: 200;
+    line-height: 0.8;
+    float: left;
+    margin: 0.1em 0.1em 0 0;
+    color: var(--color-accent);
+}
+
+/* First paragraph in post content */
 .post-content > p:first-of-type:first-letter {
     font-family: var(--font-display);
     font-size: 4em;
+    font-weight: 200;
     line-height: 0.8;
     float: left;
     margin: 0.1em 0.1em 0 0;
@@ -330,11 +354,74 @@ li {
     text-align: center;
     margin: var(--space-xl) 0;
     position: relative;
+    height: 100px;
+    overflow: hidden;
 }
 
 .title {
     font-size: clamp(2rem, 5vw, 3rem);
     margin: 0;
+    position: relative;
+    z-index: 2;
+    font-family: var(--font-display);
+    font-weight: 200;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+}
+
+.title-white {
+    color: white;
+}
+
+.title-green {
+    color: var(--color-accent);
+}
+
+/* Image hover effect */
+.image-replacement {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 1;
+}
+
+.image-replacement img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+.title-container:hover .image-replacement {
+    opacity: 1;
+}
+
+.title-container:hover .title {
+    opacity: 0;
+}
+
+/* Shine effect */
+.shine-effect {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transform: translateX(-100%);
+    transition: transform 0.4s ease;
+    z-index: 3;
+}
+
+.title-container:hover .shine-effect {
+    transform: translateX(100%);
 }
 
 /* Image container */
@@ -471,8 +558,35 @@ footer {
 }
 
 /* =========================================================
-   Utility Classes
+   Page Specific Overrides
    ========================================================= */
+
+/* Index page specific styles */
+body.index .post-title {
+    border-bottom: none;
+}
+
+body.index .post-content h1,
+body.index .post-content h2,
+body.index .post-content h3,
+body.index .post-content h4,
+body.index .post-content h5,
+body.index .post-content h6 {
+    font-size: 1.1rem;
+    line-height: 1.3;
+    margin-top: var(--space-m);
+    margin-bottom: var(--space-s);
+}
+
+/* Remove heading underlines on index */
+body.index h1::after,
+body.index h2::after,
+body.index h3::after,
+body.index h4::after,
+body.index h5::after,
+body.index h6::after {
+    display: none;
+}
 
 .text-center { text-align: center; }
 .text-muted { color: var(--color-muted); }
