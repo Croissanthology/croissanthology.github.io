@@ -14,55 +14,71 @@ layout: default
 </article>
 <style>
 .post-header {
-    margin-top: 3em;
+    margin-top: 8em;  /* lowered from ceiling */
     text-align: center;
+    margin-bottom: 4em;
 }
 
 .post {
-    width: var(--main-width);
-    margin: 0 auto;
-}
-
-.post {
-    max-width: 800px !important;
+    max-width: 1200px !important;  /* much wider */
     margin: 0 auto !important;
-    padding: 0 20px;
+    padding: 0 40px;
 }
+
 .post-title {
     font-family: 'Poiret One', cursive;
     color: #ffffff;
-    letter-spacing: 2px;
+    letter-spacing: 3px;
     text-transform: uppercase;
     margin-bottom: 0.5em;
+    font-size: 4rem !important;  /* HUGE title */
+    line-height: 1.1;
+    font-weight: 200;
 }
+
 .post-date {
     display: block;
     color: #808080;
     font-style: italic;
-    margin-top: 0.1em;
+    margin-top: 0.5em;
     font-family: 'Source Serif Pro', serif;
-}
-.post-content {
-    margin-top: 3em;
-}
-    
-.post-content > p:first-of-type:not(:has(.sidenote)):not(:has(.sidenote-number)) {
-    @extend .dropcap;
+    font-size: 1.1rem;
 }
 
-/* Simplified sidenotes */
+.post-content {
+    margin-top: 4em;
+    font-size: 1.25rem;  /* bigger body text */
+    line-height: 1.8;
+}
+
+/* kill the dropcap */
+.post-content > p:first-of-type::first-letter {
+    font-size: inherit !important;
+    font-family: inherit !important;
+    font-weight: inherit !important;
+    line-height: inherit !important;
+    float: none !important;
+    margin: 0 !important;
+    color: inherit !important;
+}
+
+/* better paragraph spacing */
+.post-content p {
+    margin-bottom: 1.5em;
+}
+
+/* sidenotes adjustments for wider layout */
 .sidenote {
     float: right;
     clear: right;
-    margin-right: -60%;
-    width: 50%;
+    margin-right: -30%;  /* adjusted for wider content */
+    width: 25%;
     margin-top: 0.3rem;
     font-size: 0.9em;
     color: #666;
     position: relative;
 }
 
-/* Just the number, no checkbox */
 .sidenote:before {
     content: counter(sidenote-counter);
     font-size: 0.9em;
@@ -71,7 +87,6 @@ layout: default
     padding-right: 0.5em;
 }
 
-/* Reset the link styling */
 .sidenote-number {
     text-decoration: none;
     border: none;
@@ -82,31 +97,23 @@ layout: default
 .sidenote-number:after {
     display: none;
 }
-
    
-/* Remove the checkbox stuff */
 input.margin-toggle,
 label.margin-toggle {
     display: none;
 }
 
-/* Add via JS */
-document.addEventListener('DOMContentLoaded', () => {
-    const firstP = document.querySelector('.post-content p:first-of-type');
-    if (firstP && firstP.querySelector('.sidenote')) {
-        firstP.classList.add('has-sidenote');
-    }
-});
-/* Force override blockquote styling */
+/* blockquotes */
 .post-content blockquote {
     all: unset;
     display: block;
-    margin: 2em 0;
-    padding: 1em 1.5em;
-    background: rgba(255, 255, 255, 0.05);
-    border-left: 3px solid #808080;
+    margin: 3em 0;
+    padding: 1.5em 2em;
+    background: rgba(255, 255, 255, 0.03);
+    border-left: 3px solid #4A9C6D;
     font-style: normal;
     color: #d3d3d3;
+    font-size: 1.1rem;
 }
 
 .post-content blockquote::before,
@@ -119,5 +126,33 @@ document.addEventListener('DOMContentLoaded', () => {
 .post-content blockquote p {
     margin: 0;
     font-style: normal;
+}
+
+/* mobile adjustments */
+@media (max-width: 768px) {
+    .post {
+        padding: 0 20px;
+    }
+    
+    .post-title {
+        font-size: 2.5rem !important;
+    }
+    
+    .post-content {
+        font-size: 1.1rem;
+    }
+    
+    .post-header {
+        margin-top: 4em;
+    }
+    
+    .sidenote {
+        float: none;
+        width: 100%;
+        margin: 1em 0;
+        padding: 1em;
+        background: rgba(255, 255, 255, 0.05);
+        border-left: 2px solid #4A9C6D;
+    }
 }
 </style>
