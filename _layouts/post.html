@@ -14,9 +14,9 @@ layout: default
 </article>
 <style>
 .post-header {
-    margin-top: 8em;  /* lowered from ceiling */
+    margin-top: 10em;  /* more breathing room */
     text-align: center;
-    margin-bottom: 4em;
+    margin-bottom: 5em;
 }
 
 .post {
@@ -26,14 +26,19 @@ layout: default
 }
 
 .post-title {
-    font-family: 'Poiret One', cursive;
+    font-family: var(--font-display);  /* system font like front page */
     color: #ffffff;
-    letter-spacing: 3px;
+    letter-spacing: 0.15em;  /* matching front page headings */
     text-transform: uppercase;
-    margin-bottom: 0.5em;
-    font-size: 4rem !important;  /* HUGE title */
-    line-height: 1.1;
-    font-weight: 200;
+    margin-bottom: 0.8em;
+    font-size: 2.5rem !important;  /* gwern-scale: prominent but not dominating */
+    line-height: 1.2;
+    font-weight: 200;  /* ultra-light weight */
+}
+
+/* kill the underline on post titles */
+.post-title::after {
+    display: none !important;
 }
 
 .post-date {
