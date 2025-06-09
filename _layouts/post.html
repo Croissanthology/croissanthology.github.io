@@ -20,7 +20,7 @@ layout: default
 }
 
 .post {
-    max-width: 1200px !important;  /* much wider */
+    max-width: 1400px !important;  /* WIDER text area */
     margin: 0 auto !important;
     padding: 0 40px;
 }
@@ -70,6 +70,17 @@ layout: default
 /* better paragraph spacing */
 .post-content p {
     margin-bottom: 1.5em;
+}
+
+/* right-aligned headings */
+.post-content h1,
+.post-content h2,
+.post-content h3,
+.post-content h4,
+.post-content h5,
+.post-content h6 {
+    text-align: right;
+    margin-right: 0;
 }
 
 /* sidenotes adjustments for wider layout */
@@ -137,6 +148,7 @@ label.margin-toggle {
 @media (max-width: 768px) {
     .post {
         padding: 0 20px;
+        max-width: 100% !important;
     }
     
     .post-title {
