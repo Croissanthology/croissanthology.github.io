@@ -35,8 +35,8 @@ body, h1, h2, h3, h4, h5, h6, p, figure, blockquote, dl, dd {
     
     /* Typography */
     --font-system: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    --font-serif: Georgia, "Times New Roman", Times, serif;  /* system serif stack */
-    --font-display: var(--font-system);  /* sans for headings */
+    --font-serif: Georgia, "Times New Roman", Times, serif;  /* keeping for potential use */
+    --font-display: var(--font-system);  /* back to sans for headings */
     --font-body: var(--font-system);  /* sans for body */
     
     /* Sizing */
@@ -260,45 +260,23 @@ ul li::marker {
 }
 
 .post-date {
-    color: var(--color-heading);  /* white like headings */
+    color: var(--color-muted);
     font-style: italic;
     font-size: 0.9rem;
-    font-family: var(--font-serif);  /* serif for dates */
-}
-
-/* New summary class */
-.post-summary {
-    color: var(--color-heading);
-    font-style: italic;
-    font-size: 1rem;
-    font-family: var(--font-serif);
-    margin-bottom: 0.5rem;
-    line-height: 1.4;
 }
 
 .post-content {
     margin-top: var(--space-xl);
 }
 
-/* Drop cap */
+/* Drop cap (for index page) */
 .dropcap {
     font-family: var(--font-display);
-    font-size: 3.2em;
-    font-weight: 200;
-    line-height: 0.85;  /* tighter for better integration */
+    font-size: 3.2em;  /* exactly 2 lines: 16px * 1.6 * 2 = 51.2px */
+    font-weight: 200;  /* back to ultra-light */
+    line-height: 1;
     float: left;
-    margin: 0 0.05em -0.1em 0;  /* negative bottom margin pulls text up */
-    color: var(--color-accent);
-}
-
-/* Dropcap for posts */
-.post-content > p:first-of-type::first-letter {
-    font-family: var(--font-display);
-    font-size: 3.2em;
-    font-weight: 200;
-    line-height: 0.85;
-    float: left;
-    margin: 0 0.05em -0.1em 0;
+    margin: 0 0.1em 0 0;
     color: var(--color-accent);
 }
 
