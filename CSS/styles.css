@@ -36,12 +36,12 @@ body, h1, h2, h3, h4, h5, h6, p, figure, blockquote, dl, dd {
     /* Typography */
     --font-system: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     --font-serif: Georgia, "Times New Roman", Times, serif;  /* SYSTEM SERIF STACK */
-    --font-display: var(--font-system);
-    --font-body: var(--font-serif);  /* serif but no external fonts */
+    --font-display: var(--font-serif);  /* serif for headings */
+    --font-body: var(--font-system);  /* back to sans-serif for body */
     
     /* Sizing */
-    --content-width: min(800px, 90vw);
-    --line-height: 1.7;  /* slightly taller for serif */
+    --content-width: min(1100px, 90vw);  /* WIDER for more breathing room */
+    --line-height: 1.6;  /* back to original */
     
     /* Z-index scale */
     --z-overlay: 50;
@@ -65,7 +65,7 @@ body, h1, h2, h3, h4, h5, h6, p, figure, blockquote, dl, dd {
 
 body {
     font-family: var(--font-body);
-    font-size: 17px;  /* bumped up for serif readability */
+    font-size: 16px;  /* back to original */
     line-height: var(--line-height);
     color: var(--color-text);
     background-color: var(--color-bg);
@@ -105,7 +105,7 @@ body {
 /* Headings */
 h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-display);
-    font-weight: 200;
+    font-weight: 400;  /* normal weight for serif */
     color: var(--color-heading);
     text-transform: uppercase;
     line-height: 1.2;
@@ -158,7 +158,8 @@ p {
 }
 
 /* First sentence small caps - ONLY in post content */
-.post-content > p:first-of-type::first-line {
+.post-content > p:first-of-type::first-line,
+.dotted-box > p:first-of-type::first-line {
     font-variant: small-caps;
     letter-spacing: 0.05em;
 }
@@ -269,11 +270,11 @@ ul li::marker {
 /* Drop cap (for index page) */
 .dropcap {
     font-family: var(--font-display);
-    font-size: 4em;
-    font-weight: 200;
-    line-height: 0.8;
+    font-size: 3.2em;  /* exactly 2 lines: 16px * 1.6 * 2 = 51.2px */
+    font-weight: 400;  /* normal weight for serif */
+    line-height: 1;
     float: left;
-    margin: 0.1em 0.1em 0 0;
+    margin: 0 0.1em 0 0;
     color: var(--color-accent);
 }
 
@@ -317,7 +318,7 @@ blockquote {
 /* Title container */
 .title-container {
     text-align: center;
-    margin: var(--space-xl) 0;
+    margin: var(--space-xl) 0 0.5rem 0;  /* very tight bottom margin */
     position: relative;
     height: 100px;
     overflow: hidden;
@@ -332,7 +333,7 @@ blockquote {
     position: relative;
     z-index: 2;
     font-family: var(--font-display);
-    font-weight: 300;
+    font-weight: 400;  /* normal for serif */
     text-transform: uppercase;
     letter-spacing: 0.2em;
     transition: opacity 0.3s ease;
@@ -374,7 +375,7 @@ blockquote {
 
 /* Dotted box */
 .dotted-box {
-    margin: var(--space-xl) 0;
+    margin: 0.5rem 0 var(--space-xl) 0;  /* minimal top margin for "nearly touching" */
     padding: var(--space-m);
     border: 1px dotted var(--color-muted);
 }
@@ -402,7 +403,7 @@ blockquote {
 
 .mobile-header-title {
     font-family: var(--font-display);
-    font-weight: 200;
+    font-weight: 400;  /* normal for serif */
     font-size: 0.875rem;
     text-align: center;
     padding: var(--space-s);
