@@ -27,6 +27,8 @@ layout: default
           font-family: 'Inter', sans-serif !important;
           border-radius: 0 !important;
           border: 1px solid #404040 !important;
+          background-color: var(--color-bg) !important;
+          color: var(--color-text) !important;
         }
 
         #custom-substack-embed button {
@@ -34,6 +36,8 @@ layout: default
           letter-spacing: 2px !important;
           text-transform: uppercase !important;
           border-radius: 4px !important;
+          background-color: var(--color-accent) !important;
+          color: var(--color-heading) !important;
         }
         
         :root {
@@ -44,7 +48,7 @@ layout: default
         /* Index layout */
         .index-main-layout {
             display: grid;
-            grid-template-columns: 1fr 3fr;
+            grid-template-columns: 1fr 4fr;
             gap: var(--space-l);
             margin-top: var(--space-l);
         }
@@ -64,7 +68,7 @@ layout: default
         }
 
         .post-list li {
-            margin-bottom: var(--space-s);
+            margin-bottom: var(--space-xs);
         }
 
         .post-list a {
@@ -129,7 +133,7 @@ layout: default
             <div class="index-left">
                 <div class="title-container">
                     <h1 class="title">
-                        <span class="title-white" style="font-family: 'Poiret One', cursive;">Croiss</span><span class="title-green">anthology</span>
+                        <span class="title-white">Croiss</span><span class="title-green">anthology</span>
                     </h1>
                     <div class="shine-effect"></div>
                     <div class="image-replacement">
@@ -145,12 +149,12 @@ layout: default
             </div>
 
             <div class="index-right">
-                <h2>Recent Posts</h2>
                 <ul class="post-list">
                 {% for post in site.posts limit:5 %}
                     <li><a href="{{ post.url }}">{{ post.title }}</a></li>
                 {% endfor %}
                 </ul>
+                <div id="custom-substack-embed"></div>
             </div>
         </div>
 
@@ -160,10 +164,6 @@ layout: default
         </div>
 </div>
 
-<!-- Substack embed at the bottom after all posts -->
-<div class="content-wrapper" style="margin-top: 40px; margin-bottom: 40px;">
-  <div id="custom-substack-embed"></div>
-</div>
 
 <!-- Place substack script before closing body tag -->
 <script>
@@ -173,10 +173,7 @@ window.CustomSubstackWidget = {
   buttonText: "Subscribe",
   theme: "custom",
   colors: {
-    primary: "#4A9C6D",
-    input: "#1a1a1a",
-    email: "#e0e0e0",
-    text: "#ffffff"
+    primary: "#4A9C6D"
   }
 };
 </script>
