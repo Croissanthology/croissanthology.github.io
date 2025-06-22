@@ -168,25 +168,23 @@ p {
    ========================================================= */
 
 /* Only apply underlines to content links */
+
+/* Content links with dotted underline */
 .post-content a,
 .dotted-box a {
     color: var(--color-link);
-    text-decoration: none;
-    position: relative;
-    display: inline-block; /* prevent underline bleeding */
-    
-    /* Dotted underline via border */
-    border-bottom: 1px dotted currentColor;
-    
-    /* Smooth transitions */
-    transition: color 0.2s ease, border-color 0.2s ease;
+    text-decoration-line: underline;
+    text-decoration-style: dotted;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+    transition: color 0.2s ease;
 }
 
 /* Hover state for content links */
 .post-content a:hover,
 .dotted-box a:hover {
     color: var(--color-accent);
-    border-bottom-style: solid;
+    text-decoration-style: solid;
 }
 
 /* All other links - no underlines by default */
@@ -576,6 +574,10 @@ body.index h4::after,
 body.index h5::after,
 body.index h6::after {
     display: none;
+}
+
+body.index footer {
+    margin-top: calc(var(--space-2xl) + 5vh);
 }
 
 .text-center { text-align: center; }
