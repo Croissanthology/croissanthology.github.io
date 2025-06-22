@@ -258,22 +258,22 @@ a[href*="x.com"]:hover {
 /* First paragraph drop cap */
 .dropcap {
     font-family: var(--font-display);
-    font-size: 4em;
+    font-size: 6em;
     font-weight: 200;
-    line-height: 0.8;
+    line-height: 0.65;
     float: left;
-    margin: 0.1em 0.1em 0 0;
+    margin: 0.2em 0.2em 0 0;
     color: var(--color-accent);
 }
 
 /* First paragraph in post content */
 .post-content > p:first-of-type:first-letter {
     font-family: var(--font-display);
-    font-size: 4em;
+    font-size: 6em;
     font-weight: 200;
-    line-height: 0.8;
+    line-height: 0.65;
     float: left;
-    margin: 0.1em 0.1em 0 0;
+    margin: 0.2em 0.2em 0 0;
     color: var(--color-accent);
 }
 
@@ -372,11 +372,12 @@ li {
     margin: 0;
     position: relative;
     z-index: 2;
-    font-family: var(--font-display);
-    font-weight: 300;
+    font-family: 'Poiret One', cursive;
+    font-weight: 200;
     text-transform: uppercase;
     letter-spacing: 0.2em;
     transition: opacity 0.3s ease;
+    visibility: hidden;
 }
 
 .title-white {
