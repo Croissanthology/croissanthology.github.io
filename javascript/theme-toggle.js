@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
         applyTheme(theme);
     }
 
-    const saved = localStorage.getItem('theme') || 'dark';
+    const saved = localStorage.getItem('theme') || 'system';
     applyTheme(saved);
 
     if (darkLink) {
