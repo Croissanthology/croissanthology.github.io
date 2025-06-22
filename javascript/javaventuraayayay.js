@@ -47,5 +47,10 @@ document.addEventListener('DOMContentLoaded', () => {
         // Your TOC code here
     }
 
-
-
+    // ===== Show title after fonts load =====
+    const mainTitle = document.querySelector('.title');
+    if (mainTitle) {
+        document.fonts.ready.then(() => {
+            mainTitle.style.visibility = 'visible';
+        });
+    }
