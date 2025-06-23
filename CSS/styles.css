@@ -41,7 +41,7 @@ body, h1, h2, h3, h4, h5, h6, p, figure, blockquote, dl, dd {
     --font-body: var(--font-system);
     
     /* Sizing */
-    --content-width: min(1000px, 95vw);
+    --content-width: min(1000px, 100%);
     --line-height: 1.6;
     
     /* Z-index scale */
@@ -217,7 +217,7 @@ a[href*="x.com"]:hover {
 
 .post-title a {
     color: var(--color-accent) !important;
-    font-weight: 300 !important;
+    font-weight: 700 !important;
     border-bottom: none;
 }
 
