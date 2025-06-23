@@ -21,6 +21,7 @@ layout: default
         #custom-substack-embed {
           margin: 20px auto 0;
           max-width: 480px;
+          text-align: center;
         }
 
         #custom-substack-embed input {
@@ -38,6 +39,7 @@ layout: default
           border-radius: 4px !important;
           background-color: var(--color-accent) !important;
           color: var(--color-heading) !important;
+          margin-top: var(--space-s);
         }
         
         :root {
@@ -50,7 +52,7 @@ layout: default
             display: grid;
             grid-template-columns: 1fr 4fr;
             gap: var(--space-l);
-            margin-top: var(--space-l);
+            margin-top: var(--space-m);
         }
 
         .index-left {
@@ -110,8 +112,27 @@ layout: default
                 grid-template-columns: 1fr;
             }
 
+            .index-left {
+                padding-right: 0;
+                border-right: none;
+            }
+
             .index-right {
                 margin-top: var(--space-l);
+                padding-left: 0;
+            }
+
+            .dotted-box {
+                border: none;
+                border-bottom: 1px dotted var(--color-border);
+                padding-left: 0;
+                padding-right: 0;
+            }
+
+            #custom-substack-embed {
+                margin-left: auto;
+                margin-right: auto;
+                max-width: 100%;
             }
 
             .featured-title {
