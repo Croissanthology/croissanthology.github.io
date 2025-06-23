@@ -527,7 +527,13 @@ footer {
     }
     
     body {
-        padding: var(--space-s);
+        padding: 0 var(--space-xs);
+    }
+
+    .container,
+    .content-wrapper {
+        padding-left: var(--space-xs);
+        padding-right: var(--space-xs);
     }
     
     .mobile-header {
