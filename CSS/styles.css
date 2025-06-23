@@ -161,6 +161,8 @@ h1::after, h2::after, h3::after, h4::after, h5::after {
 /* Paragraphs */
 p {
     margin-bottom: var(--space-m);
+    text-align: justify;
+    hyphens: auto;
 }
 
 /* =========================================================
@@ -410,6 +412,11 @@ li {
 
 .title-container:hover .image-replacement {
     opacity: 1;
+}
+
+/* Light mode: make "croiss" white when hovering the title */
+[data-theme="light"] .title-container:hover .title-white {
+    color: #ffffff;
 }
 
 /* Image container */
