@@ -110,7 +110,7 @@ layout: default
             }
 
             .index-left {
-                padding-right: 0;
+                padding-right: var(--space-xs);
                 border-right: none;
             }
 
@@ -122,8 +122,13 @@ layout: default
             .dotted-box {
                 border: none;
                 border-bottom: 1px dotted var(--color-border);
-                padding-left: 0;
-                padding-right: 0;
+                padding-left: var(--space-xs);
+                padding-right: var(--space-xs);
+            }
+
+            .featured-post {
+                margin-left: calc(-1 * var(--space-xs));
+                margin-right: calc(-1 * var(--space-s));
             }
 
 
