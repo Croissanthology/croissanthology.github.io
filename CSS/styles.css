@@ -534,13 +534,14 @@ footer {
     }
     
     body {
-        padding: 0 var(--space-xs);
+        padding-left: var(--space-xs);
+        padding-right: var(--space-s);
     }
 
     .container,
     .content-wrapper {
         padding-left: var(--space-xs);
-        padding-right: var(--space-xs);
+        padding-right: var(--space-s);
     }
     
     .mobile-header {
