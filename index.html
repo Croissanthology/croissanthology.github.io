@@ -1,5 +1,15 @@
 ---
 layout: default
+front_posts:
+  - adequate
+  - tactics
+  - earring
+  - allowed
+  - clone
+  - true
+  - auren
+  - system-prompt
+  - music
 ---
 
 
@@ -172,8 +182,11 @@ layout: default
 
             <div class="index-right">
                 <ul class="post-list">
-                {% for post in site.posts limit:10 %}
+                {% for slug in page.front_posts %}
+                    {% assign post = site.posts | where: "slug", slug | first %}
+                    {% if post %}
                     <li><a href="{{ post.url }}">{{ post.title }}</a></li>
+                    {% endif %}
                 {% endfor %}
                 </ul>
             </div>
