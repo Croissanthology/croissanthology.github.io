@@ -68,8 +68,13 @@ layout: default
 }
 
 /* better paragraph spacing */
-.post-content p {
-    margin-bottom: 1.5em;
+.post-content > p {
+    margin: 0;
+    text-indent: 2em;
+}
+
+.post-content > p:first-of-type {
+    text-indent: 0;
 }
 
 /* right-aligned headings */
