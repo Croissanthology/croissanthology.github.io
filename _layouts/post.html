@@ -52,7 +52,7 @@ layout: default
 
 .post-content {
     margin-top: 4em;
-    font-size: 1.25rem;  /* bigger body text */
+    font-size: 1.35rem;  /* bigger body text */
     line-height: 1.8;
 }
 
@@ -118,6 +118,35 @@ layout: default
 .sidenote-number:after {
     display: none;
 }
+
+/* table of contents */
+.toc-and-intro {
+    display: flex;
+    gap: var(--space-l);
+    margin-bottom: var(--space-xl);
+}
+
+.post-toc {
+    width: 50%;
+    border: 1px solid var(--color-border);
+    padding: var(--space-m);
+    font-family: var(--font-system);
+    font-weight: 700;
+}
+
+.post-toc ol {
+    list-style: none;
+    margin: 0;
+    padding-left: 0;
+}
+
+.post-toc li {
+    margin-bottom: var(--space-xs);
+}
+
+.post-intro {
+    width: 50%;
+}
    
 input.margin-toggle,
 label.margin-toggle {
@@ -161,7 +190,7 @@ label.margin-toggle {
     }
     
     .post-content {
-        font-size: 1.1rem;
+        font-size: 1.2rem;
     }
     
     .post-header {
@@ -176,5 +205,18 @@ label.margin-toggle {
         background: rgba(255, 255, 255, 0.05);
         border-left: 2px solid #4A9C6D;
     }
+
+    .toc-and-intro {
+        display: block;
+    }
+
+    .post-toc {
+        display: none;
+    }
+
+    .post-intro {
+        width: 100%;
+    }
 }
 </style>
+<script src="{{ '/javascript/toc.js' | relative_url }}" defer></script>
