@@ -11,7 +11,7 @@ Perhaps one can restrict the problem to its relevance to writing: if one writes,
 
 After all, books originally come from *somewhere*. They are perhaps just as likely to come from the [unexpected combination](https://www.lesswrong.com/posts/dhj9dhiwhq3DX6W8z/hero-licensing) of a novel and and academic paper as from a tumultuous family history.
 
-Any and all stimuli may inspire a human to write: consider poetry.
+<div class="indent-2">Any and all stimuli may inspire a human to write: consider poetry. </div>
 
 
 > Love: a burnt match skating in a urinal.
