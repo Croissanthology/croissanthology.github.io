@@ -1,0 +1,40 @@
+---
+layout: default
+permalink: /404.html
+---
+<div id="random-404"></div>
+<script>
+const options = [
+  `<div class="four-oh-four-option">
+      <h1>404 Not Found</h1>
+      <picture>
+        <source srcset="/images/vampiredark.jpeg" media="(prefers-color-scheme: dark)">
+        <img src="/images/vampire.jpeg" alt="Vampire">
+      </picture>
+      <p>"Zounds, this page was undoubtedly <a href="https://gwern.net/suzanne-delage">suzanne-delaged</a> by some stray vampire. Tough luck."</p>
+   </div>`
+];
+const choice = options[Math.floor(Math.random() * options.length)];
+document.getElementById('random-404').innerHTML = choice;
+</script>
+<style>
+#random-404 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  min-height: 80vh;
+}
+#random-404 img {
+  max-width: 400px;
+  height: auto;
+  border: none;
+  margin-top: 1rem;
+}
+#random-404 p {
+  margin-top: 1rem;
+  font-family: var(--font-body);
+  font-style: normal;
+}
+</style>
