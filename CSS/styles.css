@@ -246,8 +246,8 @@ a[href*="x.com"]:hover {
 }
 
 .post-date {
-    color: #000000;
-    font-style: italic;
+    color: var(--color-heading);
+    font-style: normal;
     font-size: 1.2rem;
 }
 
