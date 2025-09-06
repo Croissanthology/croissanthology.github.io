@@ -193,7 +193,7 @@ p {
 /* Hover state for content links */
 .post-content a:hover,
 .dotted-box a:hover {
-    color: var(--color-accent);
+    color: var(--color-muted);
     text-decoration-style: solid;
 }
 
@@ -206,8 +206,7 @@ a {
 
 /* Focus state for accessibility */
 a:focus {
-    outline: 2px solid var(--color-accent);
-    outline-offset: 2px;
+    outline: none;
 }
 
 /* Special link colors - ONLY on hover */
@@ -218,6 +217,24 @@ a[href*="lesswrong.com"]:hover {
 a[href*="twitter.com"]:hover,
 a[href*="x.com"]:hover {
     color: #1DA1F2;
+}
+
+a[href*="substack.com"]:hover {
+    color: #E06726;
+}
+
+a[href*="astralcodexten.com"]:hover {
+    color: #14E6FA;
+}
+
+a[href*="gwern.net"]:hover {
+    color: #FFB7C5;
+}
+
+/* Theme toggle icons */
+#toggle-dark,
+#toggle-system {
+    font-family: 'Inter', sans-serif;
 }
 
 /* Post title links */
@@ -291,10 +308,10 @@ a[href*="x.com"]:hover {
 
 blockquote {
     margin: var(--space-xl) 0;
-    padding: var(--space-m);
-    border-left: 3px solid var(--color-border);
-    color: var(--color-blockquote);
-    font-style: italic;
+    padding: 2.5rem;
+    border: 1px dotted var(--color-heading);
+    color: var(--color-heading);
+    font-style: normal;
 }
 
 /* =========================================================
