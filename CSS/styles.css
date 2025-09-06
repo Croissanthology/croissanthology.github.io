@@ -226,6 +226,14 @@ a[href*="substack.com"]:hover {
     color: #E06726;
 }
 
+a[href*="astralcodexten.com"]:hover {
+    color: #14E6FA;
+}
+
+a[href*="gwern.net"]:hover {
+    color: #FFB7C5;
+}
+
 /* Theme toggle icons */
 #toggle-dark,
 #toggle-system {
@@ -303,10 +311,21 @@ a[href*="substack.com"]:hover {
 
 blockquote {
     margin: var(--space-xl) 0;
-    padding: var(--space-m);
-    border-left: 3px solid var(--color-border);
-    color: var(--color-blockquote);
-    font-style: italic;
+    padding: 2.5rem;
+    border: 1px solid var(--color-heading);
+    border-width: 1px 2px 2px 1px;
+    clip-path: polygon(
+        0% 15%,
+        0% 0%,
+        100% 0%,
+        100% 85%,
+        100% 100%,
+        0% 100%,
+        0% 85%,
+        0% 15%
+    );
+    color: var(--color-heading);
+    font-style: normal;
 }
 
 /* =========================================================
