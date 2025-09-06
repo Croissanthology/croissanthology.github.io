@@ -39,7 +39,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const a = document.createElement('a');
     a.href = '#' + h.id;
-    a.textContent = `${number} ${h.textContent}`;
+    const numSpan = document.createElement('span');
+    numSpan.className = 'toc-number';
+    numSpan.textContent = number;
+    a.appendChild(numSpan);
+    a.append(' ' + h.textContent);
     li.appendChild(a);
     tocList.appendChild(li);
   });
