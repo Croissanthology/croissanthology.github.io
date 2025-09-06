@@ -7,6 +7,7 @@ permalink: /404.html
 const options = [
   `<div class="four-oh-four-option">
       <h1>404 Not Found</h1>
+
       <img src="/images/vampire.png" alt="Vampire">
       <p class="quote">
         <span>“Zounds, this page was undoubtedly”</span>
@@ -14,6 +15,7 @@ const options = [
           <a href="https://gwern.net/suzanne-delage">suzanne-delaged</a> by some stray vampire. Tough luck.”
         </span>
       </p>
+      
    </div>`
 ];
 const choice = options[Math.floor(Math.random() * options.length)];
@@ -34,6 +36,7 @@ document.getElementById('random-404').innerHTML = choice;
   border: none;
   margin-top: 1rem;
 }
+
 #random-404 .quote {
   margin-top: 1rem;
   font-family: var(--font-body);
@@ -45,5 +48,7 @@ document.getElementById('random-404').innerHTML = choice;
 }
 #random-404 .quote .offset {
   margin-left: 2rem;
+
+
 }
 </style>
