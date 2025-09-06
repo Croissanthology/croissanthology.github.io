@@ -207,6 +207,7 @@ a {
 /* Focus state for accessibility */
 a:focus {
     outline: none;
+
 }
 
 /* Special link colors - ONLY on hover */
@@ -310,6 +311,8 @@ blockquote {
     margin: var(--space-xl) 0;
     padding: 2.5rem;
     border: 1px dotted var(--color-heading);
+
+    
     color: var(--color-heading);
     font-style: normal;
 }
