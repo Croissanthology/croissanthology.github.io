@@ -193,7 +193,7 @@ p {
 /* Hover state for content links */
 .post-content a:hover,
 .dotted-box a:hover {
-    color: var(--color-accent);
+    color: var(--color-muted);
     text-decoration-style: solid;
 }
 
@@ -207,9 +207,7 @@ a {
 /* Focus state for accessibility */
 a:focus {
     outline: none;
-    outline-offset: 0;
-    border-left: 2px solid var(--color-accent);
-    padding-left: 2px;
+
 }
 
 /* Special link colors - ONLY on hover */
@@ -312,18 +310,9 @@ a[href*="gwern.net"]:hover {
 blockquote {
     margin: var(--space-xl) 0;
     padding: 2.5rem;
-    border: 1px solid var(--color-heading);
-    border-width: 1px 2px 2px 1px;
-    clip-path: polygon(
-        0% 15%,
-        0% 0%,
-        100% 0%,
-        100% 85%,
-        100% 100%,
-        0% 100%,
-        0% 85%,
-        0% 15%
-    );
+    border: 1px dotted var(--color-heading);
+
+    
     color: var(--color-heading);
     font-style: normal;
 }
