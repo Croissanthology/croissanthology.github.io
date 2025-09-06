@@ -206,8 +206,10 @@ a {
 
 /* Focus state for accessibility */
 a:focus {
-    outline: 2px solid var(--color-accent);
-    outline-offset: 2px;
+    outline: none;
+    outline-offset: 0;
+    border-left: 2px solid var(--color-accent);
+    padding-left: 2px;
 }
 
 /* Special link colors - ONLY on hover */
@@ -218,6 +220,16 @@ a[href*="lesswrong.com"]:hover {
 a[href*="twitter.com"]:hover,
 a[href*="x.com"]:hover {
     color: #1DA1F2;
+}
+
+a[href*="substack.com"]:hover {
+    color: #E06726;
+}
+
+/* Theme toggle icons */
+#toggle-dark,
+#toggle-system {
+    font-family: 'Inter', sans-serif;
 }
 
 /* Post title links */
