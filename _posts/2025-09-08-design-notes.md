@@ -29,5 +29,14 @@ Why footnotes are so !E*#&@&!& hard to design and implement (for me), I do not k
 
 Now onto the actual design!
 
+## List of future additions
+
+- Little croissant icon for intralinks
+- Change the font! It’s hard to read rn. Baskerville or something atm.
+- Footnotes! Still! Don’t! Look! Good!
+- Image integration I mean come on
+- Table of contents not perfect yet
+- Thy headings should not copy automatically, do the Gwern spinning link thing
+- Bring back colored links! Gray is boring! 
 
 **[^1]: **Or rather, had OpenAI Codex Web code things up while I was taking a stroll, shower, or otherwise not paying attention and occasionally adjusting details on my phone screen. One can lead an incredibly satisfying cadence of existence, even at our relatively primitive technological level.
