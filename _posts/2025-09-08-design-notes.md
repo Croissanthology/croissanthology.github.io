@@ -39,4 +39,4 @@ Now onto the actual design!
 - Thy headings should not copy automatically, do the Gwern spinning link thing
 - Bring back colored links! Gray is boring! 
 
-**[^1]: **Or rather, had OpenAI Codex Web code things up while I was taking a stroll, shower, or otherwise not paying attention and occasionally adjusting details on my phone screen. One can lead an incredibly satisfying cadence of existence, even at our relatively primitive technological level.
+[^1]:** **Or rather, had OpenAI Codex Web code things up while I was taking a stroll, shower, or otherwise not paying attention and occasionally adjusting details on my phone screen. One can lead an incredibly satisfying cadence of existence, even at our relatively primitive technological level.
