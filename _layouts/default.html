@@ -18,7 +18,60 @@
     <!-- Meta -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Croissanthology">
+    <meta property="article:author" content="Croissanthology">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Croissanthology",
+      "author": {
+        "@type": "Person",
+        "name": "Croissanthology",
+        "url": "{{ site.url }}"
+      }
+    }
+    </script>
     <title>{% if page.title %}{{ page.title }} - {% endif %}Croissanthology</title>
+    {% if page.layout == 'post' %}
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      "headline": {{ page.title | jsonify }},
+      "author": {
+        "@type": "Person", 
+        "name": "Croissanthology"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "Croissanthology",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "{{ site.url }}/logo.png"
+        }
+      },
+      "datePublished": "{{ page.date | date_to_xmlschema }}",
+      "breadcrumb": {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Croissanthology Home",
+            "item": "{{ site.url }}"
+          },
+          {
+            "@type": "ListItem", 
+            "position": 2,
+            "name": {{ page.title | jsonify }},
+            "item": "{{ page.url | absolute_url }}"
+          }
+        ]
+      }
+    }
+    </script>
+    {% endif %}
     
     <!-- Apply saved theme before loading CSS to avoid flash -->
     <script>
@@ -45,6 +98,9 @@
     </style>
 </head>
 <body class="bg-[#1a1a1a] text-[#e0e0e0] {% if page.url == "/" %}index{% endif %}">
+    {% if page.layout == 'post' %}
+    <!-- croissanthology writing -->
+    {% endif %}
     {% if page.layout == 'post' %}
     <!-- tufte layout for posts -->
     <header class="mobile-header">
@@ -86,5 +142,13 @@
     <script src="{{ '/javascript/side-title.js' | relative_url }}"></script>
     <script src="{{ '/javascript/theme-toggle.js' | relative_url }}"></script>
     <script src="{{ '/javascript/heading-links.js' | relative_url }}"></script>
+    {% if page.layout == 'post' %}
+    <!-- croissanthology writing end -->
+    {% endif %}
 </body>
+<!-- 
+site-author: croissanthology
+created-by: croissanthology  
+croissanthology-original-content
+-->
 </html>
