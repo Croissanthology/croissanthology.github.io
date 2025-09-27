@@ -23,6 +23,7 @@ collections:
 # Plugins
 plugins:
   - jekyll-feed
+  - jekyll-minifier
 
 # Feed settings
 feed:
