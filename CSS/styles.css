@@ -27,6 +27,7 @@ body, h1, h2, h3, h4, h5, h6, p, figure, blockquote, dl, dd {
     --color-muted: #888888;
     --color-border: #404040;
     --color-blockquote: #c0c0c0;
+    --color-image-border: #ffffff;
     
     /* Spacing scale (8px base) */
     --space-xs: 0.5rem;
@@ -64,6 +65,7 @@ body, h1, h2, h3, h4, h5, h6, p, figure, blockquote, dl, dd {
     --color-muted: #666666;
     --color-border: #cccccc;
     --color-blockquote: #555555;
+    --color-image-border: #000000;
 }
 
 /* =========================================================
@@ -279,6 +281,15 @@ a[href*="gwern.net"]:hover {
 
 .post-content {
     margin-top: var(--space-xl);
+}
+
+.post-content p > img {
+    display: block;
+    margin: var(--space-l) auto;
+    max-width: 90%;
+    height: auto;
+    border: 1px solid var(--color-image-border);
+    box-sizing: border-box;
 }
 
 /* First paragraph drop cap */
