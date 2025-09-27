@@ -5,15 +5,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poiret+One&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=EB+Garamond&display=swap" rel="stylesheet">
-    
-    <!-- Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-VVQGCQMB02"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-VVQGCQMB02');
-    </script>
+
+    <!-- Resource hints for external assets -->
+    <link rel="dns-prefetch" href="//i.imgur.com">
+    <link rel="preconnect" href="https://i.imgur.com" crossorigin>
     
     <!-- Meta -->
     <meta charset="UTF-8">
@@ -87,15 +82,11 @@
     </script>
 
     <!-- Styles -->
-    <link rel="stylesheet" href="{{ '/CSS/styles.css' | relative_url }}">
+    <style>{% include critical.css %}</style>
+    <link rel="preload" href="{{ '/CSS/styles.css' | relative_url }}" as="style">
+    <link rel="stylesheet" href="{{ '/CSS/styles.css' | relative_url }}" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="{{ '/CSS/styles.css' | relative_url }}"></noscript>
     <link rel="icon" type="image/svg+xml" href="{{ '/images/green favicon.svg' | relative_url }}">
-    <style>
-        @media (min-width: 768px) {
-            .mobile-header {
-                display: none;
-            }
-        }
-    </style>
 </head>
 <body class="bg-[#1a1a1a] text-[#e0e0e0] {% if page.url == "/" %}index{% endif %}">
     {% if page.layout == 'post' %}
@@ -138,6 +129,43 @@
                 
     
     <!-- Scripts -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      document.querySelectorAll('img').forEach(function(img) {
+        if (!img.hasAttribute('loading')) {
+          img.loading = 'lazy';
+        }
+        if (!img.hasAttribute('decoding')) {
+          img.decoding = 'async';
+        }
+      });
+
+      document.querySelectorAll('img[src*="imgur"]').forEach(function(img) {
+        if (img.hasAttribute('srcset')) {
+          return;
+        }
+
+        var src = img.getAttribute('src');
+        if (!src || src.indexOf('.jpg') === -1 && src.indexOf('.JPG') === -1 && src.indexOf('.jpeg') === -1 && src.indexOf('.JPEG') === -1) {
+          return;
+        }
+
+        var urlParts = src.split('?');
+        var basePath = urlParts[0];
+        var query = urlParts.length > 1 ? '?' + urlParts.slice(1).join('?') : '';
+
+        var halfSizePath = basePath.replace(/\.jpe?g$/i, function(match) {
+          return 'h' + match;
+        });
+
+        if (halfSizePath === basePath) {
+          return;
+        }
+
+        img.srcset = src + ' 1x, ' + halfSizePath + query + ' 0.5x';
+      });
+    });
+    </script>
     <script src="{{ '/javascript/javaventuraayayay.js' | relative_url }}"></script>
     <script src="{{ '/javascript/side-title.js' | relative_url }}"></script>
     <script src="{{ '/javascript/theme-toggle.js' | relative_url }}"></script>

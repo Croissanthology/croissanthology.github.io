@@ -1,0 +1,139 @@
+/* Critical CSS: base typography, layout, and header */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+body, h1, h2, h3, h4, h5, h6, p {
+    margin: 0;
+}
+
+:root {
+    --color-bg: #1a1a1a;
+    --color-text: #e0e0e0;
+    --color-heading: #ffffff;
+    --color-heading-hover: #b3b3b3;
+    --color-accent: #4A9C6D;
+    --color-link: #e0e0e0;
+    --color-muted: #888888;
+    --color-border: #404040;
+    --font-display: 'Poiret One', cursive;
+    --font-body: 'EB Garamond', serif;
+    --content-width: min(1000px, 100%);
+    --space-xs: 0.5rem;
+    --space-s: 1rem;
+    --space-m: 1.5rem;
+    --space-xl: 3rem;
+    --line-height: 1.6;
+    --z-overlay: 50;
+}
+
+:root[data-theme="light"] {
+    --color-bg: #ffffff;
+    --color-text: #333333;
+    --color-heading: #000000;
+    --color-heading-hover: #555555;
+    --color-accent: #6fb88a;
+    --color-link: #333333;
+    --color-muted: #666666;
+    --color-border: #cccccc;
+}
+
+body {
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: var(--line-height);
+    color: var(--color-text);
+    background-color: var(--color-bg);
+    min-height: 100vh;
+    padding: var(--space-m);
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+}
+
+.container,
+.content-wrapper,
+section {
+    width: var(--content-width);
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 0 var(--space-m);
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    color: var(--color-heading);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    line-height: 1.2;
+    margin-top: var(--space-xl);
+    margin-bottom: var(--space-m);
+}
+
+p {
+    margin-bottom: var(--space-m);
+}
+
+.mobile-header {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background-color: var(--color-bg);
+    border-bottom: 1px solid var(--color-border);
+    z-index: var(--z-overlay);
+    transform: translateY(-100%);
+    transition: transform 0.3s ease;
+}
+
+.mobile-header.visible {
+    transform: translateY(0);
+}
+
+.mobile-header-title {
+    font-family: var(--font-display);
+    font-weight: 200;
+    font-size: 0.875rem;
+    text-align: center;
+    padding: var(--space-s);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+.progress-bar {
+    height: 2px;
+    background-color: var(--color-accent);
+    width: 0;
+    transition: width 0.2s ease;
+}
+
+@media (min-width: 768px) {
+    .mobile-header {
+        display: none;
+    }
+}
+
+@media (max-width: 768px) {
+    :root {
+        --content-width: 100%;
+    }
+
+    body {
+        padding-left: var(--space-xs);
+        padding-right: var(--space-s);
+    }
+
+    .container,
+    .content-wrapper,
+    section {
+        padding-left: var(--space-xs);
+        padding-right: var(--space-s);
+    }
+
+    .mobile-header {
+        display: block;
+    }
+}
