@@ -11,12 +11,16 @@ As a wee lad I was neurotic about losing information: reading about the [Library
 And so to the question [“what are you tracking in your head?”](https://www.lesswrong.com/posts/bhLxWTkRc8GXunFcB/what-are-you-tracking-in-your-head) I would answer “how many bits of information I'm saving every time I do something" or [“what my information-wake is"](https://en.wikipedia.org/wiki/Wake_(physics)). Every time I'd take a photo, it was because the photo looked like this:
 
 
+![Chimney mantelpiece filled with books, rubber ducks, paintings from a past self, an old Tintin-themed calendar, a tripod, a nasal spray, a solar-powered waving neko from Tokyo, a cup filled with pens of all kinds, some paper, some more books.](https://imgur.com/xIn4KGs)
+
 
 *Beautiful, and lots of bits of information!*
 
 
 Rather than, say, like this:
 
+
+![Foggy day at a New England marina, droopy American flag faced with a bay of small sailing vessels, brouillard-white dominates the image, little is going on, haunting.](https://imgur.com/UUGqtAp)
 
 
 *Beautiful, but very little information!*
