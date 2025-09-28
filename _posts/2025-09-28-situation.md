@@ -32,7 +32,7 @@ Or the current unfathomable ~near-100% [rate of involuntary deaths](https://ourw
 Or even Holden Karnofsky's graph from his essay [“This Can't Go On”](https://www.lesswrong.com/posts/5FZxhdi6hZp8QwK7k/this-can-t-go-on), which argues that the 21st century is exceptional in part because humanity just *couldn't possibly* maintain 2% growth rate for 8,200 years, despite our time handling it just fine:
 
 
-[Holden-Karnofsky-generated graph where the dates behind major inventions are plotted on a timeline and, 8,000 years from now, a point is denoted symbolically by “growth can't continue at today's rate past this point”.](https://imgur.com/9IC52sS.png)
+![Holden-Karnofsky-generated graph where the dates behind major inventions are plotted on a timeline and, 8,000 years from now, a point is denoted symbolically by “growth can't continue at today's rate past this point”.](https://imgur.com/9IC52sS.png)
 
 
 
