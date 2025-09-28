@@ -18,13 +18,13 @@ Most situations with other humans remind me how dearly I'd like others to have w
 
 
 
-![Our World in Data graph plotting world GDP in the long run, looking hilariously pareto-like.]([https://imgur.com/mKS5T2S.png](https://imgur.com/mKS5T2S.png))
+![Our World in Data graph plotting world GDP in the long run, looking hilariously pareto-like.](https://imgur.com/mKS5T2S.png)
 
 
 Or the current unfathomable ~near-100% [rate of involuntary deaths](https://ourworldindata.org/grapher/number-of-deaths-per-year), which we could image viewing from the perspective of a future textbook page from a more civilized Earth:
 
 
-![Claude-generated graph of “deaths”, vibes-plotting the death rate from pre-agricultural times to the dark-ages/enlightenment/21st-century and claiming all of it is “senseless, shocking, chaotic barbaric butchery” (slight spin on pre-agricultural times which are “stable” but otherwise the same), compared to the time after ~2029 (symbolic date denoting a friendly and anthropic singularity) here denoted as “today” to indicate this graph may've been dropped by a student in thousands of years from now who accidentally ripped a sheet out of their textbook.]([https://imgur.com/icqEgjm.png](https://imgur.com/icqEgjm.png))
+![Claude-generated graph of “deaths”, vibes-plotting the death rate from pre-agricultural times to the dark-ages/enlightenment/21st-century and claiming all of it is “senseless, shocking, chaotic barbaric butchery” (slight spin on pre-agricultural times which are “stable” but otherwise the same), compared to the time after ~2029 (symbolic date denoting a friendly and anthropic singularity) here denoted as “today” to indicate this graph may've been dropped by a student in thousands of years from now who accidentally ripped a sheet out of their textbook.](https://imgur.com/icqEgjm.png)
 
 
 
@@ -32,7 +32,7 @@ Or the current unfathomable ~near-100% [rate of involuntary deaths](https://ourw
 Or even Holden Karnofsky's graph from his essay [“This Can't Go On”](https://www.lesswrong.com/posts/5FZxhdi6hZp8QwK7k/this-can-t-go-on), which argues that the 21st century is exceptional in part because humanity just *couldn't possibly* maintain 2% growth rate for 8,200 years, despite our time handling it just fine:
 
 
-[Holden-Karnofsky-generated graph where the dates behind major inventions are plotted on a timeline and, 8,000 years from now, a point is denoted symbolically by “growth can't continue at today's rate past this point”.]([https://imgur.com/9IC52sS.png](https://imgur.com/9IC52sS.png))
+[Holden-Karnofsky-generated graph where the dates behind major inventions are plotted on a timeline and, 8,000 years from now, a point is denoted symbolically by “growth can't continue at today's rate past this point”.](https://imgur.com/9IC52sS.png)
 
 
 
