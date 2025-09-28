@@ -24,6 +24,7 @@ collections:
 plugins:
   - jekyll-feed
   - jekyll-minifier
+  - jekyll-redirect-from
 
 # Feed settings
 feed:
