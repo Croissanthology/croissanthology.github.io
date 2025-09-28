@@ -3,6 +3,8 @@ layout: post
 title: "Design notes"
 date: 2025-09-08
 permalink: /design-notes
+status: "perpetual mind-bazaar"
+importance: 1
 ---
 
 I’m a fan of the notion that one can[ unsee](http://gwern.net/unseeing) through notions like “expertise” and get things done no matter what the “[base rates”](https://en.wikipedia.org/wiki/Base_rate) and such similar notions *technically* say. One does not need to be or hire an expert in web design to make a good-looking website. One probably doesn’t even have to read a *textbook *on web design to make a good-looking website. In the year of our lord 2025, one can simply write out in excessive detail what one would like to see, and one’s[ talking, thinking machines](http://en.wikipedia.org/wiki/large_language_models) will hold up a mirror one can then edit at will.
@@ -43,5 +45,7 @@ There's more relevant information to a visitor who opens a post than the title a
 - Footnotes! Still! Don’t! Look! Good!
 - Table of contents not perfect yet
 - Thy headings should not copy automatically, do the Gwern spinning link thing
+- Yuck, quote boxes are disgusting in their current form
+- Image borders should accommodate dark mode too! Why would you make borders “just black"? Huh? Why??
 
 [^1]:** **Or rather, had OpenAI Codex Web code things up while I was taking a stroll, shower, or otherwise not paying attention and occasionally adjusting details on my phone screen. One can lead an incredibly satisfying cadence of existence, even at our relatively primitive technological level.
