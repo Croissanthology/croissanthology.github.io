@@ -20,7 +20,7 @@ Admire it[ here](http://croissanthology.com/404). I’m reading *Dracula* at the
 But for now, this will suffice; I have other things to do, like designing footnotes.
 
 
-![Croissanthology's 404 page, a young female vampire with white hair and lavender robes / headband holding an anthology of papers, some of which are fluttering in the wind. Small bat familiar on her shoulder.](https://imgur.com/RCVpXtK)
+![Croissanthology's 404 page, a young female vampire with white hair and lavender robes / headband holding an anthology of papers, some of which are fluttering in the wind. Small bat familiar on her shoulder.](https://imgur.com/RCVpXtK.png)
 
 
 
