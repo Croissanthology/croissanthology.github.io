@@ -23,7 +23,10 @@ body, h1, h2, h3, h4, h5, h6, p, figure, blockquote, dl, dd {
     --color-heading: #ffffff;
     --color-heading-hover: #b3b3b3;
     --color-accent: #4A9C6D;
+    --color-title: #e0b890;
     --color-link: #e0e0e0;
+    --color-link-internal: #8e81a2;
+    --color-link-internal-hover: #6d6380;
     --color-muted: #888888;
     --color-border: #404040;
     --color-blockquote: #c0c0c0;
@@ -61,7 +64,10 @@ body, h1, h2, h3, h4, h5, h6, p, figure, blockquote, dl, dd {
     --color-heading-hover: #555555;
     /* Lighter accent for light mode */
     --color-accent: #6fb88a;
+    --color-title: #c29969;
     --color-link: #333333;
+    --color-link-internal: #8e81a2;
+    --color-link-internal-hover: #6d6380;
     --color-muted: #666666;
     --color-border: #cccccc;
     --color-blockquote: #555555;
@@ -205,7 +211,6 @@ p {
 /* Content links with dotted underline */
 .post-content a,
 .dotted-box a {
-    color: var(--color-link);
     text-decoration-line: underline;
     text-decoration-style: dotted;
     text-decoration-thickness: 1px;
@@ -216,7 +221,6 @@ p {
 /* Hover state for content links */
 .post-content a:hover,
 .dotted-box a:hover {
-    color: var(--color-muted);
     text-decoration-style: solid;
 }
 
@@ -231,6 +235,32 @@ a {
 a:focus {
     outline: none;
 
+}
+
+/* Internal link colors */
+a[href]:not([href^="http://"]):not([href^="https://"]):not([href^="//"]):not([href^="mailto:"]):not([href^="tel:"]),
+a[href^="http://croissanthology.com"],
+a[href^="https://croissanthology.com"],
+a[href^="http://www.croissanthology.com"],
+a[href^="https://www.croissanthology.com"],
+a[href^="http://croissanthology.github.io"],
+a[href^="https://croissanthology.github.io"],
+.post-title a,
+.post-list a {
+    color: var(--color-link-internal);
+}
+
+/* Internal link hover state */
+a[href]:not([href^="http://"]):not([href^="https://"]):not([href^="//"]):not([href^="mailto:"]):not([href^="tel:"]):hover,
+a[href^="http://croissanthology.com"]:hover,
+a[href^="https://croissanthology.com"]:hover,
+a[href^="http://www.croissanthology.com"]:hover,
+a[href^="https://www.croissanthology.com"]:hover,
+a[href^="http://croissanthology.github.io"]:hover,
+a[href^="https://croissanthology.github.io"]:hover,
+.post-title a:hover,
+.post-list a:hover {
+    color: var(--color-link-internal-hover);
 }
 
 /* Special link colors - ONLY on hover */
@@ -267,13 +297,13 @@ a[href*="gwern.net"]:hover {
 }
 
 .post-title a {
-    color: var(--color-accent) !important;
+    color: var(--color-link-internal);
     font-weight: 700 !important;
     border-bottom: none;
 }
 
 .post-title a:hover {
-    opacity: 0.8;
+    color: var(--color-link-internal-hover);
 }
 
 /* =========================================================
@@ -321,7 +351,7 @@ a[href*="gwern.net"]:hover {
     line-height: 0.65;
     float: left;
     margin: 0.2em 0.2em 0 0;
-    color: var(--color-accent);
+    color: var(--color-title);
 }
 
 /* First paragraph in post content */
@@ -332,7 +362,7 @@ a[href*="gwern.net"]:hover {
     line-height: 0.65;
     float: left;
     margin: 0.2em 0.2em 0 0;
-    color: var(--color-accent);
+    color: var(--color-title);
 }
 
 /* =========================================================
@@ -441,11 +471,11 @@ li {
 }
 
 .title-white {
-    color: var(--color-heading);
+    color: var(--color-title);
 }
 
 .title-green {
-    color: var(--color-accent);
+    color: var(--color-title);
 }
 
 /* Image hover effect - simple fade */
@@ -571,7 +601,7 @@ li {
 }
 
 .post-list a {
-    color: var(--color-link);
+    color: var(--color-link-internal);
     text-decoration-line: underline;
     text-decoration-style: dotted;
     text-decoration-thickness: 1px;
@@ -580,7 +610,7 @@ li {
 }
 
 .post-list a:hover {
-    color: var(--color-accent);
+    color: var(--color-link-internal-hover);
     text-decoration-style: solid;
 }
 
