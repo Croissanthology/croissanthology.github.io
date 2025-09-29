@@ -594,14 +594,12 @@ footer {
     }
     
     body {
-        padding-left: var(--space-xs);
-        padding-right: var(--space-s);
+        padding-inline: var(--space-xs);
     }
 
     .container,
     .content-wrapper {
-        padding-left: var(--space-xs);
-        padding-right: var(--space-s);
+        padding-inline: var(--space-xs);
     }
     
     .mobile-header {
