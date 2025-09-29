@@ -3,9 +3,14 @@ layout: post
 title: "Casual archiving"
 date: 2025-09-24
 permalink: /archiving
+status: "in progress"
+importance: 4
+redirect_from:
+  - /casual-archiving
+  - /casual-archiving/
 ---
 
-As a wee lad I was neurotic about losing information: reading about the [Library of Alexanderia](v) physically hurt, I'd lay [awake at night crying in bed](https://bsky.app/profile/croissanthology.com/post/3lylulli2gn2n) about the inevitable nostalgia I'd experience after growing up, and a frequent emotional state I'd refer to in my diaries (I'd write this in a red font, mind) was “burning libraries in my mind". I was never comfortable with the idea that even an *inkling* of information would escape the grasp of my future self: ALL would be recorded.
+As a wee lad I was neurotic about losing information: reading about the [Library of Alexanderia](https://en.wikipedia.org/wiki/Library_of_Alexandria) physically hurt, I'd lay [awake at night crying in bed](https://bsky.app/profile/croissanthology.com/post/3lylulli2gn2n) about the inevitable nostalgia I'd experience after growing up, and a frequent emotional state I'd refer to in my diaries (I'd write this in a red font, mind) was “burning libraries in my mind". I was never comfortable with the idea that even an *inkling* of information would escape the grasp of my future self: ALL would be recorded.
 
 
 And so to the question [“what are you tracking in your head?”](https://www.lesswrong.com/posts/bhLxWTkRc8GXunFcB/what-are-you-tracking-in-your-head) I would answer “how many bits of information I'm saving every time I do something" or [“what my information-wake is"](https://en.wikipedia.org/wiki/Wake_(physics)). Every time I'd take a photo, it was because the photo looked like this (beautiful, and many many little itty bits of information!):
@@ -43,7 +48,7 @@ Things you could do to casually archive information yourself:
 
 # **Discussion**
 
-[Twitter (croissanthology)](v)
+[Twitter (croissanthology)](https://x.com/croissanthology/status/1959767131165245929)
 
 
 [ˆ1]: Why do all this? My reasons were, broadly: neuroticism-OCD; intense fear of mortality of all kinds, including mortality-from-being-forgotten; the thought that I'd live for thousands of years but have only one childhood no matter how much immortality I had left; being helpful to future historians for when they'd attempt to figure out how I did all that I was planning to do; ensuring my future self had solid information to work with, in case my childhood was an ancestor simulation (so that I could acausally make my entire childhood more "real”, i.e. [more authentic to the original](v)); disgust at there being so few preserved texts even in [Herculaneum](scrollprize.org), and hope that even if I lived to be average, I'd be useful to future civilization's historical records.
