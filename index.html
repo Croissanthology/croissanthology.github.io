@@ -40,15 +40,15 @@ front_posts:
             {% endif %}
         {% endfor %}
         </ul>
-    </div>
-</div>
 
-{% assign starred_posts = site.posts | where: "starred", true %}
-{% for post in starred_posts %}
-<div class="featured-post">
-    <div class="featured-image">
-        <img src="images/skyline.png" alt="">
+        {% assign starred_posts = site.posts | where: "starred", true %}
+        {% for post in starred_posts %}
+        <div class="featured-post">
+            <div class="featured-image">
+                <img src="images/skyline.png" alt="">
+            </div>
+            <h2 class="featured-title"><a href="{{ post.url }}">{{ post.title }}</a></h2>
+        </div>
+        {% endfor %}
     </div>
-    <h2 class="featured-title"><a href="{{ post.url }}">{{ post.title }}</a></h2>
 </div>
-{% endfor %}
