@@ -14,6 +14,9 @@ body, h1, h2, h3, h4, h5, h6, p {
     --color-heading-hover: #b3b3b3;
     --color-accent: #4A9C6D;
     --color-link: #e0e0e0;
+    --color-link-internal: #8e81a2;
+    --color-link-internal-hover: #6d6380;
+    --color-title: #e0b890;
     --color-muted: #888888;
     --color-border: #404040;
     --font-display: 'Poiret One', cursive;
@@ -34,6 +37,9 @@ body, h1, h2, h3, h4, h5, h6, p {
     --color-heading-hover: #555555;
     --color-accent: #6fb88a;
     --color-link: #333333;
+    --color-link-internal: #8e81a2;
+    --color-link-internal-hover: #6d6380;
+    --color-title: #c29969;
     --color-muted: #666666;
     --color-border: #cccccc;
 }
@@ -50,6 +56,11 @@ body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
+}
+
+.title-white,
+.title-green {
+    color: var(--color-title);
 }
 
 .container,
