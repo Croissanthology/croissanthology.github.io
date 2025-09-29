@@ -145,12 +145,13 @@ body {
     transition: color 0.2s ease;
 }
 
-:is(h1, h2, h3, h4, h5, h6):not(.title) {
+:is(h1, h2, h3, h4, h5, h6):not(.title, .post-title) {
     cursor: pointer;
 }
 
-:is(h1, h2, h3, h4, h5, h6):not(.title):hover,
-:is(h1, h2, h3, h4, h5, h6):not(.title):focus-within {
+:is(h1, h2, h3, h4, h5, h6):not(.title, .post-title):hover,
+:is(h1, h2, h3, h4, h5, h6):not(.title, .post-title):focus-within {
+
     color: var(--color-heading-hover);
 }
 
@@ -183,13 +184,9 @@ h1::after, h2::after, h3::after, h4::after, h5::after {
 .post-content .heading-link:focus,
 .heading-link:hover,
 .heading-link:focus {
-    text-decoration: underline;
-}
 
-.heading-link:focus-visible {
-    outline: none;
-    text-decoration: underline;
-    color: var(--color-heading-hover);
+    text-decoration: none;
+
 }
 
 /* Paragraphs */
