@@ -58,7 +58,11 @@ body {
     text-rendering: optimizeLegibility;
 }
 
-.title-white,
+.title-white {
+    color: var(--color-heading);
+}
+
+
 .title-green {
     color: var(--color-title);
 }
