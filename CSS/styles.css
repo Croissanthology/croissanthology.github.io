@@ -24,7 +24,7 @@ body, h1, h2, h3, h4, h5, h6, p, figure, blockquote, dl, dd {
     --color-heading-hover: #b3b3b3;
     --color-accent: #4A9C6D;
     --color-title: #e0b890;
-
+ 
     --color-link: #e0e0e0;
     --color-link-internal: #8e81a2;
     --color-link-internal-hover: #6d6380;
@@ -268,6 +268,31 @@ a[href^="https://croissanthology.github.io"]:hover,
 .post-title a:hover,
 .post-list a:hover {
     color: var(--color-link-internal-hover);
+}
+
+/* Front page: keep internal links in the legacy gray palette */
+body.index .content-wrapper a[href]:not([href^="http://"]):not([href^="https://"]):not([href^="//"]):not([href^="mailto:"]):not([href^="tel:"]),
+body.index .content-wrapper a[href^="http://croissanthology.com"],
+body.index .content-wrapper a[href^="https://croissanthology.com"],
+body.index .content-wrapper a[href^="http://www.croissanthology.com"],
+body.index .content-wrapper a[href^="https://www.croissanthology.com"],
+body.index .content-wrapper a[href^="http://croissanthology.github.io"],
+body.index .content-wrapper a[href^="https://croissanthology.github.io"],
+body.index .content-wrapper .post-title a,
+body.index .content-wrapper .post-list a {
+    color: var(--color-link);
+}
+
+body.index .content-wrapper a[href]:not([href^="http://"]):not([href^="https://"]):not([href^="//"]):not([href^="mailto:"]):not([href^="tel:"]):hover,
+body.index .content-wrapper a[href^="http://croissanthology.com"]:hover,
+body.index .content-wrapper a[href^="https://croissanthology.com"]:hover,
+body.index .content-wrapper a[href^="http://www.croissanthology.com"]:hover,
+body.index .content-wrapper a[href^="https://www.croissanthology.com"]:hover,
+body.index .content-wrapper a[href^="http://croissanthology.github.io"]:hover,
+body.index .content-wrapper a[href^="https://croissanthology.github.io"]:hover,
+body.index .content-wrapper .post-title a:hover,
+body.index .content-wrapper .post-list a:hover {
+    color: var(--color-link);
 
 }
 
