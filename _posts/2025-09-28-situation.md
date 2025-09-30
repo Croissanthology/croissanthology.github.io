@@ -56,6 +56,15 @@ The ability to forgive the actions
 
 Another thing I don’t understand about some of my fellow 21st-century-born compatriots is that they don’t seem to understand that we’re *being watched*. There *is*  an abstract, almost begrudging admission that “future generations” are capable of judging us; but it never goes into any detail, and it’s treated as a[ rhetorical technique](http://v) rather than a[ true, material thing](http://croissanthology.com/true). That there are students in the future who will read about you in the history books is not a delusion, or the stuff of pep talks: there are *literally* children of flesh and blood who’re reading about *your actual name,* on textbooks, printed with real[ pulp paper](https://en.wikipedia.org/wiki/Pulp_(paper)).[ˆ1] Visualize the scene with as many serendipitous details as you can to make the image feel more real, if you need to.[ˆ2]
 
+It will feel weird to people when you tell them that you were alive in the 21st century. Like when my dad tells me he’s been to the Soviet Union for a soccer match, and has seen Gorbatchev give a speech before at his university. The 21st century has an *ancient*, metallic taste to it, because it’s the tail end of barbaric times before technological maturity, the dreamtime, years where anyone could stick their hand in the waterfall of human activity and expect a dozen jets of water to blow in every direction from it. ([You’d better get used to the butterfly effect; *you’re swimming in it*](https://knowyourmeme.com/memes/you-best-start-believing-in-ghost-stories-youre-in-one).)
+
+That only those who’re voracious readers of science fiction or otherwise became futurists understand this is baffling to me. Most times I read about people in the newspaper, I can’t imagine they could’ve acted the way they did if they were *aware* of it all.
+
+
+![Calvin and Hobbes looking up at a sea of stars, Calvin says “If people sat outside and looked at the stars each night, I'll bet they'd live a lot differently.” Hobbes asks “How so?” and Calvin answers “Well, when you look into infinity, you  realize that there are more important things than what people do all day.”](https://imgur.com/TEIQEwn.jpg)
+
+
+
 
 
 
