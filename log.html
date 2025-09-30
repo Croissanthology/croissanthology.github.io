@@ -6,20 +6,23 @@ title: "Log"
 <h1 style="text-align:center; font-family: Baskerville, 'Baskerville Old Face', 'Hoefler Text', Garamond, serif;">log</h1>
 
 <div style="max-width: 800px; margin: 3rem auto; padding: 0 1rem;">
-{% assign all_entries = "" | split: "" %}
+{% assign all_updates = "" | split: "" %}
 {% for post in site.data.wordlog %}
   {% for update in post.history %}
-    {% assign entry = post | merge: {
-      'date': update.date,
-      'words_added': update.words_added
-    } %}
-    {% assign all_entries = all_entries | push: entry %}
+    {% capture update_string %}{{ update.date }}|||{{ post.title }}|||{{ post.slug }}|||{{ update.words_added }}{% endcapture %}
+    {% assign all_updates = all_updates | push: update_string %}
   {% endfor %}
 {% endfor %}
 
-{% assign sorted_entries = all_entries | sort: 'date' | reverse %}
+{% assign sorted_updates = all_updates | sort | reverse %}
 
-{% for entry in sorted_entries %}
+{% for update_string in sorted_updates %}
+  {% assign parts = update_string | split: "|||" %}
+  {% assign date = parts[0] %}
+  {% assign title = parts[1] %}
+  {% assign slug = parts[2] %}
+  {% assign words_added = parts[3] %}
+  
   <div style="
     border: 1px solid #8e81a2;
     border-radius: 12px;
@@ -31,17 +34,17 @@ title: "Log"
     font-family: Baskerville, 'Baskerville Old Face', 'Hoefler Text', Garamond, serif;
   ">
     <div style="flex: 1;">
-      <a href="/{{ entry.slug }}" style="
+      <a href="/{{ slug }}" style="
         text-decoration: none;
         font-size: 1.15rem;
         font-weight: 600;
         display: block;
         margin-bottom: 0.25rem;
-      ">{{ entry.title }}</a>
+      ">{{ title }}</a>
       <div style="
         opacity: 0.7;
         font-size: 0.9rem;
-      ">{{ entry.date }}</div>
+      ">{{ date }}</div>
     </div>
     <div style="
       font-size: 1.1rem;
@@ -49,7 +52,8 @@ title: "Log"
       margin-left: 2rem;
       font-weight: 500;
     ">
-      {% if entry.words_added >= 0 %}+{% endif %}{{ entry.words_added }} words
+      {% assign words_num = words_added | plus: 0 %}
+      {% if words_num >= 0 %}+{% endif %}{{ words_added }} words
     </div>
   </div>
 {% endfor %}
