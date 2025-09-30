@@ -190,6 +190,10 @@ h1::after, h2::after, h3::after, h4::after, h5::after {
     text-decoration-style: solid;
 }
 
+.post-content :is(h1, h2, h3, h4, h5, h6) > .heading-link {
+    color: var(--color-heading);
+}
+
 .post-content .heading-link:hover,
 .post-content .heading-link:focus,
 .heading-link:hover,
@@ -242,7 +246,7 @@ a:focus {
 }
 
 /* Internal link colors */
-a[href]:not([href^="http://"]):not([href^="https://"]):not([href^="//"]):not([href^="mailto:"]):not([href^="tel:"]),
+a[href]:not([href^="http://"]):not([href^="https://"]):not([href^="//"]):not([href^="mailto:"]):not([href^="tel:"]):not(.heading-link):not(.toc-link),
 a[href^="http://croissanthology.com"],
 a[href^="https://croissanthology.com"],
 a[href^="http://www.croissanthology.com"],
@@ -257,7 +261,7 @@ a[href^="https://croissanthology.github.io"],
 }
 
 /* Internal link hover state */
-a[href]:not([href^="http://"]):not([href^="https://"]):not([href^="//"]):not([href^="mailto:"]):not([href^="tel:"]):hover,
+a[href]:not([href^="http://"]):not([href^="https://"]):not([href^="//"]):not([href^="mailto:"]):not([href^="tel:"]):not(.heading-link):not(.toc-link):hover,
 a[href^="http://croissanthology.com"]:hover,
 a[href^="https://croissanthology.com"]:hover,
 a[href^="http://www.croissanthology.com"]:hover,
