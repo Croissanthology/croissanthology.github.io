@@ -38,6 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
     li.style.marginLeft = depth * 16 + 'px';
 
     const a = document.createElement('a');
+    a.className = 'toc-link';
     a.href = '#' + h.id;
     const numSpan = document.createElement('span');
     numSpan.className = 'toc-number';
