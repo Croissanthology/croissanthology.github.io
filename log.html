@@ -9,16 +9,15 @@ title: "Log"
 {% assign all_entries = "" | split: "" %}
 {% for post in site.data.wordlog %}
   {% for update in post.history %}
-    {% assign entry = "" | split: "" %}
-    {% assign entry = entry | push: post.title %}
-    {% assign entry = entry | push: post.slug %}
-    {% assign entry = entry | push: update.date %}
-    {% assign entry = entry | push: update.words_added %}
+    {% assign entry = post | merge: {
+      'date': update.date,
+      'words_added': update.words_added
+    } %}
     {% assign all_entries = all_entries | push: entry %}
   {% endfor %}
 {% endfor %}
 
-{% assign sorted_entries = all_entries | sort: 2 | reverse %}
+{% assign sorted_entries = all_entries | sort: 'date' | reverse %}
 
 {% for entry in sorted_entries %}
   <div style="
@@ -32,17 +31,17 @@ title: "Log"
     font-family: Baskerville, 'Baskerville Old Face', 'Hoefler Text', Garamond, serif;
   ">
     <div style="flex: 1;">
-      <a href="/{{ entry[1] }}" style="
+      <a href="/{{ entry.slug }}" style="
         text-decoration: none;
         font-size: 1.15rem;
         font-weight: 600;
         display: block;
         margin-bottom: 0.25rem;
-      ">{{ entry[0] }}</a>
+      ">{{ entry.title }}</a>
       <div style="
         opacity: 0.7;
         font-size: 0.9rem;
-      ">{{ entry[2] }}</div>
+      ">{{ entry.date }}</div>
     </div>
     <div style="
       font-size: 1.1rem;
@@ -50,7 +49,7 @@ title: "Log"
       margin-left: 2rem;
       font-weight: 500;
     ">
-      {% if entry[3] >= 0 %}+{% endif %}{{ entry[3] }} words
+      {% if entry.words_added >= 0 %}+{% endif %}{{ entry.words_added }} words
     </div>
   </div>
 {% endfor %}
