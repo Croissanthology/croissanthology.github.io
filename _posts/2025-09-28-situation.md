@@ -58,7 +58,7 @@ Another thing I don’t understand about some of my fellow 21st-century-born com
 
 It will feel weird to people when you tell them that you were alive in the 21st century. Like when my dad tells me he’s been to the Soviet Union for a soccer match, and has seen Gorbatchev give a speech before at his university. The 21st century has an *ancient*, metallic taste to it, because it’s the tail end of barbaric times before technological maturity, the dreamtime, years where anyone could stick their hand in the waterfall of human activity and expect a dozen jets of water to blow in every direction from it. ([You’d better get used to the butterfly effect; *you’re swimming in it*](https://knowyourmeme.com/memes/you-best-start-believing-in-ghost-stories-youre-in-one).)
 
-That only those who’re voracious readers of science fiction or otherwise became futurists understand this is baffling to me. Most times I read about people in the newspaper, I can’t imagine they could’ve acted the way they did if they were *aware* of it all.
+That only those who’re voracious readers of science fiction or otherwise became futurists understand this is baffling to me. Most times I read about people in the newspaper, I can’t imagine they could’ve acted the way they did if they were *aware* of it all. It seems like such a vast truth that you can't merely go on treating everything else so seriously anymore.
 
 
 ![Calvin and Hobbes looking up at a sea of stars, Calvin says “If people sat outside and looked at the stars each night, I'll bet they'd live a lot differently.” Hobbes asks “How so?” and Calvin answers “Well, when you look into infinity, you  realize that there are more important things than what people do all day.”](https://imgur.com/TEIQEwn.jpg)
