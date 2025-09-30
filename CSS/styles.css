@@ -24,9 +24,11 @@ body, h1, h2, h3, h4, h5, h6, p, figure, blockquote, dl, dd {
     --color-heading-hover: #b3b3b3;
     --color-accent: #4A9C6D;
     --color-title: #e0b890;
+
     --color-link: #e0e0e0;
     --color-link-internal: #8e81a2;
     --color-link-internal-hover: #6d6380;
+
     --color-muted: #888888;
     --color-border: #404040;
     --color-blockquote: #c0c0c0;
@@ -65,9 +67,11 @@ body, h1, h2, h3, h4, h5, h6, p, figure, blockquote, dl, dd {
     /* Lighter accent for light mode */
     --color-accent: #6fb88a;
     --color-title: #c29969;
+
     --color-link: #333333;
     --color-link-internal: #8e81a2;
     --color-link-internal-hover: #6d6380;
+
     --color-muted: #666666;
     --color-border: #cccccc;
     --color-blockquote: #555555;
@@ -226,7 +230,7 @@ p {
 
 /* All other links - no underlines by default */
 a {
-    color: var(--color-link);
+    color: inherit;
     text-decoration: none;
     transition: color 0.2s ease;
 }
@@ -245,9 +249,11 @@ a[href^="http://www.croissanthology.com"],
 a[href^="https://www.croissanthology.com"],
 a[href^="http://croissanthology.github.io"],
 a[href^="https://croissanthology.github.io"],
+
 .post-title a,
 .post-list a {
     color: var(--color-link-internal);
+
 }
 
 /* Internal link hover state */
@@ -258,9 +264,11 @@ a[href^="http://www.croissanthology.com"]:hover,
 a[href^="https://www.croissanthology.com"]:hover,
 a[href^="http://croissanthology.github.io"]:hover,
 a[href^="https://croissanthology.github.io"]:hover,
+
 .post-title a:hover,
 .post-list a:hover {
     color: var(--color-link-internal-hover);
+
 }
 
 /* Special link colors - ONLY on hover */
@@ -297,13 +305,17 @@ a[href*="gwern.net"]:hover {
 }
 
 .post-title a {
+
     color: var(--color-link-internal);
+
     font-weight: 700 !important;
     border-bottom: none;
 }
 
 .post-title a:hover {
+
     color: var(--color-link-internal-hover);
+
 }
 
 /* =========================================================
@@ -471,7 +483,7 @@ li {
 }
 
 .title-white {
-    color: var(--color-heading);
+    color: var(--color-title);
 }
 
 .title-green {
