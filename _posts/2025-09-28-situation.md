@@ -42,4 +42,24 @@ The 21st century could also be said to be exceptional for its stunning lack of e
 > Yet even these differences will pale relative to one huge difference: our lives are far more dominated by consequential delusions: wildly false beliefs and non-adaptive values that matter.  While our descendants may explore delusion-dominated virtual realities, they will well understand that such things cannot be real, and don’t much influence history.  In contrast, we live in the brief but important “dreamtime” when delusions drove history.  Our descendants will remember our era as the one where the human capacity to sincerely believe crazy non-adaptive things, and act on those beliefs, was dialed to the max.
 
 
-I see no reason why determinism wouldn't be true all the way down: and so as technology advances psychology will eventually be “solved”, in the sense that human minds will become open books, illusions of “free will” will be dispelled, taking [illusions of “free will” *mattering*](http://lesswrong.com/posts/NEeW7eSXThPz7o4Ne/thou-art-physics) along with them, and then humans will simply *be*. They will see no point to suffering since they could just as well avoid suffering by pressing levers X and Y, similar to how in the 21st century you or I can take [paracetamol](https://en.wikipedia.org/wiki/Paracetamol) whenever we feel pain (and we don't think much of it). They probably *wouldn't* spiral into a Doestoevsky-like fit of burning-everything-down just because they feel purposeless, because they *wouldn't* feel purposeless, because purposelessness is probably *solvable* via sufficiently advanced psychology. Frankly, it's difficult to imagine *any* psychological problem remaining once you apply sufficient [solution](https://croissanthology.com/solutionism) to psychology.
+I see no reason why determinism wouldn't be true all the way down: and so as technology advances psychology will eventually be “solved”, in the sense that human minds will become open books, illusions of “free will” will be dispelled, taking [illusions of “free will” *mattering*](http://lesswrong.com/posts/NEeW7eSXThPz7o4Ne/thou-art-physics) along with them, and then humans will simply *be*. They will see no point to suffering since they could just as well avoid suffering by pressing levers X and Y, similar to how in the 21st century you or I can take [paracetamol](https://en.wikipedia.org/wiki/Paracetamol) whenever we feel pain (and we don't think much of it). They probably *wouldn't* spiral into a Doestoevsky-like fit of burning-everything-down just because they feel purposeless, because they *wouldn't* feel purposeless, because purposelessness is probably *solvable* via sufficiently advanced psychology. Frankly, it's difficult to imagine *any* psychological problem remaining once you apply sufficient [solutionism](https://croissanthology.com/solutionism) to it.
+
+
+## All of us children
+
+
+The ability to forgive the actions
+
+
+## All of us in a museum
+
+
+Another thing I don’t understand about some of my fellow 21st-century-born compatriots is that they don’t seem to understand that we’re *being watched*. There *is*  an abstract, almost begrudging admission that “future generations” are capable of judging us; but it never goes into any detail, and it’s treated as a[ rhetorical technique](http://v) rather than a[ true, material thing](http://croissanthology.com/true). That there are students in the future who will read about you in the history books is not a delusion, or the stuff of pep talks: there are *literally* children of flesh and blood who’re reading about *your actual name,* on textbooks, printed with real[ pulp paper](https://en.wikipedia.org/wiki/Pulp_(paper)).[ˆ1] Visualize the scene with as many serendipitous details as you can to make the image feel more real, if you need to.[ˆ2]
+
+
+
+
+[ˆ1]: You might say “I doubt that” because you put a high probability to humanity going extinct. But this is a silly thought. The dignified thing to do is to act as the children holding the textbooks would want you to act, given the stakes: if you ignore their presence because there’s a possibility they’ll never exist, you’re doing exactly what it takes to fuck up the future.
+
+
+[ˆ2]: (Description of scene by me +[ bits-beats-slop-worthy](https://gwern.net/blog/2025/good-ai-samples) AI images go here.)
