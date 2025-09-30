@@ -483,7 +483,7 @@ li {
 }
 
 .title-white {
-    color: var(--color-title);
+    color: var(--color-heading);
 }
 
 .title-green {
