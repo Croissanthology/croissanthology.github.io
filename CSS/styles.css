@@ -713,7 +713,8 @@ li {
     .dotted-box {
         border: none;
         border-bottom: 1px dotted var(--color-border);
-        padding-inline: var(--space-xs);
+        margin-inline: 0;
+        padding-inline: calc(var(--space-xs) / 2);
     }
 
     .featured-post {
