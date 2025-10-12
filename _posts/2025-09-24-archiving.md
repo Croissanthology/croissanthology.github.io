@@ -8,6 +8,8 @@ importance: 4
 redirect_from:
   - /casual-archiving
   - /casual-archiving/
+  - /archving
+  - /archving/
 ---
 
 As a wee lad I was neurotic about losing information: reading about the [Library of Alexanderia](https://en.wikipedia.org/wiki/Library_of_Alexandria) physically hurt, I'd lay [awake at night crying in bed](https://bsky.app/profile/croissanthology.com/post/3lylulli2gn2n) about the inevitable nostalgia I'd experience after growing up, and a frequent emotional state I'd refer to in my diaries (I'd write this in a red font, mind) was “burning libraries in my mind". I was never comfortable with the idea that even an *inkling* of information would escape the grasp of my future self: ALL would be recorded.
