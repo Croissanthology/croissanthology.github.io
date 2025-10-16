@@ -47,7 +47,7 @@
   {
     "slug": "utopia",
     "title": "Mundane reasons to want utopia",
-    "total_words": 513,
+    "total_words": 494,
     "history": [
       {
         "date": "2025-10-16",
@@ -80,6 +80,10 @@
       {
         "date": "2025-10-16",
         "words_added": 0
+      },
+      {
+        "date": "2025-10-16",
+        "words_added": -19
       }
     ]
   }
