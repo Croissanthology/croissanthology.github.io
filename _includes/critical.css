@@ -19,7 +19,7 @@ body, h1, h2, h3, h4, h5, h6, p {
     --color-title: #e0b890;
     --color-muted: #888888;
     --color-border: #404040;
-    --font-display: 'Poiret One', cursive;
+    --font-display: 'Poiret One', Arial, sans-serif;
     --font-body: 'EB Garamond', serif;
     --content-width: min(1000px, 100%);
     --space-xs: 0.5rem;
