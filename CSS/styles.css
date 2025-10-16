@@ -44,7 +44,7 @@ body, h1, h2, h3, h4, h5, h6, p, figure, blockquote, dl, dd {
     
     /* Typography */
     --font-system: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    --font-display: 'Poiret One', cursive;
+    --font-display: 'Poiret One', Arial, sans-serif;
     --font-body: 'EB Garamond', serif;
     
     /* Sizing */
@@ -503,7 +503,7 @@ li {
     margin: 0;
     position: relative;
     z-index: 2;
-    font-family: 'Poiret One', cursive;
+    font-family: 'Poiret One', Arial, sans-serif;
     font-weight: 200;
     text-transform: uppercase;
     letter-spacing: 0.2em;
