@@ -21,7 +21,7 @@
   {
     "slug": "solution",
     "title": "Solutionism",
-    "total_words": 873,
+    "total_words": 932,
     "history": [
       {
         "date": "2025-09-30",
@@ -30,6 +30,10 @@
       {
         "date": "2025-10-03",
         "words_added": 0
+      },
+      {
+        "date": "2025-10-24",
+        "words_added": 59
       }
     ]
   },
