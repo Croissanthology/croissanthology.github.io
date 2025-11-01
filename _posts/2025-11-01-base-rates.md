@@ -50,7 +50,7 @@ Yet perversely, the statistic *feels like* it's aimed at individuals, because sh
 ## Similar links:
 
 - [Tweet that seeded this post](https://x.com/croissanthology/status/1967714180749742147)
-- [Scott Alexander, Against Individual IQ Worries](v)
+- [Scott Alexander, Against Individual IQ Worries](https://slatestarcodex.com/2017/09/27/against-individual-iq-worries/)
 
 
 
