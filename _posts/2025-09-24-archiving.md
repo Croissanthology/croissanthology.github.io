@@ -83,7 +83,7 @@ And so a habit of casual archiving began. Pictures of daily life at home rather 
 - write about anything you're reading, while you're doing it (or you'll never do it), scribbled notes are fine
 - do not worry about the quality of the substrate you're recording things on, so long as it is *recorded*: there are entire lives stored within discord conversations, slack channels, scribbled novel notes, post-its, whiteboards-you-took-photos-of, google docs, screenshots, videos, recorded conversations, LLM conversations, whatever: if you hesitate to write, simply because you're worried the substrate is ugly or beneath you, you simply will not get anything written [^2]
 
-![Example of high information content potential: image of whiteboard with “SAMPLE for croissanthology post (visit croissanthology.com!)” scribbled on it.](blob:https://i.imgur.com/wEU5Iek.png)
+![Example of high information content potential: image of whiteboard with “SAMPLE for croissanthology post (visit croissanthology.com!)” scribbled on it.](https://i.imgur.com/wEU5Iek.png)
 
 
 ![Example of high information content potential: screenshot of the whiteboard photo in mobile photo app with, screenshot-markup-style, “SAMPLE for croissanthology post (visit croissanthology.com!)” swipe-to-typ-ed on it.](https://i.imgur.com/mKtAIdA.png)
