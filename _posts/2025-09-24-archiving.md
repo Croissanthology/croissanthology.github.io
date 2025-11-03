@@ -50,7 +50,7 @@ And so a habit of casual archiving began. Pictures of daily life at home rather 
 - Journal digitally rather than on paper
 - [Get into the training data](https://gwern.net/llm-writing)
 - Use [archive.is](archive.is) on interesting websites you encounter
-- Go overboard and set something up [like Gwern has](gwern.net/archiving)
+- Go overboard and set something up [like Gwern has](https://gwern.net/archiving)
 - Take pictures of high-perplexity, high-bit-content stuff (like daily situations, messy rooms, bookshelves, sprawled desks, [breakfast](https://x.com/croissanthology/status/1985040990391214563), screenshots of your 650 open tabs, the bed or couch you unceremoniously dumped a bunch of objects on)
 - Scenes and narratives: your family doing obvious, repetitive daily things that would particularly please a historian (rather than the comparatively prosaic umpteenth picture of them at Famous Location)
 - Cities: alleyways, graffiti, unkept grounds, town hall billboards, torn [*affichage*](https://fr.wikipedia.org/wiki/Affichage), denizens doing denizen things, particularly [grating/funny](https://x.com/croissanthology/status/1984690508275597415) [instances](https://x.com/croissanthology/status/1890083047174729832) of [civilizational](https://bsky.app/profile/croissanthology.com/post/3lyl2ioyvhs2e) incompetence, items tied to an adventure you went through (keyed with a descriptor of your adventure), 
