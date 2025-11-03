@@ -17,6 +17,9 @@ redirect_from:
 As a wee lad I was neurotic about losing information: reading about the [Library of Alexanderia](https://en.wikipedia.org/wiki/Library_of_Alexandria) physically hurt, I'd lay [awake at night crying in bed](https://bsky.app/profile/croissanthology.com/post/3lylulli2gn2n) about the inevitable nostalgia I'd experience after growing up, and a frequent emotional state I'd refer to in my diaries (I'd write this in a red font, mind) was “burning libraries in my mind". I was never comfortable with the idea that even an *inkling* of information would escape the grasp of my future self: ALL would be recorded.
 
 
+## Muh childhood
+
+
 And so to the question [“what are you tracking in your head?”](https://www.lesswrong.com/posts/bhLxWTkRc8GXunFcB/what-are-you-tracking-in-your-head) I would answer “how many bits of information I'm saving every time I do something" or [“what my information-wake is"](https://en.wikipedia.org/wiki/Wake_(physics)). Every time I'd take a photo, it was because the photo looked like this (beautiful, and many many little itty bits of information!):
 
 
@@ -63,7 +66,7 @@ And so a habit of casual archiving began. Pictures of daily life at home rather 
 - make sure your bank keeps your receipts somewhere (ideally you can back this up yourself)
 - backed up computer (e.g. my entire Mac is backed up on my google drive)
 - Keep pieces of schoolwork/paper you scribbled anything original at all on as a kid: c.f. the chest on the side of the room, you underestimate the physical size of your childhood-remnants! 
-![Picture of Paris square near le Centre Georges Pompidou / Beaubourg, containing impressively dirty gothic church, graffiti of Zinédine Zidane, mural by artist “Obey", Pixel art from *Alien Invaders*, Pompidou pipes, fountain by Niki de Saint Phalle, and tons of other details within and without the listed items, like humans at the bottom left, chimney-tops, wildly graffiti at human-level, beautiful blue sky with wispy white clouds, flying buttresses, cheerful green elephant statue, etc. etc. etc.]([https://i.imgur.com/Wy5SAUD.png](https://i.imgur.com/Wy5SAUD.png))
+![Picture of Paris square near le Centre Georges Pompidou / Beaubourg, containing impressively dirty gothic church, graffiti of Zinédine Zidane, mural by artist “Obey", Pixel art from *Alien Invaders*, Pompidou pipes, fountain by Niki de Saint Phalle, and tons of other details within and without the listed items, like humans at the bottom left, chimney-tops, wildly graffiti at human-level, beautiful blue sky with wispy white clouds, flying buttresses, cheerful green elephant statue, etc. etc. etc.](https://imgur.com/Wy5SAUD.png)
 
 
 
