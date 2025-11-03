@@ -40,7 +40,7 @@
   {
     "slug": "archiving",
     "title": "Casual archiving",
-    "total_words": 1631,
+    "total_words": 1630,
     "history": [
       {
         "date": "2025-10-12",
@@ -65,6 +65,10 @@
       {
         "date": "2025-11-03",
         "words_added": 0
+      },
+      {
+        "date": "2025-11-03",
+        "words_added": -1
       }
     ]
   },
