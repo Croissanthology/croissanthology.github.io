@@ -83,12 +83,18 @@ And so a habit of casual archiving began. Pictures of daily life at home rather 
 - write about anything you're reading, while you're doing it (or you'll never do it), scribbled notes are fine
 - do not worry about the quality of the substrate you're recording things on, so long as it is *recorded*: there are entire lives stored within discord conversations, slack channels, scribbled novel notes, post-its, whiteboards-you-took-photos-of, google docs, screenshots, videos, recorded conversations, LLM conversations, whatever: if you hesitate to write, simply because you're worried the substrate is ugly or beneath you, you simply will not get anything written [^2]
 
+![Example of high information content potential: image of whiteboard with “SAMPLE for croissanthology post (visit croissanthology.com!)” scribbled on it.](blob:https://i.imgur.com/wEU5Iek.png)
+
+
+![Example of high information content potential: screenshot of the whiteboard photo in mobile photo app with, screenshot-markup-style, “SAMPLE for croissanthology post (visit croissanthology.com!)” swipe-to-typ-ed on it.](https://i.imgur.com/mKtAIdA.png)
+
+
 # **Similar links**
 
 - [Twitter (croissanthology)](https://x.com/croissanthology/status/1959767131165245929)
 - [Lifelog (Wikipedia)](https://en.wikipedia.org/wiki/Lifelog)
 - [The Case for Life logging as life extension (Matthew Barnett)](https://www.lesswrong.com/posts/k8mwvvvpjMGcZLAKH/the-case-for-lifelogging-as-life-extension)
-- [Could a superintelligence deduce general relativity from a falling apple?](https://www.lesswrong.com/posts/ALsuxpdqeTXwgEJeZ/could-a-superintelligence-deduce-general-relativity-from-a) (titotal) [ˆ3] 
+- [Could a superintelligence deduce general relativity from a falling apple?](https://www.lesswrong.com/posts/ALsuxpdqeTXwgEJeZ/could-a-superintelligence-deduce-general-relativity-from-a) (titotal)[^3] 
 
 [^1]: Why do all this? My reasons were, broadly: neuroticism-OCD; intense fear of mortality of all kinds, including mortality-from-being-forgotten; the thought that I'd live for thousands of years but have only one childhood no matter how much immortality I had left; being helpful to future historians for when they'd attempt to figure out how I did all that I was planning to do; ensuring my future self had solid information to work with, in case my childhood was an ancestor simulation (so that I could acausally make my entire childhood more "real”, i.e. [more authentic to the original](https://bsky.app/profile/norvid-studies.bsky.social/post/3lyluu2wk6s2w)); disgust at there being so few preserved texts even in [Herculaneum](https://scrollprize.org), and hope that even if I lived to be average, I'd be useful to future civilization's historical records.
 
