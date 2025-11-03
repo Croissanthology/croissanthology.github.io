@@ -95,7 +95,7 @@ And so a habit of casual archiving began. Pictures of daily life at home rather 
 Notably [“get into the training data”](https://gwern.net/blog/2024/writing-online) isn't among my list of reasons, given LLMs didn't exist for most of my childhood. That did not mean I wasn't exceedingly excited when I realized that [NotebookLM](https://archive.is/Yo3to) could read all my works and simulate me fairly well.
 
 
-[ ^2]: Historians, who are your go-to in terms of “who should I be thinking about to ensure I'm in the right frame of mind to record relevant information", are NOT PICKY. Archeologists spend most of their lives digging up what used to be junk/trash/worthless-receipts, and you don't see them complaining! To worry about aesthetics will in practice make you the cruel arsonist of ~several micro-alexandrias. Do not be a cruel arsonist.
+[^2]: Historians, who are your go-to in terms of “who should I be thinking about to ensure I'm in the right frame of mind to record relevant information", are NOT PICKY. Archeologists spend most of their lives digging up what used to be junk/trash/worthless-receipts, and you don't see them complaining! To worry about aesthetics will in practice make you the cruel arsonist of ~several micro-alexandrias. Do not be a cruel arsonist.
 
 
 [^3]: Relevant because: how good are historians at piecing together your life from disparate chunks, anyway? Could a superintelligence be any better at it, or is this a “tic-tac-toe is a solved game and you'd tie even against [Omega](https://www.lesswrong.com/w/omega)” type situation?”
