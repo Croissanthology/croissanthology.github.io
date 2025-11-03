@@ -23,14 +23,14 @@ As a wee lad I was neurotic about losing information: reading about the [Library
 And so to the question [“what are you tracking in your head?”](https://www.lesswrong.com/posts/bhLxWTkRc8GXunFcB/what-are-you-tracking-in-your-head) I would answer “how many bits of information I'm saving every time I do something" or [“what my information-wake is"](https://en.wikipedia.org/wiki/Wake_(physics)). Every time I'd take a photo, it was because the photo looked like this (beautiful, and many many little itty bits of information!):
 
 
-![Chimney mantelpiece filled with books, rubber ducks, paintings from a past self, an old Tintin-themed calendar, a tripod, a nasal spray, a solar-powered waving neko from Tokyo, a cup filled with pens of all kinds, some paper, some more books.](https://imgur.com/xIn4KGs.png)
+![Chimney mantelpiece filled with books, rubber ducks, paintings from a past self, an old Tintin-themed calendar, a tripod, a nasal spray, a solar-powered waving neko from Tokyo, a cup filled with pens of all kinds, some paper, some more books.](https://i.imgur.com/xIn4KGs.png)
 
 
 
 Rather than, say, like this (pretty good-looking, but few bits of information):
 
 
-![Foggy day at a New England marina, droopy American flag faced with a bay of small sailing vessels, brouillard-white dominates the image, little is going on, haunting.](https://imgur.com/UUGqtAp.png)
+![Foggy day at a New England marina, droopy American flag faced with a bay of small sailing vessels, brouillard-white dominates the image, little is going on, haunting.](https://i.imgur.com/UUGqtAp.png)
 
 
 
@@ -66,7 +66,7 @@ And so a habit of casual archiving began. Pictures of daily life at home rather 
 - make sure your bank keeps your receipts somewhere (ideally you can back this up yourself)
 - backed up computer (e.g. my entire Mac is backed up on my google drive)
 - Keep pieces of schoolwork/paper you scribbled anything original at all on as a kid: c.f. the chest on the side of the room, you underestimate the physical size of your childhood-remnants! 
-![Picture of Paris square near le Centre Georges Pompidou / Beaubourg, containing impressively dirty gothic church, graffiti of Zinédine Zidane, mural by artist “Obey", Pixel art from *Alien Invaders*, Pompidou pipes, fountain by Niki de Saint Phalle, and tons of other details within and without the listed items, like humans at the bottom left, chimney-tops, wildly graffiti at human-level, beautiful blue sky with wispy white clouds, flying buttresses, cheerful green elephant statue, etc. etc. etc.](https://imgur.com/Wy5SAUD.png)
+![Picture of Paris square near le Centre Georges Pompidou / Beaubourg, containing impressively dirty gothic church, graffiti of Zinédine Zidane, mural by artist "Obey", Pixel art from *Alien Invaders*, Pompidou pipes, fountain by Niki de Saint Phalle, and tons of other details within and without the listed items, like humans at the bottom left, chimney-tops, wildly graffiti at human-level, beautiful blue sky with wispy white clouds, flying buttresses, cheerful green elephant statue, etc. etc. etc.](https://i.imgur.com/Wy5SAUD.png)
 
 
 
