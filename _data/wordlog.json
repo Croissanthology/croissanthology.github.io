@@ -142,7 +142,7 @@
   {
     "slug": "horror",
     "title": "Are horror stories ethical?",
-    "total_words": 935,
+    "total_words": 750,
     "history": [
       {
         "date": "2025-10-25",
@@ -207,6 +207,10 @@
       {
         "date": "2025-11-06",
         "words_added": -4
+      },
+      {
+        "date": "2025-11-06",
+        "words_added": -185
       }
     ]
   },
