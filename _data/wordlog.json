@@ -240,5 +240,16 @@
         "words_added": 0
       }
     ]
+  },
+  {
+    "slug": "thebes",
+    "title": "Thebes art ",
+    "total_words": 220,
+    "history": [
+      {
+        "date": "2025-11-06",
+        "words_added": 220
+      }
+    ]
   }
 ]
