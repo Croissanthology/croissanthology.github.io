@@ -290,5 +290,16 @@
         "words_added": -1
       }
     ]
+  },
+  {
+    "slug": "print",
+    "title": "Print-bound dot com?",
+    "total_words": 985,
+    "history": [
+      {
+        "date": "2025-11-08",
+        "words_added": 985
+      }
+    ]
   }
 ]
