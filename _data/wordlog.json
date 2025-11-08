@@ -279,11 +279,15 @@
   {
     "slug": "shorts",
     "title": "Is a zombified generation good for you specifically? (no)",
-    "total_words": 622,
+    "total_words": 621,
     "history": [
       {
         "date": "2025-11-08",
         "words_added": 622
+      },
+      {
+        "date": "2025-11-08",
+        "words_added": -1
       }
     ]
   }
