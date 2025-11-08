@@ -298,7 +298,7 @@
   {
     "slug": "print",
     "title": "Print-bound dot com?",
-    "total_words": 985,
+    "total_words": 967,
     "history": [
       {
         "date": "2025-11-08",
@@ -311,6 +311,10 @@
       {
         "date": "2025-11-08",
         "words_added": 0
+      },
+      {
+        "date": "2025-11-08",
+        "words_added": -18
       }
     ]
   }
