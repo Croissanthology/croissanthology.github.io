@@ -10,6 +10,6 @@ redirect_from:
     - /avoiding-the-experience-machine-is-a-true-human-desire
 ---
 
-Playing off [the Vitalik Buterin post on galaxy-brained resistance](https://vitalik.eth.limo/general/2025/11/07/galaxybrain.html), Earth~2025~
+Playing off [the Vitalik Buterin post on galaxy-brained resistance](https://vitalik.eth.limo/general/2025/11/07/galaxybrain.html), Earth<sup>2025</sup>
 
 ## Capture the Lightcone?
