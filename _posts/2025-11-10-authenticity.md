@@ -14,6 +14,10 @@ Playing off [the Vitalik Buterin post on galaxy-brained resistance](https://vita
 
 ## Cynical beliefs 
 
+## Sour Grapes?
+
+It's likely that cultural phenomena such as [the so-called "Body Positivity" movement](https://en.wikipedia.org/wiki/Body_positivity) are [sour grapes](en.wikipedia.org/wiki/The_Fox_and_the_Grapes) reactions to the crude, limited morphological freedom offered by [our technologically immmature civilization](https://croissanthology.com/situation), which would explain [its wane](https://trends.google.com/trends/explore?date=all&q=body%20positivity&hl=en) in the wake of [the rocketing popularity of](https://trends.google.com/trends/explore?date=all&q=body%20positivity,ozempic&hl=en) weight loss drugs.[^1][^2] 
+
 ## Similar links 
 
 * [Tòmas Bjartur, That Mad Olympiad](https://www.lesswrong.com/posts/LPiBBn2tqpDv76w87/that-mad-olympiad-1)
@@ -23,4 +27,9 @@ Playing off [the Vitalik Buterin post on galaxy-brained resistance](https://vita
 * [Nick Bostrom, Deep Utopia](https://nickbostrom.com/deep-utopia/)
 * [Near Cyan, Where Are the Builders?](https://near.blog/where-are-the-builders/)
 
+----
+
+[^1]: It's difficult to tell, despite [numerous](https://archive.ph/OHJeY) [articles](https://archive.is/5jMRr) by this movement despairing of its increasing irrelevance and placing the "blame" squarely on Ozempic, how much of the decline is due to the fall of "woke" in general or due to new weight loss drugs *specifically*. It's difficult to imagine there was _no_ effect, and that's sufficient to our purposes. 
+
+[^2]: In some sense, regardless of its immediate moral integrity, "body positivity" is a movement that _should not [have to] exist_. The [transgender rights movement](https://en.wikipedia.org/wiki/Transgender_rights_movement) is similar: after we reach the level of technological maturity required to edit bodies at the chromosomal level, there will be nothing more to "transition" into; ["trans" belongs in the history books](https://bsky.app/profile/croissanthology.com/post/3m2fnmfhq4c2f) of our grandchildren, described as one among countless horrors that plagued the twenty first century. [Misery was;](https://www.youtube.com/watch?v=n__42UNIhvU) trans was. 
 
