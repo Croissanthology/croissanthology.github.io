@@ -23,60 +23,18 @@
             padding: 40px 20px;
         }
         
-        .container {
-            max-width: 700px;
-            width: 100%;
-            text-align: center;
-        }
-        
         h1 {
             color: #8e81a2;
-            font-size: 3em;
-            margin-bottom: 15px;
+            font-size: 4em;
             font-weight: 400;
-        }
-        
-        .subtitle {
-            color: #c29969;
-            margin-bottom: 50px;
-            font-size: 1.2em;
-            line-height: 1.6;
-        }
-        
-        .paste-zone {
-            width: 100%;
-            min-height: 300px;
-            padding: 40px;
-            background: #fff;
-            border: 3px dashed #c29969;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.3em;
-            color: #c29969;
-        }
-        
-        .paste-zone:hover {
-            border-color: #8e81a2;
-            border-style: solid;
-            background: #f8f6f0;
-        }
-        
-        .paste-zone.active {
-            border-color: #8e81a2;
-            border-style: solid;
-            background: #f0ede5;
+            margin-bottom: 60px;
         }
         
         .progress-container {
-            width: 100%;
-            height: 10px;
+            width: 400px;
+            height: 12px;
             background: #e8e0d0;
-            border-radius: 5px;
-            margin-top: 30px;
+            border-radius: 6px;
             overflow: hidden;
             opacity: 0;
             transition: opacity 0.3s;
@@ -94,11 +52,10 @@
         }
         
         .status {
-            margin-top: 20px;
+            margin-top: 25px;
             color: #c29969;
-            font-style: italic;
-            font-size: 1.1em;
-            min-height: 28px;
+            font-size: 1.2em;
+            min-height: 30px;
         }
         
         .success {
@@ -110,31 +67,32 @@
             color: #d33;
         }
         
-        .instruction {
+        .debug {
             margin-top: 30px;
-            color: #8e81a2;
-            font-size: 0.95em;
-            opacity: 0.8;
+            padding: 15px;
+            background: #fff;
+            border: 1px solid #e8e0d0;
+            border-radius: 4px;
+            max-width: 600px;
+            font-size: 0.85em;
+            color: #666;
+            max-height: 200px;
+            overflow: auto;
+            white-space: pre-wrap;
+            word-break: break-all;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>zviquote</h1>
-        <p class="subtitle">copy your draft from substack, click below, paste with ctrl+v</p>
-        
-        <div class="paste-zone" id="pasteZone">
-            click here, then ctrl+v
-        </div>
-        
-        <div class="progress-container" id="progressContainer">
-            <div class="progress-bar" id="progressBar"></div>
-        </div>
-        
-        <div id="status" class="status"></div>
-        
-        <p class="instruction">after processing, paste back into substack with ctrl+v</p>
+    <h1>zviquote</h1>
+    
+    <div class="progress-container" id="progressContainer">
+        <div class="progress-bar" id="progressBar"></div>
     </div>
+    
+    <div id="status" class="status">paste your draft (ctrl+v)</div>
+    
+    <div id="debug" class="debug" style="display: none;"></div>
 
     <script>
         const nitterInstances = [
@@ -174,8 +132,7 @@
                 return {
                     text: tweetText,
                     username: username,
-                    xUrl: xUrl,
-                    originalUrl: xUrl
+                    xUrl: xUrl
                 };
             } catch (error) {
                 if (currentNitterIndex < nitterInstances.length - 1) {
@@ -186,52 +143,20 @@
             }
         }
 
-        function formatTweetAsHtml(tweetData) {
-            return `<blockquote><strong><a href="${tweetData.xUrl}">${tweetData.username}:</a></strong> ${tweetData.text}</blockquote>`;
+        function formatTweetAsMarkdown(tweetData) {
+            return `> **[${tweetData.username}:](${tweetData.xUrl})** ${tweetData.text}`;
         }
 
-        function findNakedLinks(html) {
+        function findNakedLinks(text) {
             const urlRegex = /https?:\/\/(?:twitter\.com|x\.com)\/[^\s<>"]+\/status\/\d+/g;
-            const nakedLinks = new Set();
-            
-            // Find URLs in plain text
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(html, 'text/html');
-            
-            // Walk through text nodes
-            const walker = document.createTreeWalker(
-                doc.body,
-                NodeFilter.SHOW_TEXT,
-                null,
-                false
-            );
-            
-            let node;
-            while (node = walker.nextNode()) {
-                const matches = node.textContent.match(urlRegex);
-                if (matches) {
-                    matches.forEach(url => nakedLinks.add(url));
-                }
-            }
-            
-            // Find auto-hyperlinked URLs (where href === text content)
-            const links = doc.querySelectorAll('a[href]');
-            links.forEach(link => {
-                const href = link.getAttribute('href');
-                const text = link.textContent.trim();
-                if (href === text && urlRegex.test(href)) {
-                    nakedLinks.add(href);
-                }
-            });
-            
-            return Array.from(nakedLinks);
+            return [...new Set(text.match(urlRegex) || [])];
         }
 
-        async function processHtml(html, onProgress) {
-            const nakedLinks = findNakedLinks(html);
+        async function processText(text, onProgress) {
+            const nakedLinks = findNakedLinks(text);
             
             if (nakedLinks.length === 0) {
-                return html;
+                return null;
             }
 
             const batchSize = 6;
@@ -240,7 +165,7 @@
                 batches.push(nakedLinks.slice(i, i + batchSize));
             }
 
-            const urlToHtml = new Map();
+            const urlToMarkdown = new Map();
             let processed = 0;
 
             for (const batch of batches) {
@@ -250,75 +175,49 @@
                 results.forEach((tweetData, index) => {
                     const url = batch[index];
                     if (tweetData) {
-                        urlToHtml.set(url, formatTweetAsHtml(tweetData));
+                        urlToMarkdown.set(url, formatTweetAsMarkdown(tweetData));
                     }
                     processed++;
                     onProgress(processed / nakedLinks.length);
                 });
             }
 
-            let result = html;
-            
-            // Replace naked links in text
-            urlToHtml.forEach((blockquote, url) => {
-                // Escape special regex characters in URL
+            let result = text;
+            urlToMarkdown.forEach((markdown, url) => {
                 const escapedUrl = url.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-                // Replace both plain text occurrences and auto-hyperlinked ones
-                result = result.replace(new RegExp(`<a[^>]*href="${escapedUrl}"[^>]*>${escapedUrl}</a>`, 'g'), blockquote);
-                result = result.replace(new RegExp(escapedUrl, 'g'), blockquote);
+                result = result.replace(new RegExp(escapedUrl, 'g'), markdown);
             });
 
             return result;
         }
 
-        async function copyHtmlToClipboard(html) {
-            try {
-                const blob = new Blob([html], { type: 'text/html' });
-                const plainBlob = new Blob([html], { type: 'text/plain' });
-                
-                await navigator.clipboard.write([
-                    new ClipboardItem({
-                        'text/html': blob,
-                        'text/plain': plainBlob
-                    })
-                ]);
-                return true;
-            } catch (error) {
-                console.error('clipboard write failed:', error);
-                return false;
-            }
-        }
-
-        const pasteZone = document.getElementById('pasteZone');
         const status = document.getElementById('status');
         const progressContainer = document.getElementById('progressContainer');
         const progressBar = document.getElementById('progressBar');
+        const debugDiv = document.getElementById('debug');
 
-        pasteZone.addEventListener('click', () => {
-            pasteZone.classList.add('active');
-            pasteZone.focus();
-        });
-
-        pasteZone.addEventListener('paste', async (e) => {
+        document.addEventListener('paste', async (e) => {
+            if (isProcessing) return;
+            
             e.preventDefault();
             
-            if (isProcessing) return;
-
             const clipboardData = e.clipboardData || window.clipboardData;
-            const html = clipboardData.getData('text/html') || clipboardData.getData('text/plain');
+            const html = clipboardData.getData('text/html');
+            const plain = clipboardData.getData('text/plain');
             
-            if (!html || !html.match(/https?:\/\/(?:twitter\.com|x\.com)/)) {
+            // Debug: show what we got
+            debugDiv.style.display = 'block';
+            debugDiv.textContent = `HTML: ${html ? 'YES (' + html.length + ' chars)' : 'NO'}\nPlain: ${plain ? 'YES (' + plain.length + ' chars)' : 'NO'}\n\nFirst 500 chars:\n${(html || plain).substring(0, 500)}`;
+            
+            const content = html || plain;
+            
+            if (!content || !content.match(/https?:\/\/(?:twitter\.com|x\.com)/)) {
                 status.textContent = 'no x.com links found';
                 status.className = 'status error';
-                setTimeout(() => {
-                    status.textContent = '';
-                    pasteZone.classList.remove('active');
-                }, 2000);
                 return;
             }
 
             isProcessing = true;
-            pasteZone.textContent = 'processing...';
             status.textContent = 'fetching tweets...';
             status.className = 'status';
             progressContainer.classList.add('visible');
@@ -326,44 +225,40 @@
             currentNitterIndex = 0;
 
             try {
-                const result = await processHtml(html, (progress) => {
+                const result = await processText(content, (progress) => {
                     progressBar.style.width = (progress * 100) + '%';
                 });
                 
-                const copied = await copyHtmlToClipboard(result);
-                
-                if (copied) {
-                    status.textContent = 'ready - paste into substack now';
-                    status.className = 'status success';
-                    pasteZone.textContent = '✓ done';
-                } else {
-                    status.textContent = 'processed but clipboard failed';
+                if (!result) {
+                    status.textContent = 'no naked links found';
                     status.className = 'status error';
-                    pasteZone.textContent = 'click here, then ctrl+v';
+                    progressContainer.classList.remove('visible');
+                    isProcessing = false;
+                    return;
                 }
                 
+                // Copy to clipboard
+                await navigator.clipboard.writeText(result);
+                
+                status.textContent = 'copied - paste back';
+                status.className = 'status success';
                 progressBar.style.width = '100%';
                 
                 setTimeout(() => {
                     progressContainer.classList.remove('visible');
-                    pasteZone.textContent = 'click here, then ctrl+v';
-                    pasteZone.classList.remove('active');
-                    if (copied) status.textContent = '';
+                    status.textContent = 'paste your draft (ctrl+v)';
+                    status.className = 'status';
+                    debugDiv.style.display = 'none';
                 }, 4000);
                 
             } catch (error) {
-                status.textContent = 'something broke: ' + error.message;
+                status.textContent = 'error: ' + error.message;
                 status.className = 'status error';
                 progressContainer.classList.remove('visible');
-                pasteZone.textContent = 'click here, then ctrl+v';
-                pasteZone.classList.remove('active');
             } finally {
                 isProcessing = false;
             }
         });
-
-        // Make paste zone focusable
-        pasteZone.setAttribute('tabindex', '0');
     </script>
 </body>
 </html>
