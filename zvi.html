@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>zvi's tweet formatter</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Cambria, Georgia, serif;
+            background: #fdf6e3;
+            color: #1a1a1a;
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            color: #8e81a2;
+            font-size: 2em;
+            margin-bottom: 10px;
+            font-weight: 400;
+        }
+        
+        .subtitle {
+            color: #c29969;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+        
+        .boxes {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        textarea {
+            width: 100%;
+            height: 400px;
+            padding: 15px;
+            font-family: Cambria, Georgia, serif;
+            font-size: 14px;
+            background: #fff;
+            border: 2px solid #c29969;
+            border-radius: 4px;
+            resize: vertical;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: #8e81a2;
+        }
+        
+        button {
+            background: #8e81a2;
+            color: #fdf6e3;
+            border: none;
+            padding: 12px 30px;
+            font-family: Cambria, Georgia, serif;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+        
+        button:hover {
+            background: #7a6f8f;
+        }
+        
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .status {
+            margin-top: 15px;
+            color: #c29969;
+            font-style: italic;
+        }
+        
+        .error {
+            color: #d33;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #8e81a2;
+            font-weight: 600;
+        }
+        
+        @media (max-width: 768px) {
+            .boxes {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>zvi's tweet formatter</h1>
+        <p class="subtitle">paste markdown with x.com links, get blockquotes back</p>
+        
+        <div class="boxes">
+            <div>
+                <label for="input">input markdown:</label>
+                <textarea id="input" placeholder="paste your draft here with x.com/username/status/123456 links..."></textarea>
+            </div>
+            <div>
+                <label for="output">formatted output:</label>
+                <textarea id="output" readonly placeholder="formatted markdown will appear here..."></textarea>
+            </div>
+        </div>
+        
+        <button id="process">format tweets</button>
+        <div id="status" class="status"></div>
+    </div>
+
+    <script>
+        const nitterInstances = [
+            'nitter.poast.org',
+            'nitter.privacydev.net',
+            'nitter.net'
+        ];
+        
+        let currentNitterIndex = 0;
+
+        function getNitterUrl(tweetUrl) {
+            const match = tweetUrl.match(/(?:twitter\.com|x\.com)\/([^\/]+)\/status\/(\d+)/);
+            if (!match) return null;
+            
+            const [, username, tweetId] = match;
+            const nitterDomain = nitterInstances[currentNitterIndex];
+            return `https://${nitterDomain}/${username}/status/${tweetId}`;
+        }
+
+        async function fetchTweetData(xUrl) {
+            const nitterUrl = getNitterUrl(xUrl);
+            if (!nitterUrl) return null;
+
+            try {
+                const response = await fetch(nitterUrl);
+                if (!response.ok) throw new Error('fetch failed');
+                
+                const html = await response.text();
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                
+                const tweetText = doc.querySelector('.tweet-content')?.innerText?.trim() || '';
+                const username = doc.querySelector('.fullname')?.innerText?.trim() || 
+                                doc.querySelector('.username')?.innerText?.trim() || 'Unknown';
+                
+                const images = Array.from(doc.querySelectorAll('.attachment.image img'))
+                    .map(img => img.src)
+                    .filter(src => src && !src.includes('pic.twitter.com'));
+                
+                return {
+                    text: tweetText,
+                    username: username,
+                    nitterUrl: nitterUrl,
+                    images: images
+                };
+            } catch (error) {
+                // Try next nitter instance
+                if (currentNitterIndex < nitterInstances.length - 1) {
+                    currentNitterIndex++;
+                    return fetchTweetData(xUrl);
+                }
+                throw error;
+            }
+        }
+
+        function formatTweetAsMarkdown(tweetData) {
+            let markdown = `> **[${tweetData.username}:](${tweetData.nitterUrl})** ${tweetData.text}`;
+            
+            if (tweetData.images.length > 0) {
+                for (const img of tweetData.images) {
+                    markdown += `\n> ![](${img})`;
+                }
+            }
+            
+            return markdown;
+        }
+
+        async function processMarkdown(input) {
+            const urlRegex = /https?:\/\/(?:twitter\.com|x\.com)\/[^\/]+\/status\/\d+/g;
+            const urls = input.match(urlRegex) || [];
+            
+            if (urls.length === 0) {
+                return input;
+            }
+
+            let result = input;
+            const processed = new Map();
+
+            for (const url of urls) {
+                if (processed.has(url)) {
+                    result = result.replace(url, processed.get(url));
+                    continue;
+                }
+
+                try {
+                    const tweetData = await fetchTweetData(url);
+                    if (tweetData) {
+                        const formatted = formatTweetAsMarkdown(tweetData);
+                        processed.set(url, formatted);
+                        result = result.replace(url, formatted);
+                    }
+                } catch (error) {
+                    console.error('failed to fetch tweet:', url, error);
+                }
+            }
+
+            return result;
+        }
+
+        document.getElementById('process').addEventListener('click', async () => {
+            const input = document.getElementById('input').value;
+            const button = document.getElementById('process');
+            const status = document.getElementById('status');
+            const output = document.getElementById('output');
+            
+            if (!input.trim()) {
+                status.textContent = 'paste some markdown first';
+                status.className = 'status error';
+                return;
+            }
+
+            button.disabled = true;
+            status.textContent = 'fetching tweets...';
+            status.className = 'status';
+            output.value = '';
+            currentNitterIndex = 0;
+
+            try {
+                const result = await processMarkdown(input);
+                output.value = result;
+                status.textContent = 'done';
+                status.className = 'status';
+            } catch (error) {
+                status.textContent = 'something broke: ' + error.message;
+                status.className = 'status error';
+            } finally {
+                button.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
