@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Writing Residency</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #fdfbf7; /* Slight warm paper off-white */
+            color: #333;
+        }
+
+        .lavender-box {
+            border: 3px solid #E6E6FA; /* Lavender */
+            background-color: #ffffff;
+            box-shadow: 8px 8px 0px #E6E6FA; /* Hard shadow for style */
+            transition: all 0.3s ease;
+        }
+
+        .lavender-btn {
+            background-color: #E6E6FA;
+            color: #5e5e80;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .lavender-btn:hover:not(:disabled) {
+            background-color: #dcd0ff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .lavender-btn:disabled {
+            background-color: #f3f4f6;
+            color: #9ca3af;
+            cursor: not-allowed;
+        }
+
+        /* Custom scrollbar for the text area */
+        textarea::-webkit-scrollbar {
+            width: 8px;
+        }
+        textarea::-webkit-scrollbar-track {
+            background: #f1f1f1; 
+        }
+        textarea::-webkit-scrollbar-thumb {
+            background: #E6E6FA; 
+            border-radius: 4px;
+        }
+        
+        /* Typography specifics */
+        .chapter-content a {
+            color: #7c3aed;
+            text-decoration: underline;
+        }
+        .chapter-content img {
+            max-width: 100%;
+            border-radius: 4px;
+            margin: 1rem 0;
+            border: 1px solid #eee;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center py-12 px-4 sm:px-6 lg:px-8">
+
+    <!-- Main Container -->
+    <div class="w-full max-w-3xl space-y-12">
+
+        <!-- Header / Progress -->
+        <div class="flex justify-end items-end px-2">
+            <div id="chapter-tracker" class="text-sm text-gray-400">Chapter 1 of 4</div>
+        </div>
+
+        <!-- 1. The Chapter Box -->
+        <div class="lavender-box p-8 sm:p-12 rounded-xl">
+            <h2 id="chapter-title" class="text-2xl sm:text-3xl font-light mb-8 text-gray-800 border-b pb-4 border-gray-100">
+                <!-- Title Injected Here -->
+            </h2>
+            <div id="chapter-body" class="chapter-content text-lg leading-relaxed text-gray-700 space-y-6">
+                <!-- Content Injected Here -->
+            </div>
+        </div>
+
+        <!-- 2. The Writing Box -->
+        <div class="space-y-4">
+            <div class="flex justify-between items-center text-sm text-gray-500 px-1">
+                <label for="input-area">Payment (500 words required)</label>
+                <span id="word-count-display" class="font-mono">0 / 500 words</span>
+            </div>
+            
+            <textarea 
+                id="input-area" 
+                class="w-full h-80 p-6 rounded-lg border border-gray-200 focus:border-purple-300 focus:ring focus:ring-purple-200 focus:ring-opacity-50 outline-none resize-none text-base shadow-sm"
+                placeholder="Write to proceed..."></textarea>
+
+            <!-- 3. The Button -->
+            <button 
+                id="submit-btn" 
+                onclick="submitWork()" 
+                disabled
+                class="w-full py-4 rounded-lg lavender-btn text-lg tracking-wide uppercase">
+                Complete Chapter
+            </button>
+
+            <!-- 4. The Warning -->
+            <p class="text-center text-xs text-gray-400">
+                text is saved nowhere, this will be deleted
+            </p>
+        </div>
+
+    </div>
+
+    <!-- Logic -->
+    <script>
+        // Data Structure for Chapters
+        const chapters = [
+            {
+                title: "You've arrived at: Smuthaven",
+                content: `
+                    <p>Hello, young traveler! Or not so young—chopped unc, perhaps. I see you've decided to write smut. You paid potentially thousands of dollars to attend a residency that forces you to write a 500 word post daily, and decided you'd use that power of anti-procrastination to make you write to write... smut? You FOOL. You absolute BUFFOON.</p>
+                    <p>You've DISAPPOINTED BEN PACE. He looks at you, shakes his head in bitter sadness, takes off his hat to meet your eyes with the frankness of a balding man, and then lift his hand and snaps his fingers.</p>
+                    <p class="font-semibold italic text-purple-900">[THUNDER BOOMS, CRESTING WAVES UNFURL UPON YOU, A STRIKE OF LIGHTNING HITS YOUR LAPTOP AND SUDDENLY IT IS GLOWING ETHEREALLY, WORDS OF DIVINE SMUT RUNNING THROUGH YOUR SCREEN IN COMBINATIONS YOU CANNOT REMEMBER BUT DESPERATELY WISH TO, NEED TO, AND THEN IT IS OVER AND YOU ARE BACK AT THE BEGINNING AND YOU HAVE SEEN GOD AND SHE IS SLUTTY AND YOU MAY NEVER SEE HER AGAIN]</p>
+                `
+            },
+            {
+                title: "You've arrived at: Drinkhaven",
+                content: `
+                    <p>The inimitable taste of whiskey. The incomparable taste of 7 beers in a row. The slight regret in your gut as you notice Claire's 10 dollar bacterium might not be having the effect you wished for. The theology blasting into your ears because it is the nature of this corner to SCREAM one's opinions. Welcome to Drinkhaven. You're on a couch, drunken on ambient CO2 and ethanol buzz, a haze lining your words, tentative confusion keeping you planted on the furniture you're splayed on, unable to think of your next move. PINNED! BY CHEMICALS!</p>
+                    <p>And you sit there and your mouth is parched and you're wondering who could've ever come up with this dumb idea anyway, you have no inspiration, and your little ape brain is broken, racked with substance, and you bang out failures <a href="https://archive.is/FbxdU" target="_blank">like this one</a>. How tiresome.</p>
+                    <p>You look up and Georgia's rat taunts you:</p>
+                    <img src="https://i.imgur.com/v7317GU.png" alt="The Drinkhaven Official Mascot Rat" />
+                    <p>You look down and your screen is <a href="https://archive.is/FbxdU" target="_blank">crap.</a></p>
+                    <p>You look all the way up, at the Lighthaven ceiling, and collapse into unconsciousness.</p>
+                `
+            },
+            {
+                title: "You've arrived at: Rathaven",
+                content: `
+                    <p>Hercules stands proud in his drawer. You do not know how he has opened it. You do not know why he's here. As far as you understand rats, there is nothing of interest for him here. It's just cables and wires stamped by the Lighthaven seal. Plastified, maybe—for the convenience of the residence-writers—but your point stands. <em>Why does he want this?</em></p>
+                    <p>Hercules sinks his teeth into the reddest wire. He rips it in half before you can do anything (not that you <em>would</em>—do anything, that is. You're too enraptured by the presence of Hercules). He splays the little metal threads on the inside of the wire. Pulls each thread one by one into a round symmetrical shape made of many metals, then cuts at the stem again with his mighty teeth.</p>
+                    <p>Hercules makes a MIGHTY LEAP and is suddenly on the FLOOR. He scurries away with MIGHTY BOUNDS and reaches the other side of Aumann, where his belle awaits him.</p>
+                    <p>He halts, and bows as low as a rat can bow, presenting his makeshift flower to her. She looks at him with awe and then swoons, and Hercules catches her in time and tucks his flower behind her ear. They embrace—the embrace of true rodent love—and escape to Paris where they will elope.</p>
+                `
+            },
+            {
+                title: "You've arrived at: Speedhaven",
+                content: `
+                    <p>You're here, and already you are leaving. Words stream from your mind. It's a stream of consciousness, and unfortunately you are not <a href="https://mingyuan.substack.com/" target="_blank">Claire Wang</a> and your streams of consciousness are not perfect drafts. Your fingers hurt, pain shooting up your nerves. You cannot stop, however. This is speedhaven.</p>
+                    <p>19 minutes left. A bone in your index breaks. But you continue.</p>
+                    <p>18 minutes left. You give out a barbaric yelp. Infused with the glorious human spirit, for 40 seconds you forget about your index.</p>
+                    <p>17 minutes left. You're sobbing. You can't really see your screen behind the heavy buffer of tears you struggle to blink out of your eyes.</p>
+                    <p>Time's up. Claude Opus 4.5 has judged your piece 11th best in the room.</p>
+                `
+            }
+        ];
+
+        let currentIndex = 0;
+        const TARGET_WORDS = 500;
+
+        // DOM Elements
+        const titleEl = document.getElementById('chapter-title');
+        const contentEl = document.getElementById('chapter-body');
+        const trackerEl = document.getElementById('chapter-tracker');
+        const inputEl = document.getElementById('input-area');
+        const countEl = document.getElementById('word-count-display');
+        const btnEl = document.getElementById('submit-btn');
+
+        // Initialize first chapter
+        function loadChapter(index) {
+            if (index >= chapters.length) {
+                showCompletion();
+                return;
+            }
+
+            const chapter = chapters[index];
+            titleEl.textContent = chapter.title;
+            contentEl.innerHTML = chapter.content;
+            trackerEl.textContent = `Chapter ${index + 1} of ${chapters.length}`;
+            
+            // Reset input area
+            inputEl.value = "";
+            updateWordCount();
+            window.scrollTo(0, 0);
+        }
+
+        function updateWordCount() {
+            const text = inputEl.value.trim();
+            // Count words by splitting by whitespace and filtering empty strings
+            const wordCount = text.length === 0 ? 0 : text.split(/\s+/).length;
+            
+            countEl.textContent = `${wordCount} / ${TARGET_WORDS} words`;
+            
+            if (wordCount >= TARGET_WORDS) {
+                btnEl.disabled = false;
+                countEl.classList.remove('text-gray-500');
+                countEl.classList.add('text-green-600', 'font-bold');
+            } else {
+                btnEl.disabled = true;
+                countEl.classList.add('text-gray-500');
+                countEl.classList.remove('text-green-600', 'font-bold');
+            }
+        }
+
+        function submitWork() {
+            // "Text is saved nowhere" -> We just clear it and move on
+            currentIndex++;
+            loadChapter(currentIndex);
+        }
+
+        function showCompletion() {
+            titleEl.textContent = "The End";
+            contentEl.innerHTML = `
+                <p>Thank you for being my fellow Inkhavenites!</p>
+            `;
+            trackerEl.textContent = "Completed";
+            
+            // Hide the input area
+            inputEl.parentElement.style.display = 'none';
+        }
+
+        // Event Listeners
+        inputEl.addEventListener('input', updateWordCount);
+
+        // Start
+        loadChapter(currentIndex);
+
+    </script>
+</body>
+</html>
