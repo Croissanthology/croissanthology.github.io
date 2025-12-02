@@ -1,54 +1,86 @@
 ---
 layout: default
-front_posts:
-  - music
-  - system-prompt
-  - auren
-  - true
-  - clone
-  - allowed
-  - earring
-  - system-prompt
-  - adequate
 ---
 
-<div class="index-main-layout">
-    <div class="index-left">
-        <div class="title-container">
-            <h1 class="title">
-                <span class="title-white">Croiss</span><span class="title-green">anthology</span>
-            </h1>
-            <div class="shine-effect"></div>
-            <div class="image-replacement">
-                <img src="images/banner.jpg" alt="Oh look a tiny easter egg!">
-            </div>
-        </div>
-
-        <div class="dotted-box">
-            <p><span class="dropcap">I</span>write about rationality, mundane utility, and our gloriously apollonian expansion into the lightcone. Earth is currently under siege: chiefly <a href="https://en.wikipedia.org/wiki/Existential_risk_from_AI">this</a> but also <a href="https://en.wikipedia.org/wiki/Death">this</a> and even <a href="https://en.wikipedia.org/wiki/List_of_cognitive_biases">this</a>. I'm active here, <a href="https://lesswrong.com/users/croissanthology">LessWrong</a>, and <a href="https://x.com/croissanthology">Twitter.</a> Inspirations include, but are not limited to, <a href="https://gwern.net">the</a> <a href="https://gleech.org">three</a> <a href="https://guzey.com">Gs</a>.</p>
-            <p>You can email me at croissanthology [at] gmail.com. All my writing is <a href="https://croissanthology.com/all">here</a>. I might start with <a href="https://croissanthology.com/archiving">this post</a> or <a href="https://croissanthology.com/fruit">this one.</a></p>  If you wish to make me happy, <a href="https://patreon.com/croissanthology">my Patreon is here</a>  :)</p>
-            <p>Switch to <a href="#" id="toggle-dark">●</a>, <a href="#" id="toggle-system">◐</a>.</p>
+<div class="index-centered-layout">
+    <div class="title-container">
+        <h1 class="title">
+            <span class="title-white">Croiss</span><span class="title-green">anthology</span>
+        </h1>
+        <div class="shine-effect"></div>
+        <div class="image-replacement">
+            <img src="images/banner.jpg" alt="Oh look a tiny easter egg!">
         </div>
     </div>
 
-    <div class="index-right">
-        <ul class="post-list">
-        {% for slug in page.front_posts %}
-            {% assign post = site.posts | where: "slug", slug | first %}
-            {% if post %}
-            <li><a href="{{ post.url }}">{{ post.title }}</a></li>
-            {% endif %}
-        {% endfor %}
-        </ul>
+    <div class="dotted-box">
+        <p><span class="dropcap">I</span>write about rationality, mundane utility, and our gloriously apollonian expansion into the lightcone. Earth is currently under siege: chiefly <a href="https://en.wikipedia.org/wiki/Existential_risk_from_AI">this</a> but also <a href="https://en.wikipedia.org/wiki/Death">this</a> and even <a href="https://en.wikipedia.org/wiki/List_of_cognitive_biases">this</a>. I'm active here, <a href="https://lesswrong.com/users/croissanthology">LessWrong</a>, and <a href="https://x.com/croissanthology">Twitter.</a> Inspirations include, but are not limited to, <a href="https://gwern.net">the</a> <a href="https://gleech.org">three</a> <a href="https://guzey.com">Gs</a>.</p>
+        <p>You can email me at croissanthology [at] gmail.com. All my writing is <a href="https://croissanthology.com/all">here</a>. I might start with <a href="https://croissanthology.com/archiving">this post</a> or <a href="https://croissanthology.com/fruit">this one.</a>  If you wish to make me happy, <a href="https://patreon.com/croissanthology">my Patreon is here</a>  :)</p>
+        <p>Switch to <a href="#" id="toggle-dark"><span class="theme-icon">●</span></a>, <a href="#" id="toggle-system">◐</a>.</p>
+    </div>
 
-        {% assign starred_posts = site.posts | where: "starred", true %}
-        {% for post in starred_posts %}
-        <div class="featured-post">
-            <div class="featured-image">
-                <img src="images/skyline.png" alt="">
-            </div>
-            <h2 class="featured-title"><a href="{{ post.url }}">{{ post.title }}</a></h2>
+    <div class="index-sections">
+        <div class="index-section">
+            <h2 class="section-title">Good Posts</h2>
+            <ul class="section-list">
+                <li><a href="/archiving">✵ Archiving my life</a></li>
+                <li><a href="/solution">✵ In defense of solution-finding</a></li>
+                <li><a href="/automation">✵ Automation for the people</a></li>
+                <li><a href="/vanilla">✵ In praise of vanilla relationships</a></li>
+                <li><a href="/on-stress">✵ On Stress</a></li>
+            </ul>
         </div>
-        {% endfor %}
+
+        <div class="index-section">
+            <h2 class="section-title">Subslop</h2>
+            <ul class="section-list" id="substack-posts">
+                <li class="loading">Loading posts...</li>
+            </ul>
+        </div>
+
+        <div class="index-section">
+            <h2 class="section-title">Blogroll</h2>
+            <ul class="section-list">
+                <li><a href="https://tomasbjartur.substack.com/">✳ Bjartur</a></li>
+                <li><a href="https://gleech.org">✳ Gavin</a></li>
+                <li><a href="https://gwern.net">✳ Gwern</a></li>
+                <li><a href="https://mingyuan.substack.com/">✳ Mingyuan</a></li>
+            </ul>
+        </div>
     </div>
 </div>
+
+<script>
+// Fetch and display Substack posts from RSS feed
+async function loadSubstackPosts() {
+    try {
+        const response = await fetch('https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent('https://croissanthology.substack.com/feed'));
+        const data = await response.json();
+
+        if (data.status === 'ok' && data.items) {
+            const container = document.getElementById('substack-posts');
+            container.innerHTML = '';
+
+            data.items.forEach(item => {
+                const li = document.createElement('li');
+                const a = document.createElement('a');
+                a.href = item.link;
+                a.textContent = `❀ ${item.title}`;
+                a.style.textDecoration = 'underline';
+                li.appendChild(a);
+                container.appendChild(li);
+            });
+        }
+    } catch (error) {
+        console.error('Error loading Substack posts:', error);
+        document.getElementById('substack-posts').innerHTML = '<li>Error loading posts</li>';
+    }
+}
+
+// Load posts when page loads
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadSubstackPosts);
+} else {
+    loadSubstackPosts();
+}
+</script>
