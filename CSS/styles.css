@@ -322,6 +322,11 @@ a[href*="gwern.net"]:hover {
     color: #FFB7C5;
 }
 
+/* Index page: disable special link colors */
+body.index a[href*="substack.com"]:hover {
+    color: var(--color-link);
+}
+
 /* Theme toggle icons */
 #toggle-dark,
 #toggle-system {
@@ -523,7 +528,9 @@ li {
 .image-replacement {
     position: absolute;
     top: 0;
-    left: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    max-width: 800px;
     width: 100%;
     height: 100%;
     display: flex;
@@ -653,18 +660,28 @@ li {
     margin: var(--space-l) auto;
 }
 
-/* Theme icon (●) larger */
+/* Theme icons - make them the same size */
 .theme-icon {
+    font-size: 1.3em;
+}
+
+#toggle-system {
     font-size: 1.3em;
 }
 
 /* Index sections styling */
 .index-sections {
     margin-top: var(--space-2xl);
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-l);
 }
 
 .index-section {
-    margin-bottom: var(--space-xl);
+    margin-bottom: 0;
 }
 
 .section-title {
@@ -676,6 +693,17 @@ li {
     margin-bottom: var(--space-s);
     padding-bottom: var(--space-xs);
     border-bottom: 1px dotted var(--color-border);
+}
+
+.section-title a {
+    color: var(--color-heading);
+    text-decoration: underline;
+    text-decoration-style: dotted;
+    transition: color 0.2s ease;
+}
+
+.section-title a:hover {
+    text-decoration-style: solid;
 }
 
 .section-list {
@@ -697,6 +725,19 @@ li {
 
 .section-list a:hover {
     text-decoration-style: solid;
+}
+
+/* Responsive grid for index sections */
+@media (max-width: 900px) {
+    .index-sections {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    .index-sections {
+        grid-template-columns: 1fr;
+    }
 }
 
 .post-list {
@@ -779,7 +820,6 @@ li {
 
     .dotted-box {
         border: none;
-        border-bottom: 1px dotted var(--color-border);
         margin-inline: 0;
         padding-inline: calc(var(--space-xs) / 2);
     }
