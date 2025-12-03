@@ -397,7 +397,7 @@ body.index a[href*="substack.com"]:hover {
     line-height: 0.65;
     float: left;
     margin: 0.2em 0.2em 0 0;
-    color: var(--color-title);
+    color: #8e81a2;
 }
 
 /* First paragraph in post content */
@@ -521,7 +521,7 @@ li {
 }
 
 .title-green {
-    color: var(--color-title);
+    color: #8e81a2;
 }
 
 /* Image hover effect - simple fade */
@@ -552,8 +552,9 @@ li {
     opacity: 1;
 }
 
-/* Light mode: make "croiss" white when hovering the title */
-[data-theme="light"] .title-container:hover .title-white {
+/* Make entire title white on hover */
+.title-container:hover .title-white,
+.title-container:hover .title-green {
     color: #ffffff;
 }
 
@@ -663,10 +664,12 @@ li {
 /* Theme icons - make them the same size */
 .theme-icon {
     font-size: 1.3em;
+    font-family: 'Inter', sans-serif;
 }
 
 #toggle-system {
     font-size: 1.3em;
+    font-family: 'Inter', sans-serif;
 }
 
 /* Index sections styling */
@@ -687,23 +690,12 @@ li {
 .section-title {
     font-family: 'Poiret One', Arial, sans-serif;
     font-size: 1.2rem;
-    font-weight: 400;
+    font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.1em;
     margin-bottom: var(--space-s);
     padding-bottom: var(--space-xs);
     border-bottom: 1px dotted var(--color-border);
-}
-
-.section-title a {
-    color: var(--color-heading);
-    text-decoration: underline;
-    text-decoration-style: dotted;
-    transition: color 0.2s ease;
-}
-
-.section-title a:hover {
-    text-decoration-style: solid;
 }
 
 .section-list {
