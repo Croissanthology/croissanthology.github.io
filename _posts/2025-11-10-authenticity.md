@@ -29,7 +29,7 @@ I argue that humans do not claim they would not enter an experience machine beca
 
 * [Tòmas Bjartur, That Mad Olympiad](https://www.lesswrong.com/posts/LPiBBn2tqpDv76w87/that-mad-olympiad-1)
 * [Twitter thread that instigated this post](https://www.lesswrong.com/posts/LPiBBn2tqpDv76w87/that-mad-olympiad-1)
-* [Croissanthology, Is a Zombified Generation Good For You Specifically? (No)](https://croissanthology.com/shorts)
+* [Is a Zombified Generation Good For You Specifically? (No)](https://croissanthology.com/shorts)
 * [Vitalik Buterin, Galaxy Brain Resistance](https://vitalik.eth.limo/general/2025/11/07/galaxybrain.html)
 * [Nick Bostrom, Deep Utopia](https://nickbostrom.com/deep-utopia/)
 * [Near Cyan, Where Are the Builders?](https://near.blog/where-are-the-builders/)
