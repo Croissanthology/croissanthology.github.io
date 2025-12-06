@@ -667,11 +667,6 @@ li {
     font-family: 'Inter', sans-serif;
 }
 
-#toggle-system {
-    font-size: 1.3em;
-    font-family: 'Inter', sans-serif;
-}
-
 /* Index sections styling */
 .index-sections {
     margin-top: var(--space-2xl);
