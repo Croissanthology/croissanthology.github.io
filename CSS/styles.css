@@ -663,8 +663,13 @@ li {
 
 /* Theme icons - make them the same size */
 .theme-icon {
-    font-size: 1.3em;
+    font-size: 20px;
     font-family: 'Inter', sans-serif;
+    display: inline-block;
+    width: 1.2em;
+    text-align: center;
+    line-height: 1;
+    vertical-align: middle;
 }
 
 /* Index sections styling */
