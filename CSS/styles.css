@@ -330,7 +330,7 @@ body.index a[href*="substack.com"]:hover {
 /* Theme toggle icons */
 #toggle-dark,
 #toggle-system {
-    font-family: 'Inter', sans-serif;
+    font-family: 'Arial', sans-serif;
 }
 
 /* Post title links */
