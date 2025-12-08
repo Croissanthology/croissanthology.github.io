@@ -207,7 +207,7 @@ h1::after, h2::after, h3::after, h4::after, h5::after {
 p {
     margin-bottom: var(--space-m);
     text-align: justify;
-    hyphens: auto;
+    hyphens: none;
 }
 
 /* =========================================================
