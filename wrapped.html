@@ -68,6 +68,8 @@
             flex: 1; display: none;
             flex-direction: column; justify-content: center; align-items: center;
             padding: 40px; text-align: center;
+            /* CRITICAL FIX: Lets clicks pass through the slide container to the tap zones behind it */
+            pointer-events: none; 
         }
         .slide.active { display: flex; }
 
@@ -133,20 +135,27 @@
         @keyframes shimmer { to { background-position: 200% center; } }
 
         /* --- LINKS --- */
+        /* CRITICAL FIX: Re-enable clicks specifically for links */
+        a {
+            pointer-events: auto; 
+            position: relative; 
+            z-index: 100; /* Ensure it sits on top of everything */
+        }
+
         a.button-link {
             display: inline-block; margin-top: 25px;
             color: var(--bg-deep); background-color: var(--cream);
             text-decoration: none; padding: 14px 28px; border-radius: 50px;
             font-weight: 800; font-size: 0.9rem; text-transform: uppercase;
             letter-spacing: 1px; transition: transform 0.2s, background-color 0.2s;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.3); position: relative; z-index: 30;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
         }
         a.button-link:hover { transform: scale(1.05); background-color: #fff;}
 
         .agi-link {
             color: var(--cream); text-decoration: none;
             border-bottom: 2px solid var(--lavender-muted);
-            padding-bottom: 2px; position: relative; z-index: 30;
+            padding-bottom: 2px;
             transition: color 0.2s; white-space: nowrap;
         }
         .agi-link:hover { color: #fff; border-bottom-color: #fff;}
@@ -158,20 +167,22 @@
             border-radius: 50%; margin-left: 4px; font-weight: bold;
         }
 
-        /* --- IMAGES (Transparent PNG Style) --- */
+        /* --- IMAGES --- */
         .patron-img {
             max-width: 90%; 
             margin-top: 30px;
             transform: rotate(-4deg);
-            /* Removed border and box-shadow */
             border: none;
             box-shadow: none;
-            /* Added drop-shadow for the cutout effect */
             filter: drop-shadow(0 15px 15px rgba(0,0,0,0.5));
         }
 
         /* --- TAP ZONES --- */
-        .tap-zone { position: absolute; top: 0; height: 100%; width: 40%; z-index: 15; cursor: pointer; }
+        .tap-zone { 
+            position: absolute; top: 0; height: 100%; width: 40%; z-index: 15; cursor: pointer; 
+            /* Ensure tap zones are clickable */
+            pointer-events: auto; 
+        }
         .left-zone { left: 0; }
         .right-zone { right: 0; }
 
@@ -249,8 +260,7 @@
 
     <div class="slide">
         <span class="big-number" style="font-size: 6rem;">33.40 USD</span>
-        <h2>made from <a href="https://patreon.com/croissanthology" target="_blank" class="agi-link">Patreon<sup class="link-bubble">↗</sup></a>.
-        </h2>
+        <h2>made from <a href="https://patreon.com/croissanthology" target="_blank" class="agi-link">Patreon</a>.</h2>
         <p style="font-size: 0.9rem; opacity: 0.7; margin-top: 10px;">(2 Waymo rides OR 2 months of Claude)</p>
     </div>
 
@@ -286,7 +296,7 @@
     async function fetchAGI() {
         const display = document.getElementById('agi-calc');
         const currentYear = new Date().getFullYear();
-        let predictionYear = 2033; // Fallback
+        let predictionYear = 2033; 
         
         const targetUrl = 'https://www.metaculus.com/api/posts/5121/';
         const proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(targetUrl);
@@ -300,8 +310,6 @@
                     const timestamp = centers[0];
                     const dateObj = new Date(timestamp * 1000);
                     const fetchedYear = dateObj.getFullYear();
-                    
-                    // Sanity check
                     if (fetchedYear > currentYear) {
                         predictionYear = fetchedYear;
                     }
@@ -423,8 +431,6 @@
 
     fetchAGI();
     updateView();
-    
-    // TRIGGER FLASH ON LOAD
     setTimeout(triggerTransitionFlash, 500);
 
 </script>
