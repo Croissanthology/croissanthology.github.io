@@ -5,13 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Croissanthology Wrapped 2025</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poiret+One&display=swap');
+        
         /* --- THEME VARIABLES --- */
         :root {
-            --bg-deep: #18121e; /* Deep purple/black base */
-            --lavender-bright: #bfaee3; /* Pop accent */
-            --lavender-muted: #8e81a2; /* Stela's fav */
+            --bg-deep: #18121e;
+            --lavender-bright: #bfaee3;
+            --lavender-muted: #8e81a2;
             --cream: #fdfbf7;
             --font-stack: 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
+            --font-banner: 'Poiret One', cursive; /* The new cool font */
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -26,29 +29,21 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            /* Smooth background color transition during flashes */
             transition: background-color 0.5s ease;
         }
 
         /* --- BACKGROUND CANVAS --- */
         #bg-canvas {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 1;
-            opacity: 0.8;
-            transition: filter 0.5s ease;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 1; opacity: 0.8; transition: filter 0.5s ease;
         }
 
         /* --- MAIN CONTAINER --- */
         .story-container {
-            position: relative;
-            z-index: 10;
-            width: 100%;
-            max-width: 450px;
-            height: 100%;
-            max-height: 900px;
-            display: flex;
-            flex-direction: column;
+            position: relative; z-index: 10;
+            width: 100%; max-width: 450px;
+            height: 100%; max-height: 900px;
+            display: flex; flex-direction: column;
         }
 
         /* --- PROGRESS BARS --- */
@@ -68,20 +63,14 @@
         .progress-bar.completed .progress-fill { width: 100%; }
         .progress-bar.active .progress-fill { width: 100%; } 
 
-        /* --- SLIDES & ENTRANCE ANIMATIONS --- */
+        /* --- SLIDES & ANIMATIONS --- */
         .slide {
-            flex: 1;
-            display: none;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 40px;
-            text-align: center;
+            flex: 1; display: none;
+            flex-direction: column; justify-content: center; align-items: center;
+            padding: 40px; text-align: center;
         }
-
         .slide.active { display: flex; }
 
-        /* Define Entrance Keyframes */
         @keyframes fadeInUp {
             from { opacity: 0; transform: translateY(40px); }
             to { opacity: 1; transform: translateY(0); }
@@ -92,68 +81,60 @@
             100% { opacity: 1; transform: scale(1); }
         }
 
-        /* Apply animations when slide is active with staggered delays */
-        .slide.active h1, .slide.active h2 { animation: fadeInUp 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
-        .slide.active p { animation: fadeInUp 0.8s cubic-bezier(0.25, 1, 0.5, 1) 0.2s forwards; }
-        .slide.active .big-number { animation: scalePop 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
-        .slide.active .button-link, .slide.active .patron-img { animation: fadeInUp 0.8s ease 0.4s forwards; }
-
-        /* Elements start invisible before animation kicks in */
-        .slide h1, .slide h2, .slide p, .slide .big-number, .slide .button-link, .slide .patron-img { opacity: 0; }
-
-        /* --- TYPOGRAPHY & COLOR SHIFTING --- */
-        h1 {
-            font-size: 3rem; font-weight: 800; margin-bottom: 24px;
-            letter-spacing: -1.5px; line-height: 1.1;
+        .slide.active h1, .slide.active h2, .slide.active .banner-title { 
+            animation: fadeInUp 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards; 
         }
-        h2 {
-            font-size: 2.2rem; font-weight: 700; margin-bottom: 16px;
-            letter-spacing: -1px;
+        .slide.active p, .slide.active .sub-info { 
+            animation: fadeInUp 0.8s cubic-bezier(0.25, 1, 0.5, 1) 0.2s forwards; 
         }
-        p {
-            font-size: 1.2rem; font-weight: 600; line-height: 1.5;
-            color: var(--lavender-bright);
+        .slide.active .big-number { 
+            animation: scalePop 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; 
+        }
+        .slide.active .button-link, .slide.active .patron-img { 
+            animation: fadeInUp 0.8s ease 0.4s forwards; 
         }
 
-        /* The Lavender Gradient Text */
+        /* Initial hidden state */
+        .slide h1, .slide h2, .slide p, .slide .big-number, .slide .button-link, .slide .patron-img, .banner-title { opacity: 0; }
+
+        /* --- TYPOGRAPHY --- */
+        /* The Banner Title Style */
+        .banner-title {
+            font-family: var(--font-banner);
+            font-size: 3.5rem;
+            font-weight: 800;
+            line-height: 0.9;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        h1 { font-size: 3rem; font-weight: 800; margin-bottom: 24px; letter-spacing: -1.5px; line-height: 1.1; }
+        h2 { font-size: 2.2rem; font-weight: 700; margin-bottom: 16px; letter-spacing: -1px; }
+        p { font-size: 1.2rem; font-weight: 600; line-height: 1.5; color: var(--lavender-bright); }
+
         .gradient-text, .big-number {
             background: linear-gradient(135deg, #fff 0%, var(--lavender-muted) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            transition: background 0.5s ease; /* Smooth transition for color shift */
+            transition: background 0.5s ease;
         }
 
-        .big-number {
-            font-size: 9rem; font-weight: 900; letter-spacing: -6px;
-            line-height: 1; margin-bottom: 10px;
-        }
+        .big-number { font-size: 9rem; font-weight: 900; letter-spacing: -6px; line-height: 1; margin-bottom: 10px; }
 
-        /* --- TRANSITION STATE (THE FLASH EFFECT) --- */
-        /* When body has 'transitioning' class, shift colors wildly */
-        body.transitioning {
-            background-color: #2a0e35; /* temporary darker purple background */
-        }
-        
-        body.transitioning #bg-canvas {
-            /* Hue rotate the lavender blobs into crazy colors */
-            filter: hue-rotate(180deg) saturate(300%); 
-        }
-
-        body.transitioning .gradient-text, 
-        body.transitioning .big-number {
-            /* Temporary Holographic Rainbow Gradient */
+        /* --- FLASH TRANSITION --- */
+        body.transitioning { background-color: #2a0e35; }
+        body.transitioning #bg-canvas { filter: hue-rotate(180deg) saturate(300%); }
+        body.transitioning .gradient-text, body.transitioning .big-number {
             background: linear-gradient(90deg, #ff00cc, #3333ff, #00ccff, #ff00cc);
             background-size: 200% auto;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             animation: shimmer 0.5s linear infinite;
         }
+        @keyframes shimmer { to { background-position: 200% center; } }
 
-        @keyframes shimmer {
-            to { background-position: 200% center; }
-        }
-
-        /* --- LINKS & BUTTONS --- */
+        /* --- LINKS --- */
         a.button-link {
             display: inline-block; margin-top: 25px;
             color: var(--bg-deep); background-color: var(--cream);
@@ -187,15 +168,12 @@
         }
 
         /* --- TAP ZONES --- */
-        .tap-zone {
-            position: absolute; top: 0; height: 100%; width: 40%;
-            z-index: 15; cursor: pointer;
-        }
+        .tap-zone { position: absolute; top: 0; height: 100%; width: 40%; z-index: 15; cursor: pointer; }
         .left-zone { left: 0; }
         .right-zone { right: 0; }
 
-        /* Mobile adjustments */
         @media (max-width: 600px) {
+            .banner-title { font-size: 2.8rem; }
             h1 { font-size: 2.5rem; }
             h2 { font-size: 1.8rem; }
             .big-number { font-size: 7rem; }
@@ -212,13 +190,18 @@
     <div class="progress-container" id="progress-bars"></div>
 
     <div class="slide active">
-        <h1 style="font-size: 2.5rem; line-height: 1.3;">
-            Croissanthology dot com: your 2025 AD 
+        <div class="banner-title gradient-text">
+            CROISSANTHOLOGY<br>
+            DOT COM
+        </div>
+        
+        <p style="margin-top: 20px; font-size: 1.4rem; color: #fff; opacity: 0.9;" class="sub-info">
+            your 2025 AD <br>
             <a href="https://www.metaculus.com/questions/5121/date-of-artificial-general-intelligence/" target="_blank" class="agi-link">
-                <span id="agi-calc" class="gradient-text">Calculating...</span><sup class="link-bubble">↗</sup>
+                <span id="agi-calc">Calculating...</span><sup class="link-bubble">↗</sup>
             </a>
-            in review.
-        </h1>
+            <br>in review.
+        </p>
     </div>
 
     <div class="slide">
@@ -240,12 +223,18 @@
     </div>
 
     <div class="slide">
-        <span class="big-number" style="font-size: 7rem;">33.40 USD</span>
+        <span class="big-number" style="font-size: 6rem;">33.40 USD</span>
         <h2>made from Patreon.</h2>
     </div>
 
     <div class="slide">
-        <h2 style="font-size: 2.8rem;">Countless <a href="https://x.com/croissanthology" target="_blank" class="agi-link" style="font-size: 2.8rem;">Tweets</a><sup class="link-bubble">↗</sup></h2>
+        <h2 style="font-size: 2.8rem;">
+            Countless 
+            <br style="display: block; content: ''; margin-bottom: 10px;">
+            <a href="https://x.com/croissanthology" target="_blank" class="agi-link" style="font-size: 2.8rem;">
+                Tweets<sup class="link-bubble">↗</sup>
+            </a>
+        </h2>
         <p>(number unspecified)</p>
     </div>
 
@@ -256,7 +245,7 @@
 
     <div class="slide">
         <h1 style="font-size: 4rem; color: var(--lavender-bright); margin-bottom: 5px;" class="gradient-text">Sole<br>Patron!</h1>
-        <img src="thankfulscrooge.png" alt="Thankful Scrooge" class="patron-img" onerror="this.style.display='none'; this.insertAdjacentHTML('afterend', '<p style=\'margin-top:20px\'>[Image: thankfulscrooge.png]</p>')">
+        <img src="images/thankfulscrooge.jpg" alt="Thankful Scrooge" class="patron-img">
     </div>
 
     <div class="slide">
@@ -267,13 +256,14 @@
 </div>
 
 <script>
-    /* --- 1. AGI LOGIC (Client-Side Proxy) --- */
+    /* --- 1. AGI LOGIC (FIXED) --- */
     async function fetchAGI() {
         const display = document.getElementById('agi-calc');
-        const currentYear = new Date().getFullYear();
-        let predictionYear = 2033; 
+        const currentYear = new Date().getFullYear(); // 2025
+        let predictionYear = 2033; // Default fallback
+        
+        // This is Question 5121 on Metaculus
         const targetUrl = 'https://www.metaculus.com/api/posts/5121/';
-        // Using a different proxy that handles caching better for this specific use case
         const proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(targetUrl);
 
         try {
@@ -281,22 +271,38 @@
             if (response.ok) {
                 const data = await response.json();
                 const centers = data?.question?.aggregations?.recency_weighted?.latest?.centers;
+                
                 if (centers && centers.length > 0) {
                     const timestamp = centers[0];
-                    predictionYear = new Date(timestamp * 1000).getFullYear();
+                    const dateObj = new Date(timestamp * 1000);
+                    const fetchedYear = dateObj.getFullYear();
+                    
+                    // --- SANITY CHECK (The Bug Fix) ---
+                    // If fetchedYear is older than now (e.g. 1970 due to 0 timestamp), 
+                    // ignore it and keep the default 2033.
+                    if (fetchedYear > currentYear) {
+                        predictionYear = fetchedYear;
+                        console.log("Metaculus fetch success:", predictionYear);
+                    } else {
+                        console.log("Fetched year seems wrong (past), utilizing fallback:", fetchedYear);
+                    }
                 }
             }
-        } catch (e) { console.log("Fetch failed, using fallback."); }
+        } catch (e) { console.log("Fetch failed, utilizing fallback."); }
 
-        display.innerText = `(-${predictionYear - currentYear} S)`;
+        // Calculate Difference
+        // 2033 - 2025 = 8
+        const diff = predictionYear - currentYear;
+        
+        // Display
+        display.innerText = `(-${diff} S)`;
     }
 
-    /* --- 2. CANVAS ANIMATION (The Blobs) --- */
+    /* --- 2. CANVAS ANIMATION --- */
     const canvas = document.getElementById('bg-canvas');
     const ctx = canvas.getContext('2d');
     let width, height;
     let blobs = [];
-    // Global speed multiplier for transitions
     let speedMultiplier = 1; 
 
     function resize() {
@@ -317,7 +323,6 @@
             this.color = colors[Math.floor(Math.random() * colors.length)];
         }
         update() {
-            // Speed increases during transition
             this.x += this.baseVx * speedMultiplier;
             this.y += this.baseVy * speedMultiplier;
             if (this.x < -100 || this.x > width + 100) this.baseVx *= -1;
@@ -340,13 +345,12 @@
     }
     animate();
 
-    /* --- 3. NAVIGATION & TRANSITION EFFECTS --- */
+    /* --- 3. NAVIGATION --- */
     const slides = document.querySelectorAll('.slide');
     const progressContainer = document.getElementById('progress-bars');
     let currentSlide = 0;
     let isAnimating = false;
 
-    // Initialize Progress Bars
     slides.forEach(() => {
         let bar = document.createElement('div');
         bar.className = 'progress-bar';
@@ -355,18 +359,11 @@
     });
     const bars = document.querySelectorAll('.progress-bar');
 
-    // THE FLASH EFFECT FUNCTION
     function triggerTransitionFlash() {
         if(isAnimating) return;
         isAnimating = true;
-
-        // 1. Add class to body to trigger CSS color shifts
         document.body.classList.add('transitioning');
-        
-        // 2. Speed up blobs
         speedMultiplier = 8;
-
-        // 3. Reset after 600ms (matches CSS transition times)
         setTimeout(() => {
             document.body.classList.remove('transitioning');
             speedMultiplier = 1;
