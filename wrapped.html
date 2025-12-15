@@ -250,7 +250,7 @@
     <div class="slide">
         <span class="big-number" style="font-size: 6rem;">33.40 USD</span>
         <h2>made from Patreon.</h2>
-        <p style="font-size: 0.9rem; opacity: 0.7; margin-top: 10px;">(2 Waymo rides, 2 months of Claude)</p>
+        <p style="font-size: 0.9rem; opacity: 0.7; margin-top: 10px;">(2 Waymo rides OR 2 months of Claude)</p>
     </div>
 
     <div class="slide">
@@ -308,6 +308,8 @@
             }
         } catch (e) { console.log("Fetch failed, utilizing fallback."); }
 
+        await new Promise(r => setTimeout(r, 2000));
+        
         const diff = predictionYear - currentYear;
         display.innerText = `(-${diff} S)`;
     }
