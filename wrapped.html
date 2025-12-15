@@ -5,13 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Croissanthology Wrapped 2025</title>
     <style>
-        /* --- SPOTIFY WRAPPED THEME VARIABLES --- */
+        /* --- THEME VARIABLES --- */
         :root {
             --bg-deep: #18121e; /* Deep purple/black base */
             --lavender-bright: #bfaee3; /* Pop accent */
             --lavender-muted: #8e81a2; /* Stela's fav */
             --cream: #fdfbf7;
-            /* Font stack similar to Spotify's Circular/Gotham */
             --font-stack: 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
         }
 
@@ -23,215 +22,184 @@
             color: var(--cream);
             height: 100vh;
             width: 100vw;
-            overflow: hidden; /* Prevent scrolling, slides only */
+            overflow: hidden;
             display: flex;
             justify-content: center;
             align-items: center;
+            /* Smooth background color transition during flashes */
+            transition: background-color 0.5s ease;
         }
 
-        /* --- BACKGROUND ANIMATION (Canvas) --- */
+        /* --- BACKGROUND CANVAS --- */
         #bg-canvas {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0; width: 100%; height: 100%;
             z-index: 1;
             opacity: 0.8;
+            transition: filter 0.5s ease;
         }
 
-        /* --- MAIN CONTENT CONTAINER --- */
+        /* --- MAIN CONTAINER --- */
         .story-container {
             position: relative;
             z-index: 10;
             width: 100%;
-            max-width: 450px; /* Limits width on desktop to look like a phone */
+            max-width: 450px;
             height: 100%;
             max-height: 900px;
             display: flex;
             flex-direction: column;
-            /* subtle shadow for desktop viewing */
-            box-shadow: 0 0 50px rgba(0,0,0,0.5); 
         }
 
         /* --- PROGRESS BARS --- */
         .progress-container {
-            position: absolute;
-            top: 15px;
-            left: 0;
-            width: 100%;
-            display: flex;
-            gap: 4px;
-            padding: 0 12px;
-            z-index: 20;
+            position: absolute; top: 15px; left: 0; width: 100%;
+            display: flex; gap: 4px; padding: 0 12px; z-index: 20;
         }
-
         .progress-bar {
-            flex: 1;
-            height: 4px;
-            background: rgba(255,255,255,0.3);
-            border-radius: 2px;
-            overflow: hidden;
+            flex: 1; height: 4px; background: rgba(255,255,255,0.3);
+            border-radius: 2px; overflow: hidden;
         }
-
         .progress-fill {
-            height: 100%;
-            width: 0%;
-            background: var(--cream);
+            height: 100%; width: 0%; background: var(--cream);
             transition: width 0.2s linear;
             box-shadow: 0 0 8px rgba(255,255,255,0.6);
         }
-
         .progress-bar.completed .progress-fill { width: 100%; }
         .progress-bar.active .progress-fill { width: 100%; } 
 
-        /* --- SLIDES --- */
+        /* --- SLIDES & ENTRANCE ANIMATIONS --- */
         .slide {
             flex: 1;
-            display: none; /* Hidden by default */
+            display: none;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             padding: 40px;
             text-align: center;
-            opacity: 0;
-            transform: scale(0.95);
-            transition: opacity 0.4s ease, transform 0.4s ease;
         }
 
-        .slide.active { 
-            display: flex; 
-            opacity: 1;
-            transform: scale(1);
+        .slide.active { display: flex; }
+
+        /* Define Entrance Keyframes */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes scalePop {
+            0% { opacity: 0; transform: scale(0.5); }
+            70% { transform: scale(1.1); }
+            100% { opacity: 1; transform: scale(1); }
         }
 
-        /* --- TYPOGRAPHY --- */
+        /* Apply animations when slide is active with staggered delays */
+        .slide.active h1, .slide.active h2 { animation: fadeInUp 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
+        .slide.active p { animation: fadeInUp 0.8s cubic-bezier(0.25, 1, 0.5, 1) 0.2s forwards; }
+        .slide.active .big-number { animation: scalePop 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+        .slide.active .button-link, .slide.active .patron-img { animation: fadeInUp 0.8s ease 0.4s forwards; }
+
+        /* Elements start invisible before animation kicks in */
+        .slide h1, .slide h2, .slide p, .slide .big-number, .slide .button-link, .slide .patron-img { opacity: 0; }
+
+        /* --- TYPOGRAPHY & COLOR SHIFTING --- */
         h1 {
-            font-size: 3rem; /* Big impact */
-            font-weight: 800; 
-            margin-bottom: 24px;
-            letter-spacing: -1.5px;
-            line-height: 1.1;
+            font-size: 3rem; font-weight: 800; margin-bottom: 24px;
+            letter-spacing: -1.5px; line-height: 1.1;
         }
-
         h2 {
-            font-size: 2.2rem;
-            font-weight: 700;
-            margin-bottom: 16px;
+            font-size: 2.2rem; font-weight: 700; margin-bottom: 16px;
             letter-spacing: -1px;
         }
-
         p {
-            font-size: 1.1rem;
-            font-weight: 600;
-            line-height: 1.5;
+            font-size: 1.2rem; font-weight: 600; line-height: 1.5;
             color: var(--lavender-bright);
         }
 
-        .big-number {
-            font-size: 9rem;
-            font-weight: 900;
-            letter-spacing: -6px;
-            line-height: 1;
-            margin-bottom: 10px;
-            /* Gradient Text Effect */
+        /* The Lavender Gradient Text */
+        .gradient-text, .big-number {
             background: linear-gradient(135deg, #fff 0%, var(--lavender-muted) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            transition: background 0.5s ease; /* Smooth transition for color shift */
         }
 
-        .sub-text {
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            opacity: 0.8;
-            margin-bottom: 10px;
+        .big-number {
+            font-size: 9rem; font-weight: 900; letter-spacing: -6px;
+            line-height: 1; margin-bottom: 10px;
+        }
+
+        /* --- TRANSITION STATE (THE FLASH EFFECT) --- */
+        /* When body has 'transitioning' class, shift colors wildly */
+        body.transitioning {
+            background-color: #2a0e35; /* temporary darker purple background */
+        }
+        
+        body.transitioning #bg-canvas {
+            /* Hue rotate the lavender blobs into crazy colors */
+            filter: hue-rotate(180deg) saturate(300%); 
+        }
+
+        body.transitioning .gradient-text, 
+        body.transitioning .big-number {
+            /* Temporary Holographic Rainbow Gradient */
+            background: linear-gradient(90deg, #ff00cc, #3333ff, #00ccff, #ff00cc);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shimmer 0.5s linear infinite;
+        }
+
+        @keyframes shimmer {
+            to { background-position: 200% center; }
         }
 
         /* --- LINKS & BUTTONS --- */
         a.button-link {
-            display: inline-block;
-            margin-top: 25px;
-            color: var(--bg-deep);
-            background-color: var(--cream);
-            text-decoration: none;
-            padding: 14px 28px;
-            border-radius: 50px;
-            font-weight: 800;
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: transform 0.2s, background-color 0.2s;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
-            position: relative;
-            z-index: 30; /* Ensure clickable over tap zones */
+            display: inline-block; margin-top: 25px;
+            color: var(--bg-deep); background-color: var(--cream);
+            text-decoration: none; padding: 14px 28px; border-radius: 50px;
+            font-weight: 800; font-size: 0.9rem; text-transform: uppercase;
+            letter-spacing: 1px; transition: transform 0.2s, background-color 0.2s;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3); position: relative; z-index: 30;
         }
-        
-        a.button-link:hover { 
-            transform: scale(1.05); 
-            background-color: #fff;
-        }
+        a.button-link:hover { transform: scale(1.05); background-color: #fff;}
 
-        /* --- THE SPECIAL AGI LINK --- */
         .agi-link {
-            color: var(--cream);
-            text-decoration: none;
+            color: var(--cream); text-decoration: none;
             border-bottom: 2px solid var(--lavender-muted);
-            padding-bottom: 2px;
-            position: relative;
-            z-index: 30;
-            transition: color 0.2s;
+            padding-bottom: 2px; position: relative; z-index: 30;
+            transition: color 0.2s; white-space: nowrap;
         }
-        
-        .agi-link:hover {
-            color: #fff;
-            border-bottom-color: #fff;
-        }
+        .agi-link:hover { color: #fff; border-bottom-color: #fff;}
 
-        /* The Bubble Icon */
         .link-bubble {
-            display: inline-flex;
-            justify-content: center;
-            align-items: center;
-            vertical-align: super;
-            font-size: 0.6em;
-            width: 18px;
-            height: 18px;
-            background-color: var(--lavender-bright);
-            color: var(--bg-deep);
-            border-radius: 50%;
-            margin-left: 4px;
-            font-weight: bold;
+            display: inline-flex; justify-content: center; align-items: center;
+            vertical-align: super; font-size: 0.6em; width: 18px; height: 18px;
+            background-color: var(--lavender-bright); color: var(--bg-deep);
+            border-radius: 50%; margin-left: 4px; font-weight: bold;
         }
 
         /* --- IMAGES --- */
         .patron-img {
-            max-width: 85%;
-            border-radius: 20px;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.6);
-            margin-top: 30px;
-            transform: rotate(-4deg); /* Jaunty angle */
-            border: 4px solid var(--cream);
+            max-width: 85%; border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.6); margin-top: 30px;
+            transform: rotate(-4deg); border: 4px solid var(--cream);
         }
 
-        /* --- TAP ZONES (Invisible click areas) --- */
+        /* --- TAP ZONES --- */
         .tap-zone {
-            position: absolute;
-            top: 0;
-            height: 100%;
-            width: 40%;
-            z-index: 15;
-            cursor: pointer;
+            position: absolute; top: 0; height: 100%; width: 40%;
+            z-index: 15; cursor: pointer;
         }
         .left-zone { left: 0; }
         .right-zone { right: 0; }
 
-        /* Mobile specific adjustments */
+        /* Mobile adjustments */
         @media (max-width: 600px) {
             h1 { font-size: 2.5rem; }
+            h2 { font-size: 1.8rem; }
             .big-number { font-size: 7rem; }
         }
-
     </style>
 </head>
 <body>
@@ -239,21 +207,18 @@
 <canvas id="bg-canvas"></canvas>
 
 <div class="story-container">
-    
     <div class="tap-zone left-zone" onclick="prevSlide()"></div>
     <div class="tap-zone right-zone" onclick="nextSlide()"></div>
-
     <div class="progress-container" id="progress-bars"></div>
 
     <div class="slide active">
-        <div class="sub-text">2025 In Review</div>
-        <h1>Croissanthology<br>.com</h1>
-        <p style="margin-top: 20px; font-size: 1.4rem; color: #fff;">
-            Your 2025 AD<br>
+        <h1 style="font-size: 2.5rem; line-height: 1.3;">
+            Croissanthology dot com: your 2025 AD 
             <a href="https://www.metaculus.com/questions/5121/date-of-artificial-general-intelligence/" target="_blank" class="agi-link">
-                <span id="agi-calc">Calculating...</span><sup class="link-bubble">↗</sup>
+                <span id="agi-calc" class="gradient-text">Calculating...</span><sup class="link-bubble">↗</sup>
             </a>
-        </p>
+            in review.
+        </h1>
     </div>
 
     <div class="slide">
@@ -270,9 +235,18 @@
     </div>
 
     <div class="slide">
-        <h1 style="font-size: 2.8rem;">Fresh Coat<br>of Paint</h1>
-        <p>A bunch of new design elements added to the website!</p>
+        <h2 style="font-size: 2.5rem;" class="gradient-text">A bunch of new design elements added to the website!</h2>
         <a href="https://croissanthology.com/design-notes" target="_blank" class="button-link">Design Notes</a>
+    </div>
+
+    <div class="slide">
+        <span class="big-number" style="font-size: 7rem;">33.40 USD</span>
+        <h2>made from Patreon.</h2>
+    </div>
+
+    <div class="slide">
+        <h2 style="font-size: 2.8rem;">Countless <a href="https://x.com/croissanthology" target="_blank" class="agi-link" style="font-size: 2.8rem;">Tweets</a><sup class="link-bubble">↗</sup></h2>
+        <p>(number unspecified)</p>
     </div>
 
     <div class="slide">
@@ -281,63 +255,49 @@
     </div>
 
     <div class="slide">
-        <h1 style="font-size: 4rem; color: var(--lavender-bright); margin-bottom: 5px;">Sole<br>Patron!</h1>
+        <h1 style="font-size: 4rem; color: var(--lavender-bright); margin-bottom: 5px;" class="gradient-text">Sole<br>Patron!</h1>
         <img src="thankfulscrooge.png" alt="Thankful Scrooge" class="patron-img" onerror="this.style.display='none'; this.insertAdjacentHTML('afterend', '<p style=\'margin-top:20px\'>[Image: thankfulscrooge.png]</p>')">
     </div>
 
     <div class="slide">
         <h1 style="font-size: 3.5rem;">Thank you<br>for sticking<br>around!</h1>
         <p>See you next year.</p>
-        <div style="margin-top: 40px; font-weight: bold; color: var(--lavender-muted);">💜 Stela</div>
     </div>
 
 </div>
 
 <script>
-    /* --- 1. AGI LOGIC (Client-Side Proxy Fetch) --- */
+    /* --- 1. AGI LOGIC (Client-Side Proxy) --- */
     async function fetchAGI() {
         const display = document.getElementById('agi-calc');
         const currentYear = new Date().getFullYear();
-        let predictionYear = 2033; // Default fallback if fetch fails
-
-        // Metaculus API endpoint for Question 5121
+        let predictionYear = 2033; 
         const targetUrl = 'https://www.metaculus.com/api/posts/5121/';
-        
-        // Use 'AllOrigins' proxy to bypass CORS on Github Pages
-        const proxyUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(targetUrl);
+        // Using a different proxy that handles caching better for this specific use case
+        const proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(targetUrl);
 
         try {
             const response = await fetch(proxyUrl);
             if (response.ok) {
                 const data = await response.json();
-                
-                // Navigate Metaculus JSON structure (this path can change, so we try/catch)
-                // We look for 'recency_weighted' centers which usually holds the prediction date timestamp
                 const centers = data?.question?.aggregations?.recency_weighted?.latest?.centers;
-                
                 if (centers && centers.length > 0) {
-                    const timestamp = centers[0]; // Unix timestamp
-                    const dateObj = new Date(timestamp * 1000);
-                    predictionYear = dateObj.getFullYear();
-                    console.log("Metaculus fetch success:", predictionYear);
+                    const timestamp = centers[0];
+                    predictionYear = new Date(timestamp * 1000).getFullYear();
                 }
             }
-        } catch (e) {
-            console.log("Fetch failed, using fallback.", e);
-        }
+        } catch (e) { console.log("Fetch failed, using fallback."); }
 
-        // Calculate Difference
-        const diff = predictionYear - currentYear;
-        
-        // Update Text
-        display.innerText = `(-${diff} S)`;
+        display.innerText = `(-${predictionYear - currentYear} S)`;
     }
 
-    /* --- 2. CANVAS ANIMATION (Lavender Blobs) --- */
+    /* --- 2. CANVAS ANIMATION (The Blobs) --- */
     const canvas = document.getElementById('bg-canvas');
     const ctx = canvas.getContext('2d');
     let width, height;
     let blobs = [];
+    // Global speed multiplier for transitions
+    let speedMultiplier = 1; 
 
     function resize() {
         width = canvas.width = window.innerWidth;
@@ -347,82 +307,78 @@
     resize();
 
     class Blob {
-        constructor() {
-            this.init();
-        }
-        
+        constructor() { this.init(); }
         init() {
-            this.x = Math.random() * width;
-            this.y = Math.random() * height;
-            // Slow, drifting movement
-            this.vx = (Math.random() - 0.5) * 0.8;
-            this.vy = (Math.random() - 0.5) * 0.8;
-            this.radius = Math.random() * 150 + 100; // Big soft blobs
-            
-            // Randomly pick one of your lavender colors
+            this.x = Math.random() * width; this.y = Math.random() * height;
+            this.baseVx = (Math.random() - 0.5) * 0.8;
+            this.baseVy = (Math.random() - 0.5) * 0.8;
+            this.radius = Math.random() * 150 + 100; 
             const colors = ['#8e81a2', '#bfaee3', '#5a4a6e'];
             this.color = colors[Math.floor(Math.random() * colors.length)];
         }
-
         update() {
-            this.x += this.vx;
-            this.y += this.vy;
-
-            // Bounce off edges smoothly
-            if (this.x < -100 || this.x > width + 100) this.vx *= -1;
-            if (this.y < -100 || this.y > height + 100) this.vy *= -1;
+            // Speed increases during transition
+            this.x += this.baseVx * speedMultiplier;
+            this.y += this.baseVy * speedMultiplier;
+            if (this.x < -100 || this.x > width + 100) this.baseVx *= -1;
+            if (this.y < -100 || this.y > height + 100) this.baseVy *= -1;
         }
-
         draw() {
-            ctx.beginPath();
-            ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-            ctx.fillStyle = this.color;
-            ctx.fill();
+            ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+            ctx.fillStyle = this.color; ctx.fill();
         }
     }
 
-    // Create 6 blobs
     for(let i=0; i<6; i++) blobs.push(new Blob());
 
     function animate() {
-        // Clear background
-        ctx.fillStyle = '#18121e'; 
-        ctx.fillRect(0, 0, width, height);
-
-        // Apply blur to make them look like a lava lamp
+        ctx.clearRect(0,0,width,height);
         ctx.filter = 'blur(80px)';
         blobs.forEach(b => { b.update(); b.draw(); });
-        ctx.filter = 'none'; // Reset filter
-        
+        ctx.filter = 'none'; 
         requestAnimationFrame(animate);
     }
     animate();
 
-    /* --- 3. NAVIGATION --- */
+    /* --- 3. NAVIGATION & TRANSITION EFFECTS --- */
     const slides = document.querySelectorAll('.slide');
     const progressContainer = document.getElementById('progress-bars');
     let currentSlide = 0;
+    let isAnimating = false;
 
     // Initialize Progress Bars
     slides.forEach(() => {
         let bar = document.createElement('div');
-        bar.classList.add('progress-bar');
-        let fill = document.createElement('div');
-        fill.classList.add('progress-fill');
-        bar.appendChild(fill);
+        bar.className = 'progress-bar';
+        bar.innerHTML = '<div class="progress-fill"></div>';
         progressContainer.appendChild(bar);
     });
-
     const bars = document.querySelectorAll('.progress-bar');
 
+    // THE FLASH EFFECT FUNCTION
+    function triggerTransitionFlash() {
+        if(isAnimating) return;
+        isAnimating = true;
+
+        // 1. Add class to body to trigger CSS color shifts
+        document.body.classList.add('transitioning');
+        
+        // 2. Speed up blobs
+        speedMultiplier = 8;
+
+        // 3. Reset after 600ms (matches CSS transition times)
+        setTimeout(() => {
+            document.body.classList.remove('transitioning');
+            speedMultiplier = 1;
+            isAnimating = false;
+        }, 600);
+    }
+
     function updateView() {
-        // Update Slides
         slides.forEach((slide, i) => {
             slide.classList.remove('active');
             if (i === currentSlide) slide.classList.add('active');
         });
-
-        // Update Progress Bars
         bars.forEach((bar, i) => {
             bar.classList.remove('active', 'completed');
             if (i < currentSlide) bar.classList.add('completed');
@@ -431,26 +387,26 @@
     }
 
     function nextSlide() {
-        if (currentSlide < slides.length - 1) {
+        if (currentSlide < slides.length - 1 && !isAnimating) {
+            triggerTransitionFlash();
             currentSlide++;
             updateView();
         }
     }
 
     function prevSlide() {
-        if (currentSlide > 0) {
+        if (currentSlide > 0 && !isAnimating) {
+            triggerTransitionFlash();
             currentSlide--;
             updateView();
         }
     }
 
-    // Keyboard Support
     document.addEventListener('keydown', (e) => {
         if (e.key === "ArrowRight" || e.key === " ") nextSlide();
         if (e.key === "ArrowLeft") prevSlide();
     });
 
-    // Run on Load
     fetchAGI();
     updateView();
 
