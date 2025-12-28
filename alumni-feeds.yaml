@@ -1,0 +1,32 @@
+# Alumni RSS Feeds Configuration
+# Add your camp alumni RSS feeds here
+# Format:
+#   - name: "Author Name"
+#     blog_title: "Blog Title"
+#     feed_url: "https://example.com/feed"
+
+feeds:
+  - name: "Example Alumni 1"
+    blog_title: "Thoughts and Things"
+    feed_url: "https://example.substack.com/feed"
+
+  - name: "Example Alumni 2"
+    blog_title: "Writing from the Edge"
+    feed_url: "https://another-example.com/rss"
+
+# Configuration
+config:
+  # Number of days to look back for posts
+  days_back: 60
+
+  # Output file path
+  output_file: "alumni-blogroll.html"
+
+  # Page title
+  page_title: "Camp Alumni Blogroll"
+
+  # Background image (relative to the HTML file)
+  background_image: "alsoimages/joan.jpg"
+
+  # Optional: Add a header description
+  header_description: "Recent posts from our camp alumni"
