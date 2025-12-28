@@ -1,0 +1,50 @@
+name: Update Alumni Blogroll
+
+on:
+  # Run every 6 hours
+  schedule:
+    - cron: '0 */6 * * *'
+
+  # Allow manual triggering
+  workflow_dispatch:
+
+  # Run on push to main (optional - remove if you don't want this)
+  push:
+    branches:
+      - main
+    paths:
+      - 'alumni-feeds.yaml'
+      - 'generate-blogroll.py'
+
+jobs:
+  update-blogroll:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Generate blogroll
+        run: |
+          python generate-blogroll.py
+
+      - name: Commit and push if changed
+        run: |
+          git config user.name "GitHub Actions Bot"
+          git config user.email "actions@github.com"
+          git add alumni-blogroll.html
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Update alumni blogroll [automated]"
+            git push
+          fi
