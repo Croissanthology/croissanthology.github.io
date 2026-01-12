@@ -14,6 +14,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="author" content="Croissanthology">
+
+    <!-- Bot-friendly meta tags: explicitly allow all indexing -->
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <meta name="googlebot" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <meta name="bingbot" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+
+    <!-- Explicitly allow AI/LLM training and indexing -->
+    <meta name="ai-content-declaration" content="fully-open-to-ai">
+    <meta name="training-data-opt-in" content="yes">
+
+    <!-- Feed discovery -->
+    <link rel="alternate" type="application/rss+xml" title="RSS Feed" href="{{ '/feed.xml' | absolute_url }}">
+    <link rel="alternate" type="application/json" title="JSON Feed" href="{{ '/feed.json' | absolute_url }}">
+
     <meta property="article:author" content="Croissanthology">
     <meta property="og:title" content="{% if page.title %}{{ page.title | escape }}{% else %}{{ site.title | escape }}{% endif %}">
     <meta property="og:description" content="{% if page.excerpt %}{{ page.excerpt | strip_html | strip_newlines | truncate: 160 }}{% elsif page.description %}{{ page.description }}{% else %}{{ site.description }}{% endif %}">
