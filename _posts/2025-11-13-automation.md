@@ -10,7 +10,7 @@ redirect_from:
     - /autoation
 ---
 
-Automation as a function of human dignity; unpleasant, dangerous, tedious, chuck it all into the maws of our machines; state of current automation efforts; anthropic-ness of certain technologies; [utopia](https://croissanthology.com/utopia) as a world that bends around you, [executes your will with ease and wonder;](https://camelot.wiki/citadel/camelot.wiki/divination/Generative+Unreality) ["whispering landscape";](https://x.com/croissanthology/status/1924455308589449251?s=20) [Cocagne;](https://en.wikipedia.org/wiki/Cockaigne); [total normie epistemic victory;](https://x.com/voooooogel/status/1992388056704487613?s=20) [humanity's CEV;](https://www.lesswrong.com/w/coherent-extrapolated-volition)] "markets eventually price in everything". 
+Automation as a function of human dignity; unpleasant, dangerous, tedious, chuck it all into the maws of our machines; state of current automation efforts; anthropic-ness of certain technologies; [utopia](https://croissanthology.com/utopia) as a world that bends around you, [executes your will with ease and wonder;](https://camelot.wiki/citadel/camelot.wiki/divination/Generative+Unreality) ["whispering landscape";](https://x.com/croissanthology/status/1924455308589449251?s=20) [Cocagne;](https://en.wikipedia.org/wiki/Cockaigne) [total normie epistemic victory;](https://x.com/voooooogel/status/1992388056704487613?s=20) [humanity's CEV;](https://www.lesswrong.com/w/coherent-extrapolated-volition) "markets eventually price in everything". 
 
 ## Dignity 
 
