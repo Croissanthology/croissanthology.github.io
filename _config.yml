@@ -1,6 +1,6 @@
 # Site settings
 title: Croissanthology
-description: "."
+description: "Writing about rationality, mundane utility, and our gloriously apollonian expansion into the lightcone. Essays on AI risk, cognitive biases, death, and human progress."
 url: "https://croissanthology.github.io"
 baseurl: "" 
 
@@ -29,7 +29,7 @@ plugins:
 # Feed settings
 feed:
   path: feed.xml
-  posts_limit: 20
+  posts_limit: 1000  # Include all posts for maximum discoverability
 
 # Theme settings
 theme: null  # Using custom theme
