@@ -322,6 +322,25 @@ a[href*="gwern.net"]:hover {
     color: #FFB7C5;
 }
 
+/* Wikipedia link indicator - superscript serif "W" */
+a[href*="wikipedia.org"]::after,
+a[href*="wikimedia.org"]::after,
+a[href*="wiktionary.org"]::after {
+    content: "W";
+    font-family: "Times New Roman", Times, serif;
+    font-size: 0.6em;
+    font-style: italic;
+    vertical-align: super;
+    margin-left: 1px;
+    opacity: 0.7;
+}
+
+a[href*="wikipedia.org"]:hover::after,
+a[href*="wikimedia.org"]:hover::after,
+a[href*="wiktionary.org"]:hover::after {
+    opacity: 1;
+}
+
 /* Index page: disable special link colors */
 body.index a[href*="substack.com"]:hover {
     color: var(--color-link);
