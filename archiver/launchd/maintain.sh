@@ -12,13 +12,6 @@ cd "$REPO_ROOT"
 git fetch --quiet origin
 git pull --quiet --ff-only || true
 
-# Load SMTP credentials. Expects ~/.archiver.env with lines like:
-#   export ARCHIVER_SMTP_USER="you@gmail.com"
-#   export ARCHIVER_SMTP_PASS="abcd efgh ijkl mnop"   # gmail app password
-if [[ -f "$HOME/.archiver.env" ]]; then
-  source "$HOME/.archiver.env"
-fi
-
 BINARY="$REPO_ROOT/archiver/target/release/archiver"
 if [[ ! -x "$BINARY" ]]; then
   echo "archiver binary not found at $BINARY — building it now..."
@@ -29,7 +22,7 @@ fi
 
 # Commit + push any rehosts / new state.
 if ! git diff --quiet || ! git diff --cached --quiet; then
-  git add archive/ .archiver/ _posts/ || true
+  git add archive/ .archiver/ _posts/ SUBSTACK_DEAD_LINKS.md 2>/dev/null || true
   git commit -m "archiver: monthly maintenance pass" || true
   git push --quiet origin "$(git rev-parse --abbrev-ref HEAD)" || true
 fi
