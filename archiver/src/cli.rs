@@ -399,7 +399,7 @@ fn maintain() -> Result<()> {
         ui::info(&format!("skip: {}", s));
     }
 
-    // Email substack-sourced dead links not yet notified
+    // Filter substack-pending items down to those not yet notified.
     let pending: Vec<(String, String, String)> = report
         .substack_pending
         .iter()
@@ -415,20 +415,49 @@ fn maintain() -> Result<()> {
         .collect();
 
     if !pending.is_empty() {
-        match notify::email_substack_dead(&pending) {
-            Ok(()) => {
-                for (_, dead, _) in &pending {
-                    if let Ok(c) = state::canonicalize(dead) {
-                        if let Some(e) = st.archives.get_mut(&c) {
-                            e.notified = true;
-                        }
-                    }
+        // Persistent checklist file in the repo (committed by the wrapper).
+        match notify::append_substack_todo(&pending) {
+            Ok(Some(path)) => ui::success(
+                "todo file",
+                &path.to_string_lossy(),
+            ),
+            Ok(None) => {}
+            Err(e) => ui::warn(&format!("substack todo file failed: {}", e)),
+        }
+
+        // Apple Mail summary (no creds; uses whatever account Mail.app has set up).
+        let body = notify::render_mail_body(&pending);
+        let subject = format!(
+            "[archiver] {} dead substack link(s) need a manual patch",
+            pending.len()
+        );
+        match notify::apple_mail(config::NOTIFY_EMAIL, &subject, &body) {
+            Ok(()) => ui::success("emailed via Mail.app", config::NOTIFY_EMAIL),
+            Err(e) => ui::warn(&format!("Apple Mail send failed: {}", e)),
+        }
+
+        // Mark notified so we don't re-spam next run.
+        for (_, dead, _) in &pending {
+            if let Ok(c) = state::canonicalize(dead) {
+                if let Some(e) = st.archives.get_mut(&c) {
+                    e.notified = true;
                 }
-                ui::success("emailed", &format!("{} substack notice(s)", pending.len()));
             }
-            Err(e) => ui::warn(&format!("email failed: {}", e)),
         }
     }
+
+    // Single summary notification banner.
+    let summary = format!(
+        "{} rehost(s) · {} substack patch(es)",
+        report.rewritten.len(),
+        pending.len()
+    );
+    if report.rewritten.len() + pending.len() > 0 {
+        if let Err(e) = notify::macos_notification("archiver 🐾", &summary) {
+            ui::warn(&format!("macOS notification failed: {}", e));
+        }
+    }
+
     st.save(&config::state_path())?;
     notify::terminal_bell();
     Ok(())

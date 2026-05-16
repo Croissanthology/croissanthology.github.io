@@ -22,14 +22,18 @@ brew install monolith
 ln -s "$PWD/target/release/archiver" /usr/local/bin/archiver
 ```
 
-Then drop your Gmail SMTP creds into `~/.archiver.env`:
+No credentials needed. The monthly notifications use macOS-native plumbing:
 
-```sh
-export ARCHIVER_SMTP_USER="margotwarrenbancquart@gmail.com"
-export ARCHIVER_SMTP_PASS="abcd efgh ijkl mnop"   # Gmail app password
-```
+- **Desktop notification** via `osascript` (`display notification …`)
+- **Email** via Apple Mail via `osascript` — uses whatever account Mail.app
+  is already signed into, no app passwords / SMTP setup
+- **Persistent checklist** in `SUBSTACK_DEAD_LINKS.md` at the repo root
+- **Terminal bell** when run interactively
 
-(Get an app password at https://myaccount.google.com/apppasswords.)
+The first time the cron triggers Apple Mail you'll get a one-time macOS prompt
+asking *"Terminal wants to control Mail.app"* — click **Allow**. From then on
+it's silent. If you want to pre-grant: System Settings → Privacy & Security
+→ Automation → Terminal (or your shell) → enable Mail.
 
 ## Daily use
 
