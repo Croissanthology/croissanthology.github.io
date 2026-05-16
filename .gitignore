@@ -1,0 +1,10 @@
+_site/
+.jekyll-cache/
+.sass-cache/
+.bundle/
+vendor/
+.DS_Store
+
+# archiver tool build artefacts (committing the binary is unnecessary)
+archiver/target/
+archiver/launchd/maintain.log

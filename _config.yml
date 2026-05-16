@@ -62,4 +62,10 @@ exclude:
   - README.md
   - LICENSE
   - .gitignore
+  - archiver
+  - .archiver
+
+# `archive/` is intentionally NOT excluded — those are the local copies
+# the archiver tool generates, and we want GitHub Pages to serve them
+# at /archive/<slug>/ so they can stand in for dead links.
 
