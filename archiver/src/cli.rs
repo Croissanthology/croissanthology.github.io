@@ -65,7 +65,18 @@ enum Cmd {
         label: Option<String>,
     },
     /// Render the static d3 visualization from `.archiver/measurements.json`.
-    Viz,
+    Viz {
+        /// Only include posts whose label is in this comma-separated list.
+        /// e.g. --labels "SSC 2014,Gwern 2014"
+        #[arg(long)]
+        labels: Option<String>,
+        /// Exclude posts whose source URL is in this comma-separated list.
+        #[arg(long)]
+        exclude_urls: Option<String>,
+        /// Output path relative to the repo root.
+        #[arg(long, default_value = "archive-health.html")]
+        output: String,
+    },
 }
 
 pub fn run() -> Result<()> {
@@ -82,7 +93,11 @@ pub fn run() -> Result<()> {
         Some(Cmd::List) => run_list(),
         Some(Cmd::Maintain { dry_run }) => maintain(dry_run),
         Some(Cmd::Measure { url, label }) => measure::run(&ensure_scheme(&url), label),
-        Some(Cmd::Viz) => viz::run(),
+        Some(Cmd::Viz {
+            labels,
+            exclude_urls,
+            output,
+        }) => viz::run(labels, exclude_urls, output),
     }
 }
 
@@ -432,6 +447,9 @@ fn run_rehost(dry_run: bool) -> Result<()> {
     for s in &report.skipped {
         ui::info(&format!("skip: {}", s));
     }
+    for dir in &report.published_archives {
+        ui::success("staged for push", dir);
+    }
     if !dry_run {
         st.save(&config::state_path())?;
     }
@@ -475,6 +493,9 @@ fn maintain(dry_run: bool) -> Result<()> {
     }
     for s in &report.skipped {
         ui::info(&format!("skip: {}", s));
+    }
+    for dir in &report.published_archives {
+        ui::success("staged for push", dir);
     }
 
     // Filter substack-pending items down to those not yet notified.

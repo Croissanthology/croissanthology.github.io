@@ -22,18 +22,16 @@
   <key>WorkingDirectory</key>
   <string>REPLACE_ME_REPO_PATH</string>
 
-  <!-- Run on the 1st of every month at 09:00 local time. -->
+  <!-- Run nightly at 03:30 local time. If the Mac is asleep at that time,
+       launchd runs it as soon as the Mac wakes (lid open + on power). -->
   <key>StartCalendarInterval</key>
   <dict>
-    <key>Day</key>
-    <integer>1</integer>
     <key>Hour</key>
-    <integer>9</integer>
+    <integer>3</integer>
     <key>Minute</key>
-    <integer>0</integer>
+    <integer>30</integer>
   </dict>
 
-  <!-- If the Mac was asleep at the scheduled time, run as soon as it wakes. -->
   <key>RunAtLoad</key>
   <false/>
 

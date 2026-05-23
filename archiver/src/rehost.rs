@@ -1,6 +1,7 @@
 use anyhow::Result;
 use std::fs;
 use std::path::Path;
+use std::process::Command;
 
 use crate::config;
 use crate::state::State;
@@ -9,6 +10,7 @@ pub struct RehostReport {
     pub rewritten: Vec<(String, String)>,    // (source_post, dead_url)
     pub substack_pending: Vec<(String, String, String)>, // (post_path, dead_url, archive_url)
     pub skipped: Vec<String>,
+    pub published_archives: Vec<String>, // archive dirs git-added (for log/email)
 }
 
 pub fn rehost_dead(state: &mut State, dry_run: bool) -> Result<RehostReport> {
@@ -17,6 +19,7 @@ pub fn rehost_dead(state: &mut State, dry_run: bool) -> Result<RehostReport> {
         rewritten: vec![],
         substack_pending: vec![],
         skipped: vec![],
+        published_archives: vec![],
     };
 
     let keys: Vec<String> = state.archives.keys().cloned().collect();
@@ -40,6 +43,7 @@ pub fn rehost_dead(state: &mut State, dry_run: bool) -> Result<RehostReport> {
         }
 
         let archive_url = format!("/{}", local_rel.trim_start_matches('/'));
+        let mut needs_publish = false;
 
         for src in entry.source_posts.clone() {
             let src_abs = repo.join(&src);
@@ -64,12 +68,21 @@ pub fn rehost_dead(state: &mut State, dry_run: bool) -> Result<RehostReport> {
                     entry.canonical_url.clone(),
                     archive_public,
                 ));
+                // Substack posts can't be auto-edited, but the archive URL we'll
+                // paste manually still has to exist on the live site.
+                needs_publish = true;
                 continue;
             }
             if rewrite_post(&src_abs, &entry.canonical_url, &archive_url, dry_run)? {
                 report
                     .rewritten
                     .push((src.clone(), entry.canonical_url.clone()));
+                needs_publish = true;
+            }
+        }
+        if needs_publish && !dry_run {
+            if let Some(dir) = publish_archive(&repo, &local_rel) {
+                report.published_archives.push(dir);
             }
         }
         if !dry_run {
@@ -78,6 +91,24 @@ pub fn rehost_dead(state: &mut State, dry_run: bool) -> Result<RehostReport> {
     }
 
     Ok(report)
+}
+
+/// Stage the archive directory backing `local_rel` so the `<repo>/archive/<slug>/`
+/// path actually exists on the live site (the directory is gitignored by default;
+/// only load-bearing archives get pushed). Returns the relative dir we staged,
+/// or None on git failure (gracefully ignored — the email still tells the user).
+fn publish_archive(repo: &Path, local_rel: &str) -> Option<String> {
+    let archive_dir = local_rel.rsplit_once('/').map(|(d, _)| d).unwrap_or(local_rel);
+    let status = Command::new("git")
+        .args(["add", "-f", "--", archive_dir])
+        .current_dir(repo)
+        .status()
+        .ok()?;
+    if status.success() {
+        Some(archive_dir.to_string())
+    } else {
+        None
+    }
 }
 
 /// Append a small `[archived]` link next to every occurrence of `dead_url`

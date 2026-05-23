@@ -4,27 +4,53 @@
 //! `<repo>/archive-health.html`.
 
 use anyhow::{Context, Result};
+use std::collections::HashSet;
 use std::fs;
 
 use crate::{config, measure, ui};
 
-const OUTPUT_FILE: &str = "archive-health.html";
-
-pub fn run() -> Result<()> {
-    let data = measure::load().context("load measurements")?;
+pub fn run(
+    labels: Option<String>,
+    exclude_urls: Option<String>,
+    output: String,
+) -> Result<()> {
+    let mut data = measure::load().context("load measurements")?;
     if data.posts.is_empty() {
         ui::warn("no measurements yet. run `archiver measure <post-url> [--label X]` first.");
         return Ok(());
     }
+
+    if let Some(allowlist) = labels.as_deref() {
+        let allowed: HashSet<&str> =
+            allowlist.split(',').map(|s| s.trim()).collect();
+        data.posts.retain(|p| allowed.contains(p.label.as_str()));
+        ui::info(&format!(
+            "label filter: keeping {} post(s) matching {:?}",
+            data.posts.len(),
+            allowed
+        ));
+    }
+    if let Some(blocklist) = exclude_urls.as_deref() {
+        let blocked: HashSet<&str> =
+            blocklist.split(',').map(|s| s.trim()).collect();
+        let before = data.posts.len();
+        data.posts.retain(|p| !blocked.contains(p.url.as_str()));
+        ui::info(&format!(
+            "url exclude: dropped {} post(s)",
+            before - data.posts.len()
+        ));
+    }
+    if data.posts.is_empty() {
+        ui::warn("no posts left after filter — nothing to render");
+        return Ok(());
+    }
+
     let json = serde_json::to_string(&data)?;
     let html = render_html(&json, data.posts.len());
-    let path = config::repo_root().join(OUTPUT_FILE);
+    let path = config::repo_root().join(&output);
     fs::write(&path, html)?;
     ui::success("viz", &path.to_string_lossy());
-    ui::info(&format!(
-        "open: file://{}",
-        path.to_string_lossy()
-    ));
+    ui::info(&format!("open: file://{}", path.to_string_lossy()));
     Ok(())
 }
 

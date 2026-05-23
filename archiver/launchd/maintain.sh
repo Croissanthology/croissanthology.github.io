@@ -1,7 +1,14 @@
 #!/usr/bin/env zsh
 # Wrapper invoked by com.croissanthology.archiver.plist.
-# Runs the monthly archiver maintenance pass. Notifications go through
-# Apple Mail + macOS notification center — no SMTP creds required.
+# Runs the nightly archiver maintenance pass:
+#   1. pull latest from origin
+#   2. archiver scan — pick up new outbound citations from any posts you
+#      added/edited since last run (cheap; already-archived links are skipped)
+#   3. archiver maintain — check for rot, rehost dead links, mail summary.
+#      `archiver rehost` itself git-adds the SPECIFIC archive dirs that back
+#      confirmed-dead links (archive/ is gitignored so unstaged dirs stay local)
+#   4. commit + push if anything got staged
+# Notifications go through Apple Mail + macOS notification center.
 set -euo pipefail
 
 # Resolve the repo root (this script lives at <repo>/archiver/launchd/).
@@ -19,11 +26,19 @@ if [[ ! -x "$BINARY" ]]; then
   (cd "$REPO_ROOT/archiver" && cargo build --release)
 fi
 
+# Pick up new citations from any posts added/edited since last run.
+"$BINARY" scan
+
+# Check for rot, rehost dead links, mail summary. archiver rehost stages
+# only the specific archive dirs it actually needs (archive/ is gitignored).
 "$BINARY" maintain
 
-# Commit + push any rehosts / new state.
+# Commit + push whatever got staged (rewritten posts, SUBSTACK_DEAD_LINKS.md,
+# archive dirs that back confirmed-dead links). Also stage edited _posts/
+# files in case rehost rewrote them.
+git add -- _posts/ SUBSTACK_DEAD_LINKS.md 2>/dev/null || true
+
 if ! git diff --quiet || ! git diff --cached --quiet; then
-  git add archive/ .archiver/ _posts/ SUBSTACK_DEAD_LINKS.md 2>/dev/null || true
-  git commit -m "archiver: monthly maintenance pass" || true
+  git commit -m "archiver: nightly maintenance pass" || true
   git push --quiet origin "$(git rev-parse --abbrev-ref HEAD)" || true
 fi
