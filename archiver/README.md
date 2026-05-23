@@ -70,6 +70,10 @@ The `https://` is optional — bare domains like `clairebookworm.com` get auto-p
 - `/paywall` — engage the bypass chain (12ft.io → archive.is render → Googlebot UA)
 - `/all` — archive the post AND every outbound link on it. Use for Scott-Alexander-style posts where half the citations have rotted; you save the post and its sources in one move.
 
+**Interactive standalone commands** (type instead of pasting a URL):
+- `/domain <yourblog.com>` — register a host as "yours" and bootstrap `.archiver/config.toml` (walks you through email + site origin on first run). The fast onboarding path — fork the repo, run `archiver`, type `/domain myblog.com`, you're set.
+- `/info` — print all commands (subcommands + interactive) with descriptions.
+
 Other commands:
 
 | command | what it does |

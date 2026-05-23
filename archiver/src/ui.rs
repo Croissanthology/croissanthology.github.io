@@ -17,10 +17,16 @@ pub fn banner() {
         "https://".bright_cyan(),
     );
     println!(
-        "  {} suffix with {} for paywall bypass, or {} to also archive every outbound link on the page.\n",
+        "  {} suffix with {} for paywall bypass, or {} to also archive every outbound link on the page.",
         "·".bright_black(),
         "/paywall".bright_yellow(),
         "/all".bright_green(),
+    );
+    println!(
+        "  {} or type {} to set up your own blog · {} for the full command list.\n",
+        "·".bright_black(),
+        "/domain <yourblog.com>".bright_cyan(),
+        "/info".bright_magenta(),
     );
 }
 
