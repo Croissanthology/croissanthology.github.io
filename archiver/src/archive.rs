@@ -13,56 +13,132 @@ pub fn client() -> Client {
         .expect("build reqwest client")
 }
 
+/// Backoff delays between retry attempts (seconds). First attempt is
+/// immediate; if it fails with 429/5xx/timeout, we wait and retry.
+const WAYBACK_BACKOFF: &[u64] = &[0, 3, 12];
+const ARCHIVE_IS_BACKOFF: &[u64] = &[0, 5, 20];
+
 pub fn submit_wayback(url: &str) -> Result<String> {
     let c = client();
-    let resp = c
-        .get(format!("https://web.archive.org/save/{}", url))
-        .header("Accept", "text/html")
-        .send()
-        .context("wayback save request")?;
-    let final_url = resp.url().to_string();
-    if final_url.contains("web.archive.org/web/") {
-        return Ok(final_url);
-    }
-    if let Some(loc) = resp.headers().get("content-location").and_then(|v| v.to_str().ok()) {
-        return Ok(format!("https://web.archive.org{}", loc));
-    }
-    if let Some(loc) = resp.headers().get("location").and_then(|v| v.to_str().ok()) {
-        if loc.starts_with("http") {
-            return Ok(loc.to_string());
+    let mut last_status: Option<u16> = None;
+    let mut last_err: Option<anyhow::Error> = None;
+
+    for delay in WAYBACK_BACKOFF {
+        if *delay > 0 {
+            std::thread::sleep(Duration::from_secs(*delay));
         }
-        return Ok(format!("https://web.archive.org{}", loc));
+        let resp = c
+            .get(format!("https://web.archive.org/save/{}", url))
+            .header("Accept", "text/html")
+            .send();
+        match resp {
+            Ok(r) => {
+                let code = r.status().as_u16();
+                if is_retryable_status(code) {
+                    last_status = Some(code);
+                    continue;
+                }
+                let final_url = r.url().to_string();
+                if final_url.contains("web.archive.org/web/") {
+                    return Ok(final_url);
+                }
+                if let Some(loc) = r.headers().get("content-location").and_then(|v| v.to_str().ok())
+                {
+                    return Ok(format!("https://web.archive.org{}", loc));
+                }
+                if let Some(loc) = r.headers().get("location").and_then(|v| v.to_str().ok()) {
+                    if loc.starts_with("http") {
+                        return Ok(loc.to_string());
+                    }
+                    return Ok(format!("https://web.archive.org{}", loc));
+                }
+                return Err(anyhow!("wayback returned no snapshot URL (status {})", code));
+            }
+            Err(e) => {
+                if e.is_timeout() {
+                    last_err = Some(anyhow::Error::from(e));
+                    continue;
+                }
+                return Err(anyhow::Error::from(e).context("wayback save request"));
+            }
+        }
     }
-    Err(anyhow!("wayback returned no snapshot URL (status {})", resp.status()))
+    if let Some(code) = last_status {
+        Err(anyhow!(
+            "wayback rate-limited (HTTP {}) after {} retries",
+            code,
+            WAYBACK_BACKOFF.len() - 1
+        ))
+    } else {
+        Err(last_err.unwrap_or_else(|| anyhow!("wayback timed out after retries")))
+    }
 }
 
 pub fn submit_archive_is(url: &str) -> Result<String> {
     let c = client();
-    let resp = c
-        .post("https://archive.ph/submit/")
-        .form(&[("url", url), ("anyway", "1")])
-        .send()
-        .context("archive.is submit")?;
-    if let Some(refresh) = resp.headers().get("refresh").and_then(|v| v.to_str().ok()) {
-        let lower = refresh.to_lowercase();
-        if let Some(idx) = lower.find("url=") {
-            return Ok(refresh[idx + 4..].trim().to_string());
+    let mut last_status: Option<u16> = None;
+    let mut last_err: Option<anyhow::Error> = None;
+
+    for delay in ARCHIVE_IS_BACKOFF {
+        if *delay > 0 {
+            std::thread::sleep(Duration::from_secs(*delay));
+        }
+        let resp = c
+            .post("https://archive.ph/submit/")
+            .form(&[("url", url), ("anyway", "1")])
+            .send();
+        match resp {
+            Ok(r) => {
+                let code = r.status().as_u16();
+                if is_retryable_status(code) {
+                    last_status = Some(code);
+                    continue;
+                }
+                if let Some(refresh) = r.headers().get("refresh").and_then(|v| v.to_str().ok()) {
+                    let lower = refresh.to_lowercase();
+                    if let Some(idx) = lower.find("url=") {
+                        return Ok(refresh[idx + 4..].trim().to_string());
+                    }
+                }
+                if let Some(loc) = r.headers().get("location").and_then(|v| v.to_str().ok()) {
+                    if loc.starts_with("http") {
+                        return Ok(loc.to_string());
+                    }
+                }
+                let final_url = r.url().to_string();
+                if is_archive_is_snapshot(&final_url) {
+                    return Ok(final_url);
+                }
+                // CAPTCHA / submit page — retry doesn't help, the CAPTCHA
+                // won't solve itself in 20s. Surface the failure.
+                return Err(anyhow!(
+                    "archive.is returned no snapshot URL (status {}, landed at {})",
+                    code,
+                    final_url
+                ));
+            }
+            Err(e) => {
+                if e.is_timeout() {
+                    last_err = Some(anyhow::Error::from(e));
+                    continue;
+                }
+                return Err(anyhow::Error::from(e).context("archive.is submit"));
+            }
         }
     }
-    if let Some(loc) = resp.headers().get("location").and_then(|v| v.to_str().ok()) {
-        if loc.starts_with("http") {
-            return Ok(loc.to_string());
-        }
+    if let Some(code) = last_status {
+        Err(anyhow!(
+            "archive.is rate-limited (HTTP {}) after {} retries",
+            code,
+            ARCHIVE_IS_BACKOFF.len() - 1
+        ))
+    } else {
+        Err(last_err.unwrap_or_else(|| anyhow!("archive.is timed out after retries")))
     }
-    let final_url = resp.url().to_string();
-    if is_archive_is_snapshot(&final_url) {
-        return Ok(final_url);
-    }
-    Err(anyhow!(
-        "archive.is returned no snapshot URL (status {}, landed at {})",
-        resp.status(),
-        final_url
-    ))
+}
+
+fn is_retryable_status(code: u16) -> bool {
+    code == 429 || (500..=599).contains(&code)
 }
 
 /// True iff `url` looks like an archive.ph / archive.is snapshot — host matches
