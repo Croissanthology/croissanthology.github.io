@@ -12,3 +12,10 @@ archiver/launchd/maintain.log
 # archiver per-site state: your config (contains your email), the index of
 # what you've archived, link-rot measurements. Keep these local to your machine.
 .archiver/
+
+# Local-copy archives. Bulk stays on your laptop (potentially gigabytes per
+# /all run). When `archiver rehost` detects a confirmed-dead link, IT will
+# `git add -f` the specific archive dir that backs the rehost — so only the
+# load-bearing subset gets pushed to GitHub. Everything else is insurance
+# against future rot in your own future citations, kept local.
+archive/
