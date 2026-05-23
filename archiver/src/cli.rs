@@ -476,6 +476,9 @@ pub(crate) fn archive_post_outlinks(post_url: &str, also_archive_post: bool) -> 
         if let Err(e) = archive_single(url, false, &source, false) {
             ui::fail(&e.to_string());
         }
+        // Polite inter-link pacing so wayback / archive.is don't rate-limit
+        // us mid-post. Retries in archive.rs catch the rest.
+        std::thread::sleep(Duration::from_millis(1000));
     }
     ui::happy_cat("post done");
     Ok(())
