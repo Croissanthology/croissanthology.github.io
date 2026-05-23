@@ -8,3 +8,7 @@ vendor/
 # archiver tool build artefacts (committing the binary is unnecessary)
 archiver/target/
 archiver/launchd/maintain.log
+
+# archiver per-site state: your config (contains your email), the index of
+# what you've archived, link-rot measurements. Keep these local to your machine.
+.archiver/

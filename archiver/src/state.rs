@@ -184,3 +184,88 @@ pub fn make_slug(url: &str) -> String {
         format!("{}-{}-{}", host_clean, path_clean, short_hash)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn canonicalize_strips_tracking_params_keeps_real_ones() {
+        let got = canonicalize(
+            "https://example.com/post?id=42&utm_source=twitter&fbclid=xx&gclid=yy&mc_cid=zz",
+        )
+        .unwrap();
+        assert!(got.contains("id=42"), "got: {}", got);
+        for bad in ["utm_source", "fbclid", "gclid", "mc_cid"] {
+            assert!(!got.contains(bad), "{} should be stripped: {}", bad, got);
+        }
+    }
+
+    #[test]
+    fn canonicalize_only_tracking_params_drops_query_entirely() {
+        let got = canonicalize("https://example.com/x?utm_source=t&fbclid=q").unwrap();
+        assert!(!got.contains('?'), "got: {}", got);
+    }
+
+    #[test]
+    fn canonicalize_drops_fragment() {
+        let got = canonicalize("https://example.com/post#section-3").unwrap();
+        assert!(!got.contains('#'), "got: {}", got);
+    }
+
+    #[test]
+    fn canonicalize_lowercases_host() {
+        let got = canonicalize("https://EXAMPLE.COM/x").unwrap();
+        assert!(got.contains("example.com"));
+        assert!(!got.contains("EXAMPLE"));
+    }
+
+    #[test]
+    fn canonicalize_preserves_path() {
+        let got = canonicalize("https://example.com/a/b/c?x=1").unwrap();
+        assert!(got.contains("/a/b/c"));
+        assert!(got.contains("x=1"));
+    }
+
+    #[test]
+    fn canonicalize_invalid_url_errors() {
+        assert!(canonicalize("not a url").is_err());
+    }
+
+    #[test]
+    fn make_slug_is_deterministic() {
+        let a = make_slug("https://example.com/post");
+        let b = make_slug("https://example.com/post");
+        assert_eq!(a, b);
+    }
+
+    #[test]
+    fn make_slug_distinguishes_urls() {
+        let a = make_slug("https://example.com/a");
+        let b = make_slug("https://example.com/b");
+        assert_ne!(a, b);
+    }
+
+    #[test]
+    fn make_slug_replaces_dots_in_host() {
+        let s = make_slug("https://blog.example.com/post-name");
+        assert!(s.contains("blog-example-com"), "slug: {}", s);
+        assert!(s.contains("post-name"), "slug: {}", s);
+    }
+
+    #[test]
+    fn make_slug_caps_long_paths() {
+        let long_path = "a".repeat(200);
+        let s = make_slug(&format!("https://example.com/{}", long_path));
+        // host-clean + truncated-path + 8-char hash; path piece must be <= 60 chars
+        let parts: Vec<&str> = s.split('-').collect();
+        let path_chunk = parts[parts.len() - 2];
+        assert!(path_chunk.len() <= 60, "path chunk too long: {}", path_chunk);
+    }
+
+    #[test]
+    fn make_slug_no_path_falls_back_to_host_hash() {
+        let s = make_slug("https://example.com/");
+        assert!(s.starts_with("example-com-"), "slug: {}", s);
+    }
+}

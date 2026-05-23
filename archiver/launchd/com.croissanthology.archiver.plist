@@ -9,7 +9,8 @@
   <!--
     Replace REPLACE_ME_REPO_PATH below with the absolute path to this repo
     on your MacBook (something like /Users/margot/code/croissanthology.github.io).
-    The wrapper script lives there and sources your SMTP credentials.
+    The wrapper script lives there; notifications go through Apple Mail +
+    macOS notification center, no SMTP creds required.
   -->
   <key>ProgramArguments</key>
   <array>

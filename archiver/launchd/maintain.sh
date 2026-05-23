@@ -1,6 +1,7 @@
 #!/usr/bin/env zsh
 # Wrapper invoked by com.croissanthology.archiver.plist.
-# Sources SMTP credentials, then runs the monthly archiver maintenance pass.
+# Runs the monthly archiver maintenance pass. Notifications go through
+# Apple Mail + macOS notification center — no SMTP creds required.
 set -euo pipefail
 
 # Resolve the repo root (this script lives at <repo>/archiver/launchd/).

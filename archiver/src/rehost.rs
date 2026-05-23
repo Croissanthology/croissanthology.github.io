@@ -11,7 +11,7 @@ pub struct RehostReport {
     pub skipped: Vec<String>,
 }
 
-pub fn rehost_dead(state: &mut State) -> Result<RehostReport> {
+pub fn rehost_dead(state: &mut State, dry_run: bool) -> Result<RehostReport> {
     let repo = config::repo_root();
     let mut report = RehostReport {
         rewritten: vec![],
@@ -58,7 +58,7 @@ pub fn rehost_dead(state: &mut State) -> Result<RehostReport> {
                     post_slug
                 );
                 let archive_public =
-                    format!("{}{}", config::SITE_ORIGIN, archive_url);
+                    format!("{}{}", config::settings().site_origin, archive_url);
                 report.substack_pending.push((
                     pub_url,
                     entry.canonical_url.clone(),
@@ -66,21 +66,29 @@ pub fn rehost_dead(state: &mut State) -> Result<RehostReport> {
                 ));
                 continue;
             }
-            if rewrite_post(&src_abs, &entry.canonical_url, &archive_url)? {
+            if rewrite_post(&src_abs, &entry.canonical_url, &archive_url, dry_run)? {
                 report
                     .rewritten
                     .push((src.clone(), entry.canonical_url.clone()));
             }
         }
-        entry.rehosted = true;
+        if !dry_run {
+            entry.rehosted = true;
+        }
     }
 
     Ok(report)
 }
 
 /// Append a small `[archived]` link next to every occurrence of `dead_url`
-/// in the markdown/html post. Returns true if anything changed.
-fn rewrite_post(path: &Path, dead_url: &str, archive_url: &str) -> Result<bool> {
+/// in the markdown/html post. Returns true if anything would change (or did
+/// change when not dry-run).
+fn rewrite_post(
+    path: &Path,
+    dead_url: &str,
+    archive_url: &str,
+    dry_run: bool,
+) -> Result<bool> {
     let original = fs::read_to_string(path)?;
     let ext = path
         .extension()
@@ -94,7 +102,9 @@ fn rewrite_post(path: &Path, dead_url: &str, archive_url: &str) -> Result<bool> 
     };
 
     if updated != original {
-        fs::write(path, updated)?;
+        if !dry_run {
+            fs::write(path, updated)?;
+        }
         Ok(true)
     } else {
         Ok(false)
@@ -149,4 +159,95 @@ fn rewrite_html(content: &str, dead_url: &str, archive_url: &str) -> String {
         out = rebuilt;
     }
     out
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    const DEAD: &str = "https://dead.example.com/x";
+    const ARCH: &str = "/archive/dead-example-com-x-abcd1234/index.html";
+
+    #[test]
+    fn md_appends_archived_sibling() {
+        let body = "see [post](https://dead.example.com/x) for more.";
+        let out = rewrite_markdown(body, DEAD, ARCH);
+        assert!(
+            out.contains("](https://dead.example.com/x) [[archived]](/archive/dead-example-com-x-abcd1234/index.html)"),
+            "got: {}", out
+        );
+    }
+
+    #[test]
+    fn md_idempotent_when_already_archived() {
+        let original = "[post](https://dead.example.com/x) [[archived]](/archive/dead-example-com-x-abcd1234/index.html)";
+        let out = rewrite_markdown(original, DEAD, ARCH);
+        assert_eq!(out, original);
+    }
+
+    #[test]
+    fn md_no_match_unchanged() {
+        let body = "[other](https://other.com/a)";
+        let out = rewrite_markdown(body, DEAD, ARCH);
+        assert_eq!(out, body);
+    }
+
+    #[test]
+    fn md_rewrites_every_occurrence() {
+        let body = "[one](https://dead.example.com/x) and [two](https://dead.example.com/x)";
+        let out = rewrite_markdown(body, DEAD, ARCH);
+        let count = out.matches("[[archived]]").count();
+        assert_eq!(count, 2, "got: {}", out);
+    }
+
+    #[test]
+    fn html_double_quotes_rewritten() {
+        let html = r#"<p><a href="https://dead.example.com/x">post</a> after</p>"#;
+        let out = rewrite_html(html, DEAD, ARCH);
+        assert!(out.contains("archiver-rehost"), "got: {}", out);
+        // marker must be AFTER the closing </a>
+        let close = out.find("</a>").unwrap();
+        let marker = out.find("archiver-rehost").unwrap();
+        assert!(marker > close, "marker not after </a>: {}", out);
+    }
+
+    #[test]
+    fn html_single_quotes_rewritten() {
+        let html = r#"<p><a href='https://dead.example.com/x'>post</a></p>"#;
+        let out = rewrite_html(html, DEAD, ARCH);
+        assert!(out.contains("archiver-rehost"), "got: {}", out);
+    }
+
+    #[test]
+    fn html_idempotent() {
+        let already = format!(
+            r#"<a href="https://dead.example.com/x">post</a> <a class="archiver-rehost" href="{}" title="local archive of dead link">[archived]</a>"#,
+            ARCH
+        );
+        let out = rewrite_html(&already, DEAD, ARCH);
+        assert_eq!(out, already);
+    }
+
+    #[test]
+    fn html_no_match_unchanged() {
+        let html = r#"<a href="https://other.com/a">x</a>"#;
+        let out = rewrite_html(html, DEAD, ARCH);
+        assert_eq!(out, html);
+    }
+
+    #[test]
+    fn html_multiple_occurrences_each_get_marker() {
+        let html = r#"<a href="https://dead.example.com/x">one</a> and <a href="https://dead.example.com/x">two</a>"#;
+        let out = rewrite_html(html, DEAD, ARCH);
+        let count = out.matches("archiver-rehost").count();
+        assert_eq!(count, 2, "got: {}", out);
+    }
+
+    #[test]
+    fn html_does_not_match_substring_url() {
+        // dead_url is a strict prefix of another URL — must NOT be patched.
+        let html = r#"<a href="https://dead.example.com/x-extra">other</a>"#;
+        let out = rewrite_html(html, DEAD, ARCH);
+        assert_eq!(out, html, "substring URL was patched: {}", out);
+    }
 }
