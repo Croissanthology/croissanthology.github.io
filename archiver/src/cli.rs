@@ -235,6 +235,33 @@ fn print_info() {
     println!();
     println!("  {} — three-layer link archiver for personal blogs", m);
     println!();
+    println!("  {}", "what it does".bright_cyan().bold());
+    let paras = [
+        "    archives every outbound link in your posts THREE ways — a local copy on",
+        "    your machine via monolith, the Internet Archive's Wayback Machine, and",
+        "    archive.is. then every night via launchd it HEAD-checks each one.",
+        "",
+        "    when a link returns 404/410/451 three nights in a row, it's flagged dead.",
+        "    for posts in your own repo (markdown/html), archiver auto-edits them",
+        "    inline to add an [archived] sibling link pointing at your local copy.",
+        "    for posts hosted elsewhere (substack, medium, ghost — anywhere you don't",
+        "    have direct file access), it emails you the dead URL + the source post",
+        "    URL + the archive URL, so you patch by hand in the platform's editor.",
+        "",
+        "    why: link rot is silent. nobody emails you when a citation dies, you",
+        "    just notice years later when a reader complains. gwern.net has ~3% rot",
+        "    at 12 years because of mechanisms like this; scott alexander's same-era",
+        "    SSC has ~36%. this is how you stay closer to gwern's number.",
+        "",
+        "    limitation: it can't auto-write to platforms you don't control. for",
+        "    substack/medium/etc you get the email + the location, but the actual",
+        "    patch is manual. (substack has no public write API; gwern's auto-rewrite",
+        "    works only because he hosts his own site.)",
+    ];
+    for line in paras {
+        println!("{}", line.bright_black());
+    }
+    println!();
     println!("  {}", "subcommands".bright_cyan().bold());
     let rows = [
         ("archiver", "interactive prompt with the cat"),
