@@ -123,7 +123,7 @@ archiver/
   src/
     main.rs          # module declarations, calls cli::run()
     cli.rs           # clap subcommands + interactive mode
-    config.rs        # OWN_DOMAINS, NOTIFY_EMAIL, repo_root() walker
+    config.rs        # Settings struct, repo_root() walker, config.toml loader
     state.rs         # JSON state, canonicalize(), make_slug()
     archive.rs       # Wayback + archive.is submission
     local.rs         # shells out to `monolith`
@@ -146,15 +146,21 @@ archive/             # output: served by Jekyll at /archive/<slug>/
 | `archiver` | interactive prompt with the ASCII cat |
 | `archiver add <url>` | archive one URL |
 | `archiver add --paywall <url>` | with bypass chain |
-| `archiver post <url>` | archive every outbound link on one of Margot's own posts |
+| `archiver post <url>` | archive every outbound link on a post (post itself not archived — appropriate for Margot's own posts) |
+| `archiver post --all <url>` | …and also archive the post itself (use for external posts like SSC, where the post is at risk of rot too) |
 | `archiver scan` | walk every post in the repo + `subslop/`, archive new outbound links |
-| `archiver check` | link-rot check on everything |
-| `archiver rehost` | rewrite source posts for confirmed-dead links + queue substack patches |
+| `archiver check [--dry-run]` | link-rot check on everything; dry-run skips state save |
+| `archiver rehost [--dry-run]` | rewrite source posts for confirmed-dead links + queue substack patches; dry-run skips file writes and state save |
 | `archiver list` | show what's archived |
-| `archiver maintain` | the full monthly pass — what launchd runs |
+| `archiver maintain [--dry-run]` | the full monthly pass — what launchd runs; dry-run skips files/mail/notifications/state |
 
 Pasting a `croissanthology.com` or `croissanthology.substack.com` URL is
-auto-detected and treated as `archiver post <url>`.
+auto-detected and treated as `archiver post <url>` (outlinks only).
+
+**Interactive-mode niceties**:
+- `https://` is auto-prepended if missing — `clairebookworm.com` works.
+- Suffix the URL with `/paywall` (or `/paywalled`) to engage the bypass chain.
+- Suffix the URL with `/all` to also archive the post itself + every outbound link — equivalent to `archiver post --all <url>`.
 
 ### Notification design (post-refactor)
 
@@ -180,9 +186,15 @@ auto-detected and treated as `archiver post <url>`.
   happens during `canonicalize()` so the same article shared two ways
   doesn't get double-archived.
 - **Margot's own domains are skipped** during outbound-link extraction.
-  See `config::OWN_DOMAINS` + `config::is_own_host()`. Currently:
+  See `config::settings().own_domains` (loaded from `.archiver/config.toml`)
+  + `config::is_own_host()`. Currently her config has:
   `croissanthology.com`, `www.croissanthology.com`,
   `croissanthology.github.io`, `croissanthology.substack.com`.
+- **twitter.com / x.com are rewritten to nitter** inside `local::save_local`
+  only. monolith can't capture twitter directly (JS-required); nitter is the
+  server-side-rendered mirror. The state file still keys off the original
+  tweet URL — wayback + archive.is also still see the original. If nitter.net
+  goes down (it has historically), change `nitter_host` in `.archiver/config.toml`.
 - **Substack mirror posts (`subslop/<slug>/index.html`) are detected
   via path-contains-`subslop/`** and never rewritten — the substack post
   can only be edited manually, so those go into the checklist+mail.
@@ -225,10 +237,13 @@ git checkout claude/cross-device-conversation-Tfs4x
 # Install the actual page-saver
 brew install monolith
 
-# Build and link the binary
+# Build and link the binary.
+# Apple-Silicon macs: brew prefix is /opt/homebrew, and /usr/local/bin
+# usually doesn't exist. Use /opt/homebrew/bin (margot already owns it,
+# no sudo). On Intel macs swap in /usr/local/bin.
 cd archiver
 cargo build --release
-ln -sf "$PWD/target/release/archiver" /usr/local/bin/archiver
+ln -sf "$PWD/target/release/archiver" /opt/homebrew/bin/archiver
 
 # Smoke test
 archiver --help

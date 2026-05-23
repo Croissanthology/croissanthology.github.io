@@ -55,8 +55,60 @@ pub fn submit_archive_is(url: &str) -> Result<String> {
         }
     }
     let final_url = resp.url().to_string();
-    if final_url.contains("archive.ph") || final_url.contains("archive.is") {
+    if is_archive_is_snapshot(&final_url) {
         return Ok(final_url);
     }
-    Err(anyhow!("archive.is returned no archive URL (status {})", resp.status()))
+    Err(anyhow!(
+        "archive.is returned no snapshot URL (status {}, landed at {})",
+        resp.status(),
+        final_url
+    ))
+}
+
+/// True iff `url` looks like an archive.ph / archive.is snapshot — host matches
+/// and path is not the bare submit endpoint. archive.ph snapshot paths look
+/// like `/abc12` or `/2026/01/01/...`. `/submit/` and `/` itself don't count.
+fn is_archive_is_snapshot(url: &str) -> bool {
+    let Ok(parsed) = url::Url::parse(url) else {
+        return false;
+    };
+    let Some(host) = parsed.host_str() else {
+        return false;
+    };
+    let host_matches = host.ends_with("archive.ph")
+        || host.ends_with("archive.is")
+        || host.ends_with("archive.today");
+    if !host_matches {
+        return false;
+    }
+    let path = parsed.path();
+    path != "/" && !path.starts_with("/submit")
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn snapshot_url_accepted() {
+        assert!(is_archive_is_snapshot("https://archive.ph/abc12"));
+        assert!(is_archive_is_snapshot("https://archive.is/2026/x"));
+    }
+
+    #[test]
+    fn submit_endpoint_rejected() {
+        // This was the bug: the submit landing page was claimed as a snapshot.
+        assert!(!is_archive_is_snapshot("https://archive.ph/submit/"));
+        assert!(!is_archive_is_snapshot("https://archive.ph/submit"));
+    }
+
+    #[test]
+    fn bare_host_rejected() {
+        assert!(!is_archive_is_snapshot("https://archive.ph/"));
+    }
+
+    #[test]
+    fn other_hosts_rejected() {
+        assert!(!is_archive_is_snapshot("https://example.com/abc"));
+    }
 }

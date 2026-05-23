@@ -12,18 +12,26 @@ pub fn banner() {
 "#;
     println!("{}", art.bright_magenta());
     println!(
-        "  {} paste a URL. add {} at the end for paywall bypass.\n",
+        "  {} paste a URL ({} optional).",
         "·".bright_black(),
-        "/paywall".bright_yellow()
+        "https://".bright_cyan(),
+    );
+    println!(
+        "  {} suffix with {} for paywall bypass, or {} to also archive every outbound link on the page.\n",
+        "·".bright_black(),
+        "/paywall".bright_yellow(),
+        "/all".bright_green(),
     );
 }
 
 pub fn noms(url: &str) {
+    // Caption text only — these run BEFORE the network calls, so don't claim
+    // success here. Per-layer ✓ / ! lines come after.
     let frames = [
         ("/\\_/\\", "( o.o )", " > ^ <  ", "spotted the link…"),
         ("/\\_/\\", "( -.- )", " > * <  ", "munching…"),
         ("/\\_/\\", "( ^.^ )", " > ~ <  ", "archiving…"),
-        ("/\\_/\\", "( ^_^ )", " > w <  ", "saved 🐾"),
+        ("/\\_/\\", "( ^_^ )", " > w <  ", "🐾"),
     ];
     for _ in 0..5 {
         println!();

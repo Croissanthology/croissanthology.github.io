@@ -7,7 +7,7 @@ use std::time::Duration;
 use url::Url;
 use walkdir::WalkDir;
 
-use crate::{archive, check, config, extract, local, notify, paywall, rehost, state, ui};
+use crate::{archive, check, config, extract, local, measure, notify, paywall, rehost, state, ui, viz};
 
 #[derive(Parser)]
 #[command(
@@ -28,31 +28,61 @@ enum Cmd {
         #[arg(long)]
         paywall: bool,
     },
-    /// Given one of your post URLs, archive every outbound link on it.
-    Post { url: String },
+    /// Archive every outbound link on a post. Pass --all to also archive the post itself.
+    Post {
+        url: String,
+        /// Also archive the post itself, not just its outbound links.
+        #[arg(long)]
+        all: bool,
+    },
     /// Walk every post in the repo + subslop/ and archive every new outbound link.
     Scan,
     /// Run a link-rot check on everything archived.
-    Check,
+    Check {
+        /// Run checks but do not persist state changes.
+        #[arg(long)]
+        dry_run: bool,
+    },
     /// Process confirmed-dead links: rewrite source posts, queue substack notifications.
-    Rehost,
+    Rehost {
+        /// Compute rewrites but do not touch source files or save state.
+        #[arg(long)]
+        dry_run: bool,
+    },
     /// Show everything archived.
     List,
     /// Full monthly pass: check → rehost → email.
-    Maintain,
+    Maintain {
+        /// Simulate the full pass without writing files, sending mail, or saving state.
+        #[arg(long)]
+        dry_run: bool,
+    },
+    /// Measure (don't archive) link rot on a post, for the comparison viz.
+    Measure {
+        url: String,
+        /// Display label for the post in the visualization (default: host).
+        #[arg(long)]
+        label: Option<String>,
+    },
+    /// Render the static d3 visualization from `.archiver/measurements.json`.
+    Viz,
 }
 
 pub fn run() -> Result<()> {
     let cli = Cli::parse();
     match cli.command {
         None => interactive(),
-        Some(Cmd::Add { url, paywall }) => add_url(&url, paywall),
-        Some(Cmd::Post { url }) => archive_post_outlinks(&url),
+        Some(Cmd::Add { url, paywall }) => add_url(&ensure_scheme(&url), paywall),
+        Some(Cmd::Post { url, all }) => {
+            archive_post_outlinks(&ensure_scheme(&url), all)
+        }
         Some(Cmd::Scan) => scan_all(),
-        Some(Cmd::Check) => run_check(),
-        Some(Cmd::Rehost) => run_rehost(),
+        Some(Cmd::Check { dry_run }) => run_check(dry_run),
+        Some(Cmd::Rehost { dry_run }) => run_rehost(dry_run),
         Some(Cmd::List) => run_list(),
-        Some(Cmd::Maintain) => maintain(),
+        Some(Cmd::Maintain { dry_run }) => maintain(dry_run),
+        Some(Cmd::Measure { url, label }) => measure::run(&ensure_scheme(&url), label),
+        Some(Cmd::Viz) => viz::run(),
     }
 }
 
@@ -65,6 +95,15 @@ fn interactive() -> Result<()> {
         .context("read url from prompt")?;
     let mut url = raw.trim().to_string();
     let mut paywall = false;
+    let mut archive_all = false;
+    for suffix in [" /all", "/all"] {
+        if url.ends_with(suffix) {
+            archive_all = true;
+            url.truncate(url.len() - suffix.len());
+            url = url.trim().to_string();
+            break;
+        }
+    }
     for suffix in [" /paywall", " /paywalled", "/paywall", "/paywalled"] {
         if url.ends_with(suffix) {
             paywall = true;
@@ -73,7 +112,22 @@ fn interactive() -> Result<()> {
             break;
         }
     }
+    let url = ensure_scheme(&url);
+    if archive_all {
+        return archive_post_outlinks(&url, true);
+    }
     add_url(&url, paywall)
+}
+
+/// If the input doesn't carry a scheme (no `://`), prepend `https://`.
+/// Pure string transform; URL validation happens downstream.
+pub(crate) fn ensure_scheme(input: &str) -> String {
+    let trimmed = input.trim();
+    if trimmed.contains("://") {
+        trimmed.to_string()
+    } else {
+        format!("https://{}", trimmed)
+    }
 }
 
 fn add_url(url: &str, paywall: bool) -> Result<()> {
@@ -83,7 +137,7 @@ fn add_url(url: &str, paywall: bool) -> Result<()> {
         ui::header(&format!(
             "🐾  own post detected — archiving every outbound link on it"
         ));
-        return archive_post_outlinks(url);
+        return archive_post_outlinks(url, false);
     }
     archive_single(url, paywall, &[], true)
 }
@@ -178,7 +232,7 @@ fn archive_single(
     Ok(())
 }
 
-fn archive_post_outlinks(post_url: &str) -> Result<()> {
+fn archive_post_outlinks(post_url: &str, also_archive_post: bool) -> Result<()> {
     let client = archive::client();
     ui::info(&format!("fetching {}", post_url));
     let html = client
@@ -189,6 +243,18 @@ fn archive_post_outlinks(post_url: &str) -> Result<()> {
     let links = extract::from_html(&html);
     ui::info(&format!("found {} outbound link(s) on post", links.len()));
     let source = vec![format!("[live] {}", post_url)];
+
+    if also_archive_post {
+        ui::header("🐾  archiving the post itself");
+        if let Err(e) = archive_single(post_url, false, &[], true) {
+            ui::fail(&e.to_string());
+        }
+        ui::header(&format!(
+            "🐾  archiving {} outbound link(s)",
+            links.len()
+        ));
+    }
+
     for url in &links {
         if let Err(e) = archive_single(url, false, &source, false) {
             ui::fail(&e.to_string());
@@ -301,13 +367,16 @@ fn scan_all() -> Result<()> {
     Ok(())
 }
 
-fn run_check() -> Result<()> {
+fn run_check(dry_run: bool) -> Result<()> {
     let mut st = state::State::load(&config::state_path())?;
     let client = archive::client();
     let total = st.archives.len() as u64;
     if total == 0 {
         ui::info("nothing archived yet — run `archiver scan` or feed me some links");
         return Ok(());
+    }
+    if dry_run {
+        ui::info("[dry-run] running checks but state will NOT be saved");
     }
     let pb = ProgressBar::new(total);
     pb.set_style(
@@ -330,7 +399,9 @@ fn run_check() -> Result<()> {
         pb.inc(1);
     }
     pb.finish_and_clear();
-    st.save(&config::state_path())?;
+    if !dry_run {
+        st.save(&config::state_path())?;
+    }
     if dead_now.is_empty() {
         ui::happy_cat("all links healthy");
     } else {
@@ -342,14 +413,15 @@ fn run_check() -> Result<()> {
     Ok(())
 }
 
-fn run_rehost() -> Result<()> {
+fn run_rehost(dry_run: bool) -> Result<()> {
     let mut st = state::State::load(&config::state_path())?;
-    let report = rehost::rehost_dead(&mut st)?;
+    if dry_run {
+        ui::info("[dry-run] no files will be written and state will NOT be saved");
+    }
+    let report = rehost::rehost_dead(&mut st, dry_run)?;
+    let label = if dry_run { "would rehost" } else { "rehosted" };
     for (src, dead) in &report.rewritten {
-        ui::success(
-            "rehosted",
-            &format!("{} (in {})", dead, src),
-        );
+        ui::success(label, &format!("{} (in {})", dead, src));
     }
     for (post, dead, archive) in &report.substack_pending {
         ui::warn(&format!(
@@ -360,7 +432,9 @@ fn run_rehost() -> Result<()> {
     for s in &report.skipped {
         ui::info(&format!("skip: {}", s));
     }
-    st.save(&config::state_path())?;
+    if !dry_run {
+        st.save(&config::state_path())?;
+    }
     Ok(())
 }
 
@@ -388,12 +462,16 @@ fn run_list() -> Result<()> {
     Ok(())
 }
 
-fn maintain() -> Result<()> {
-    run_check()?;
+fn maintain(dry_run: bool) -> Result<()> {
+    run_check(dry_run)?;
     let mut st = state::State::load(&config::state_path())?;
-    let report = rehost::rehost_dead(&mut st)?;
+    if dry_run {
+        ui::info("[dry-run] no files written, no mail sent, no notifications fired");
+    }
+    let report = rehost::rehost_dead(&mut st, dry_run)?;
+    let label = if dry_run { "would rehost" } else { "rehosted" };
     for (src, dead) in &report.rewritten {
-        ui::success("rehosted", &format!("{} (in {})", dead, src));
+        ui::success(label, &format!("{} (in {})", dead, src));
     }
     for s in &report.skipped {
         ui::info(&format!("skip: {}", s));
@@ -414,7 +492,7 @@ fn maintain() -> Result<()> {
         .cloned()
         .collect();
 
-    if !pending.is_empty() {
+    if !pending.is_empty() && !dry_run {
         // Persistent checklist file in the repo (committed by the wrapper).
         match notify::append_substack_todo(&pending) {
             Ok(Some(path)) => ui::success(
@@ -431,8 +509,9 @@ fn maintain() -> Result<()> {
             "[archiver] {} dead substack link(s) need a manual patch",
             pending.len()
         );
-        match notify::apple_mail(config::NOTIFY_EMAIL, &subject, &body) {
-            Ok(()) => ui::success("emailed via Mail.app", config::NOTIFY_EMAIL),
+        let to = config::settings().notify_email.as_str();
+        match notify::apple_mail(to, &subject, &body) {
+            Ok(()) => ui::success("emailed via Mail.app", to),
             Err(e) => ui::warn(&format!("Apple Mail send failed: {}", e)),
         }
 
@@ -444,6 +523,13 @@ fn maintain() -> Result<()> {
                 }
             }
         }
+    } else if !pending.is_empty() {
+        for (post, dead, archive) in &pending {
+            ui::warn(&format!(
+                "substack pending: {} cites dead {} (archive at {})",
+                post, dead, archive
+            ));
+        }
     }
 
     // Single summary notification banner.
@@ -452,13 +538,62 @@ fn maintain() -> Result<()> {
         report.rewritten.len(),
         pending.len()
     );
-    if report.rewritten.len() + pending.len() > 0 {
+    if !dry_run && report.rewritten.len() + pending.len() > 0 {
         if let Err(e) = notify::macos_notification("archiver 🐾", &summary) {
             ui::warn(&format!("macOS notification failed: {}", e));
         }
+    } else if dry_run {
+        ui::info(&format!("[dry-run] summary: {}", summary));
     }
 
-    st.save(&config::state_path())?;
-    notify::terminal_bell();
+    if !dry_run {
+        st.save(&config::state_path())?;
+        notify::terminal_bell();
+    }
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn ensure_scheme_preserves_https() {
+        assert_eq!(ensure_scheme("https://foo.com"), "https://foo.com");
+    }
+
+    #[test]
+    fn ensure_scheme_preserves_http() {
+        assert_eq!(ensure_scheme("http://foo.com"), "http://foo.com");
+    }
+
+    #[test]
+    fn ensure_scheme_prepends_for_bare_domain() {
+        assert_eq!(ensure_scheme("foo.com"), "https://foo.com");
+    }
+
+    #[test]
+    fn ensure_scheme_prepends_for_bare_subdomain_with_path() {
+        assert_eq!(
+            ensure_scheme("www.example.com/posts/x"),
+            "https://www.example.com/posts/x"
+        );
+    }
+
+    #[test]
+    fn ensure_scheme_trims_whitespace() {
+        assert_eq!(ensure_scheme("  foo.com  "), "https://foo.com");
+    }
+
+    #[test]
+    fn ensure_scheme_leaves_non_http_schemes_alone() {
+        // We don't want to silently rewrite ftp:// or gopher:// — let URL parsing reject them.
+        assert_eq!(ensure_scheme("ftp://x.com"), "ftp://x.com");
+    }
+
+    #[test]
+    fn ensure_scheme_handles_empty() {
+        // Empty input shouldn't panic; downstream Url::parse will produce a friendly error.
+        assert_eq!(ensure_scheme(""), "https://");
+    }
 }
