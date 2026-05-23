@@ -108,7 +108,28 @@ fn interactive() -> Result<()> {
         .allow_empty(false)
         .interact_text()
         .context("read url from prompt")?;
-    let mut url = raw.trim().to_string();
+    let trimmed = raw.trim();
+
+    // Standalone slash commands (not URL + suffix). These start the input.
+    if let Some(rest) = trimmed.strip_prefix('/') {
+        let mut parts = rest.splitn(2, char::is_whitespace);
+        let cmd = parts.next().unwrap_or("");
+        let arg = parts.next().unwrap_or("").trim();
+        return match cmd {
+            "domain" => handle_domain_command(arg),
+            "info" | "help" => {
+                print_info();
+                Ok(())
+            }
+            other => {
+                ui::warn(&format!("unknown command: /{}", other));
+                print_info();
+                Ok(())
+            }
+        };
+    }
+
+    let mut url = trimmed.to_string();
     let mut paywall = false;
     let mut archive_all = false;
     for suffix in [" /all", "/all"] {
@@ -132,6 +153,126 @@ fn interactive() -> Result<()> {
         return archive_post_outlinks(&url, true);
     }
     add_url(&url, paywall)
+}
+
+/// Handle the `/domain <yourblog.com>` slash command. Registers the host as
+/// "your own" (skipped during outbound-link extraction) and writes
+/// `.archiver/config.toml`. If the file doesn't exist yet or has placeholder
+/// values, walks you through a one-time setup prompt.
+fn handle_domain_command(arg: &str) -> Result<()> {
+    if arg.is_empty() {
+        ui::warn("usage: /domain <yourblog.com>  (or substack handle, etc.)");
+        return Ok(());
+    }
+    // Be forgiving about pasted scheme / trailing slashes.
+    let domain = arg
+        .trim()
+        .trim_start_matches("https://")
+        .trim_start_matches("http://")
+        .trim_end_matches('/')
+        .to_string();
+    if domain.is_empty() || domain.contains(' ') {
+        ui::warn(&format!("'{}' doesn't look like a valid domain", arg));
+        return Ok(());
+    }
+
+    let mut settings = config::settings().clone();
+    let was_placeholder = settings.own_domains == vec!["example.com".to_string()];
+    if was_placeholder {
+        settings.own_domains.clear();
+    }
+    if settings.own_domains.iter().any(|d| d == &domain) {
+        ui::info(&format!("domain already registered: {}", domain));
+    } else {
+        settings.own_domains.push(domain.clone());
+        ui::success("registered", &domain);
+    }
+
+    // First-time setup: walk through the placeholder fields.
+    if settings.notify_email == "you@example.com" || settings.notify_email.is_empty() {
+        let email: String = Input::new()
+            .with_prompt("  email for monthly dead-link notifications")
+            .interact_text()
+            .context("read email")?;
+        settings.notify_email = email.trim().to_string();
+    }
+    if settings.site_origin == "https://example.com" || settings.site_origin.is_empty() {
+        let default_origin = format!("https://{}", domain);
+        let origin: String = Input::new()
+            .with_prompt("  public URL prefix for your archive (e.g. https://yourblog.com)")
+            .default(default_origin)
+            .interact_text()
+            .context("read site origin")?;
+        settings.site_origin = origin.trim().trim_end_matches('/').to_string();
+    }
+
+    let path = config::config_path();
+    if let Some(parent) = path.parent() {
+        std::fs::create_dir_all(parent).context("create .archiver dir")?;
+    }
+    let toml_str = toml::to_string_pretty(&settings).context("serialize config")?;
+    std::fs::write(&path, toml_str).context("write config.toml")?;
+    ui::success("config saved", &path.to_string_lossy());
+
+    ui::info(&format!(
+        "you're set. own_domains: {} · notify: {} · origin: {}",
+        settings.own_domains.join(", "),
+        settings.notify_email,
+        settings.site_origin
+    ));
+    if was_placeholder {
+        ui::info(
+            "next: build + symlink the binary + install the launchd plist — see archiver/README.md."
+        );
+    }
+    ui::info("(restart `archiver` for the new config to take effect in this session.)");
+    Ok(())
+}
+
+fn print_info() {
+    use colored::Colorize;
+    let m = "archiver 🐾".bright_magenta().bold();
+    println!();
+    println!("  {} — three-layer link archiver for personal blogs", m);
+    println!();
+    println!("  {}", "subcommands".bright_cyan().bold());
+    let rows = [
+        ("archiver", "interactive prompt with the cat"),
+        ("archiver add <url>", "archive one URL (--paywall for bypass chain)"),
+        ("archiver post <url>", "archive every outbound link on a post (--all also archives the page)"),
+        ("archiver scan", "walk your repo + subslop/ and archive new citations"),
+        ("archiver check [--dry-run]", "HEAD every archived URL; 3 consecutive 404/410/NXDOMAIN → dead"),
+        ("archiver rehost [--dry-run]", "rewrite source posts for dead links + stage archive dirs"),
+        ("archiver maintain", "the full nightly pass: scan + check + rehost + notify"),
+        ("archiver measure <url> [--label X]", "measure (don't archive) link rot — feeds the viz"),
+        ("archiver viz [--labels X --exclude-urls Y --output Z]", "render the d3 visualization"),
+        ("archiver list", "show everything archived + status"),
+    ];
+    for (cmd, desc) in rows {
+        println!("    {:<54} {}", cmd.bright_white(), desc.bright_black());
+    }
+    println!();
+    println!("  {}", "in interactive mode (the cat prompt)".bright_cyan().bold());
+    let slash = [
+        ("paste a URL", "archive it (https:// optional)"),
+        ("<url> /paywall", "engage paywall bypass chain"),
+        ("<url> /all", "archive the page + every outbound link on it"),
+        ("/domain <yourblog.com>", "register the host as your own + bootstrap config.toml"),
+        ("/info", "show this help"),
+    ];
+    for (cmd, desc) in slash {
+        println!("    {:<54} {}", cmd.bright_white(), desc.bright_black());
+    }
+    println!();
+    println!("  {}", "where things live".bright_cyan().bold());
+    println!("    {:<54} {}", "<repo>/.archiver/config.toml".bright_white(), "your config (gitignored)".bright_black());
+    println!("    {:<54} {}", "<repo>/.archiver/index.json".bright_white(), "what you've archived + check history".bright_black());
+    println!("    {:<54} {}", "<repo>/archive/<slug>/".bright_white(), "local copies (gitignored; rehost stages specific dirs)".bright_black());
+    println!("    {:<54} {}", "<repo>/archive-health.html".bright_white(), "the d3 viz".bright_black());
+    println!("    {:<54} {}", "<repo>/archiver/README.md".bright_white(), "full docs".bright_black());
+    println!();
+    println!("  MIT-licensed · runs nightly via launchd · gwern.net/archiving for the design lineage");
+    println!();
 }
 
 /// If the input doesn't carry a scheme (no `://`), prepend `https://`.
