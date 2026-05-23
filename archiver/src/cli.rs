@@ -271,7 +271,13 @@ fn print_info() {
     println!("    {:<54} {}", "<repo>/archive-health.html".bright_white(), "the d3 viz".bright_black());
     println!("    {:<54} {}", "<repo>/archiver/README.md".bright_white(), "full docs".bright_black());
     println!();
-    println!("  MIT-licensed · runs nightly via launchd · gwern.net/archiving for the design lineage");
+    println!("  runs nightly via launchd · gwern.net/archiving for the design lineage");
+    println!(
+        "  built by {} at {} with {}",
+        "margot".bright_magenta(),
+        "croissanthology.com".bright_cyan(),
+        "claude".bright_yellow(),
+    );
     println!();
 }
 

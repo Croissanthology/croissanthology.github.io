@@ -7,15 +7,11 @@ pub fn banner() {
     let art = r#"
        /\_/\        ┌────────────────────────────────┐
       ( o.o )       │   archiver — feed me links     │
-       > ^ <        │   croissanthology / margot     │
+       > ^ <        │   they live forever 🐾         │
       / >🔗<        └────────────────────────────────┘
 "#;
     println!("{}", art.bright_magenta());
-    println!(
-        "  {} paste a URL ({} optional).",
-        "·".bright_black(),
-        "https://".bright_cyan(),
-    );
+    println!("  {} paste a URL.", "·".bright_black());
     println!(
         "  {} suffix with {} for paywall bypass, or {} to also archive every outbound link on the page.",
         "·".bright_black(),
