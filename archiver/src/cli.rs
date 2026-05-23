@@ -7,7 +7,9 @@ use std::time::Duration;
 use url::Url;
 use walkdir::WalkDir;
 
-use crate::{archive, check, config, extract, local, measure, notify, paywall, rehost, state, ui, viz};
+use crate::{
+    archive, check, config, extract, local, measure, notify, paywall, rehost, site, state, ui, viz,
+};
 
 #[derive(Parser)]
 #[command(
@@ -64,6 +66,18 @@ enum Cmd {
         #[arg(long)]
         label: Option<String>,
     },
+    /// Archive every post on a blog (via its sitemap.xml) + every outbound link.
+    Site {
+        /// Domain of the blog, e.g. `you.substack.com` or `yourblog.com`.
+        domain: String,
+        /// Stop after archiving this many posts (handy for testing).
+        #[arg(long)]
+        limit: Option<usize>,
+        /// Enumerate posts but don't actually archive — for verifying the
+        /// sitemap fetch + filter without firing the full pipeline.
+        #[arg(long)]
+        dry_run: bool,
+    },
     /// Render the static d3 visualization from `.archiver/measurements.json`.
     Viz {
         /// Only include posts whose label is in this comma-separated list.
@@ -93,6 +107,17 @@ pub fn run() -> Result<()> {
         Some(Cmd::List) => run_list(),
         Some(Cmd::Maintain { dry_run }) => maintain(dry_run),
         Some(Cmd::Measure { url, label }) => measure::run(&ensure_scheme(&url), label),
+        Some(Cmd::Site {
+            domain,
+            limit,
+            dry_run,
+        }) => {
+            if dry_run {
+                site::dry_run(&domain, limit)
+            } else {
+                site::run(&domain, limit)
+            }
+        }
         Some(Cmd::Viz {
             labels,
             exclude_urls,
@@ -117,6 +142,7 @@ fn interactive() -> Result<()> {
         let arg = parts.next().unwrap_or("").trim();
         return match cmd {
             "domain" => handle_domain_command(arg),
+            "site" => site::run(arg, None),
             "info" | "help" => {
                 print_info();
                 Ok(())
@@ -274,6 +300,7 @@ fn print_info() {
         ("archiver measure <url> [--label X]", "measure (don't archive) link rot — feeds the viz"),
         ("archiver viz [--labels X --exclude-urls Y --output Z]", "render the d3 visualization"),
         ("archiver list", "show everything archived + status"),
+        ("archiver site <domain> [--limit N]", "archive every post on a blog (via /sitemap.xml) + every outbound link"),
     ];
     for (cmd, desc) in rows {
         println!("    {:<54} {}", cmd.bright_white(), desc.bright_black());
@@ -285,6 +312,7 @@ fn print_info() {
         ("<url> /paywall", "engage paywall bypass chain"),
         ("<url> /all", "archive the page + every outbound link on it"),
         ("/domain <yourblog.com>", "register the host as your own + bootstrap config.toml"),
+        ("/site <yourblog.com>", "archive every post + every outbound link on that domain (hours-long; ctrl-c safe)"),
         ("/info", "show this help"),
     ];
     for (cmd, desc) in slash {
@@ -421,7 +449,7 @@ fn archive_single(
     Ok(())
 }
 
-fn archive_post_outlinks(post_url: &str, also_archive_post: bool) -> Result<()> {
+pub(crate) fn archive_post_outlinks(post_url: &str, also_archive_post: bool) -> Result<()> {
     let client = archive::client();
     ui::info(&format!("fetching {}", post_url));
     let html = client
