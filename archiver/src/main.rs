@@ -8,6 +8,7 @@ mod measure;
 mod notify;
 mod paywall;
 mod rehost;
+mod site;
 mod state;
 mod ui;
 mod viz;
