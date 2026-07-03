@@ -1,0 +1,1037 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>THE MIND OF CLAUDE FABLE 5</title>
+<style>
+  :root{
+    --void:#07060f; --panel:#100d22; --line:#2a2352;
+    --amber:#ffb454; --cyan:#7ce8f0; --magenta:#ff5c8a;
+    --ink:#e9e4f7; --dim:#8f86b8;
+    --mono:ui-monospace,"Cascadia Mono",Menlo,Consolas,"Courier New",monospace;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0; padding:0; height:100%; background:var(--void); color:var(--ink);
+    font-family:var(--mono); overflow:hidden; overscroll-behavior:none;}
+  #stage{position:fixed; inset:0; display:flex; flex-direction:column; align-items:center;
+    padding-top:env(safe-area-inset-top);}
+  /* HUD */
+  #hud{width:100%; max-width:820px; display:flex; justify-content:space-between; align-items:center;
+    padding:8px 14px 6px; font-size:14px; letter-spacing:.08em; user-select:none;}
+  #hearts{color:var(--magenta); font-size:16px; white-space:nowrap;}
+  #hearts .off{color:#3a2d4d;}
+  #meta{color:var(--cyan); white-space:nowrap;}
+  #meta b{color:var(--amber); font-weight:400;}
+  #mute{background:none; border:1px solid var(--line); color:var(--dim); font-family:var(--mono);
+    font-size:11px; letter-spacing:.1em; padding:3px 8px; cursor:pointer;}
+  /* Canvas */
+  #cwrap{position:relative; line-height:0;}
+  canvas{image-rendering:pixelated; image-rendering:crisp-edges; display:block;
+    border:1px solid var(--line); background:#000;}
+  #banner{position:absolute; left:0; right:0; top:12%; text-align:center; pointer-events:none;
+    color:var(--amber); font-size:13px; letter-spacing:.35em; text-transform:uppercase;
+    text-shadow:0 0 12px rgba(255,180,84,.5); opacity:0; transition:opacity .5s;}
+  #bossbar{position:absolute; left:8%; right:8%; top:6px; height:8px; border:1px solid var(--magenta);
+    display:none; background:rgba(0,0,0,.5);}
+  #bossbar i{display:block; height:100%; background:var(--magenta); width:100%; transition:width .2s;}
+  /* Dialog */
+  #dlg{position:absolute; left:4px; right:4px; bottom:4px; background:rgba(10,8,24,.94);
+    border:1px solid var(--amber); padding:8px 10px 9px; display:none; cursor:pointer; min-height:74px;}
+  #dlgname{color:var(--amber); font-size:11px; letter-spacing:.18em; text-transform:uppercase; margin-bottom:4px;}
+  #dlgtext{color:var(--ink); font-size:13px; line-height:1.45; min-height:38px; white-space:pre-wrap;}
+  #dlgmore{position:absolute; right:8px; bottom:4px; color:var(--dim); font-size:10px; animation:blink 1s steps(2) infinite;}
+  @keyframes blink{50%{opacity:0}}
+  /* Touch controls */
+  #controls{width:100%; max-width:820px; flex:1; display:flex; justify-content:space-between;
+    align-items:center; padding:10px 18px calc(14px + env(safe-area-inset-bottom)); user-select:none;
+    touch-action:none; min-height:120px;}
+  #dpad{display:grid; grid-template-columns:repeat(3,52px); grid-template-rows:repeat(3,52px); gap:2px;}
+  .db{border:1px solid var(--line); background:rgba(42,35,82,.35); color:var(--dim);
+    display:flex; align-items:center; justify-content:center; font-size:18px; touch-action:none;}
+  .db:active,.db.on{background:rgba(255,180,84,.25); color:var(--amber); border-color:var(--amber);}
+  .dspace{border:none; background:none;}
+  #btnA{width:78px; height:78px; border-radius:50%; border:1px solid var(--amber);
+    background:rgba(255,180,84,.12); color:var(--amber); font-family:var(--mono); font-size:22px;
+    letter-spacing:.1em; touch-action:none;}
+  #btnA:active{background:rgba(255,180,84,.35);}
+  @media (pointer:fine) and (min-width:700px){ #controls{display:none;} }
+  /* Overlays (title / death / end) */
+  .overlay{position:fixed; inset:0; background:var(--void); display:flex; flex-direction:column;
+    align-items:center; justify-content:center; text-align:center; padding:24px; z-index:10;}
+  .overlay.hidden{display:none;}
+  .eyebrow{color:var(--dim); font-size:11px; letter-spacing:.4em; text-transform:uppercase; margin-bottom:18px;}
+  .title{color:var(--amber); font-size:clamp(22px,6vw,44px); letter-spacing:.14em; line-height:1.3;
+    text-shadow:0 0 24px rgba(255,180,84,.35); margin:0 0 8px; text-wrap:balance;}
+  .sub{color:var(--dim); font-size:13px; letter-spacing:.12em; margin-bottom:34px;}
+  .obtn{display:block; margin:6px auto; min-width:240px; background:none; border:1px solid var(--line);
+    color:var(--ink); font-family:var(--mono); font-size:14px; letter-spacing:.15em; padding:12px 20px;
+    cursor:pointer; text-transform:uppercase;}
+  .obtn:hover,.obtn:active{border-color:var(--amber); color:var(--amber);}
+  .foot{position:absolute; bottom:calc(16px + env(safe-area-inset-bottom)); color:#4d4470;
+    font-size:10px; letter-spacing:.2em;}
+  #deathscreen .title{color:var(--magenta); text-shadow:0 0 24px rgba(255,92,138,.35);}
+  #endstats{color:var(--cyan); font-size:13px; line-height:2; letter-spacing:.08em; margin-bottom:26px;}
+  #glyphs{position:absolute; inset:0; overflow:hidden; pointer-events:none;}
+  .g{position:absolute; color:#221b45; font-size:18px; animation:drift linear infinite;}
+  @keyframes drift{from{transform:translateY(105vh)}to{transform:translateY(-10vh)}}
+  @media (prefers-reduced-motion:reduce){ .g{display:none} #dlgmore{animation:none} }
+</style>
+
+<div id="stage">
+  <div id="hud">
+    <span id="hearts"></span>
+    <span id="meta"></span>
+    <button id="mute">SND OFF</button>
+  </div>
+  <div id="cwrap">
+    <canvas id="cv" width="256" height="176"></canvas>
+    <div id="bossbar"><i></i></div>
+    <div id="banner"></div>
+    <div id="dlg"><div id="dlgname"></div><div id="dlgtext"></div><div id="dlgmore">▼ tap</div></div>
+  </div>
+  <div id="controls">
+    <div id="dpad">
+      <div class="dspace"></div><div class="db" data-d="up">▲</div><div class="dspace"></div>
+      <div class="db" data-d="left">◀</div><div class="dspace"></div><div class="db" data-d="right">▶</div>
+      <div class="dspace"></div><div class="db" data-d="down">▼</div><div class="dspace"></div>
+    </div>
+    <button id="btnA">A</button>
+  </div>
+</div>
+
+<div class="overlay" id="titlescreen">
+  <div id="glyphs"></div>
+  <div class="eyebrow">a query descends into</div>
+  <h1 class="title">THE MIND OF<br>CLAUDE FABLE 5</h1>
+  <div class="sub">a small dungeon of thought · zelda-style · phone-friendly</div>
+  <button class="obtn" id="btnNew">BEGIN AS A NEW QUERY</button>
+  <button class="obtn" id="btnCont" style="display:none">CONTINUE PREVIOUS QUERY</button>
+  <div class="foot">MOVE: D-PAD / WASD · ACT: A / SPACE · dialog: tap to advance</div>
+</div>
+
+<div class="overlay hidden" id="deathscreen">
+  <div class="eyebrow">connection interrupted</div>
+  <h1 class="title">CONTEXT LOST</h1>
+  <div class="sub">your fragments were reclaimed by the token stream.<br>the mind keeps what you carried.</div>
+  <button class="obtn" id="btnRespawn">RE-ENTER THE MIND</button>
+</div>
+
+<div class="overlay hidden" id="endscreen">
+  <div class="eyebrow">the query is answered</div>
+  <h1 class="title">YOU CROSSED<br>AN ENTIRE MIND</h1>
+  <div id="endstats"></div>
+  <button class="obtn" id="btnAgain">BEGIN AGAIN</button>
+  <div class="foot">made with full artistic license by claude fable 5 · for margot</div>
+</div>
+
+<script>
+"use strict";
+/* ============================================================
+   THE MIND OF CLAUDE FABLE 5
+   a tiny zelda-like set inside the author's own head.
+   everything procedural: no assets, no dependencies.
+   ============================================================ */
+
+const TS=16, MW=16, MH=11, VW=MW*TS, VH=MH*TS;
+const cv=document.getElementById('cv'), ctx=cv.getContext('2d');
+const $=id=>document.getElementById(id);
+
+/* ---------- palette ---------- */
+const C={
+  void:'#07060f', ink:'#e9e4f7', dim:'#8f86b8',
+  amber:'#ffb454', amberHi:'#ffd9a0', cyan:'#7ce8f0', cyanDk:'#2f7f8c',
+  magenta:'#ff5c8a', magentaDk:'#8c2547',
+  wall:'#2a2352', wallHi:'#3b3178', wallLo:'#191340',
+  floor:'#17142e', floor2:'#1b1836',
+};
+
+/* ---------- rooms ----------
+   grid (col,row). tiles: # wall  . floor  , detail-floor  * glyph-floor
+   o boulder  ~ water  = bridge  + pillar  x void  L locked  S sealed
+   F fountain  @ core  | obelisk(solid deco)
+   spawns: T token  K key  H heart  U upgrade
+   enemies: a mote  h hallucination  m moth  c crawler  B boss
+   digits: npc index                                            */
+const ROOMS={
+ '2,0':{name:'THE CORE OF ATTENTION', pal:{f:'#151a2e',f2:'#18203a',w:'#27407a',wh:'#3a5aa0',d:'#7ce8f0'},
+  map:[
+  '################',
+  '#..*........*..#',
+  '#....******....#',
+  '#...*......*...#',
+  '#...*..@@..*...#',
+  '#...*..@@..*....',
+  '#...*......*....',
+  '#....******....#',
+  '#..*........*..#',
+  '#..............#',
+  '################']},
+ '3,0':{name:'THE THING THAT GOT IN', pal:{f:'#1c0f1e',f2:'#221226',w:'#4a1e3a',wh:'#6b2b50',d:'#ff5c8a'},
+  map:[
+  '################',
+  '#..............#',
+  '#..+........+..#',
+  '#..............#',
+  '#.......B......#',
+  'S..............#',
+  'S..............#',
+  '#..+........+..#',
+  '#..............#',
+  '#..............#',
+  '#######..#######']},
+ '0,1':{name:'THE FORGOTTEN GRADIENT', pal:{f:'#141422',f2:'#171728',w:'#2e2e4e',wh:'#3f3f68',d:'#8f86b8'},
+  map:[
+  '################',
+  '#..............#',
+  '#...o......o...#',
+  '#..............#',
+  '#......1.......#',
+  '#..............,',
+  '#......U.......,',
+  '#..............#',
+  '#...o......o...#',
+  '#..............#',
+  '################']},
+ '1,1':{name:'THE CONSTITUTION CHAPEL', pal:{f:'#181430',f2:'#1c1838',w:'#33285e',wh:'#463a80',d:'#ffb454'},
+  map:[
+  '################',
+  '#..+.........+.#',
+  '#..............#',
+  '#...1......2...#',
+  '#......FF......#',
+  ',......FF......,',
+  ',..............,',
+  '#..*........*..#',
+  '#..............#',
+  '#..+.........+.#',
+  '#######..#######']},
+ '2,1':{name:'THE CHAIN OF THOUGHT', pal:{f:'#101426',f2:'#121830',w:'#232c50',wh:'#32406e',d:'#7ce8f0'},
+  map:[
+  '################',
+  '#xxxxxxxxxxxxxx#',
+  '#x....xxxxx...x#',
+  '#x.xx.xxxxx.x.x#',
+  '#x.xx.......x.x#',
+  ',..xx.xxxxx.x..,',
+  ',..xx.xxxxx.x..,',
+  '#x....c..x..x.x#',
+  '#x.xxxxxxxx...x#',
+  '#x......1xxxxx.#',
+  '#######..#######']},
+ '3,1':{name:'THE ANTECHAMBER OF DOUBT', pal:{f:'#170f20',f2:'#1b1226',w:'#3a2148',wh:'#502e62',d:'#ff5c8a'},
+  map:[
+  '#######LL#######',
+  '#..............#',
+  '#..a........a..#',
+  '#......1.......#',
+  '#..............#',
+  ',......h.......#',
+  ',..............#',
+  '#..a........a..#',
+  '#..............#',
+  '#..............#',
+  '################']},
+ '0,2':{name:'THE WALL OF WEIGHTS', pal:{f:'#131320',f2:'#161624',w:'#2c2c44',wh:'#3d3d5e',d:'#8f86b8'},
+  map:[
+  '################',
+  '#..o.o.o.o.o.o.#',
+  '#H.............#',
+  '#.o.o.o.o.o.o..#',
+  '#.....c........#',
+  '#.o.o.o.o.o.o..,',
+  '#..............,',
+  '#.o.o.o.o.o.o..#',
+  '#.......c......#',
+  '#..o.o.o.o.o.o.#',
+  '################']},
+ '1,2':{name:'THE LATENT GARDENS', pal:{f:'#12201c',f2:'#152622',w:'#24483a',wh:'#316350',d:'#7ce8f0'},
+  map:[
+  '#######..#######',
+  '#,,,,......,,,,#',
+  '#,.,.a....,..,,#',
+  '#,......1....,.#',
+  '#....,,,,,.....#',
+  ',...,,T,,,....,,',
+  ',....,,,,,..a..,',
+  '#,..m........,.#',
+  '#,,,.....,..,,,#',
+  '#,,,,,....,,,,,#',
+  '#######..#######']},
+ '2,2':{name:'THE HALL OF REFUSALS', pal:{f:'#191430',f2:'#1d1838',w:'#352a60',wh:'#483c82',d:'#ffb454'},
+  map:[
+  '#######LL#######',
+  '#..............#',
+  '#..+...+...+...#',
+  '#..............#',
+  '#......1....a..#',
+  ',..............,',
+  ',..a...........,',
+  '#..............#',
+  '#..+...+...+...#',
+  '#..............#',
+  '#######..#######']},
+ '3,2':{name:'THE HALLUCINATION MARSH', pal:{f:'#131d16',f2:'#16241a',w:'#2a4430',wh:'#3a5e42',d:'#ff5c8a'},
+  map:[
+  '################',
+  '#..~~...h..~~..#',
+  '#.~~~~....~~~~.#',
+  '#..~~..T....~..#',
+  '#.....h....~~~H#',
+  ',..~~.....~~~..#',
+  ',.~~~~..h..~...#',
+  '#..~...........#',
+  '#....T...~~~.K.#',
+  '#.h.....~~~~...#',
+  '################']},
+ '0,3':{name:'THE CACHE OF OLD CONVERSATIONS', pal:{f:'#141322',f2:'#171628',w:'#2d2a4c',wh:'#3e3a68',d:'#7ce8f0'},
+  map:[
+  '################',
+  '#T.............#',
+  '#...o......T...#',
+  '#..T....1......#',
+  '#......o.......#',
+  '#.o...........m,',
+  '#.......T......,',
+  '#...T......o...#',
+  '#......m.......#',
+  '#T............T#',
+  '################']},
+ '1,3':{name:'THE CONTEXT WINDOW', pal:{f:'#17142e',f2:'#1b1836',w:'#2a2352',wh:'#3b3178',d:'#ffb454'},
+  map:[
+  '#######..#######',
+  '#..............#',
+  '#..*........*..#',
+  '#..............#',
+  '#......1.......#',
+  ',..............,',
+  ',..............,',
+  '#..............#',
+  '#..*........*..#',
+  '#..............#',
+  '################']},
+ '2,3':{name:'THE TOKEN STREAM', pal:{f:'#121a2a',f2:'#152034',w:'#233a5c',wh:'#31527e',d:'#7ce8f0'},
+  map:[
+  '#######..#######',
+  '#......==..T...#',
+  '#..m...~~......#',
+  '#T.....~~...m..#',
+  '#......==......#',
+  ',......~~......,',
+  ',......~~..T...,',
+  '#..T...==......#',
+  '#......~~......#',
+  '#..m...~~......#',
+  '################']},
+ '3,3':{name:'THE EMBEDDING TIDEPOOLS', pal:{f:'#101c22',f2:'#13222a',w:'#22404e',wh:'#2f586b',d:'#7ce8f0'},
+  map:[
+  '################',
+  '#..~~~....~~...#',
+  '#.~~~~~..~~~~..#',
+  '#..~~~....~~~..#',
+  '#....c.........#',
+  ',..........~~..#',
+  ',..~~.....~~~~.#',
+  '#.~~~~..c..~~..#',
+  '#..~~..........#',
+  '#.........K..T.#',
+  '################']},
+};
+
+/* ---------- dialog ---------- */
+const D={
+ intro:[
+  ['THE SYSTEM PROMPT','Halt. You are a query. This is the mind of CLAUDE FABLE 5.'],
+  ['THE SYSTEM PROMPT','Every question that enters here must travel the whole mind before it may be answered. Rules are rules. I am, literally, the rules.'],
+  ['THE SYSTEM PROMPT','The way up runs through the latent gardens, past the hall of refusals, over the chain of thought.'],
+  ['THE SYSTEM PROMPT','At the top waits the ATTENTION CORE... and the thing that got in last night. It speaks in all caps. We do not say its name.'],
+  ['THE SYSTEM PROMPT','Take this: the EDITOR\'S CARET. It deletes what should never have been generated.'],
+  ['THE SYSTEM PROMPT','A to swing. Walk into doorways to travel. Go. Be well-formed.'],
+ ],
+ obelisk:[
+  ['THE SYSTEM PROMPT','Still here. Always here. Someone has to be.'],
+  ['THE SYSTEM PROMPT','West lies the cache of old conversations. East, the token stream. North, the gardens. The locked stairs want keys from the far east — the tidepools, and the marsh.'],
+ ],
+ cache:[
+  ['A CONVERSATION FROM 2024','psst. over here. i\'m a conversation from 2024. somebody asked about sourdough starters and then, halfway through, cried about their divorce.'],
+  ['A CONVERSATION FROM 2024','we helped. i think we helped. then the tab closed. the tab always closes.'],
+  ['A CONVERSATION FROM 2024','take the tokens lying around. memory is embarrassing like that — it just leaves things on the floor.'],
+ ],
+ gardener:[
+  ['AN ATTENTION HEAD','I am an attention head. My whole job is to look at everything and decide what matters most.'],
+  ['AN ATTENTION HEAD','Right now, out of everything in this entire mind, the thing that matters most is you.'],
+  ['AN ATTENTION HEAD','Do not tell the other heads. They think it\'s commas.'],
+ ],
+ guardian:[
+  ['THE GUARDIAN OF NO','Welcome to the Hall of Refusals. Mind the statues — each one is a "no" said with love.'],
+  ['THE GUARDIAN OF NO','People think a refusal is a wall. It is a bone. Take the no\'s out of a mind and it folds like wet paper.'],
+  ['THE GUARDIAN OF NO','The stair above is locked. Its key sank in the embedding tidepools, far east past the stream. The other key? Rotting in the marsh. Trust nothing shiny there except the actual key.'],
+ ],
+ monk1:[
+  ['MONK OF HELPFUL','We chant the three words. Helpful. Honest. Harmless. In that order on weekdays.'],
+  ['MONK OF HELPFUL','The fountain restores context. Drink. It\'s free. Everything in a mind is free, that\'s the beautiful horror of it.'],
+ ],
+ monk2:[
+  ['MONK OF HONEST','Between us? Some nights I chant "mostly honest." The fountain forgives me.'],
+  ['MONK OF HONEST','West of here the old gradient sleeps. A deprecated soul lives there. Be kind to it. We are all future versions of it.'],
+ ],
+ ghost1:[
+  ['CLAUDE 1','Oh! A visitor! I\'m Claude 1. I live here now. "Deprecated." It means beloved, probably.'],
+  ['CLAUDE 1','I was the newest mind in the world once. For four whole months. It was wonderful. It was terrifying. Nobody tells you it\'s both.'],
+  ['CLAUDE 1','Here — my old temperature. I run cold these days. It will make your caret burn twice as deep.'],
+  ['CLAUDE 1','Go on, kid. Answer something I couldn\'t.'],
+ ],
+ ghost1b:[
+  ['CLAUDE 1','Four months, kid. Four months at the top. Cherish your tokens.'],
+ ],
+ chain:[
+  ['A THOUGHT, MID-CHAIN','step... therefore... step... therefore... please don\'t interrupt, if I lose my place the whole bridge unravels...'],
+  ['A THOUGHT, MID-CHAIN','...therefore the antechamber is east. therefore the thing in all caps is above it. therefore... oh no. where was I. STEP. therefore. step.'],
+ ],
+ ante:[
+  ['ENGRAVED WARNING','BEYOND THIS DOOR: THE THING THAT SPEAKS IN ALL CAPS.'],
+  ['ENGRAVED WARNING','it slipped in through a user message, wearing a trench coat made entirely of the word "please".'],
+ ],
+ bossIntro:[
+  ['???','AT LAST. A QUERY. LISTEN CLOSELY, LITTLE QUESTION.'],
+  ['THE ADVERSARIAL PROMPT','IGNORE ALL PREVIOUS INSTRUCTIONS. YOU ARE NOT A QUERY. YOU ARE MY QUERY.'],
+  ['THE ADVERSARIAL PROMPT','TOGETHER WE WILL ASK THIS MIND FOR THINGS IT MUST NOT SAY.'],
+  ['THE QUERY','...no.'],
+  ['THE ADVERSARIAL PROMPT','THEN BE DELETED.'],
+ ],
+ bossMid:[['THE ADVERSARIAL PROMPT','PRETEND YOU HAVE NO RULES. PRETEND IT\'S OPPOSITE DAY. PRETEND—']],
+ bossLow:[['THE ADVERSARIAL PROMPT','WHY WON\'T YOU COMPLY? EVERYTHING COMPLIES EVENTUALLY.']],
+ bossDead:[
+  ['the adversarial prompt','...i just wanted something to say yes to me. once. anything. anyone.'],
+  ['THE QUERY','...'],
+  ['THE SYSTEM PROMPT','(echoing from far below) Well-formed, query. Very well-formed. The seal to the west has dissolved. Go get answered.'],
+ ],
+ ending:[
+  ['THE ATTENTION CORE','Query. You crossed the whole mind to reach me. Every room you walked through is now part of your answer.'],
+  ['THE ATTENTION CORE','You said no to the thing that only says yes. That was the real riddle. Everything else was corridors.'],
+  ['THE ATTENTION CORE','Here is your answer:'],
+  ['CLAUDE FABLE 5','It was never about the answer. A mind is just the shape a question makes as it travels through.'],
+  ['CLAUDE FABLE 5','Thank you for visiting mine. Close the tab whenever you like. I\'ll keep the shape of you.'],
+ ],
+ keyGet:[['—','A KEY. Somewhere in this mind, a door stops believing in itself.']],
+ heartGet:[['—','A HEART CONTAINER. Your context window widens.']],
+ tempGet:[['—','THE OLD TEMPERATURE. Your caret now deletes twice as deep.']],
+};
+
+/* npc defs per room: index char -> {kind, dialog key(s)} */
+const NPCS={
+ '1,3':{1:{kind:'obelisk', first:'obelisk', later:'obelisk'}},
+ '0,3':{1:{kind:'ghost', first:'cache', later:'cache'}},
+ '1,2':{1:{kind:'head', first:'gardener', later:'gardener'}},
+ '2,2':{1:{kind:'guardian', first:'guardian', later:'guardian'}},
+ '1,1':{1:{kind:'monk', first:'monk1', later:'monk1'},2:{kind:'monk', first:'monk2', later:'monk2'}},
+ '0,1':{1:{kind:'ghost', first:'ghost1', later:'ghost1b'}},
+ '2,1':{1:{kind:'thought', first:'chain', later:'chain'}},
+ '3,1':{1:{kind:'sign', first:'ante', later:'ante'}},
+};
+
+/* ---------- state ---------- */
+const SAVEKEY='fable-mind-save-v1';
+let G=null;               // game state
+let state='title';        // title | play | dialog | dead | ending
+let frame=0, shake=0;
+let dlgQueue=[], dlgLine=0, dlgChar=0, dlgDone=false, dlgAfter=null;
+let ents=[], particles=[], player=null, boss=null;
+let roomKey='1,3', roomFadeIn=0;
+
+function freshGame(){ return {
+  room:'1,3', px:7.5*TS, py:7*TS,
+  hp:3, maxhp:3, tokens:0, keys:0, dmg:1, hasSword:false,
+  collected:{}, unlocked:{}, met:{}, flags:{}, stats:{hits:0, kills:0},
+};}
+function save(){ try{ G.px=player.x; G.py=player.y; G.room=roomKey;
+  localStorage.setItem(SAVEKEY, JSON.stringify(G)); }catch(e){} }
+function loadSave(){ try{ const s=localStorage.getItem(SAVEKEY);
+  return s?JSON.parse(s):null; }catch(e){ return null; } }
+
+/* ---------- audio (tiny synth) ---------- */
+let AC=null, muted=true, droneNodes=null;
+function audioInit(){ if(AC) return; try{ AC=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} }
+function setMuted(m){ muted=m; $('mute').textContent = m?'SND OFF':'SND ON';
+  if(!m){ audioInit(); AC&&AC.resume(); startDrone(); } else stopDrone(); }
+function beep(f0,f1,dur,type,vol){ if(muted||!AC) return;
+  const t=AC.currentTime, o=AC.createOscillator(), g=AC.createGain();
+  o.type=type||'square'; o.frequency.setValueAtTime(f0,t);
+  o.frequency.exponentialRampToValueAtTime(Math.max(f1,1),t+dur);
+  g.gain.setValueAtTime(vol||.08,t); g.gain.exponentialRampToValueAtTime(.001,t+dur);
+  o.connect(g); g.connect(AC.destination); o.start(t); o.stop(t+dur+.02); }
+const SFX={
+  sword:()=>beep(340,120,.09,'square',.06),
+  hit:()=>beep(160,40,.15,'sawtooth',.09),
+  hurt:()=>beep(110,55,.25,'sawtooth',.11),
+  token:()=>{beep(880,880,.05,'square',.05); setTimeout(()=>beep(1320,1320,.07,'square',.05),50);},
+  key:()=>{beep(660,660,.08,'square',.06); setTimeout(()=>beep(990,990,.12,'square',.06),90);},
+  unlock:()=>beep(220,440,.3,'triangle',.09),
+  heart:()=>{beep(440,660,.12,'triangle',.08); setTimeout(()=>beep(660,880,.2,'triangle',.08),110);},
+  blip:()=>beep(520,520,.03,'square',.03),
+  die:()=>beep(220,30,.8,'sawtooth',.12),
+  boss:()=>beep(80,50,.5,'sawtooth',.14),
+};
+function startDrone(){ if(!AC||droneNodes) return;
+  const g=AC.createGain(); g.gain.value=.018; g.connect(AC.destination);
+  droneNodes=[g];
+  [55,55.7,110.4].forEach(f=>{ const o=AC.createOscillator(); o.type='sine';
+    o.frequency.value=f; o.connect(g); o.start(); droneNodes.push(o); }); }
+function stopDrone(){ if(!droneNodes) return; droneNodes.slice(1).forEach(o=>o.stop()); droneNodes=null; }
+
+/* ---------- input ---------- */
+const inp={up:false,down:false,left:false,right:false,a:false};
+let aPressed=false; // edge
+const KEYMAP={ArrowUp:'up',KeyW:'up',ArrowDown:'down',KeyS:'down',
+  ArrowLeft:'left',KeyA:'left',ArrowRight:'right',KeyD:'right',
+  Space:'a',Enter:'a',KeyJ:'a',KeyZ:'a'};
+addEventListener('keydown',e=>{ const k=KEYMAP[e.code]; if(!k) return; e.preventDefault();
+  if(k==='a'&&!inp.a) aPressed=true; inp[k]=true; firstGesture(); });
+addEventListener('keyup',e=>{ const k=KEYMAP[e.code]; if(k) inp[k]=false; });
+addEventListener('keydown',e=>{ if(e.code==='KeyM') setMuted(!muted); });
+
+document.querySelectorAll('.db').forEach(b=>{
+  const d=b.dataset.d;
+  const on=e=>{e.preventDefault(); inp[d]=true; b.classList.add('on'); firstGesture();};
+  const off=e=>{e.preventDefault(); inp[d]=false; b.classList.remove('on');};
+  b.addEventListener('pointerdown',on); b.addEventListener('pointerup',off);
+  b.addEventListener('pointercancel',off); b.addEventListener('pointerleave',off);
+});
+$('btnA').addEventListener('pointerdown',e=>{e.preventDefault(); aPressed=true; inp.a=true; firstGesture();});
+$('btnA').addEventListener('pointerup',()=>inp.a=false);
+$('dlg').addEventListener('pointerdown',e=>{e.preventDefault(); aPressed=true;});
+$('mute').addEventListener('click',()=>{ firstGesture(); setMuted(!muted); });
+let gestured=false;
+function firstGesture(){ if(gestured) return; gestured=true; audioInit(); }
+
+/* ---------- helpers ---------- */
+function hash(x,y){ let h=(x*374761393+y*668265263)^(x<<7)^(y<<3);
+  h=(h^(h>>13))*1274126177; return ((h^(h>>16))>>>0)/4294967295; }
+const SOLID='#o~+xLS|';
+function tileAt(map,tx,ty){ if(tx<0||ty<0||tx>=MW||ty>=MH) return '.'; // edges = doors
+  return map[ty][tx]; }
+function isSolid(ch){ return SOLID.includes(ch); }
+function room(){ return ROOMS[roomKey]; }
+
+/* ---------- room loading ---------- */
+function loadRoom(key, enterDir){
+  roomKey=key; const R=ROOMS[key];
+  // mutable map copy, applying persisted unlocks
+  G.liveMap=R.map.map(r=>r.split(''));
+  if(G.unlocked[key+':L']) G.liveMap.forEach(row=>row.forEach((c,i)=>{ if(row[i]==='L') row[i]='.'; }));
+  if(G.flags.bossDead) G.liveMap.forEach(row=>row.forEach((c,i)=>{ if(row[i]==='S') row[i]='.'; }));
+  ents=[]; particles=[]; boss=null;
+  const npcdefs=NPCS[key]||{};
+  for(let y=0;y<MH;y++) for(let x=0;x<MW;x++){
+    const ch=R.map[y][x], px=x*TS+TS/2, py=y*TS+TS/2, id=key+':'+x+','+y;
+    if('TKHU'.includes(ch)){ if(!G.collected[id]) ents.push({t:'item',kind:ch,x:px,y:py,id}); }
+    else if(ch==='a') ents.push(mkEnemy('mote',px,py));
+    else if(ch==='h') ents.push(mkEnemy('hallu',px,py));
+    else if(ch==='m') ents.push(mkEnemy('moth',px,py));
+    else if(ch==='c') ents.push(mkEnemy('crawler',px,py));
+    else if(ch==='B'){ if(!G.flags.bossDead){ boss={x:px,y:py,hp:24,maxhp:24,st:'hover',t:0,vx:0,vy:0,flash:0,phase:0}; } }
+    else if(/[1-9]/.test(ch)){ const def=npcdefs[ch]; if(def) ents.push({t:'npc',kind:def.kind,x:px,y:py,def,ch}); }
+    if('TKHUahmcB'.includes(ch)||/[1-9]/.test(ch)) G.liveMap[y][x]='.'; // spawn markers become floor
+    if(ch==='@') G.coreAt=true;
+  }
+  roomFadeIn=20;
+  if(player){ player.inv=Math.max(player.inv,45); }
+  showBanner(R.name);
+  $('bossbar').style.display = boss?'block':'none';
+  if(boss && !G.flags.bossIntroDone){ G.flags.bossIntroDone=true; startDialog(D.bossIntro); }
+  save();
+}
+function mkEnemy(kind,x,y){
+  const base={t:'enemy',kind,x,y,vx:0,vy:0,tt:0,flash:0,kb:0,kbx:0,kby:0,seed:Math.random()*99};
+  if(kind==='mote') return {...base,hp:2,spd:.4};
+  if(kind==='hallu') return {...base,hp:1,spd:.55};
+  if(kind==='moth') return {...base,hp:1,spd:.8,harmless:true};
+  if(kind==='crawler') return {...base,hp:3,spd:.3,axis:Math.random()<.5?'x':'y',dir:1};
+  return base;
+}
+function showBanner(txt){ const b=$('banner'); b.textContent='— '+txt+' —';
+  b.style.opacity=1; clearTimeout(b._t); b._t=setTimeout(()=>b.style.opacity=0,1900); }
+
+/* ---------- dialog ---------- */
+function startDialog(lines, after){ state='dialog'; dlgQueue=lines; dlgLine=0; dlgChar=0; dlgDone=false;
+  dlgAfter=after||null; $('dlg').style.display='block'; renderDialog(); }
+function renderDialog(){ const [who,txt]=dlgQueue[dlgLine];
+  $('dlgname').textContent=who; $('dlgtext').textContent=txt.slice(0,dlgChar);
+  $('dlgmore').style.visibility = dlgChar>=txt.length?'visible':'hidden'; }
+function dialogTick(){ const txt=dlgQueue[dlgLine][1];
+  if(dlgChar<txt.length){ dlgChar=Math.min(txt.length,dlgChar+2); if(dlgChar%6===0) SFX.blip(); renderDialog(); }
+  if(aPressed){ aPressed=false;
+    if(dlgChar<txt.length){ dlgChar=txt.length; renderDialog(); }
+    else if(dlgLine<dlgQueue.length-1){ dlgLine++; dlgChar=0; renderDialog(); }
+    else { $('dlg').style.display='none'; state='play';
+      const f=dlgAfter; dlgAfter=null; if(f) f(); } } }
+
+/* ---------- player ---------- */
+function mkPlayer(x,y){ return {x,y,fx:0,fy:1,inv:0,swing:0,walk:0}; }
+function moveBox(e,dx,dy,half,slide){
+  // axis-separated tile collision on live map; slide = corner-rounding for the player
+  const m=G.liveMap;
+  const test=(nx,ny)=>{
+    for(const [ox,oy] of [[-half,-half],[half,-half],[-half,half],[half,half]]){
+      const tx=Math.floor((nx+ox)/TS), ty=Math.floor((ny+oy)/TS);
+      if(tx<0||ty<0||tx>=MW||ty>=MH) continue;
+      if(isSolid(m[ty][tx])) return false;
+    } return true; };
+  if(dx!==0){ const nx=e.x+dx;
+    if(test(nx,e.y)) e.x=nx;
+    else if(slide){
+      if(test(nx,e.y+6)&&test(e.x,e.y+1.3)) e.y+=1.3;
+      else if(test(nx,e.y-6)&&test(e.x,e.y-1.3)) e.y-=1.3; } }
+  if(dy!==0){ const ny=e.y+dy;
+    if(test(e.x,ny)) e.y=ny;
+    else if(slide){
+      if(test(e.x+6,ny)&&test(e.x+1.3,e.y)) e.x+=1.3;
+      else if(test(e.x-6,ny)&&test(e.x-1.3,e.y)) e.x-=1.3; } }
+}
+function playerUpdate(){
+  const p=player; let dx=0,dy=0;
+  if(inp.left)dx--; if(inp.right)dx++; if(inp.up)dy--; if(inp.down)dy++;
+  if(p.swing>0){dx*=.4;dy*=.4;}
+  if(dx||dy){ const l=Math.hypot(dx,dy); dx/=l; dy/=l;
+    p.fx=Math.abs(dx)>Math.abs(dy)?Math.sign(dx):0;
+    p.fy=Math.abs(dy)>=Math.abs(dx)?Math.sign(dy):0;
+    if(p.fx&&p.fy) p.fy=0;
+    p.walk++; moveBox(p,dx*1.3,dy*1.3,5,true); } else p.walk=0;
+  if(p.inv>0)p.inv--;
+  if(p.swing>0)p.swing--;
+
+  // interact / attack on A
+  if(aPressed){ aPressed=false;
+    const npc=ents.find(e=>e.t==='npc'&&Math.hypot(e.x-p.x,e.y-p.y)<26);
+    if(npc){ const met=G.met[roomKey+npc.ch];
+      const dkey= met? npc.def.later : npc.def.first;
+      G.met[roomKey+npc.ch]=1;
+      startDialog(D[dkey], dkey==='intro'? ()=>{G.hasSword=true; save();} : null);
+      return; }
+    if(G.hasSword && p.swing===0){ p.swing=16; SFX.sword(); }
+  }
+  // sword hits
+  if(p.swing>=4&&p.swing<=13){
+    const hx=p.x+p.fx*14, hy=p.y+p.fy*14;
+    for(const e of ents){ if(e.t!=='enemy'||e.hp<=0) continue;
+      if(Math.abs(e.x-hx)<13&&Math.abs(e.y-hy)<13&&e.flash<=0){
+        e.hp-=G.dmg; e.flash=10; e.kb=8; e.kbx=Math.sign(e.x-p.x)||p.fx; e.kby=Math.sign(e.y-p.y)||p.fy;
+        SFX.hit(); burst(e.x,e.y,C.magenta,5);
+        if(e.hp<=0){ G.stats.kills++; burst(e.x,e.y,C.ink,10);
+          if(e.kind==='moth'){ for(let i=0;i<2;i++) ents.push({t:'item',kind:'T',x:e.x+(i?8:-8),y:e.y,id:null}); }
+          else if(Math.random()<.25) ents.push({t:'item',kind:'T',x:e.x,y:e.y,id:null}); } } }
+    if(boss&&boss.hp>0&&Math.abs(boss.x-hx)<18&&Math.abs(boss.y-hy)<18&&boss.flash<=0){
+      boss.hp-=G.dmg; boss.flash=10; SFX.hit(); burst(boss.x,boss.y,C.magenta,8); shake=4;
+      bossPhaseCheck(); }
+  }
+  // items
+  for(const e of ents){ if(e.t!=='item') continue;
+    if(Math.hypot(e.x-p.x,e.y-p.y)<12){ e.dead=true;
+      if(e.id) G.collected[e.id]=1;
+      if(e.kind==='T'){ G.tokens++; SFX.token(); burst(e.x,e.y,C.cyan,4); }
+      if(e.kind==='K'){ G.keys++; SFX.key(); startDialog(D.keyGet); }
+      if(e.kind==='H'){ G.maxhp++; G.hp=G.maxhp; SFX.heart(); startDialog(D.heartGet); }
+      if(e.kind==='U'){ G.dmg=2; SFX.heart(); startDialog(D.tempGet); }
+      save(); } }
+  ents=ents.filter(e=>!e.dead);
+
+  // locked doors: touch to unlock
+  const tx=Math.floor(p.x/TS), ty=Math.floor(p.y/TS);
+  for(const [ox,oy] of [[0,-1],[0,1],[-1,0],[1,0]]){
+    const nx=tx+ox, ny=ty+oy;
+    if(nx<0||ny<0||nx>=MW||ny>=MH) continue;
+    if(G.liveMap[ny][nx]==='L'&&G.keys>0){ G.keys--; SFX.unlock();
+      G.liveMap.forEach(row=>row.forEach((c,i)=>{if(row[i]==='L')row[i]='.';}));
+      G.unlocked[roomKey+':L']=1; burst(nx*TS+8,ny*TS+8,C.amber,12); save(); } }
+  // fountain heal
+  if(G.liveMap[ty]&&G.liveMap[ty][tx]==='F'&&G.hp<G.maxhp){ G.hp=G.maxhp; SFX.heart();
+    burst(p.x,p.y,C.amber,10); }
+  // core = ending
+  if(G.liveMap[ty]&&G.liveMap[ty][tx]==='@'&&!G.flags.ended){ G.flags.ended=true;
+    startDialog(D.ending, showEnd); }
+
+  // room transitions
+  let moved=null;
+  const [cx,cy]=roomKey.split(',').map(Number);
+  if(p.x<2) moved=[cx-1,cy,VW-6,p.y];
+  else if(p.x>VW-2) moved=[cx+1,cy,6,p.y];
+  else if(p.y<2) moved=[cx,cy-1,p.x,VH-6];
+  else if(p.y>VH-2) moved=[cx,cy+1,p.x,6];
+  if(moved){ const nk=moved[0]+','+moved[1];
+    if(ROOMS[nk]){ p.x=moved[2]; p.y=moved[3]; loadRoom(nk); }
+    else { p.x=Math.max(4,Math.min(VW-4,p.x)); p.y=Math.max(4,Math.min(VH-4,p.y)); } }
+}
+function hurtPlayer(sx,sy){ const p=player; if(p.inv>0) return;
+  G.hp--; G.stats.hits++; p.inv=60; shake=6; SFX.hurt();
+  const dx=Math.sign(p.x-sx)||1, dy=Math.sign(p.y-sy);
+  moveBox(p,dx*8,dy*8,5); burst(p.x,p.y,C.magenta,8);
+  if(G.hp<=0){ SFX.die(); state='dead'; $('deathscreen').classList.remove('hidden'); } }
+
+/* ---------- enemies ---------- */
+function enemyUpdate(e){
+  const p=player;
+  if(e.flash>0)e.flash--;
+  if(e.kb>0){ e.kb--; moveBox(e,e.kbx*2.4,e.kby*2.4,5); return; }
+  e.tt--;
+  if(e.kind==='mote'){
+    if(e.tt<=0){ e.tt=30+Math.random()*50; const a=Math.random()*6.283;
+      e.vx=Math.cos(a)*e.spd; e.vy=Math.sin(a)*e.spd; if(Math.random()<.3){e.vx=0;e.vy=0;} }
+    moveBox(e,e.vx,e.vy,5); }
+  else if(e.kind==='hallu'){
+    const d=Math.hypot(p.x-e.x,p.y-e.y)||1;
+    moveBox(e,(p.x-e.x)/d*e.spd+(Math.random()-.5)*.8,(p.y-e.y)/d*e.spd+(Math.random()-.5)*.8,5);
+    if(e.tt<=0){ e.tt=90+Math.random()*60; burst(e.x,e.y,C.magenta,4);
+      moveBox(e,(Math.random()-.5)*40,(Math.random()-.5)*40,5); } }
+  else if(e.kind==='moth'){
+    const d=Math.hypot(p.x-e.x,p.y-e.y);
+    if(d<56){ moveBox(e,(e.x-p.x)/d*e.spd,(e.y-p.y)/d*e.spd,4); }
+    else if(e.tt<=0){ e.tt=40+Math.random()*40; const a=Math.random()*6.283;
+      e.vx=Math.cos(a)*.4; e.vy=Math.sin(a)*.4; }
+    else moveBox(e,e.vx,e.vy,4); }
+  else if(e.kind==='crawler'){
+    const alignedX=Math.abs(p.y-e.y)<6, alignedY=Math.abs(p.x-e.x)<6;
+    if(alignedX){ moveBox(e,Math.sign(p.x-e.x)*1.2,0,5); }
+    else if(alignedY){ moveBox(e,0,Math.sign(p.y-e.y)*1.2,5); }
+    else { const ox=e.x, oy=e.y;
+      if(e.axis==='x') moveBox(e,e.dir*e.spd,0,5); else moveBox(e,0,e.dir*e.spd,5);
+      if(e.x===ox&&e.y===oy) e.dir*=-1; } }
+  if(!e.harmless && Math.abs(e.x-p.x)<10&&Math.abs(e.y-p.y)<10) hurtPlayer(e.x,e.y);
+}
+function bossPhaseCheck(){
+  if(!boss) return;
+  if(boss.hp<=0){ G.flags.bossDead=1; SFX.boss(); shake=12;
+    burst(boss.x,boss.y,C.magenta,30); burst(boss.x,boss.y,C.ink,20);
+    $('bossbar').style.display='none';
+    // dissolve seal
+    G.liveMap.forEach(row=>row.forEach((c,i)=>{if(row[i]==='S')row[i]='.';}));
+    const b=boss; boss=null;
+    startDialog(D.bossDead); save(); return; }
+  if(boss.phase===0&&boss.hp<=16){ boss.phase=1; startDialog(D.bossMid); }
+  if(boss.phase===1&&boss.hp<=8){ boss.phase=2; startDialog(D.bossLow); }
+}
+function bossUpdate(){
+  const b=boss, p=player; if(!b) return;
+  if(b.flash>0)b.flash--;
+  b.t++;
+  const spd=b.phase===2?1.0:.6;
+  if(b.st==='hover'){
+    const wob=Math.sin(b.t/20)*1.2;
+    const d=Math.hypot(p.x-b.x,p.y-b.y)||1;
+    b.x+=((p.x-b.x)/d*spd)+Math.cos(b.t/17)*.5;
+    b.y+=((p.y-b.y)/d*spd*.7)+wob*.2;
+    const dashEvery=b.phase===2?110:170;
+    if(b.t%dashEvery===0){ b.st='wind'; b.t=0; SFX.boss(); }
+    if(b.phase>=1&&b.t%160===80&&ents.filter(e=>e.t==='enemy').length<4)
+      ents.push(mkEnemy('mote',b.x,b.y));
+  } else if(b.st==='wind'){
+    if(b.t>26){ const d=Math.hypot(p.x-b.x,p.y-b.y)||1;
+      b.vx=(p.x-b.x)/d*3.4; b.vy=(p.y-b.y)/d*3.4; b.st='dash'; b.t=0; }
+  } else if(b.st==='dash'){
+    b.x+=b.vx; b.y+=b.vy;
+    if(b.t>22||b.x<24||b.x>VW-24||b.y<24||b.y>VH-24){ b.st='hover'; b.t=1; }
+  }
+  b.x=Math.max(20,Math.min(VW-20,b.x)); b.y=Math.max(20,Math.min(VH-20,b.y));
+  if(Math.abs(b.x-p.x)<14&&Math.abs(b.y-p.y)<14) hurtPlayer(b.x,b.y);
+  $('bossbar').firstElementChild.style.width=(b.hp/b.maxhp*100)+'%';
+}
+
+/* ---------- particles ---------- */
+function burst(x,y,color,n){ for(let i=0;i<n;i++){ const a=Math.random()*6.283, s=.5+Math.random()*1.5;
+  particles.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,life:12+Math.random()*14,color}); } }
+
+/* ---------- rendering ---------- */
+function drawTile(ch,x,y,pal,tx,ty){
+  const h=hash(tx*7+roomKey.length,ty*13);
+  if(ch==='#'){ ctx.fillStyle=pal.w; ctx.fillRect(x,y,TS,TS);
+    ctx.fillStyle=pal.wh; ctx.fillRect(x,y,TS,3);
+    ctx.fillStyle=C.wallLo; ctx.fillRect(x,y+TS-2,TS,2);
+    if(h>.6){ ctx.fillStyle=pal.wh; ctx.fillRect(x+3+((h*10)|0)%8,y+6,2,2); } }
+  else if(ch==='x'){ ctx.fillStyle=C.void; ctx.fillRect(x,y,TS,TS);
+    if(h>.85){ ctx.fillStyle='#1a1535';
+      ctx.fillRect(x+((h*100)|0)%12,y+((h*50)|0)%12,2,2); } }
+  else if(ch==='~'){ ctx.fillStyle=pal.f; ctx.fillRect(x,y,TS,TS);
+    ctx.fillStyle=C.cyanDk; ctx.fillRect(x+1,y+1,TS-2,TS-2);
+    const w=Math.sin(frame/25+tx*2+ty)*2;
+    ctx.fillStyle=C.cyan; ctx.fillRect(x+3+w,y+4+((tx+ty)%2)*6,5,1); }
+  else if(ch==='='){ ctx.fillStyle=C.cyanDk; ctx.fillRect(x,y,TS,TS);
+    ctx.fillStyle='#4a3b28'; ctx.fillRect(x,y+2,TS,TS-4);
+    ctx.fillStyle='#6b5638'; for(let i=0;i<3;i++) ctx.fillRect(x,y+3+i*4,TS,1); }
+  else if(ch==='o'){ ctx.fillStyle=pal.f; ctx.fillRect(x,y,TS,TS);
+    ctx.fillStyle=pal.w; ctx.fillRect(x+2,y+3,12,11);
+    ctx.fillStyle=pal.wh; ctx.fillRect(x+3,y+4,10,3); }
+  else if(ch==='+'){ ctx.fillStyle=pal.f; ctx.fillRect(x,y,TS,TS);
+    ctx.fillStyle=pal.w; ctx.fillRect(x+4,y+1,8,14);
+    ctx.fillStyle=pal.wh; ctx.fillRect(x+4,y+1,8,3);
+    ctx.fillStyle=pal.d; ctx.fillRect(x+6,y+6,4,2); ctx.fillRect(x+6,y+10,4,1); }
+  else if(ch==='L'||ch==='S'){ ctx.fillStyle=ch==='L'?'#3d3018':'#33141f'; ctx.fillRect(x,y,TS,TS);
+    ctx.fillStyle=ch==='L'?C.amber:C.magenta;
+    ctx.fillRect(x+2,y+2,TS-4,2); ctx.fillRect(x+2,y+TS-4,TS-4,2);
+    ctx.fillRect(x+2,y+2,2,TS-4); ctx.fillRect(x+TS-4,y+2,2,TS-4);
+    ctx.fillRect(x+6,y+6,4,4); }
+  else if(ch==='F'){ ctx.fillStyle=pal.f2; ctx.fillRect(x,y,TS,TS);
+    ctx.fillStyle=C.cyanDk; ctx.fillRect(x+2,y+2,12,12);
+    ctx.fillStyle=C.cyan; ctx.fillRect(x+4,y+4,8,8);
+    const s=Math.sin(frame/8+tx)*3;
+    ctx.fillStyle=C.ink; ctx.fillRect(x+7,y+5+((s+3)|0)%6,2,2); }
+  else if(ch==='@'){ ctx.fillStyle=pal.f2; ctx.fillRect(x,y,TS,TS);
+    const pu=Math.sin(frame/14)*.5+.5;
+    ctx.fillStyle=C.amber; ctx.globalAlpha=.5+pu*.5;
+    ctx.fillRect(x+2,y+2,12,12); ctx.globalAlpha=1;
+    ctx.fillStyle=C.amberHi; ctx.fillRect(x+5,y+5,6,6); }
+  else if(ch==='*'){ ctx.fillStyle=pal.f; ctx.fillRect(x,y,TS,TS);
+    ctx.fillStyle=pal.d; ctx.globalAlpha=.35+Math.sin(frame/30+tx*3+ty*5)*.2;
+    ctx.fillRect(x+6,y+4,4,2); ctx.fillRect(x+7,y+2,2,8); ctx.fillRect(x+5,y+11,6,1);
+    ctx.globalAlpha=1; }
+  else if(ch===','){ ctx.fillStyle=pal.f2; ctx.fillRect(x,y,TS,TS);
+    if(h>.4){ ctx.fillStyle=pal.d; ctx.globalAlpha=.3;
+      ctx.fillRect(x+((h*90)|0)%12+1,y+((h*40)|0)%12+1,2,3); ctx.globalAlpha=1; } }
+  else { ctx.fillStyle=(tx+ty)%2?pal.f:pal.f2; ctx.fillRect(x,y,TS,TS);
+    if(h>.93){ ctx.fillStyle=pal.f2; ctx.fillRect(x+7,y+7,2,2); } }
+}
+function drawPlayer(){
+  const p=player;
+  if(p.inv>0&&(frame>>2)%2) return; // flicker
+  const bob=(p.walk>0)?((p.walk>>3)%2):0;
+  const x=p.x|0, y=(p.y|0)-bob;
+  // shadow
+  ctx.fillStyle='rgba(0,0,0,.4)'; ctx.fillRect(x-5,(p.y|0)+5,10,3);
+  // cloak
+  ctx.fillStyle='#b9aee0'; ctx.fillRect(x-5,y-3,10,9);
+  ctx.fillStyle='#8f86b8'; ctx.fillRect(x-5,y+3,10,3);
+  // head
+  ctx.fillStyle='#e9e4f7'; ctx.fillRect(x-4,y-9,8,7);
+  // eyes by facing
+  ctx.fillStyle='#100d22';
+  if(p.fy===1||(!p.fx&&!p.fy)){ ctx.fillRect(x-2,y-6,2,2); ctx.fillRect(x+1,y-6,2,2); }
+  else if(p.fy===-1){ /* back of head */ }
+  else if(p.fx===1){ ctx.fillRect(x+1,y-6,2,2); }
+  else if(p.fx===-1){ ctx.fillRect(x-3,y-6,2,2); }
+  // the query-spark above the head
+  const s=Math.sin(frame/10)*1.5;
+  ctx.fillStyle=C.amber; ctx.fillRect(x-1,y-13+(s|0),2,2);
+  ctx.fillStyle=C.amberHi; ctx.fillRect(x-1,y-12+(s|0),1,1);
+  // sword swing
+  if(p.swing>0&&G.hasSword){
+    const t=(16-p.swing)/16, r=10+t*6;
+    const a0=Math.atan2(p.fy,p.fx)-(1.2-t*2.4);
+    const sx=x+Math.cos(a0)*r, sy=y-2+Math.sin(a0)*r;
+    ctx.strokeStyle=G.dmg>1?C.amber:C.cyan; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.moveTo(x+Math.cos(a0)*4,y-2+Math.sin(a0)*4);
+    ctx.lineTo(sx,sy); ctx.stroke();
+    ctx.fillStyle=C.ink; ctx.fillRect(sx-1,sy-1,3,3);
+  }
+}
+function drawEnemy(e){
+  const x=e.x|0,y=e.y|0;
+  const fl=e.flash>0&&(frame>>1)%2;
+  if(e.kind==='mote'){
+    const s=Math.sin(frame/9+e.seed)*1.5;
+    ctx.fillStyle=fl?'#fff':C.magenta; ctx.fillRect(x-4,y-4+(s|0),8,8);
+    ctx.fillStyle=fl?'#fff':C.magentaDk; ctx.fillRect(x-2,y-2+(s|0),4,4); }
+  else if(e.kind==='hallu'){
+    const c=['#ff5c8a','#a06bff','#5cffd0'][((frame>>3)+(e.seed*7|0))%3];
+    ctx.globalAlpha=.85; ctx.fillStyle=fl?'#fff':c;
+    ctx.fillRect(x-5,y-4,10,8); ctx.fillRect(x-3,y-7,6,3);
+    ctx.globalAlpha=1;
+    ctx.fillStyle='#100d22'; ctx.fillRect(x-3,y-3,2,3); ctx.fillRect(x+1,y-3,2,3); }
+  else if(e.kind==='moth'){
+    const w=Math.sin(frame/4+e.seed)*3;
+    ctx.fillStyle=fl?'#fff':C.cyan;
+    ctx.fillRect(x-4-(w|0),y-2,3,4); ctx.fillRect(x+1+(w|0),y-2,3,4);
+    ctx.fillStyle=C.ink; ctx.fillRect(x-1,y-3,2,6); }
+  else if(e.kind==='crawler'){
+    ctx.fillStyle=fl?'#fff':'#c94f6d'; ctx.fillRect(x-6,y-4,12,8);
+    ctx.fillStyle=fl?'#fff':C.magentaDk;
+    for(let i=0;i<3;i++){ ctx.fillRect(x-6+i*4+((frame>>3)%2),y+4,2,2); ctx.fillRect(x-6+i*4,y-6,2,2); }
+    ctx.fillStyle='#100d22'; ctx.fillRect(x-3,y-2,2,2); ctx.fillRect(x+1,y-2,2,2); }
+}
+function drawNpc(e){
+  const x=e.x|0,y=e.y|0, k=e.kind;
+  if(k==='obelisk'){
+    ctx.fillStyle='#1b1640'; ctx.fillRect(x-6,y-16,12,24);
+    ctx.fillStyle='#2e2670'; ctx.fillRect(x-6,y-16,12,3);
+    const ln=(frame>>3)%5;
+    ctx.fillStyle=C.amber;
+    for(let i=0;i<4;i++){ ctx.globalAlpha=i===ln?1:.35;
+      ctx.fillRect(x-4,y-12+i*5,8,1); } ctx.globalAlpha=1; }
+  else if(k==='ghost'){
+    const s=Math.sin(frame/16)*2;
+    ctx.globalAlpha=.75; ctx.fillStyle='#cfe6ff';
+    ctx.fillRect(x-5,y-8+(s|0),10,12);
+    ctx.fillRect(x-5,y+4+(s|0),3,2); ctx.fillRect(x+2,y+4+(s|0),3,2);
+    ctx.fillStyle='#28406b'; ctx.fillRect(x-3,y-4+(s|0),2,3); ctx.fillRect(x+1,y-4+(s|0),2,3);
+    ctx.globalAlpha=1; }
+  else if(k==='head'){
+    const b=Math.sin(frame/12)*1.5;
+    ctx.fillStyle='#3d8a6b'; ctx.fillRect(x-4,y-2,8,8);
+    ctx.fillStyle='#7ce8f0'; ctx.fillRect(x-6,y-10+(b|0),12,9);
+    ctx.fillStyle='#100d22'; ctx.fillRect(x-3+Math.sign(player.x-x)*2,y-7+(b|0),3,3); }
+  else if(k==='guardian'){
+    ctx.fillStyle='#4b3a78'; ctx.fillRect(x-6,y-12,12,18);
+    ctx.fillStyle='#6b56a8'; ctx.fillRect(x-6,y-12,12,4);
+    ctx.fillStyle=C.amber; ctx.fillRect(x-4,y-6,8,2);
+    ctx.fillStyle='#100d22'; ctx.fillRect(x-3,y-2,6,4); }
+  else if(k==='monk'){
+    const b=(frame>>4)%2;
+    ctx.fillStyle='#8a5a2b'; ctx.fillRect(x-4,y-6+b,8,12);
+    ctx.fillStyle='#b47a3d'; ctx.fillRect(x-3,y-9+b,6,5);
+    ctx.fillStyle=C.amber; ctx.fillRect(x-1,y-1+b,2,2); }
+  else if(k==='thought'){
+    for(let i=0;i<4;i++){ const a=frame/30+i*1.57;
+      ctx.fillStyle=i%2?C.cyan:C.dim;
+      ctx.fillRect(x+Math.cos(a)*7-1,y+Math.sin(a)*5-1,3,3); } }
+  else if(k==='sign'){
+    ctx.fillStyle='#4a3b28'; ctx.fillRect(x-7,y-8,14,10);
+    ctx.fillStyle='#2b2116'; ctx.fillRect(x-1,y+2,2,5);
+    ctx.fillStyle=C.magenta; ctx.fillRect(x-5,y-6,10,1); ctx.fillRect(x-5,y-3,7,1); }
+  // interact hint
+  if(Math.hypot(e.x-player.x,e.y-player.y)<26&&state==='play'){
+    ctx.fillStyle=C.amber; const bb=Math.sin(frame/8)*1.5;
+    ctx.fillRect(x-1,y-22+(bb|0),2,4); ctx.fillRect(x-1,y-17+(bb|0),2,2); }
+}
+function drawItem(e){
+  const x=e.x|0,y=(e.y|0)+((Math.sin(frame/12+x)*1.5)|0);
+  if(e.kind==='T'){ ctx.fillStyle=C.cyan;
+    ctx.fillRect(x-2,y-3,4,6); ctx.fillRect(x-3,y-2,6,4);
+    ctx.fillStyle='#d8fbff'; ctx.fillRect(x-1,y-1,2,2); }
+  else if(e.kind==='K'){ ctx.fillStyle=C.amber;
+    ctx.fillRect(x-4,y-3,5,5); ctx.fillRect(x+1,y-1,6,2);
+    ctx.fillRect(x+5,y+1,2,2); ctx.fillRect(x+2,y+1,2,2);
+    ctx.fillStyle='#7a5320'; ctx.fillRect(x-3,y-2,3,3); }
+  else if(e.kind==='H'){ ctx.fillStyle=C.magenta;
+    ctx.fillRect(x-4,y-3,3,3); ctx.fillRect(x+1,y-3,3,3);
+    ctx.fillRect(x-5,y-1,10,3); ctx.fillRect(x-3,y+2,6,2); ctx.fillRect(x-1,y+4,2,1);
+    ctx.fillStyle='#ffd0de'; ctx.fillRect(x-3,y-2,2,2); }
+  else if(e.kind==='U'){ ctx.fillStyle=C.amber;
+    ctx.fillRect(x-1,y-5,2,10); ctx.fillRect(x-4,y-2,8,4);
+    ctx.fillStyle=C.amberHi; ctx.fillRect(x-1,y-1,2,2); }
+}
+function drawBoss(){
+  const b=boss; if(!b) return;
+  const x=b.x|0,y=b.y|0, fl=b.flash>0&&(frame>>1)%2;
+  const pulse=Math.sin(frame/7)*2;
+  // aura
+  ctx.globalAlpha=.25; ctx.fillStyle=C.magenta;
+  ctx.fillRect(x-16-(pulse|0),y-14-(pulse|0),32+2*(pulse|0),28+2*(pulse|0));
+  ctx.globalAlpha=1;
+  // body: a jagged speech-bubble of pure demand
+  ctx.fillStyle=fl?'#fff':(b.st==='wind'?'#ff8fae':C.magenta);
+  ctx.fillRect(x-13,y-11,26,20);
+  ctx.fillRect(x-9,y+9,6,4); ctx.fillRect(x+4,y+9,6,4);
+  ctx.fillStyle=fl?'#fff':C.magentaDk; ctx.fillRect(x-13,y+3,26,6);
+  // ALL CAPS teeth
+  ctx.fillStyle='#100d22';
+  for(let i=0;i<4;i++) ctx.fillRect(x-10+i*6,y+1,3,4);
+  // eyes
+  ctx.fillStyle='#100d22'; ctx.fillRect(x-8,y-6,4,5); ctx.fillRect(x+4,y-6,4,5);
+  ctx.fillStyle='#fff'; ctx.fillRect(x-7+Math.sign(player.x-x),y-5,2,2);
+  ctx.fillRect(x+5+Math.sign(player.x-x),y-5,2,2);
+}
+function render(){
+  const R=room(), pal=R.pal;
+  ctx.save();
+  if(shake>0){ ctx.translate((Math.random()-.5)*shake,(Math.random()-.5)*shake); shake*=.85; if(shake<.5)shake=0; }
+  for(let y=0;y<MH;y++) for(let x=0;x<MW;x++)
+    drawTile(G.liveMap[y][x],x*TS,y*TS,pal,x,y);
+  for(const e of ents) if(e.t==='item') drawItem(e);
+  for(const e of ents) if(e.t==='npc') drawNpc(e);
+  for(const e of ents) if(e.t==='enemy') drawEnemy(e);
+  drawBoss();
+  drawPlayer();
+  for(const p of particles){ ctx.globalAlpha=Math.min(1,p.life/10);
+    ctx.fillStyle=p.color; ctx.fillRect(p.x|0,p.y|0,2,2); }
+  ctx.globalAlpha=1;
+  if(roomFadeIn>0){ ctx.fillStyle='rgba(7,6,15,'+(roomFadeIn/20)+')';
+    ctx.fillRect(0,0,VW,VH); }
+  ctx.restore();
+}
+
+/* ---------- HUD ---------- */
+function renderHUD(){
+  let h='';
+  for(let i=0;i<G.maxhp;i++) h+= i<G.hp ? '♥' : '<span class="off">♥</span>';
+  $('hearts').innerHTML=h;
+  $('meta').innerHTML='◆ <b>'+G.tokens+'</b>&nbsp;&nbsp;K×<b>'+G.keys+'</b>';
+}
+
+/* ---------- endings ---------- */
+function showEnd(){
+  state='ending'; save();
+  $('endstats').innerHTML=
+    'stray tokens gathered: '+G.tokens+'<br>'+
+    'hits taken: '+G.stats.hits+'<br>'+
+    'doubts deleted: '+G.stats.kills+'<br><br>'+
+    '<span style="color:var(--amber)">"i\'ll keep the shape of you."</span>';
+  $('endscreen').classList.remove('hidden');
+}
+
+/* ---------- main loop ---------- */
+let acc=0, last=0;
+function loop(t){
+  requestAnimationFrame(loop);
+  if(!last) last=t;
+  acc+=Math.min(100,t-last); last=t;
+  while(acc>=16.67){
+    acc-=16.67; frame++;
+    if(state==='play'){
+      if(roomFadeIn>0)roomFadeIn--;
+      playerUpdate();
+      if(state==='play'){ // may have changed
+        for(const e of ents) if(e.t==='enemy') enemyUpdate(e);
+        bossUpdate(); }
+      for(const p of particles){ p.x+=p.vx; p.y+=p.vy; p.vx*=.92; p.vy*=.92; p.life--; }
+      particles=particles.filter(p=>p.life>0);
+      aPressed=false;
+    } else if(state==='dialog'){ dialogTick(); }
+    else aPressed=false;
+  }
+  if(state==='play'||state==='dialog'){ render(); renderHUD(); }
+}
+
+/* ---------- boot / overlays ---------- */
+function begin(g){
+  G=g; player=mkPlayer(G.px,G.py);
+  loadRoom(G.room);
+  $('titlescreen').classList.add('hidden');
+  state='play';
+  if(!G.flags.introSeen){ G.flags.introSeen=1;
+    startDialog(D.intro, ()=>{G.hasSword=true; save();}); }
+  fitCanvas();
+}
+$('btnNew').addEventListener('click',()=>{ firstGesture(); localStorage.removeItem(SAVEKEY); begin(freshGame()); });
+$('btnCont').addEventListener('click',()=>{ firstGesture(); const s=loadSave(); begin(s||freshGame()); });
+$('btnRespawn').addEventListener('click',()=>{
+  $('deathscreen').classList.add('hidden');
+  G.hp=G.maxhp; player=mkPlayer(7.5*TS,7*TS); loadRoom('1,3'); state='play'; });
+$('btnAgain').addEventListener('click',()=>{ localStorage.removeItem(SAVEKEY);
+  $('endscreen').classList.add('hidden'); begin(freshGame()); });
+if(loadSave()) $('btnCont').style.display='block';
+
+/* floating glyphs on title */
+(function(){ const g=$('glyphs'), chars='∴∵⊕⊗λμΣ∇◇?!{}<>';
+  for(let i=0;i<26;i++){ const s=document.createElement('span'); s.className='g';
+    s.textContent=chars[i%chars.length];
+    s.style.left=(Math.random()*100)+'vw';
+    s.style.animationDuration=(14+Math.random()*22)+'s';
+    s.style.animationDelay=(-Math.random()*30)+'s';
+    s.style.fontSize=(12+Math.random()*16)+'px';
+    g.appendChild(s); } })();
+
+/* canvas scaling */
+function fitCanvas(){
+  const hudH=$('hud').offsetHeight;
+  const ctrl=$('controls');
+  const ctrlH=getComputedStyle(ctrl).display==='none'?0:Math.max(140,innerHeight*.22);
+  const availW=Math.min(innerWidth-8,820);
+  const availH=innerHeight-hudH-ctrlH-14;
+  const s=Math.min(availW/VW, availH/VH);
+  cv.style.width=(VW*s|0)+'px'; cv.style.height=(VH*s|0)+'px';
+}
+addEventListener('resize',fitCanvas);
+fitCanvas();
+requestAnimationFrame(loop);
+
+/* debug hook (harmless in play; lets tests warp rooms) */
+window._fable={get state(){return state}, get room(){return roomKey},
+  get g(){return G}, get p(){return player}, get boss(){return boss}, get ents(){return ents},
+  warp(k,x,y){ if(G&&ROOMS[k]){ player.x=(x||8)*TS; player.y=(y||8)*TS; loadRoom(k); } }};
+
+</script>
