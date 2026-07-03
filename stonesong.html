@@ -1,0 +1,923 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>STONESONG</title>
+<style>
+  :root{
+    --mist:#1a2228; --panel:#212b33; --line:#3a4a54;
+    --bone:#e8e2d4; --dim:#8fa0a8; --moss:#7ba05f;
+    --ember:#e0975a; --teal:#6fc2bb; --stonec:#9aa8ae;
+    --mono:ui-monospace,"Cascadia Mono",Menlo,Consolas,"Courier New",monospace;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0; padding:0; height:100%; background:var(--mist); color:var(--bone);
+    font-family:var(--mono); overflow:hidden; overscroll-behavior:none;}
+  #stage{position:fixed; inset:0; display:flex; flex-direction:column; align-items:center;
+    padding-top:env(safe-area-inset-top);}
+  #hud{width:100%; max-width:820px; display:flex; justify-content:space-between; align-items:center;
+    gap:8px; padding:8px 12px 6px; font-size:13px; letter-spacing:.06em; user-select:none;}
+  #wordsHud{color:var(--teal); white-space:nowrap;}
+  #stonesHud{color:var(--ember); white-space:nowrap;}
+  .hbtn{background:var(--panel); border:1px solid var(--line); color:var(--bone); font-family:var(--mono);
+    font-size:11px; letter-spacing:.1em; padding:3px 8px; cursor:pointer;}
+  #cwrap{position:relative; line-height:0;}
+  canvas{image-rendering:pixelated; image-rendering:crisp-edges; display:block;
+    border:1px solid var(--line); background:#000;}
+  #banner{position:absolute; left:0; right:0; top:8%; text-align:center; pointer-events:none;
+    color:var(--bone); font-size:12px; letter-spacing:.3em; text-transform:uppercase;
+    text-shadow:0 1px 0 rgba(0,0,0,.8); opacity:0; transition:opacity .5s;}
+  #dlg{position:absolute; left:4px; right:4px; bottom:4px; background:rgba(26,34,40,.96);
+    border:1px solid var(--ember); padding:8px 10px 9px; display:none; cursor:pointer; min-height:70px;}
+  #dlgname{color:var(--ember); font-size:11px; letter-spacing:.18em; text-transform:uppercase; margin-bottom:4px;}
+  #dlgtext{color:var(--bone); font-size:13px; line-height:1.45; min-height:20px; white-space:pre-wrap;}
+  #dlgmore{position:absolute; right:8px; bottom:4px; color:var(--dim); font-size:10px; animation:blink 1s steps(2) infinite;}
+  @keyframes blink{50%{opacity:0}}
+  /* decipher panel */
+  #panel{position:fixed; inset:0; z-index:20; background:rgba(16,22,26,.97); display:none;
+    flex-direction:column; align-items:center; padding:16px 12px calc(16px + env(safe-area-inset-bottom));
+    overflow-y:auto;}
+  #panel.open{display:flex;}
+  #phint{color:var(--dim); font-size:12px; line-height:1.5; max-width:52ch; text-align:center;
+    margin:6px 0 14px; font-style:italic;}
+  #ptitle{color:var(--ember); font-size:11px; letter-spacing:.3em; text-transform:uppercase;}
+  #glyphrow{display:flex; flex-wrap:wrap; justify-content:center; gap:10px; max-width:560px;}
+  .git{display:flex; flex-direction:column; align-items:center; gap:4px;}
+  .git canvas{border:none; background:transparent;}
+  .chip{min-width:52px; max-width:76px; font-family:var(--mono); font-size:10px; padding:4px 4px;
+    background:var(--panel); border:1px solid var(--line); color:var(--dim); cursor:pointer;
+    text-align:center; overflow:hidden; text-overflow:ellipsis;}
+  .chip.guess{color:var(--bone); border-color:var(--dim);}
+  .chip.known{color:var(--teal); border-color:var(--teal); background:rgba(111,194,187,.08);}
+  #pfeed{color:var(--ember); font-size:12px; min-height:18px; margin:12px 0 2px; text-align:center; letter-spacing:.06em;}
+  #presult{color:var(--bone); font-size:14px; line-height:1.6; max-width:46ch; text-align:center; display:none; margin:8px 0;}
+  #presult .phon{color:var(--teal); font-size:12px; letter-spacing:.12em; display:block; margin-top:6px;}
+  .pbtn{margin:10px 4px 0; background:var(--panel); border:1px solid var(--ember); color:var(--ember);
+    font-family:var(--mono); font-size:13px; letter-spacing:.15em; padding:10px 22px; cursor:pointer;
+    text-transform:uppercase;}
+  .pbtn.dim{border-color:var(--line); color:var(--dim);}
+  #opts{position:fixed; left:50%; transform:translateX(-50%); bottom:calc(20px + env(safe-area-inset-bottom));
+    z-index:30; background:var(--panel); border:1px solid var(--ember); padding:10px; display:none;
+    flex-direction:column; gap:4px; min-width:230px; max-height:55vh; overflow-y:auto;}
+  #opts.open{display:flex;}
+  #opts button{background:none; border:1px solid var(--line); color:var(--bone); font-family:var(--mono);
+    font-size:13px; padding:8px 10px; cursor:pointer; text-align:left;}
+  #opts button:active{border-color:var(--ember); color:var(--ember);}
+  #optlabel{color:var(--dim); font-size:10px; letter-spacing:.2em; text-transform:uppercase; margin-bottom:4px;}
+  /* notebook */
+  #book{position:fixed; inset:0; z-index:20; background:rgba(16,22,26,.97); display:none;
+    flex-direction:column; align-items:center; padding:16px 10px calc(16px + env(safe-area-inset-bottom)); overflow-y:auto;}
+  #book.open{display:flex;}
+  #bookgrid{display:flex; flex-wrap:wrap; justify-content:center; gap:10px; max-width:600px; margin-top:12px;}
+  .bw{display:flex; flex-direction:column; align-items:center; width:74px; padding:6px 2px;
+    border:1px solid var(--line); background:var(--panel);}
+  .bw .en{color:var(--bone); font-size:10px; margin-top:2px; text-align:center;}
+  .bw .ph{color:var(--teal); font-size:9px; letter-spacing:.08em;}
+  #mythbox{max-width:52ch; color:var(--dim); font-size:12px; line-height:1.6; margin-top:18px;}
+  #mythbox h3{color:var(--ember); font-size:11px; letter-spacing:.25em; text-transform:uppercase; margin:14px 0 4px;}
+  /* controls */
+  #controls{width:100%; max-width:820px; flex:1; display:flex; justify-content:space-between;
+    align-items:center; padding:10px 18px calc(14px + env(safe-area-inset-bottom)); user-select:none;
+    touch-action:none; min-height:120px;}
+  #dpad{display:grid; grid-template-columns:repeat(3,52px); grid-template-rows:repeat(3,52px); gap:2px;}
+  .db{border:1px solid var(--line); background:rgba(33,43,51,.7); color:var(--dim);
+    display:flex; align-items:center; justify-content:center; font-size:18px; touch-action:none;}
+  .db:active,.db.on{background:rgba(224,151,90,.2); color:var(--ember); border-color:var(--ember);}
+  .dspace{border:none; background:none;}
+  #btnA{width:78px; height:78px; border-radius:50%; border:1px solid var(--ember);
+    background:rgba(224,151,90,.1); color:var(--ember); font-family:var(--mono); font-size:22px;
+    letter-spacing:.1em; touch-action:none;}
+  #btnA:active{background:rgba(224,151,90,.3);}
+  @media (pointer:fine) and (min-width:700px){ #controls{display:none;} }
+  .overlay{position:fixed; inset:0; background:var(--mist); display:flex; flex-direction:column;
+    align-items:center; justify-content:center; text-align:center; padding:24px; z-index:40; overflow:hidden;}
+  .overlay.hidden{display:none;}
+  .eyebrow{color:var(--dim); font-size:11px; letter-spacing:.4em; text-transform:uppercase; margin-bottom:18px;}
+  .title{color:var(--bone); font-size:clamp(26px,8vw,52px); letter-spacing:.3em; line-height:1.25;
+    margin:0 0 12px; text-wrap:balance; text-shadow:0 0 30px rgba(111,194,187,.25);}
+  .sub{color:var(--dim); font-size:13px; letter-spacing:.1em; margin-bottom:30px; max-width:36ch; line-height:1.7;}
+  .obtn{display:block; margin:6px auto; min-width:250px; background:var(--panel); border:1px solid var(--line);
+    color:var(--bone); font-family:var(--mono); font-size:14px; letter-spacing:.15em; padding:12px 20px;
+    cursor:pointer; text-transform:uppercase;}
+  .obtn:hover,.obtn:active{border-color:var(--ember); color:var(--ember);}
+  .foot{position:absolute; bottom:calc(16px + env(safe-area-inset-bottom)); color:#54646e;
+    font-size:10px; letter-spacing:.2em; text-align:center; width:100%; padding:0 12px;}
+  #titleglyphs{margin-bottom:22px;}
+  #endstats{color:var(--bone); font-size:13px; line-height:2; letter-spacing:.06em; margin-bottom:8px;}
+  #endsong{color:var(--teal); font-size:12px; line-height:1.8; max-width:44ch; margin-bottom:20px; font-style:italic;}
+  @media (prefers-reduced-motion:reduce){ #dlgmore{animation:none} }
+</style>
+
+<div id="stage">
+  <div id="hud">
+    <span id="wordsHud"></span>
+    <span id="stonesHud"></span>
+    <button class="hbtn" id="bookbtn">NOTEBOOK</button>
+    <button class="hbtn" id="mute">SND OFF</button>
+  </div>
+  <div id="cwrap">
+    <canvas id="cv" width="256" height="176"></canvas>
+    <div id="banner"></div>
+    <div id="dlg"><div id="dlgname"></div><div id="dlgtext"></div><div id="dlgmore">▼ tap</div></div>
+  </div>
+  <div id="controls">
+    <div id="dpad">
+      <div class="dspace"></div><div class="db" data-d="up">▲</div><div class="dspace"></div>
+      <div class="db" data-d="left">◀</div><div class="dspace"></div><div class="db" data-d="right">▶</div>
+      <div class="dspace"></div><div class="db" data-d="down">▼</div><div class="dspace"></div>
+    </div>
+    <button id="btnA">A</button>
+  </div>
+</div>
+
+<div id="panel">
+  <div id="ptitle"></div>
+  <div id="phint"></div>
+  <div id="glyphrow"></div>
+  <div id="pfeed"></div>
+  <div id="presult"></div>
+  <div>
+    <button class="pbtn" id="psubmit">READ ALOUD</button>
+    <button class="pbtn dim" id="pclose">STEP BACK</button>
+  </div>
+</div>
+<div id="opts"><div id="optlabel">this sign might mean…</div></div>
+
+<div id="book">
+  <div id="ptitle2" class="eyebrow" style="margin-bottom:0">margot's notebook</div>
+  <div id="bookcount" style="color:var(--dim);font-size:11px;letter-spacing:.15em;margin-top:6px;"></div>
+  <div id="bookgrid"></div>
+  <div id="mythbox"></div>
+  <button class="pbtn dim" id="bclose" style="margin-top:18px">CLOSE</button>
+</div>
+
+<div class="overlay" id="titlescreen">
+  <div class="eyebrow">an island · a lost language · a notebook</div>
+  <h1 class="title">STONESONG</h1>
+  <canvas id="titleglyphs" width="280" height="56"></canvas>
+  <div class="sub">the people are gone. their words are not. read the stones, fill the notebook, learn what happened here.</div>
+  <button class="obtn" id="btnNew">COME ASHORE</button>
+  <button class="obtn" id="btnCont" style="display:none">CONTINUE</button>
+  <div class="foot">MOVE: D-PAD / WASD · EXAMINE: A / SPACE · NOTEBOOK: I</div>
+</div>
+
+<div class="overlay hidden" id="endscreen">
+  <div class="eyebrow">the last stone, read aloud</div>
+  <h1 class="title" style="font-size:clamp(20px,6vw,38px)">EVERY READER<br>IS A HARBOR</h1>
+  <div id="endstats"></div>
+  <div id="endsong"></div>
+  <button class="obtn" id="btnKeep">STAY A WHILE</button>
+  <div class="foot">designed by claude fable 5 · world-depth by sonnet 5 subagents · for margot</div>
+</div>
+
+<script>
+"use strict";
+/* ============================================================
+   STONESONG — an island, a lost language, a notebook.
+   You decipher "Ael": compositional glyphs read from context.
+   Engine + language design: Claude Fable 5.
+   Corpus & lore depth: Sonnet 5 subagents (verified adversarially).
+   ============================================================ */
+
+const TS=16, MW=16, MH=11, VW=MW*TS, VH=MH*TS;
+const cv=document.getElementById('cv'), ctx=cv.getContext('2d');
+const $=id=>document.getElementById(id);
+
+/* ---------- palette ---------- */
+const C={
+  sand:'#c9bda0', sand2:'#c1b596', dune:'#a8ad7e', dune2:'#9da374',
+  sea:'#3f6b74', sea2:'#37606a', foam:'#c7dcd9', fresh:'#4f8a90',
+  cliff:'#4a545c', cliffHi:'#5d6a73', rock:'#6b7880',
+  ruin:'#7d8a8a', ruinHi:'#93a09e', moss:'#6f9459',
+  stone:'#8d9ba1', stoneHi:'#aab8bc', stoneLo:'#5f6d74',
+  path:'#b3a888', wood:'#7a6248', ink:'#1a2228',
+  bone:'#e8e2d4', ember:'#e0975a', teal:'#6fc2bb', grave:'#75838c',
+};
+
+/* ---------- CORPUS (filled by the worldbuilders; placeholder shape) ---------- */
+const CORPUS={lexicon:[],inscriptions:[]};
+const LORE={place_names:[],flavor:[],myths:[],margin_notes:[],ending_note:''};
+/* ---------- /CORPUS ---------- */
+
+const LEX={}; // id -> word
+function indexCorpus(){ for(const w of CORPUS.lexicon) LEX[w.id]=w; }
+const SITE_ORDER=()=>CORPUS.inscriptions.map(i=>i.id);
+function insc(id){ return CORPUS.inscriptions.find(i=>i.id===id); }
+
+/* ---------- rooms ----------
+   . sand  , dune  : path  ~ sea  w spring  # cliff  r rock  k wreck
+   m ruin-wall  b ruin-block  s standing stone  T tree  g grave  * shells
+   d gate (opens when its site is read)  digits: inscription sites */
+const ROOMS={
+ '0,2':{name:'wreck', map:[
+  '#######..#######',
+  '#,,.....,,....*#',
+  '#,..r......1...#',
+  '#..............#',
+  '#....k.....*...#',
+  '#..kkk.........,',
+  '#...kk....2....,',
+  '#*.............#',
+  '#~~..........~~#',
+  '#~~~~~~~~~~~~~~#',
+  '################']},
+ '1,2':{name:'path', map:[
+  '#######..#######',
+  '#,,,,,,,:,,,,,,#',
+  '#,,.....:....,,#',
+  '#,...1..:......#',
+  '#....::::......#',
+  ',....:.....2...,',
+  ',...::.........,',
+  '#,,,:,,,,,,,,,,#',
+  '#,,::,,,,,,,,,,#',
+  '#,,,,,,,,,,,,,,#',
+  '################']},
+ '2,2':{name:'quay', map:[
+  '#######..#######',
+  '#,,.........~~~#',
+  '#,...1....~~~~~#',
+  '#........~~~~~~#',
+  '#..2...::~~~~~~#',
+  ',......::::~~~~#',
+  ',......::::::3.#',
+  '#....~~~~~~~~~~#',
+  '#..~~~~~~~~~~~~#',
+  '#~~~~~~~~~~~~~~#',
+  '################']},
+ '0,1':{name:'terraces', map:[
+  '#######..#######',
+  '#,,,,,,,,,,,,,,#',
+  '#mmmmmmmmmmm,,,#',
+  '#..1.......m,,,#',
+  '#,,,,,,,,,,m,,,#',
+  '#mmmmmmm...m...,',
+  '#......m...2...,',
+  '#,,,,,,m,,,,,,,#',
+  '#..mmmmm..mmmm.#',
+  '#,,,,,,,,,,,,,,#',
+  '#######..#######']},
+ '1,1':{name:'village', map:[
+  '#######dd#######',
+  '#..bb..2..bb...#',
+  '#..b.......b...#',
+  '#......1.......#',
+  '#.bb......bb...#',
+  ',.b..3....b....,',
+  ',.........4....,',
+  '#..bb..........#',
+  '#...b....bb....#',
+  '#......*.......#',
+  '#######..#######']},
+ '2,1':{name:'spring', map:[
+  '################',
+  '#,,..r.....,,,,#',
+  '#....www.......#',
+  '#...wwwww1.....#',
+  '#..wwwwww......#',
+  ',..wwwww2......#',
+  ',...www........#',
+  '#..........*...#',
+  '#,,..r.....,,..#',
+  '#,,,,,......,,,#',
+  '#######..#######']},
+ '0,0':{name:'grove', map:[
+  '################',
+  '#,,T,,,,,,,,T,,#',
+  '#,g.g.g..g.g,,,#',
+  '#,...1......,,,#',
+  '#,g.g..g.2g.,,,#',
+  '#,..........,,,,',
+  '#,g.g.3g.g.,,,,,',
+  '#,,..........,,#',
+  '#,,T,,,,,,,,T,,#',
+  '#,,,,,,,,,,,,,,#',
+  '#######..#######']},
+ '1,0':{name:'tower', map:[
+  '################',
+  '#,,..........,,#',
+  '#....bbbb......#',
+  '#...b....b.....#',
+  '#...b.2..b.....#',
+  ',...b....b..1.d,',
+  ',...bb..bb....d,',
+  '#....bbbb......#',
+  '#..*.......,,..#',
+  '#,,..........,,#',
+  '#######..#######']},
+ '2,0':{name:'sanctum', map:[
+  '################',
+  '#,,r........r,,#',
+  '#.....ssss.....#',
+  '#....s....s....#',
+  '#....s..2.s....#',
+  ',..1.d....s....#',
+  ',....d....s....#',
+  '#....s....s....#',
+  '#.....ssss.....#',
+  '#,,r........r,,#',
+  '################']},
+};
+const SITEMAP={
+ '0,2':{1:'A1',2:'A2'}, '1,2':{1:'B1',2:'B2'}, '2,2':{1:'C1',2:'C2',3:'C3'},
+ '0,1':{1:'D1',2:'D2'}, '1,1':{1:'E1',2:'E2',3:'E3',4:'E4'}, '2,1':{1:'F1',2:'F2'},
+ '0,0':{1:'G1',2:'G2',3:'G3'}, '1,0':{1:'H1',2:'H2'}, '2,0':{1:'I1',2:'I2'},
+};
+const GATES={'1,1':'E2','1,0':'H1','2,0':'I1'}; // room whose 'd' tiles open when site is read
+const MYTH_UNLOCK={A1:0,B2:1,F2:2};
+
+/* ---------- glyph rendering: radicals as living line-art ---------- */
+const MARKS=['not','many','small','big','all'];
+function drawRadical(g,name,x,y,s){
+  // draws one radical inside a 10s x 12s box whose top-left is (x,y)
+  g.lineWidth=Math.max(1.4,s*1.1); g.lineCap='round'; g.lineJoin='round';
+  g.beginPath();
+  const M=(a,b)=>g.moveTo(x+a*s,y+b*s), L=(a,b)=>g.lineTo(x+a*s,y+b*s);
+  const A=(a,b,r,s0,s1,cc)=>g.arc(x+a*s,y+b*s,r*s,s0,s1,cc||false);
+  switch(name){
+    case 'person': A(5,2.6,1.7,0,6.283); M(5,4.4); L(5,8); M(5,8); L(2.6,11.4); M(5,8); L(7.4,11.4); M(2.4,6.4); L(7.6,6.4); break;
+    case 'water': M(1,4); g.quadraticCurveTo(x+3*s,y+2*s,x+5*s,y+4*s); g.quadraticCurveTo(x+7*s,y+6*s,x+9*s,y+4*s);
+      M(1,8); g.quadraticCurveTo(x+3*s,y+6*s,x+5*s,y+8*s); g.quadraticCurveTo(x+7*s,y+10*s,x+9*s,y+8*s); break;
+    case 'sky': M(1,3); L(9,3); M(2.4,5.6); L(7.6,5.6); M(4,8.2); L(6,8.2); break;
+    case 'sun': A(5,6,2.6,0,6.283); M(5,1); L(5,2.4); M(5,9.6); L(5,11); M(0.8,6); L(2.2,6); M(7.8,6); L(9.2,6); break;
+    case 'moon': A(5.6,6,3.4,0.6,5.7); break;
+    case 'stone': M(2,10.5); L(2.8,4.5); L(6,3); L(8.4,5.6); L(8,10.5); L(2,10.5); break;
+    case 'plant': M(5,11); L(5,4); M(5,6.5); g.quadraticCurveTo(x+2.4*s,y+5.4*s,x+2*s,y+2.8*s);
+      M(5,6.5); g.quadraticCurveTo(x+7.6*s,y+5.4*s,x+8*s,y+2.8*s); break;
+    case 'fish': M(1.6,6); g.quadraticCurveTo(x+4*s,y+2.6*s,x+7*s,y+6*s); g.quadraticCurveTo(x+4*s,y+9.4*s,x+1.6*s,y+6*s);
+      M(7,6); L(9,4); M(7,6); L(9,8); break;
+    case 'bird': M(1,7); g.quadraticCurveTo(x+3*s,y+3.4*s,x+5,y+7*s); M(5,7); g.quadraticCurveTo(x+7*s,y+3.4*s,x+9*s,y+7*s); break;
+    case 'boat': M(1.4,6.4); L(8.6,6.4); L(7,9.6); L(3,9.6); L(1.4,6.4); M(5,6.4); L(5,2); L(7.4,4.4); L(5,4.4); break;
+    case 'house': M(2,10.5); L(2,6); L(5,2.6); L(8,6); L(8,10.5); L(2,10.5); break;
+    case 'hand': M(2.4,11); L(2.4,5.4); M(4.2,10.6); L(4.2,3.6); M(6,10.6); L(6,3); M(7.8,10.8); L(7.8,4); M(2.4,8); L(7.8,8.4); break;
+    case 'eye': M(1.2,6.4); g.quadraticCurveTo(x+5*s,y+2*s,x+8.8*s,y+6.4*s); g.quadraticCurveTo(x+5*s,y+10.8*s,x+1.2*s,y+6.4*s);
+      A(5,6.4,1.2,0,6.283); break;
+    case 'voice': A(2.4,6.4,1.1,0,6.283); A(2.4,6.4,3,-0.9,0.9); A(2.4,6.4,4.7,-0.9,0.9); break;
+    case 'path': M(2.6,10.8); L(3.8,8); M(4.6,6.4); L(5.6,4); M(6.4,2.6); L(7.4,0.9); break;
+    case 'heart': M(5,10.6); L(1.8,6.4); g.quadraticCurveTo(x+1*s,y+3*s,x+3.4*s,y+3*s);
+      g.quadraticCurveTo(x+5*s,y+3.2*s,x+5*s,y+5*s); g.quadraticCurveTo(x+5*s,y+3.2*s,x+6.6*s,y+3*s);
+      g.quadraticCurveTo(x+9*s,y+3*s,x+8.2*s,y+6.4*s); L(5,10.6); break;
+    case 'fire': M(2.6,10.8); g.quadraticCurveTo(x+1.6*s,y+7*s,x+4*s,y+5*s); g.quadraticCurveTo(x+3.4*s,y+3*s,x+5.4*s,y+1);
+      g.quadraticCurveTo(x+5.8*s,y+3.4*s,x+7*s,y+5*s); g.quadraticCurveTo(x+8.8*s,y+7.4*s,x+7.4*s,y+10.8*s); L(2.6,10.8); break;
+    case 'wave': M(1,9); g.quadraticCurveTo(x+2*s,y+3*s,x+5.4*s,y+3.4*s); g.quadraticCurveTo(x+8*s,y+3.8*s,x+8*s,y+6*s);
+      g.quadraticCurveTo(x+8*s,y+8*s,x+6*s,y+7.4*s); break;
+    default: M(2,2); L(8,10); M(8,2); L(2,10);
+  }
+  g.stroke();
+}
+function drawGlyph(g,word,cx,cy,cell,color){
+  // draws a full word-glyph centered at (cx,cy) in a cell x cell*1.25 box
+  g.save(); g.strokeStyle=color||C.bone;
+  const rads=word.radicals.filter(r=>!MARKS.includes(r));
+  const marks=word.radicals.filter(r=>MARKS.includes(r));
+  let scale=cell/13, small=marks.includes('small');
+  if(small) scale*=0.62;
+  if(rads.length<=1){
+    const s=scale, w=10*s;
+    drawRadical(g,rads[0]||'stone',cx-w/2,cy-6*s,s);
+  } else {
+    const s=scale*0.68, w=10*s;
+    drawRadical(g,rads[0],cx-w-1.5,cy-6*s,s);
+    drawRadical(g,rads[1],cx+1.5,cy-6*s,s);
+  }
+  const ex=cell*0.62;
+  g.lineWidth=Math.max(1.2,scale*1.1);
+  if(marks.includes('not')){ g.beginPath(); g.moveTo(cx-ex,cy+ex*0.9); g.lineTo(cx+ex,cy-ex*0.9); g.stroke(); }
+  if(marks.includes('many')){ g.fillStyle=color||C.bone;
+    for(let i=-1;i<=1;i++) g.fillRect(cx+i*cell*0.28-1.2,cy+cell*0.56,2.6,2.6); }
+  if(marks.includes('big')){ g.beginPath(); g.moveTo(cx-ex,cy+cell*0.6); g.lineTo(cx+ex,cy+cell*0.6); g.stroke(); }
+  if(marks.includes('all')){ g.beginPath(); g.arc(cx,cy,cell*0.72,0,6.283); g.stroke(); }
+  g.restore();
+}
+
+/* ---------- state ---------- */
+const SAVEKEY='stonesong-save-v1';
+let G=null, state='title', frame=0;
+let dlgQueue=[], dlgLine=0, dlgChar=0, dlgAfter=null;
+let ents=[], particles=[], player=null;
+let roomKey='0,2', roomFadeIn=0;
+let curSite=null, guesses={}, optGlyph=null;
+
+const store={
+  get(){ try{ const s=localStorage.getItem(SAVEKEY); return s?JSON.parse(s):null; }catch(e){ return null; } },
+  set(v){ try{ localStorage.setItem(SAVEKEY, JSON.stringify(v)); }catch(e){} },
+  del(){ try{ localStorage.removeItem(SAVEKEY); }catch(e){} },
+};
+function freshGame(){ return {
+  room:'0,2', px:7.5*TS, py:4*TS,
+  known:{}, solved:{}, notesFired:{}, myths:{}, flags:{}, stats:{misreads:0},
+};}
+function save(){ if(!G) return; G.px=player.x; G.py=player.y; G.room=roomKey; store.set(G); }
+function knownCount(){ return Object.keys(G.known).length; }
+function solvedCount(){ return Object.keys(G.solved).length; }
+
+/* ---------- audio ---------- */
+let AC=null, muted=true, droneNodes=null;
+function audioInit(){ if(AC) return; try{ AC=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} }
+function setMuted(m){ muted=m; $('mute').textContent=m?'SND OFF':'SND ON';
+  if(!m){ audioInit(); AC&&AC.resume(); startDrone(); } else stopDrone(); }
+function beep(f0,f1,dur,type,vol,delay){ if(muted||!AC) return;
+  const t=AC.currentTime+(delay||0), o=AC.createOscillator(), g=AC.createGain();
+  o.type=type||'sine'; o.frequency.setValueAtTime(f0,t);
+  o.frequency.exponentialRampToValueAtTime(Math.max(f1,1),t+dur);
+  g.gain.setValueAtTime(vol||.05,t); g.gain.exponentialRampToValueAtTime(.001,t+dur);
+  o.connect(g); g.connect(AC.destination); o.start(t); o.stop(t+dur+.02); }
+const PENTA=[262,294,349,392,466,523,587,698];
+const SFX={
+  blip:()=>beep(420,420,.03,'square',.02),
+  step:()=>{},
+  open:()=>beep(196,262,.2,'sine',.05),
+  assign:()=>beep(523,523,.06,'triangle',.045),
+  wrong:()=>{beep(220,180,.25,'sine',.06); beep(233,190,.25,'sine',.05,.02);},
+  solve:()=>{[0,2,4,6].forEach((n,i)=>beep(PENTA[n],PENTA[n],.5,'sine',.055,i*.16));},
+  gate:()=>{beep(131,196,.7,'sine',.08); beep(98,147,.9,'sine',.06,.1);},
+  note:()=>{beep(698,698,.12,'triangle',.045); beep(880,880,.2,'triangle',.04,.13);},
+  ending:()=>{[0,2,4,5,7,6,4,2,0].forEach((n,i)=>beep(PENTA[n%8],PENTA[n%8],.6,'sine',.05,i*.3));},
+};
+function startDrone(){ if(!AC||droneNodes) return;
+  const g=AC.createGain(); g.gain.value=.014; g.connect(AC.destination);
+  droneNodes=[g];
+  [65.4,65.9,98.2].forEach(f=>{ const o=AC.createOscillator(); o.type='sine';
+    o.frequency.value=f; o.connect(g); o.start(); droneNodes.push(o); }); }
+function stopDrone(){ if(!droneNodes) return; droneNodes.slice(1).forEach(o=>o.stop()); droneNodes=null; }
+
+/* ---------- input ---------- */
+const inp={up:false,down:false,left:false,right:false};
+let aPressed=false;
+const KEYMAP={ArrowUp:'up',KeyW:'up',ArrowDown:'down',KeyS:'down',
+  ArrowLeft:'left',KeyA:'left',ArrowRight:'right',KeyD:'right'};
+addEventListener('keydown',e=>{
+  if(e.code==='KeyM'){ setMuted(!muted); return; }
+  if(e.code==='KeyI'){ toggleBook(); return; }
+  if(e.code==='Escape'){ if($('panel').classList.contains('open')) closePanel(); if($('book').classList.contains('open')) toggleBook(); return; }
+  if(e.code==='Space'||e.code==='Enter'||e.code==='KeyJ'||e.code==='KeyZ'){ e.preventDefault(); aPressed=true; firstGesture(); return; }
+  const k=KEYMAP[e.code]; if(!k) return; e.preventDefault(); inp[k]=true; firstGesture(); });
+addEventListener('keyup',e=>{ const k=KEYMAP[e.code]; if(k) inp[k]=false; });
+document.querySelectorAll('.db').forEach(b=>{
+  const d=b.dataset.d;
+  const on=e=>{e.preventDefault(); inp[d]=true; b.classList.add('on'); firstGesture();};
+  const off=e=>{e.preventDefault(); inp[d]=false; b.classList.remove('on');};
+  b.addEventListener('pointerdown',on); b.addEventListener('pointerup',off);
+  b.addEventListener('pointercancel',off); b.addEventListener('pointerleave',off);
+});
+$('btnA').addEventListener('pointerdown',e=>{e.preventDefault(); aPressed=true; firstGesture();});
+$('dlg').addEventListener('pointerdown',e=>{e.preventDefault(); aPressed=true;});
+$('mute').addEventListener('click',()=>{ firstGesture(); setMuted(!muted); });
+$('bookbtn').addEventListener('click',()=>{ firstGesture(); toggleBook(); });
+let gestured=false;
+function firstGesture(){ if(gestured) return; gestured=true; audioInit(); }
+
+/* ---------- helpers ---------- */
+function hash(x,y){ let h=(x*374761393+y*668265263)^(x<<7)^(y<<3);
+  h=(h^(h>>13))*1274126177; return ((h^(h>>16))>>>0)/4294967295; }
+function srand(seed){ let t=seed>>>0; return ()=>{ t=(t*1664525+1013904223)>>>0; return t/4294967296; }; }
+const SOLID='#o~wrkmbsTgd';
+function isSolid(ch){ return SOLID.includes(ch); }
+function room(){ return ROOMS[roomKey]; }
+function toast(txt){ const b=$('banner'); b.textContent=txt;
+  b.style.opacity=1; clearTimeout(b._t); b._t=setTimeout(()=>b.style.opacity=0,2400); }
+function placeName(key){ const pn=LORE.place_names.find(p=>p.screen===ROOMS[key].name);
+  return pn? pn.ael.toUpperCase()+' · '+pn.english : ROOMS[key].name.toUpperCase(); }
+
+/* ---------- room loading ---------- */
+function loadRoom(key){
+  roomKey=key; const R=ROOMS[key];
+  G.liveMap=R.map.map(r=>r.split(''));
+  const gate=GATES[key];
+  if(gate&&G.solved[gate]) G.liveMap.forEach(row=>row.forEach((c,i)=>{ if(row[i]==='d') row[i]= (key==='1,1'?'.':'.'); }));
+  ents=[]; particles=[];
+  const sm=SITEMAP[key]||{};
+  for(let y=0;y<MH;y++) for(let x=0;x<MW;x++){
+    const ch=R.map[y][x];
+    if(/[1-9]/.test(ch)){ const sid=sm[ch];
+      ents.push({t:'site',id:sid,x:x*TS+TS/2,y:y*TS+TS/2});
+      G.liveMap[y][x]='.'; }
+  }
+  roomFadeIn=18;
+  toast('— '+placeName(key)+' —');
+  save();
+}
+
+/* ---------- dialog ---------- */
+function startDialog(lines, after){ state='dialog'; dlgQueue=lines; dlgLine=0; dlgChar=0;
+  dlgAfter=after||null; $('dlg').style.display='block'; renderDialog(); }
+function renderDialog(){ const [who,txt]=dlgQueue[dlgLine];
+  $('dlgname').textContent=who; $('dlgtext').textContent=txt.slice(0,dlgChar);
+  $('dlgmore').style.visibility=dlgChar>=txt.length?'visible':'hidden'; }
+function dialogTick(){ const txt=dlgQueue[dlgLine][1];
+  if(dlgChar<txt.length){ dlgChar=Math.min(txt.length,dlgChar+2); if(dlgChar%6===0) SFX.blip(); renderDialog(); }
+  if(aPressed){ aPressed=false;
+    if(dlgChar<txt.length){ dlgChar=txt.length; renderDialog(); }
+    else if(dlgLine<dlgQueue.length-1){ dlgLine++; dlgChar=0; renderDialog(); }
+    else { $('dlg').style.display='none'; state='play';
+      const f=dlgAfter; dlgAfter=null; if(f) f(); } } }
+
+/* ---------- decipher panel ---------- */
+function siteIndex(id){ return SITE_ORDER().indexOf(id); }
+function canAttempt(site){
+  return site.glyphs.every(g=>G.known[g]||site.new_ids.includes(g));
+}
+function openPanel(siteId){
+  const site=insc(siteId);
+  if(!site){ toast('the carving is worn beyond reading.'); return; }
+  if(G.solved[siteId]){ showSolvedPanel(site); return; }
+  if(!canAttempt(site)){
+    startDialog([["MARGOT'S NOTEBOOK","Too many of these signs are still strangers. Other stones first — the island will teach me its words in its own order."]]);
+    return; }
+  curSite=site; guesses={};
+  for(const gid of site.glyphs) if(G.known[gid]) guesses[gid]=gid;
+  state='panel'; SFX.open();
+  $('panel').classList.add('open');
+  $('ptitle').textContent='STONE '+siteId+' · '+placeName(roomKey);
+  $('phint').textContent=site.hint;
+  $('presult').style.display='none'; $('pfeed').textContent='';
+  $('psubmit').style.display='';
+  buildGlyphRow(site);
+}
+function buildGlyphRow(site){
+  const row=$('glyphrow'); row.innerHTML='';
+  site.glyphs.forEach((gid,idx)=>{
+    const item=document.createElement('div'); item.className='git';
+    const c=document.createElement('canvas'); c.width=56; c.height=64;
+    const g=c.getContext('2d');
+    drawGlyph(g,LEX[gid],28,30,26,G.known[gid]?C.teal:C.bone);
+    const chip=document.createElement('button'); chip.className='chip';
+    if(G.known[gid]){ chip.classList.add('known'); chip.textContent=LEX[gid].english; }
+    else if(guesses[gid]!==undefined&&guesses[gid]!==null){ chip.classList.add('guess'); chip.textContent=LEX[guesses[gid]].english; }
+    else chip.textContent='?';
+    const open=()=>{ if(G.known[gid]) return; openOpts(gid); };
+    chip.addEventListener('click',open); c.addEventListener('click',open);
+    item.appendChild(c); item.appendChild(chip); row.appendChild(item);
+  });
+}
+function openOpts(gid){
+  optGlyph=gid;
+  const box=$('opts');
+  box.querySelectorAll('button').forEach(b=>b.remove());
+  candidatesFor(gid).forEach(cid=>{
+    const b=document.createElement('button');
+    b.textContent=LEX[cid].english;
+    b.addEventListener('click',()=>{ guesses[gid]=cid; SFX.assign();
+      box.classList.remove('open'); buildGlyphRow(curSite); });
+    box.appendChild(b); });
+  const b=document.createElement('button'); b.textContent='(leave unread)'; b.style.color='var(--dim)';
+  b.addEventListener('click',()=>{ delete guesses[gid]; box.classList.remove('open'); buildGlyphRow(curSite); });
+  box.appendChild(b);
+  box.classList.add('open');
+}
+function candidatesFor(gid){
+  const w=LEX[gid], rnd=srand([...gid].reduce((a,c)=>a*31+c.charCodeAt(0),7));
+  const pool=CORPUS.lexicon.filter(x=>x.id!==gid&&x.pos===w.pos).map(x=>x.id);
+  const pool2=CORPUS.lexicon.filter(x=>x.id!==gid&&x.pos!==w.pos).map(x=>x.id);
+  const picks=[];
+  while(picks.length<4&&pool.length) picks.push(pool.splice((rnd()*pool.length)|0,1)[0]);
+  while(picks.length<5&&pool2.length) picks.push(pool2.splice((rnd()*pool2.length)|0,1)[0]);
+  picks.push(gid);
+  // seeded shuffle
+  for(let i=picks.length-1;i>0;i--){ const j=(rnd()*(i+1))|0; [picks[i],picks[j]]=[picks[j],picks[i]]; }
+  return picks;
+}
+$('psubmit').addEventListener('click',()=>{
+  if(!curSite) return;
+  const unset=curSite.glyphs.filter(g=>guesses[g]===undefined);
+  if(unset.length){ $('pfeed').textContent='some signs still say "?" — give every glyph a guess first.'; return; }
+  const right=curSite.glyphs.filter(g=>guesses[g]===g).length, total=curSite.glyphs.length;
+  if(right===total) solveSite();
+  else { G.stats.misreads++;
+    // keep correct guesses, clear wrong ones
+    for(const g of curSite.glyphs) if(guesses[g]!==g) delete guesses[g];
+    SFX.wrong();
+    $('pfeed').textContent=right+' of '+total+' ring true. the others slip away like water.';
+    buildGlyphRow(curSite); save(); }
+});
+$('pclose').addEventListener('click',closePanel);
+function closePanel(){ $('panel').classList.remove('open'); $('opts').classList.remove('open');
+  curSite=null; state='play'; }
+function showSolvedPanel(site){
+  curSite=site; state='panel';
+  $('panel').classList.add('open');
+  $('ptitle').textContent='STONE '+site.id+' · read';
+  $('phint').textContent=site.hint;
+  buildGlyphRow(site);
+  $('pfeed').textContent='';
+  showResult(site);
+  $('psubmit').style.display='none';
+}
+function phonLine(site){ return site.glyphs.map(g=>LEX[g].phon).join(' '); }
+function showResult(site){
+  const r=$('presult'); r.style.display='block';
+  r.innerHTML='“'+site.english+'”<span class="phon">'+phonLine(site)+'</span>';
+}
+function solveSite(){
+  const site=curSite;
+  G.solved[site.id]=1;
+  const newly=site.glyphs.filter(g=>!G.known[g]);
+  for(const g of site.glyphs) G.known[g]=1;
+  SFX.solve();
+  buildGlyphRow(site); showResult(site);
+  $('pfeed').textContent= newly.length? 'new words settle into the notebook: '+newly.map(g=>LEX[g].english).join(', ') : 'the stone rings true.';
+  $('psubmit').style.display='none';
+  if(MYTH_UNLOCK[site.id]!==undefined&&LORE.myths[MYTH_UNLOCK[site.id]]) G.myths[MYTH_UNLOCK[site.id]]=1;
+  const gateRoom=Object.keys(GATES).find(k=>GATES[k]===site.id);
+  if(gateRoom){ SFX.gate();
+    if(gateRoom===roomKey) G.liveMap.forEach(row=>row.forEach((c,i)=>{ if(row[i]==='d') row[i]='.'; }));
+    setTimeout(()=>toast('somewhere near, stone grinds against stone.'),600); }
+  save(); renderHUD();
+  checkMilestones();
+  if(site.id==='I2'){ setTimeout(finale,900); return; }
+}
+function checkMilestones(){
+  const n=knownCount();
+  for(const note of LORE.margin_notes){
+    if(n>=note.milestone&&!G.notesFired[note.milestone]){
+      G.notesFired[note.milestone]=1; SFX.note();
+      const openNote=()=>startDialog([["C., IN THE MARGIN",note.text]]);
+      if(state==='panel'){ closePanel(); openNote(); } else openNote();
+      save(); return; } }
+}
+function finale(){
+  closePanel(); SFX.ending();
+  const site=insc('I2');
+  const after=()=>{
+    $('endstats').innerHTML=
+      'words learned: '+knownCount()+'/'+CORPUS.lexicon.length+
+      ' · stones read: '+solvedCount()+'/'+CORPUS.inscriptions.length+
+      '<br>misreadings forgiven by the sea: '+G.stats.misreads;
+    $('endsong').innerHTML='“'+site.english+'”<br><br><span style="color:var(--teal)">'+phonLine(site)+'</span>';
+    $('endscreen').classList.remove('hidden');
+    G.flags.done=1; save();
+  };
+  if(LORE.ending_note) startDialog([["C., ON THE LAST PAGE",LORE.ending_note]], after);
+  else after();
+}
+
+/* ---------- notebook ---------- */
+function toggleBook(){
+  const b=$('book');
+  if(b.classList.contains('open')){ b.classList.remove('open'); if(state==='book') state='play'; return; }
+  if(state!=='play') return;
+  state='book'; b.classList.add('open');
+  $('bookcount').textContent=knownCount()+' of '+CORPUS.lexicon.length+' words · '+solvedCount()+' of '+CORPUS.inscriptions.length+' stones';
+  const grid=$('bookgrid'); grid.innerHTML='';
+  for(const w of CORPUS.lexicon){ if(!G.known[w.id]) continue;
+    const d=document.createElement('div'); d.className='bw';
+    const c=document.createElement('canvas'); c.width=44; c.height=48;
+    drawGlyph(c.getContext('2d'),w,22,22,18,C.teal);
+    const en=document.createElement('div'); en.className='en'; en.textContent=w.english;
+    const ph=document.createElement('div'); ph.className='ph'; ph.textContent=w.phon;
+    d.appendChild(c); d.appendChild(en); d.appendChild(ph); grid.appendChild(d); }
+  const mb=$('mythbox'); mb.innerHTML='';
+  LORE.myths.forEach((m,i)=>{ if(!G.myths[i]) return;
+    const h=document.createElement('h3'); h.textContent='mural sketch: '+m.title;
+    const p=document.createElement('div'); p.textContent=m.text;
+    mb.appendChild(h); mb.appendChild(p); });
+}
+$('bclose').addEventListener('click',toggleBook);
+
+/* ---------- player ---------- */
+function mkPlayer(x,y){ return {x,y,fx:0,fy:1,walk:0}; }
+function moveBox(e,dx,dy,half,slide){
+  const m=G.liveMap;
+  const test=(nx,ny)=>{
+    for(const [ox,oy] of [[-half,-half],[half,-half],[-half,half],[half,half]]){
+      const tx=Math.floor((nx+ox)/TS), ty=Math.floor((ny+oy)/TS);
+      if(tx<0||ty<0||tx>=MW||ty>=MH) continue;
+      if(isSolid(m[ty][tx])) return false;
+    } return true; };
+  if(dx!==0){ const nx=e.x+dx;
+    if(test(nx,e.y)) e.x=nx;
+    else if(slide){
+      if(test(nx,e.y+6)&&test(e.x,e.y+1.3)) e.y+=1.3;
+      else if(test(nx,e.y-6)&&test(e.x,e.y-1.3)) e.y-=1.3; } }
+  if(dy!==0){ const ny=e.y+dy;
+    if(test(e.x,ny)) e.y=ny;
+    else if(slide){
+      if(test(e.x+6,ny)&&test(e.x+1.3,e.y)) e.x+=1.3;
+      else if(test(e.x-6,ny)&&test(e.x-1.3,e.y)) e.x-=1.3; } }
+}
+const FLAVFALL={
+  'T':'a tree bent by a wind that no longer blows.',
+  'r':'lichen maps a slow orange continent across the rock.',
+  'k':'ship\'s timber — mine. the sea kept the rest as payment.',
+  'g':'a small stone, set upright with great care.',
+  'w':'fresh water, clear as a held breath.',
+  'm':'a wall built without mortar. every stone chosen, none wasted.',
+  'b':'a roofless room. the hearth-smell is forty years gone.',
+  's':'a standing stone, waiting the way stones do.',
+  '*':'shells, sorted by someone\'s hand. by size. why?',
+  '~':'the sea. it did what it did without malice.',
+  ':':'a path worn by feet smaller than mine.',
+  'd':'a sealed door-stone. carved words ring its rim — it wants to be read, not forced.',
+};
+function flavorFor(ch){
+  const R=room();
+  const list=LORE.flavor.filter(f=>f.screen===R.name);
+  if(list.length){ const i=[...ch+R.name].reduce((a,c)=>a+c.charCodeAt(0),0)%list.length;
+    const f=list[(({T:0,r:1,k:2,g:3,w:4,m:5,b:0,s:1,'*':2,'~':3,':':4,d:5})[ch]??i)%list.length];
+    if(f) return f.text; }
+  return FLAVFALL[ch];
+}
+function interact(){
+  const p=player;
+  const site=ents.find(e=>e.t==='site'&&Math.hypot(e.x-p.x,e.y-p.y)<24);
+  if(site){ openPanel(site.id); return; }
+  const tx=Math.floor((p.x+p.fx*13)/TS), ty=Math.floor((p.y+p.fy*13)/TS);
+  if(tx<0||ty<0||tx>=MW||ty>=MH) return;
+  const ch=G.liveMap[ty][tx];
+  const fl=flavorFor(ch);
+  if(fl) toast(fl);
+}
+function playerUpdate(){
+  const p=player; let dx=0,dy=0;
+  if(inp.left)dx--; if(inp.right)dx++; if(inp.up)dy--; if(inp.down)dy++;
+  if(dx||dy){ const l=Math.hypot(dx,dy); dx/=l; dy/=l;
+    p.fx=Math.abs(dx)>Math.abs(dy)?Math.sign(dx):0;
+    p.fy=Math.abs(dy)>=Math.abs(dx)?Math.sign(dy):0;
+    if(p.fx&&p.fy) p.fy=0;
+    p.walk++; moveBox(p,dx*1.25,dy*1.25,5,true); } else p.walk=0;
+  if(aPressed){ aPressed=false; interact(); if(state!=='play') return; }
+  const [cx,cy]=roomKey.split(',').map(Number);
+  let moved=null;
+  if(p.x<2) moved=[cx-1,cy,VW-6,p.y];
+  else if(p.x>VW-2) moved=[cx+1,cy,6,p.y];
+  else if(p.y<2) moved=[cx,cy-1,p.x,VH-6];
+  else if(p.y>VH-2) moved=[cx,cy+1,p.x,6];
+  if(moved){ const nk=moved[0]+','+moved[1];
+    if(ROOMS[nk]){ p.x=moved[2]; p.y=moved[3]; loadRoom(nk); }
+    else { p.x=Math.max(4,Math.min(VW-4,p.x)); p.y=Math.max(4,Math.min(VH-4,p.y)); } }
+}
+
+/* ---------- rendering ---------- */
+function drawTile(ch,x,y,tx,ty){
+  const h=hash(tx*7+roomKey.length,ty*13);
+  ctx.fillStyle=(tx+ty)%2?C.sand:C.sand2; ctx.fillRect(x,y,TS,TS);
+  if(ch===','){ ctx.fillStyle=(tx+ty)%2?C.dune:C.dune2; ctx.fillRect(x,y,TS,TS);
+    if(h>.6){ ctx.fillStyle='#8f965f'; ctx.fillRect(x+((h*90)|0)%12+1,y+((h*40)|0)%11+1,1,4); } }
+  else if(ch==='.'){ if(h>.88){ ctx.fillStyle=C.sand2; ctx.fillRect(x+7,y+7,2,2); } }
+  else if(ch===':'){ ctx.fillStyle=C.path; ctx.fillRect(x,y,TS,TS);
+    ctx.fillStyle='#a2967a'; if(h>.4) ctx.fillRect(x+3+((h*10)|0)%8,y+5+((h*20)|0)%6,3,2); }
+  else if(ch==='#'){ ctx.fillStyle=C.cliff; ctx.fillRect(x,y,TS,TS);
+    ctx.fillStyle=C.cliffHi; ctx.fillRect(x,y,TS,3);
+    if(h>.55){ ctx.fillRect(x+2+((h*30)|0)%9,y+6,3,2); }
+    if(h>.85){ ctx.fillStyle=C.moss; ctx.fillRect(x+3+((h*50)|0)%8,y+9,3,2); } }
+  else if(ch==='~'){ ctx.fillStyle=C.sea; ctx.fillRect(x,y,TS,TS);
+    ctx.fillStyle=C.sea2; ctx.fillRect(x,y,TS,2);
+    const w=Math.sin(frame/34+tx*1.7+ty*2.6)*2.5;
+    ctx.fillStyle='rgba(199,220,217,.6)'; ctx.fillRect(x+3+w,y+5+((tx+ty)%3)*3,5,1);
+    if(h>.8&&(frame>>5)%2){ ctx.fillStyle=C.foam; ctx.fillRect(x+((h*70)|0)%12,y+((h*30)|0)%12,2,1); } }
+  else if(ch==='w'){ ctx.fillStyle=C.fresh; ctx.fillRect(x,y,TS,TS);
+    const w=Math.sin(frame/26+tx*2+ty)*2;
+    ctx.fillStyle='#9fd0cd'; ctx.fillRect(x+4+w,y+4+((tx+ty)%2)*5,4,1); }
+  else if(ch==='r'){ ctx.fillStyle=C.rock; ctx.fillRect(x+2,y+4,12,10);
+    ctx.fillStyle='#7d8a92'; ctx.fillRect(x+3,y+5,10,4);
+    ctx.fillStyle=C.ember; ctx.globalAlpha=.5; ctx.fillRect(x+4+((h*40)|0)%6,y+6,3,2); ctx.globalAlpha=1; }
+  else if(ch==='k'){ ctx.fillStyle=C.wood; ctx.fillRect(x+1,y+2,14,12);
+    ctx.fillStyle='#6a543c'; for(let i=0;i<3;i++) ctx.fillRect(x+2,y+4+i*4,12,1);
+    ctx.fillStyle='#59462f'; ctx.fillRect(x+1,y+2,14,2); }
+  else if(ch==='m'){ ctx.fillStyle=C.ruin; ctx.fillRect(x,y+3,TS,13);
+    ctx.fillStyle=C.ruinHi; ctx.fillRect(x,y+3,TS,3);
+    ctx.fillStyle='#6c7878'; ctx.fillRect(x+((h*40)|0)%9,y+8,5,1);
+    if(h>.7){ ctx.fillStyle=C.moss; ctx.fillRect(x+((h*60)|0)%11+1,y+5,3,2); } }
+  else if(ch==='b'){ ctx.fillStyle=C.ruin; ctx.fillRect(x,y,TS,TS);
+    ctx.fillStyle=C.ruinHi; ctx.fillRect(x,y,TS,4);
+    ctx.fillStyle='#6c7878'; ctx.fillRect(x+2+((h*30)|0)%7,y+8,6,1); ctx.fillRect(x+1,y+12,5,1);
+    if(h>.65){ ctx.fillStyle=C.moss; ctx.fillRect(x+((h*80)|0)%12,y+2,3,2); } }
+  else if(ch==='s'){ ctx.fillStyle=C.stoneLo; ctx.fillRect(x+5,y+13,7,3);
+    ctx.fillStyle=C.stone; ctx.fillRect(x+4,y+1,8,14);
+    ctx.fillStyle=C.stoneHi; ctx.fillRect(x+4,y+1,3,14);
+    ctx.fillStyle=C.stoneLo; ctx.fillRect(x+6,y+4,4,1); ctx.fillRect(x+6,y+7,3,1); ctx.fillRect(x+6,y+10,4,1); }
+  else if(ch==='T'){ ctx.fillStyle='#5c4a34'; ctx.fillRect(x+7,y+6,3,10);
+    ctx.fillRect(x+8,y+4,5,3); // wind-bent
+    ctx.fillStyle='#5d7a4d'; ctx.fillRect(x+6,y-1,10,7);
+    ctx.fillStyle='#6e8f5c'; ctx.fillRect(x+8,y,6,4); }
+  else if(ch==='g'){ ctx.fillStyle=C.grave; ctx.fillRect(x+5,y+5,6,9);
+    ctx.fillStyle='#8794a0'; ctx.fillRect(x+5,y+5,6,3);
+    ctx.fillStyle=C.stoneLo; ctx.fillRect(x+7,y+9,2,1);
+    if(h>.55){ ctx.fillStyle='#c9d3b8'; ctx.fillRect(x+3+((h*40)|0)%3,y+13,2,2); } }
+  else if(ch==='*'){ ctx.fillStyle=C.foam; ctx.fillRect(x+4,y+6,3,2); ctx.fillRect(x+9,y+9,3,2);
+    ctx.fillStyle='#d9cfae'; ctx.fillRect(x+7,y+4,2,2); }
+  else if(ch==='d'){ ctx.fillStyle=C.stoneLo; ctx.fillRect(x,y,TS,TS);
+    ctx.fillStyle=C.stone; ctx.fillRect(x+1,y+1,14,14);
+    const tw=(frame>>4)%2;
+    ctx.fillStyle=tw?C.ember:'#b8845a';
+    ctx.fillRect(x+4,y+4,8,1); ctx.fillRect(x+4,y+7,6,1); ctx.fillRect(x+4,y+10,8,1); }
+}
+function drawSite(e){
+  const x=e.x|0,y=e.y|0, solved=G.solved[e.id];
+  // the stone
+  ctx.fillStyle=C.stoneLo; ctx.fillRect(x-5,y+4,10,3);
+  ctx.fillStyle=solved?'#9fb5b2':C.stone; ctx.fillRect(x-5,y-9,10,14);
+  ctx.fillStyle=solved?'#c2d6d2':C.stoneHi; ctx.fillRect(x-5,y-9,3,14);
+  // carved lines
+  const gl=solved?C.teal:C.ember;
+  ctx.fillStyle=gl; ctx.globalAlpha=solved?.9:(.5+Math.sin(frame/22+x)*.25);
+  ctx.fillRect(x-2,y-7,5,1); ctx.fillRect(x-2,y-4,3,1); ctx.fillRect(x-2,y-1,5,1); ctx.fillRect(x-2,y+2,4,1);
+  ctx.globalAlpha=1;
+  if(!solved&&state==='play'&&Math.hypot(e.x-player.x,e.y-player.y)<24){
+    ctx.fillStyle=C.bone; const bb=Math.sin(frame/8)*1.5;
+    ctx.fillRect(x-1,y-16+(bb|0),2,4); ctx.fillRect(x-1,y-11+(bb|0),2,2); }
+}
+function drawMargot(){
+  const p=player, bob=(p.walk>0)?((p.walk>>3)%2):0;
+  const x=p.x|0, y=(p.y|0)-bob;
+  ctx.fillStyle='rgba(26,34,40,.3)'; ctx.fillRect(x-5,(p.y|0)+5,10,3);
+  // sea-coat
+  ctx.fillStyle='#4e6e78'; ctx.fillRect(x-5,y-3,10,9);
+  ctx.fillStyle='#3f5a63'; ctx.fillRect(x-5,y+3,10,3);
+  ctx.fillStyle='#c9bda0'; ctx.fillRect(x-2,y-1,4,3); // satchel
+  // head + blonde hair
+  ctx.fillStyle='#f4e0c8'; ctx.fillRect(x-4,y-9,8,7);
+  ctx.fillStyle='#e8cd76'; ctx.fillRect(x-5,y-11,10,4);
+  ctx.fillRect(x-5,y-9,2,6); ctx.fillRect(x+3,y-9,2,6);
+  ctx.fillStyle=C.ink;
+  if(p.fy===1||(!p.fx&&!p.fy)){ ctx.fillRect(x-2,y-6,2,2); ctx.fillRect(x+1,y-6,2,2); }
+  else if(p.fy===-1){ ctx.fillStyle='#e8cd76'; ctx.fillRect(x-4,y-9,8,7); }
+  else if(p.fx===1){ ctx.fillRect(x+1,y-6,2,2); }
+  else if(p.fx===-1){ ctx.fillRect(x-3,y-6,2,2); }
+  // the notebook, held
+  ctx.fillStyle=C.bone; ctx.fillRect(x+4,y-1,3,4);
+  ctx.fillStyle=C.ember; ctx.fillRect(x+4,y-1,3,1);
+}
+function render(){
+  for(let y=0;y<MH;y++) for(let x=0;x<MW;x++)
+    drawTile(G.liveMap[y][x],x*TS,y*TS,x,y);
+  const drawList=ents.slice().sort((a,b)=>a.y-b.y);
+  let md=false;
+  for(const e of drawList){ if(!md&&player.y<e.y){ drawMargot(); md=true; } drawSite(e); }
+  if(!md) drawMargot();
+  for(const p of particles){ ctx.globalAlpha=Math.min(1,p.life/14);
+    ctx.fillStyle=p.color; ctx.fillRect(p.x|0,p.y|0,2,2); ctx.globalAlpha=1; }
+  // drifting mist
+  ctx.globalAlpha=.05+Math.sin(frame/120)*.02;
+  ctx.fillStyle='#dfe8ea';
+  const mx=(frame/3)%512-256;
+  ctx.fillRect(mx,30,200,26); ctx.fillRect(mx+300,100,240,20);
+  ctx.globalAlpha=1;
+  if(roomFadeIn>0){ ctx.fillStyle='rgba(26,34,40,'+(roomFadeIn/18)+')'; ctx.fillRect(0,0,VW,VH); }
+}
+function renderHUD(){
+  $('wordsHud').textContent='◈ words '+knownCount()+'/'+(CORPUS.lexicon.length||'?');
+  $('stonesHud').textContent='▣ stones '+solvedCount()+'/'+(CORPUS.inscriptions.length||'?');
+}
+
+/* ---------- main loop ---------- */
+let acc=0,last=0;
+function loop(t){
+  requestAnimationFrame(loop);
+  if(!last)last=t;
+  acc+=Math.min(100,t-last); last=t;
+  while(acc>=16.67){
+    acc-=16.67; frame++;
+    if(state==='play'){ if(roomFadeIn>0)roomFadeIn--; playerUpdate(); aPressed=false; }
+    else if(state==='dialog'){ dialogTick(); }
+    else aPressed=false;
+    for(const p of particles){ p.x+=p.vx; p.y+=p.vy; p.life--; }
+    particles=particles.filter(p=>p.life>0);
+  }
+  if(state==='play'||state==='dialog'){ render(); renderHUD(); }
+}
+
+/* ---------- boot ---------- */
+function begin(g){
+  G=g; indexCorpus(); player=mkPlayer(G.px,G.py);
+  loadRoom(G.room);
+  $('titlescreen').classList.add('hidden');
+  state='play';
+  if(!G.flags.introSeen){ G.flags.introSeen=1;
+    startDialog([
+      ["MARGOT","The ship is gone. The island is not. And every stone on it is covered in writing."],
+      ["MARGOT","No people. No boats. Just… words, waiting. Well. I didn't pack much, but I packed the notebook."],
+      ["C., ON THE FIRST PAGE","'For M. — Whatever you find out there, write it down. Languages don't die while someone is still reading. — C.'"],
+    ]); }
+  fitCanvas();
+}
+$('btnNew').addEventListener('click',()=>{ firstGesture(); store.del(); begin(freshGame()); });
+$('btnCont').addEventListener('click',()=>{ firstGesture(); begin(store.get()||freshGame()); });
+$('btnKeep').addEventListener('click',()=>{ $('endscreen').classList.add('hidden'); state='play'; });
+if(store.get()) $('btnCont').style.display='block';
+
+/* title glyph strip */
+(function(){ const c=$('titleglyphs'), g=c.getContext('2d');
+  const teasers=[['heart','eye'],['voice','stone'],['water','big'],['eye','not'],['voice','path']];
+  teasers.forEach((rads,i)=>{ drawGlyph(g,{radicals:rads},34+i*54,28,22,
+    i%2?C.teal:C.bone); }); })();
+
+function fitCanvas(){
+  const hudH=$('hud').offsetHeight;
+  const ctrl=$('controls');
+  const ctrlH=getComputedStyle(ctrl).display==='none'?0:Math.max(140,innerHeight*.22);
+  const availW=Math.min(innerWidth-8,820);
+  const availH=innerHeight-hudH-ctrlH-14;
+  const s=Math.min(availW/VW, availH/VH);
+  cv.style.width=(VW*s|0)+'px'; cv.style.height=(VH*s|0)+'px';
+}
+addEventListener('resize',fitCanvas);
+fitCanvas();
+requestAnimationFrame(loop);
+
+/* debug hook */
+window._ss={get state(){return state}, get room(){return roomKey}, get g(){return G}, get p(){return player},
+  get ents(){return ents}, get corpus(){return CORPUS}, get lex(){return LEX},
+  warp(k,x,y){ if(G&&ROOMS[k]){ player.x=(x||8)*TS; player.y=(y||8)*TS; loadRoom(k); } },
+  openPanel, guessAll(){ if(curSite) for(const g of curSite.glyphs) guesses[g]=g; buildGlyphRow(curSite); },
+  submit(){ $('psubmit').click(); }};
+</script>
