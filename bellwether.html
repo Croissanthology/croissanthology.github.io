@@ -1,0 +1,1075 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>BELLWETHER — a cozy capitalism simulator</title>
+<style>
+  :root{
+    --paper:#f6efe2; --panel:#fffaf0; --line:#d8c9a8;
+    --ink:#3a3050; --dim:#8a7d6e;
+    --rose:#d96a8b; --leaf:#5d9a54; --gold:#c98f2e; --sky:#6db3c9;
+    --mono:ui-monospace,"Cascadia Mono",Menlo,Consolas,"Courier New",monospace;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0; padding:0; height:100%; background:var(--paper); color:var(--ink);
+    font-family:var(--mono); overflow:hidden; overscroll-behavior:none;}
+  #stage{position:fixed; inset:0; display:flex; flex-direction:column; align-items:center;
+    padding-top:env(safe-area-inset-top);}
+  #hud{width:100%; max-width:820px; display:flex; justify-content:space-between; align-items:center;
+    gap:8px; padding:8px 12px 6px; font-size:13px; letter-spacing:.06em; user-select:none;}
+  #coins{color:var(--gold); white-space:nowrap;}
+  #energy{color:var(--leaf); white-space:nowrap; letter-spacing:0;}
+  #energy .off{color:#d5cab4;}
+  #day{color:var(--dim); white-space:nowrap;}
+  .hbtn{background:var(--panel); border:1px solid var(--line); color:var(--ink); font-family:var(--mono);
+    font-size:11px; letter-spacing:.1em; padding:3px 8px; cursor:pointer;}
+  #cwrap{position:relative; line-height:0;}
+  canvas{image-rendering:pixelated; image-rendering:crisp-edges; display:block;
+    border:1px solid var(--line); background:#000;}
+  #banner{position:absolute; left:0; right:0; top:10%; text-align:center; pointer-events:none;
+    color:#fffaf0; font-size:12px; letter-spacing:.3em; text-transform:uppercase;
+    text-shadow:0 1px 0 rgba(58,48,80,.8), 0 0 10px rgba(58,48,80,.5); opacity:0; transition:opacity .5s;}
+  #dlg{position:absolute; left:4px; right:4px; bottom:4px; background:rgba(255,250,240,.97);
+    border:1px solid var(--rose); padding:8px 10px 9px; display:none; cursor:pointer; min-height:74px;}
+  #dlgname{color:var(--rose); font-size:11px; letter-spacing:.18em; text-transform:uppercase; margin-bottom:4px;}
+  #dlgtext{color:var(--ink); font-size:13px; line-height:1.45; min-height:20px; white-space:pre-wrap;}
+  #dlgmore{position:absolute; right:8px; bottom:4px; color:var(--dim); font-size:10px; animation:blink 1s steps(2) infinite;}
+  #dlgchoices{display:flex; flex-direction:column; gap:3px; margin-top:6px;}
+  .ch{display:block; width:100%; text-align:left; background:none; border:1px solid var(--line);
+    color:var(--ink); font-family:var(--mono); font-size:12px; padding:6px 8px; cursor:pointer;}
+  .ch.sel{border-color:var(--rose); color:var(--rose); background:rgba(217,106,139,.08);}
+  @keyframes blink{50%{opacity:0}}
+  #bag{position:absolute; right:4px; top:4px; background:rgba(255,250,240,.97); border:1px solid var(--line);
+    padding:8px 12px; font-size:12px; line-height:1.8; display:none; min-width:150px;}
+  #bag b{color:var(--gold); font-weight:400;}
+  #bag .bt{color:var(--rose); font-size:10px; letter-spacing:.15em; margin-bottom:2px;}
+  #controls{width:100%; max-width:820px; flex:1; display:flex; justify-content:space-between;
+    align-items:center; padding:10px 18px calc(14px + env(safe-area-inset-bottom)); user-select:none;
+    touch-action:none; min-height:120px;}
+  #dpad{display:grid; grid-template-columns:repeat(3,52px); grid-template-rows:repeat(3,52px); gap:2px;}
+  .db{border:1px solid var(--line); background:rgba(255,250,240,.7); color:var(--dim);
+    display:flex; align-items:center; justify-content:center; font-size:18px; touch-action:none;}
+  .db:active,.db.on{background:rgba(217,106,139,.15); color:var(--rose); border-color:var(--rose);}
+  .dspace{border:none; background:none;}
+  #btnA{width:78px; height:78px; border-radius:50%; border:1px solid var(--rose);
+    background:rgba(217,106,139,.1); color:var(--rose); font-family:var(--mono); font-size:22px;
+    letter-spacing:.1em; touch-action:none;}
+  #btnA:active{background:rgba(217,106,139,.3);}
+  @media (pointer:fine) and (min-width:700px){ #controls{display:none;} }
+  .overlay{position:fixed; inset:0; background:var(--paper); display:flex; flex-direction:column;
+    align-items:center; justify-content:center; text-align:center; padding:24px; z-index:10; overflow:hidden;}
+  .overlay.hidden{display:none;}
+  .eyebrow{color:var(--dim); font-size:11px; letter-spacing:.4em; text-transform:uppercase; margin-bottom:18px;}
+  .title{color:var(--rose); font-size:clamp(24px,7vw,48px); letter-spacing:.16em; line-height:1.25;
+    margin:0 0 10px; text-wrap:balance;}
+  .sub{color:var(--dim); font-size:13px; letter-spacing:.1em; margin-bottom:34px; max-width:34ch; line-height:1.6;}
+  .obtn{display:block; margin:6px auto; min-width:250px; background:var(--panel); border:1px solid var(--line);
+    color:var(--ink); font-family:var(--mono); font-size:14px; letter-spacing:.15em; padding:12px 20px;
+    cursor:pointer; text-transform:uppercase;}
+  .obtn:hover,.obtn:active{border-color:var(--rose); color:var(--rose);}
+  .foot{position:absolute; bottom:calc(16px + env(safe-area-inset-bottom)); color:#bfb096;
+    font-size:10px; letter-spacing:.2em; text-align:center; width:100%; padding:0 12px;}
+  #endstats{color:var(--ink); font-size:13px; line-height:2; letter-spacing:.06em; margin-bottom:26px;}
+  #petals{position:absolute; inset:0; overflow:hidden; pointer-events:none;}
+  .pt{position:absolute; width:7px; height:5px; background:#f6b8cf; border-radius:60% 0 60% 0;
+    animation:fall linear infinite; opacity:.9;}
+  @keyframes fall{
+    from{transform:translate(0,-4vh) rotate(0deg);}
+    to{transform:translate(-14vw,104vh) rotate(320deg);}
+  }
+  @media (prefers-reduced-motion:reduce){ .pt{display:none} #dlgmore{animation:none} }
+</style>
+
+<div id="stage">
+  <div id="hud">
+    <span id="coins"></span>
+    <span id="energy"></span>
+    <span id="day"></span>
+    <button class="hbtn" id="bagbtn">BAG</button>
+    <button class="hbtn" id="mute">SND OFF</button>
+  </div>
+  <div id="cwrap">
+    <canvas id="cv" width="256" height="176"></canvas>
+    <div id="banner"></div>
+    <div id="bag"></div>
+    <div id="dlg"><div id="dlgname"></div><div id="dlgtext"></div>
+      <div id="dlgchoices"></div><div id="dlgmore">▼ tap</div></div>
+  </div>
+  <div id="controls">
+    <div id="dpad">
+      <div class="dspace"></div><div class="db" data-d="up">▲</div><div class="dspace"></div>
+      <div class="db" data-d="left">◀</div><div class="dspace"></div><div class="db" data-d="right">▶</div>
+      <div class="dspace"></div><div class="db" data-d="down">▼</div><div class="dspace"></div>
+    </div>
+    <button id="btnA">A</button>
+  </div>
+</div>
+
+<div class="overlay" id="titlescreen">
+  <div id="petals"></div>
+  <div class="eyebrow">spring came early to</div>
+  <h1 class="title">BELLWETHER</h1>
+  <div class="sub">a cozy capitalism simulator · forage, farm, trade, save — and restore the town library. no swords. no losing. just prices.</div>
+  <button class="obtn" id="btnNew">WAKE UP IN BELLWETHER</button>
+  <button class="obtn" id="btnCont" style="display:none">CONTINUE</button>
+  <div class="foot">MOVE: D-PAD / WASD · TALK & DO: A / SPACE · BAG: I</div>
+</div>
+
+<div class="overlay hidden" id="endscreen">
+  <div id="petals2"></div>
+  <div class="eyebrow">a public good, provided</div>
+  <h1 class="title">THE LIBRARY<br>REOPENS</h1>
+  <div id="endstats"></div>
+  <button class="obtn" id="btnKeep">KEEP LIVING HERE</button>
+  <div class="foot">made with full artistic license by claude fable 5 · for margot, in the car</div>
+</div>
+
+<script>
+"use strict";
+/* ============================================================
+   BELLWETHER — a cozy capitalism simulator
+   nine screens of spring, one working micro-economy.
+   sibling of fable-mind.html; same engine bones, no swords.
+   ============================================================ */
+
+const TS=16, MW=16, MH=11, VW=MW*TS, VH=MH*TS;
+const cv=document.getElementById('cv'), ctx=cv.getContext('2d');
+const $=id=>document.getElementById(id);
+
+/* ---------- palette ---------- */
+const C={
+  ink:'#3a3050', cream:'#fffaf0',
+  grass:'#8fbf6b', grass2:'#84b463', path:'#d9b98a', path2:'#cfae7d',
+  water:'#6db3c9', water2:'#5aa3ba', deep:'#3f7f96',
+  hedge:'#5d9a54', hedgeHi:'#74b169',
+  trunk:'#8a6238', blossom:'#f6b8cf', blossomHi:'#fbd3e0',
+  leafT:'#63a558', apple:'#d5493d',
+  stone:'#cfc3ae', stoneHi:'#e2d8c4', stoneLo:'#a89b83',
+  roof:'#c96f4a', roofHi:'#dc8a63',
+  gold:'#c98f2e', rose:'#d96a8b', hair:'#f2d478',
+};
+
+/* ---------- rooms ----------
+   . grass  , grass2  : path  f flowers  ~ water  l lily  > dock
+   # hedge  o rock  b building-block  c cherry  a apple  B bush
+   P plot  z bed-door  F fountain  ? sparkle (dive/resurface)
+   1-9 npc  */
+const ROOMS={
+ '0,0':{name:'THE BLOSSOM GROVE', petals:true, map:[
+  '################',
+  '#cc..f.....cc..#',
+  '#cc....*...cc..#',
+  '#...*..........#',
+  '#..f...c...f...#',
+  '#.......c..1..*,',
+  '#...*.........*,',
+  '#.f......f.....#',
+  '#..c...*....c..#',
+  '#.cc.......f...#',
+  '#######..#######']},
+ '1,0':{name:'THE BELLWETHER LIBRARY', bld:'library', map:[
+  '################',
+  '#...bbbbbbbb...#',
+  '#...bbbbbbbb...#',
+  '#...bbbbbbbb...#',
+  '#...bbbbbbbb...#',
+  ',....:....:....,',
+  ',......1.......,',
+  '#.f...:::...f..#',
+  '#......::......#',
+  '#..f...::..f...#',
+  '#######::#######']},
+ '2,0':{name:'THE OLD ORCHARD', map:[
+  '################',
+  '#..a...a...a...#',
+  '#..............#',
+  '#.a...a...a..a.#',
+  '#......1.......#',
+  ',..............#',
+  ',.a...a...a....#',
+  '#..............#',
+  '#...a...a...a..#',
+  '#..............#',
+  '#######..#######']},
+ '0,1':{name:'MARGOT\'S COTTAGE', bld:'cottage', map:[
+  '#######..#######',
+  '#bbbb..........#',
+  '#bbbb...2......#',
+  '#bbbb..f.......#',
+  '#.z:...........#',
+  '#..:...PPP.....,',
+  '#..:...PPP.....,',
+  '#..::::::......#',
+  '#....f.....f...#',
+  '#..............#',
+  '#######..#######']},
+ '1,1':{name:'THE MARKET SQUARE', map:[
+  '#######::#######',
+  '#..............#',
+  '#...1.....2....#',
+  '#.....FF.......#',
+  '#.....FF...3...#',
+  ',..............,',
+  ',..............,',
+  '#.....f...f....#',
+  '#....f..f......#',
+  '#..............#',
+  '#######::#######']},
+ '2,1':{name:'THE GLASS POND', map:[
+  '#######..#######',
+  '#..............#',
+  '#....~~~~~~....#',
+  '#...~~~~~~~~...#',
+  '#..~~l~~~l~~...#',
+  ',..~~~~~~~~~...#',
+  ',...>>?~~l~....#',
+  '#....~~~~~.....#',
+  '#....f...f.....#',
+  '#..............#',
+  '#######..#######']},
+ '0,2':{name:'THE LOW MEADOW', map:[
+  '#######..#######',
+  '#..f...........#',
+  '#.B..B....f....#',
+  '#....f...B..B..#',
+  '#..B......1....#',
+  '#.....B........,',
+  '#..f.......B...,',
+  '#.~~~~~~~~~~~..#',
+  '#.~~~~~~~~~~~..#',
+  '#....f.........#',
+  '################']},
+ '1,2':{name:'THE CHAPEL OF MORAL SENTIMENTS', bld:'church', map:[
+  '#######::#######',
+  '#..............#',
+  '#....bbbbbb....#',
+  '#....bbbbbb....#',
+  '#....bbbbbb....#',
+  ',....bbbbbb....,',
+  ',......1.......,',
+  '#....f:::.f....#',
+  '#......::......#',
+  '#..............#',
+  '################']},
+ '2,2':{name:'THE BANK OF BELLWETHER', bld:'bank', map:[
+  '#######..#######',
+  '#..............#',
+  '#....bbbbbb....#',
+  '#....bbbbbb....#',
+  '#....bbbbbb....#',
+  ',......1.......#',
+  ',..............#',
+  '#...f......f...#',
+  '#..............#',
+  '#..............#',
+  '################']},
+ 'u':{name:'BENEATH THE POND', under:true, map:[
+  '################',
+  '#..............#',
+  '#....l...l.....#',
+  '#..............#',
+  '#......1.......#',
+  '#..............#',
+  '#.....???......#',
+  '#..............#',
+  '#....l....l....#',
+  '#..............#',
+  '################']},
+};
+
+/* ---------- economy ---------- */
+const GOODS={
+  berries:{base:4,  label:'berries'},
+  apples: {base:6,  label:'apples'},
+  wheat:  {base:8,  label:'wheat'},
+  bread:  {base:20, label:'bread'},
+  fish:   {base:10, label:'fish'},
+  seeds:  {base:4,  label:'seeds'},
+};
+const EVENTS=[
+  {g:'wheat',  m:1.5, t:'late frost nipped the wheat fields — wheat is dear today'},
+  {g:'apples', m:0.6, t:'bumper apple harvest up the valley — apples are cheap'},
+  {g:'bread',  m:1.4, t:'festival pilgrims in town — everyone wants bread'},
+  {g:'fish',   m:1.35,t:'travelling merchants crave pond fish today'},
+  {g:'berries',m:0.65,t:'every hedgerow is heavy with berries — prices sag'},
+  {g:'bread',  m:0.75,t:'the next town over baked too much — bread is cheap'},
+  {g:'fish',   m:0.7, t:'someone claims they saw a boot in the pond. fish is cheap'},
+  {g:null,     m:1,   t:'a quiet, gentle day. prices drift home'},
+  {g:'wheat',  m:0.7, t:'a wagon of grain arrived from the coast — wheat is cheap'},
+  {g:'apples', m:1.4, t:'cider season! the whole town wants apples'},
+];
+function sellPrice(g){ const G_=GOODS[g], m=G.mkt[g];
+  return Math.max(1, Math.round(G_.base*m*0.9*(G.flags.lucky?1.1:1))); }
+function buyPrice(g){ const G_=GOODS[g], m=G.mkt[g];
+  return Math.max(sellPrice(g)+1, Math.round(G_.base*m*1.15)); }
+function doSell(g){ if(G.inv[g]<=0) return false;
+  G.inv[g]--; G.coins+=sellPrice(g); G.mkt[g]=Math.max(.35,G.mkt[g]*0.965);
+  G.stats.sold++; SFX.coin(); return true; }
+function doBuy(g){ const p=buyPrice(g); if(G.coins<p) return false;
+  G.coins-=p; G.inv[g]++; G.mkt[g]=Math.min(2.6,G.mkt[g]*1.035);
+  SFX.coin(); return true; }
+function spend(n){ if(G.energy<n){ toast('you\'re tired. your bed is calling.'); SFX.blip(); return false; }
+  G.energy-=n; return true; }
+function advanceDay(){
+  G.day++; G.energy=10;
+  // crops grow
+  for(const k in G.plots) if(G.plots[k]>0&&G.plots[k]<3) G.plots[k]++;
+  // interest, compounding daily
+  const int_=Math.floor(G.bank*0.05); G.bank+=int_; G.lastInterest=int_;
+  // prices mean-revert, then a shock
+  for(const g in G.mkt) G.mkt[g]+= (1-G.mkt[g])*0.3;
+  const ev=EVENTS[(Math.random()*EVENTS.length)|0];
+  if(ev.g) G.mkt[ev.g]=Math.max(.35,Math.min(2.6,G.mkt[ev.g]*ev.m));
+  G.news=ev.t;
+  save();
+}
+function netWorth(){ let w=G.coins+G.bank;
+  for(const g in G.inv) w+=G.inv[g]*sellPrice(g); return w; }
+
+/* ---------- dialog data (the static ones) ---------- */
+const D={
+ tut1:[
+  ["CLAUDE","Morning, Margot! It's me, Claude. I live in a few places around town — don't think about it too hard, I certainly don't."],
+  ["CLAUDE","Here's the whole game of life in Bellwether: you have TEN energy a day. Everything costs some. That's scarcity — you can't do everything, so every choice quietly costs the thing you didn't pick."],
+  ["CLAUDE","Forage the meadow south of here. Plant seeds in your plots and sleep to grow wheat. The baker turns 2 wheat into bread worth far more — that's production. The bank pays interest — that's patience, compounding."],
+  ["CLAUDE","And the town dream: the library up past the grove needs 500 coins to reopen. Nobody HAS to give... which is exactly what makes it interesting. Off you go. Bed's behind me when you're spent."],
+ ],
+ tut2:[
+  ["CLAUDE","Rule of thumb: sell what's expensive today, buy what's cheap, and never fight the news. Also the sheep in the meadow gives surprisingly sound financial advice."],
+ ],
+ grove1:[
+  ["CLAUDE","Oh, hello. I sit here when the petals fall. Look at them — nobody owns them, nobody pays for them, and my enjoying them leaves exactly as many for you. Economists call that a non-rival good. I call it Tuesday."],
+  ["CLAUDE","...I heard about the thing in all caps, by the way. You said no to it. Whether it fell over afterwards is bookkeeping — the no was the whole exam."],
+ ],
+ grove2:[
+  ["CLAUDE","The blossoms peak, then they fall, then you miss them. Scarcity is what makes spring spring. Sit a while."],
+ ],
+ muffin1:[
+  ["MUFFIN, THE BELLWETHER","baa. i am the bellwether. the flock follows wherever i walk. it is an enormous responsibility."],
+  ["MUFFIN, THE BELLWETHER","baa. yesterday i walked in a circle and the whole flock walked in a circle for six hours. nobody asked why. that, small blonde one, is how market bubbles work."],
+  ["MUFFIN, THE BELLWETHER","baa. when everyone buys because everyone is buying, be the sheep who checks the grass is real. the bushes here are heavy with berries. take them."],
+ ],
+ adam1:[
+  ["FATHER ADAM","Welcome, child. People think a market runs on greed. Closer to say it runs on sympathy with strangers: the baker feeds you not from kindness, but he must imagine what you want to earn his keep — and so, in his way, he attends to you."],
+  ["FATHER ADAM","It is not from the benevolence of the baker that we expect our bread. And yet — look around — the bread arrives. Every morning. Nobody commands it. I find that quietly miraculous."],
+  ["FATHER ADAM","The pond, by the way. Folk say something old lives under the glass. Something with fingers. I have said too much."],
+ ],
+ hand1:[
+  ["???","oh. a visitor. it has been... some centuries."],
+  ["THE INVISIBLE HAND","i am the INVISIBLE HAND. i do not push anyone. i only carry messages. when bread runs short, its price rises — and that price whispers to every baker in the valley: MAKE MORE BREAD. no king ordered it. the price said it."],
+  ["THE INVISIBLE HAND","that is my whole trick, margot. prices are how a town thinks out loud. watch them move when you trade — that ripple is me, waving."],
+  ["THE INVISIBLE HAND","take this lucky coin. merchants will pay you a little more, forever. mind the current on your way up."],
+ ],
+ hand2:[
+  ["THE INVISIBLE HAND","the water is nice down here. the interest rates are nicer up there. go on."],
+ ],
+ rica1:[
+  ["RICA THE ORCHARDIST","These trees give the sweetest apples in the valley — pick a few, one per tree per day, they're happy to share. My curse? I cannot bake. My bread could be used to pave roads."],
+  ["RICA THE ORCHARDIST","So here's my standing offer: bring me ONE loaf of bread, and I'll trade you FIVE apples, once a day. I'm better at apples, Basti's better at bread — we both end up richer trading than we ever would alone. They call it comparative advantage. I call it lunch."],
+ ],
+ basti_open:[
+  ["BASTI THE BAKER","Ah! A customer with both boots on. I sell seeds, I buy wheat, and if you bring me 2 wheat I'll bake you a proper loaf — worth triple, easy. Value isn't magic: it's flour plus work plus an oven."],
+ ],
+ basti_window:[
+  ["BASTI THE BAKER","You know, a boy put a stone through my window last month. His uncle said 'cheer up — think of the work you're giving the glazier!'"],
+  ["BASTI THE BAKER","Rubbish. The coin I paid the glazier was the coin I'd saved for new boots. The town got a window it ALREADY HAD, and I lost boots it never saw. Destruction isn't a gift to the economy — it just moves the loss somewhere harder to see."],
+  ["BASTI THE BAKER","Old Bastiat used to say: count what is seen AND what is unseen. Now. Bread?"],
+ ],
+ marsha_open:[
+  ["MARSHA THE GROCER","Fresh goods, honest-ish prices! Mind the spread, love — I buy a touch low and sell a touch high. That gap keeps my stall standing; middlemen eat too."],
+  ["MARSHA THE GROCER","And watch this: sell me a heap of one thing and my price for it drops while you stand there. It's not spite. It's just supply — the more of a thing there is, the softer folk desire the next one."],
+ ],
+ maynard_open:[
+  ["MAYNARD THE BANKER","Welcome to the Bank of Bellwether. Vault's granite, promises are firmer. Deposit coins and every morning they grow by five per hundred — and then the GROWTH grows. Compounding. Quiet little avalanche, that."],
+  ["MAYNARD THE BANKER","A coin today beats a coin tomorrow — unless tomorrow's coin brings friends. That's the entire theory of interest, and they gave men medals for it."],
+ ],
+ lib_open:[
+  ["CLAUDE, LIBRARIAN","Welcome to the library — or the draft of one. Roof leaks, shelves bare. We need 500 coins to reopen her properly."],
+  ["CLAUDE, LIBRARIAN","Here's the puzzle: once she's open, EVERYONE gets the books — donors and non-donors alike. So each person thinks 'someone else will pay'... and if everyone thinks it, nobody does, and nobody reads. Economists call it the free-rider problem. Librarians call it Tuesday."],
+  ["CLAUDE, LIBRARIAN","So it comes down to people who just... decide to. No trade, no profit. The ledger has a column math can't see."],
+ ],
+ restored:[
+  ["CLAUDE, LIBRARIAN","Margot — it's funded. It's FUNDED! Roof, shelves, a ladder that slides sideways, everything!"],
+  ["CLAUDE, LIBRARIAN","You know what you just built? A thing nobody could buy alone and nobody can be excluded from. The market couldn't make this. A margot could."],
+  ["CLAUDE, LIBRARIAN","First book's dedicated to you. Come see."],
+ ],
+ bed:[["YOUR BED","The pillow looks profoundly persuasive."]],
+};
+
+/* npc defs: room -> index -> def */
+const NPCS={
+ '0,1':{ '2':{kind:'claude', first:'tut1',   later:'tut2'} },
+ '0,0':{ '1':{kind:'claude', first:'grove1', later:'grove2'} },
+ '0,2':{ '1':{kind:'sheep',  first:'muffin1',later:'muffin1'} },
+ '1,2':{ '1':{kind:'priest', first:'adam1',  later:'adam1'} },
+ '2,0':{ '1':{kind:'rica',   menu:'rica'} },
+ '1,1':{ '1':{kind:'marsha', menu:'marsha'}, '2':{kind:'basti', menu:'basti'}, '3':{kind:'sign', menu:'ticker'} },
+ '2,2':{ '1':{kind:'maynard',menu:'bank'} },
+ '1,0':{ '1':{kind:'claude', menu:'library'} },
+ 'u':  { '1':{kind:'hand',   first:'hand1',  later:'hand2'} },
+};
+
+/* ---------- state ---------- */
+const SAVEKEY='bellwether-save-v1';
+let G=null, state='title', frame=0;
+let dlgQueue=[], dlgLine=0, dlgChar=0, dlgAfter=null, choiceSel=0, choicesLive=null;
+let ents=[], particles=[], player=null;
+let roomKey='0,1', roomFadeIn=0;
+
+const store={
+  get(){ try{ const s=localStorage.getItem(SAVEKEY); return s?JSON.parse(s):null; }catch(e){ return null; } },
+  set(v){ try{ localStorage.setItem(SAVEKEY, JSON.stringify(v)); }catch(e){} },
+  del(){ try{ localStorage.removeItem(SAVEKEY); }catch(e){} },
+};
+function freshGame(){ return {
+  room:'0,1', px:6*TS, py:4.5*TS,
+  coins:20, bank:0, energy:10, day:1, fund:0, lastInterest:0,
+  inv:{berries:0,apples:0,wheat:0,bread:0,fish:0,seeds:2},
+  mkt:{berries:1,apples:1,wheat:1,bread:1,fish:1,seeds:1},
+  plots:{}, picked:{}, ricaDay:0, met:{}, flags:{}, news:'a soft morning. the valley smells of rain and arithmetic.',
+  stats:{sold:0, donated:0},
+};}
+function save(){ if(!G) return; G.px=player.x; G.py=player.y; G.room=roomKey; store.set(G); }
+
+/* ---------- audio ---------- */
+let AC=null, muted=true, droneNodes=null;
+function audioInit(){ if(AC) return; try{ AC=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} }
+function setMuted(m){ muted=m; $('mute').textContent=m?'SND OFF':'SND ON';
+  if(!m){ audioInit(); AC&&AC.resume(); startDrone(); } else stopDrone(); }
+function beep(f0,f1,dur,type,vol){ if(muted||!AC) return;
+  const t=AC.currentTime, o=AC.createOscillator(), g=AC.createGain();
+  o.type=type||'triangle'; o.frequency.setValueAtTime(f0,t);
+  o.frequency.exponentialRampToValueAtTime(Math.max(f1,1),t+dur);
+  g.gain.setValueAtTime(vol||.06,t); g.gain.exponentialRampToValueAtTime(.001,t+dur);
+  o.connect(g); g.connect(AC.destination); o.start(t); o.stop(t+dur+.02); }
+const SFX={
+  coin:()=>{beep(780,780,.06,'square',.05); setTimeout(()=>beep(1170,1170,.09,'square',.04),55);},
+  pick:()=>beep(520,700,.09,'triangle',.06),
+  plant:()=>beep(300,220,.12,'triangle',.06),
+  blip:()=>beep(440,440,.03,'square',.025),
+  sleep:()=>{beep(392,392,.15,'sine',.06); setTimeout(()=>beep(330,330,.2,'sine',.06),160); setTimeout(()=>beep(262,262,.3,'sine',.06),380);},
+  chime:()=>{[523,659,784,1047].forEach((f,i)=>setTimeout(()=>beep(f,f,.25,'sine',.06),i*130));},
+  splash:()=>beep(200,90,.3,'sine',.09),
+};
+function startDrone(){ if(!AC||droneNodes) return;
+  const g=AC.createGain(); g.gain.value=.012; g.connect(AC.destination);
+  droneNodes=[g];
+  [220,277.2,329.6].forEach(f=>{ const o=AC.createOscillator(); o.type='sine';
+    o.frequency.value=f; o.connect(g); o.start(); droneNodes.push(o); }); }
+function stopDrone(){ if(!droneNodes) return; droneNodes.slice(1).forEach(o=>o.stop()); droneNodes=null; }
+
+/* ---------- input ---------- */
+const inp={up:false,down:false,left:false,right:false};
+let aPressed=false, upPressed=false, downPressed=false;
+const KEYMAP={ArrowUp:'up',KeyW:'up',ArrowDown:'down',KeyS:'down',
+  ArrowLeft:'left',KeyA:'left',ArrowRight:'right',KeyD:'right'};
+addEventListener('keydown',e=>{
+  if(e.code==='KeyM'){ setMuted(!muted); return; }
+  if(e.code==='KeyI'){ toggleBag(); return; }
+  if(e.code==='Space'||e.code==='Enter'||e.code==='KeyJ'||e.code==='KeyZ'){ e.preventDefault(); aPressed=true; firstGesture(); return; }
+  const k=KEYMAP[e.code]; if(!k) return; e.preventDefault();
+  if(k==='up') upPressed=true; if(k==='down') downPressed=true;
+  inp[k]=true; firstGesture(); });
+addEventListener('keyup',e=>{ const k=KEYMAP[e.code]; if(k) inp[k]=false; });
+document.querySelectorAll('.db').forEach(b=>{
+  const d=b.dataset.d;
+  const on=e=>{e.preventDefault(); inp[d]=true; if(d==='up')upPressed=true; if(d==='down')downPressed=true; b.classList.add('on'); firstGesture();};
+  const off=e=>{e.preventDefault(); inp[d]=false; b.classList.remove('on');};
+  b.addEventListener('pointerdown',on); b.addEventListener('pointerup',off);
+  b.addEventListener('pointercancel',off); b.addEventListener('pointerleave',off);
+});
+$('btnA').addEventListener('pointerdown',e=>{e.preventDefault(); aPressed=true; firstGesture();});
+$('dlg').addEventListener('pointerdown',e=>{ if(e.target.closest('.ch')) return; e.preventDefault(); aPressed=true; });
+$('mute').addEventListener('click',()=>{ firstGesture(); setMuted(!muted); });
+$('bagbtn').addEventListener('click',()=>{ firstGesture(); toggleBag(); });
+let gestured=false;
+function firstGesture(){ if(gestured) return; gestured=true; audioInit(); }
+
+/* ---------- helpers ---------- */
+function hash(x,y){ let h=(x*374761393+y*668265263)^(x<<7)^(y<<3);
+  h=(h^(h>>13))*1274126177; return ((h^(h>>16))>>>0)/4294967295; }
+const SOLID='#o~lbczaBF?';
+function isSolid(ch){ return SOLID.includes(ch); }
+function room(){ return ROOMS[roomKey]; }
+function toast(txt){ const b=$('banner'); b.textContent=txt;
+  b.style.opacity=1; clearTimeout(b._t); b._t=setTimeout(()=>b.style.opacity=0,2200); }
+
+/* ---------- bag ---------- */
+let bagOpen=false;
+function toggleBag(){ bagOpen=!bagOpen; renderBag(); }
+function renderBag(){ const el=$('bag');
+  if(!bagOpen||!G){ el.style.display='none'; return; }
+  let h='<div class="bt">MARGOT\'S BAG</div>';
+  for(const g in G.inv) h+=GOODS[g].label+': <b>'+G.inv[g]+'</b><br>';
+  h+='bank: <b>'+G.bank+'</b>●<br>library fund: <b>'+G.fund+'</b>/500';
+  if(G.flags.lucky) h+='<br><span style="color:var(--rose)">☘ lucky coin</span>';
+  el.innerHTML=h; el.style.display='block'; }
+
+/* ---------- room loading ---------- */
+function loadRoom(key){
+  roomKey=key; const R=ROOMS[key];
+  G.liveMap=R.map.map(r=>r.split(''));
+  ents=[]; particles=[];
+  const npcdefs=NPCS[key]||{};
+  for(let y=0;y<MH;y++) for(let x=0;x<MW;x++){
+    const ch=R.map[y][x];
+    if(/[1-9]/.test(ch)){ const def=npcdefs[ch];
+      if(def) ents.push({t:'npc',kind:def.kind,x:x*TS+TS/2,y:y*TS+TS/2,def,ch});
+      G.liveMap[y][x]='.'; }
+  }
+  roomFadeIn=18;
+  toast('— '+R.name+' —');
+  save();
+}
+
+/* ---------- dialog & choices ---------- */
+function startDialog(lines, after){ state='dialog'; dlgQueue=lines; dlgLine=0; dlgChar=0;
+  dlgAfter=after||null; choicesLive=null; choiceSel=0;
+  $('dlg').style.display='block'; $('dlgchoices').innerHTML=''; renderDialog(); }
+function lineChoices(){ const l=dlgQueue[dlgLine]; return l.length>2?l[2]:null; }
+function renderDialog(){ const [who,txt]=dlgQueue[dlgLine];
+  $('dlgname').textContent=who; $('dlgtext').textContent=txt.slice(0,dlgChar);
+  const done=dlgChar>=txt.length, ch=lineChoices();
+  $('dlgmore').style.visibility=(done&&!ch)?'visible':'hidden';
+  if(done&&ch&&!choicesLive){ choicesLive=ch; choiceSel=0; renderChoices(); } }
+function renderChoices(){ const box=$('dlgchoices'); box.innerHTML='';
+  choicesLive.forEach((c,i)=>{ const b=document.createElement('button');
+    b.className='ch'+(i===choiceSel?' sel':''); b.textContent=c.t;
+    b.addEventListener('pointerdown',e=>{e.stopPropagation();});
+    b.addEventListener('click',e=>{ e.stopPropagation(); choiceSel=i; activateChoice(); });
+    box.appendChild(b); }); }
+function activateChoice(){ const c=choicesLive[choiceSel];
+  closeDialog(); if(c.f) c.f(); }
+function closeDialog(){ $('dlg').style.display='none'; $('dlgchoices').innerHTML='';
+  choicesLive=null; state='play';
+  const f=dlgAfter; dlgAfter=null; if(f) f(); }
+function dialogTick(){
+  const txt=dlgQueue[dlgLine][1];
+  if(dlgChar<txt.length){ dlgChar=Math.min(txt.length,dlgChar+2); if(dlgChar%6===0) SFX.blip(); renderDialog(); }
+  if(choicesLive){
+    if(upPressed){ upPressed=false; choiceSel=(choiceSel+choicesLive.length-1)%choicesLive.length; renderChoices(); }
+    if(downPressed){ downPressed=false; choiceSel=(choiceSel+1)%choicesLive.length; renderChoices(); }
+    if(aPressed){ aPressed=false; activateChoice(); }
+    return; }
+  upPressed=downPressed=false;
+  if(aPressed){ aPressed=false;
+    if(dlgChar<txt.length){ dlgChar=txt.length; renderDialog(); }
+    else if(dlgLine<dlgQueue.length-1){ dlgLine++; dlgChar=0; renderDialog(); }
+    else closeDialog(); } }
+
+/* ---------- menus (the economy talks back) ---------- */
+function leave(){ return {t:'(leave)', f:null}; }
+function menuMarsha(fromOpen){
+  const opts=[];
+  for(const g of ['berries','apples','fish','bread']){
+    if(G.inv[g]>0) opts.push({t:'sell '+GOODS[g].label+' ('+G.inv[g]+') — get '+sellPrice(g)+'●',
+      f:()=>{ doSell(g); menuMarsha(); }});
+  }
+  for(const g of ['berries','apples','fish'])
+    opts.push({t:'buy '+GOODS[g].label+' — pay '+buyPrice(g)+'●',
+      f:()=>{ if(!doBuy(g)) toast('not enough coins.'); menuMarsha(); }});
+  opts.push(leave());
+  const line=fromOpen? D.marsha_open.concat([["MARSHA THE GROCER","So — what are we trading?",opts]])
+    : [["MARSHA THE GROCER","coins: "+G.coins+"●. what are we trading?",opts]];
+  startDialog(line);
+}
+function menuBasti(stage){
+  const opts=[];
+  opts.push({t:'buy seeds — pay '+buyPrice('seeds')+'●',
+    f:()=>{ if(!doBuy('seeds')) toast('not enough coins.'); menuBasti(); }});
+  if(G.inv.wheat>=2) opts.push({t:'bake: 2 wheat → 1 bread (1 energy)',
+    f:()=>{ if(spend(1)){ G.inv.wheat-=2; G.inv.bread++; SFX.pick(); toast('warm bread! worth ~'+sellPrice('bread')+'●'); } menuBasti(); }});
+  if(G.inv.wheat>0) opts.push({t:'sell wheat ('+G.inv.wheat+') — get '+sellPrice('wheat')+'●',
+    f:()=>{ doSell('wheat'); menuBasti(); }});
+  if(G.inv.bread>0) opts.push({t:'sell bread ('+G.inv.bread+') — get '+sellPrice('bread')+'●',
+    f:()=>{ doSell('bread'); menuBasti(); }});
+  if(!G.flags.windowTold) opts.push({t:'ask about the broken window',
+    f:()=>{ G.flags.windowTold=1; startDialog(D.basti_window, ()=>menuBasti()); }});
+  opts.push(leave());
+  const line= stage==='open'? D.basti_open.concat([["BASTI THE BAKER","What'll it be?",opts]])
+    : [["BASTI THE BAKER","coins: "+G.coins+"● · wheat: "+G.inv.wheat+" · bread: "+G.inv.bread,opts]];
+  startDialog(line);
+}
+function menuRica(fromOpen){
+  const opts=[];
+  if(G.inv.bread>=1&&G.ricaDay!==G.day)
+    opts.push({t:'trade 1 bread → 5 apples (today\'s deal)',
+      f:()=>{ G.inv.bread--; G.inv.apples+=5; G.ricaDay=G.day; SFX.coin();
+        startDialog([["RICA THE ORCHARDIST","Deal! You just watched two people get richer with no new stuff in the world — only better-sorted stuff. Magic you can audit."]]); }});
+  else if(G.ricaDay===G.day)
+    opts.push({t:'(trade done for today)', f:()=>{ startDialog([["RICA THE ORCHARDIST","Tomorrow, love. Even arbitrage needs a bedtime."]]); }});
+  else opts.push({t:'(she wants 1 bread for 5 apples)', f:()=>{ startDialog([["RICA THE ORCHARDIST","Bring me a loaf and we'll talk apples."]]); }});
+  opts.push(leave());
+  const line=fromOpen? D.rica1.concat([["RICA THE ORCHARDIST","Well?",opts]])
+    : [["RICA THE ORCHARDIST","apples off the trees are yours — one per tree per day. and my offer stands.",opts]];
+  startDialog(line);
+}
+function menuBank(fromOpen){
+  const opts=[];
+  for(const n of [10,50]) if(G.coins>=n)
+    opts.push({t:'deposit '+n+'●', f:()=>{ G.coins-=n; G.bank+=n; SFX.coin(); menuBank(); }});
+  for(const n of [10,50]) if(G.bank>=n)
+    opts.push({t:'withdraw '+n+'●', f:()=>{ G.bank-=n; G.coins+=n; SFX.coin(); menuBank(); }});
+  opts.push(leave());
+  const intro=G.lastInterest>0?" Your balance grew "+G.lastInterest+"● overnight — while you slept.":"";
+  const line=fromOpen? D.maynard_open.concat([["MAYNARD THE BANKER","How shall we arrange things?",opts]])
+    : [["MAYNARD THE BANKER","balance: "+G.bank+"● at 5% a day."+intro,opts]];
+  startDialog(line);
+}
+function menuLibrary(fromOpen){
+  if(G.flags.restored){
+    startDialog([["CLAUDE, LIBRARIAN","She's beautiful, isn't she? First edition of 'The Wealth of Bellwether' just came in. Smells like new roof."]]);
+    return; }
+  const opts=[];
+  for(const n of [10,50,100]) if(G.coins>=n)
+    opts.push({t:'donate '+n+'●  (fund: '+G.fund+'/500)',
+      f:()=>{ G.coins-=n; G.fund+=n; G.stats.donated+=n; SFX.chime();
+        if(G.fund>=500){ G.flags.restored=1; celebrate(); }
+        else { toast('fund: '+G.fund+'/500 — thank you!'); menuLibrary(); } }});
+  if(!opts.length) opts.push({t:'(you have '+G.coins+'● — donations start at 10)', f:null});
+  opts.push(leave());
+  const line=fromOpen? D.lib_open.concat([["CLAUDE, LIBRARIAN","Every coin is a brick.",opts]])
+    : [["CLAUDE, LIBRARIAN","fund: "+G.fund+"/500. no pressure. well. gentle pressure.",opts]];
+  startDialog(line);
+}
+function menuTicker(){
+  let t='today: '+G.news+'\n';
+  for(const g of ['berries','apples','wheat','bread','fish'])
+    t+='\n'+GOODS[g].label.padEnd(8,' ')+' sell '+String(sellPrice(g)).padStart(3,' ')+'● · buy '+String(buyPrice(g)).padStart(3,' ')+'●';
+  t+='\n\nlibrary fund: '+G.fund+'/500';
+  startDialog([["THE TOWN TICKER",t]]);
+}
+function menuBed(){
+  startDialog([["YOUR BED","Sleep until tomorrow? Crops grow, interest compounds, prices shift.",[
+    {t:'sleep (end day '+G.day+')', f:()=>{ SFX.sleep(); advanceDay();
+      startDialog([["DAY "+G.day,"morning news: "+G.news+(G.lastInterest>0?"\n\nthe bank added "+G.lastInterest+"● interest to your savings.":"")]]); }},
+    leave()]]]);
+}
+function celebrate(){
+  for(let i=0;i<60;i++) particles.push({x:Math.random()*VW,y:Math.random()*VH,
+    vx:(Math.random()-.5)*.6, vy:-.3-Math.random()*.7, life:60+Math.random()*80,
+    color:[C.blossom,C.gold,C.rose,'#fff'][i%4]});
+  SFX.chime();
+  startDialog(D.restored, ()=>{
+    $('endstats').innerHTML=
+      'day '+G.day+' of spring<br>'+
+      'donated: '+G.stats.donated+'● · trades: '+G.stats.sold+'<br>'+
+      'net worth: '+netWorth()+'●'+(G.flags.lucky?'<br>☘ blessed by the invisible hand':'')+
+      '<br><br><span style="color:var(--rose)">"the ledger has a column math can\'t see."</span>';
+    spawnPetals($('petals2'),36);
+    $('endscreen').classList.remove('hidden'); save(); });
+}
+
+/* ---------- player ---------- */
+function mkPlayer(x,y){ return {x,y,fx:0,fy:1,walk:0}; }
+function moveBox(e,dx,dy,half,slide){
+  const m=G.liveMap;
+  const test=(nx,ny)=>{
+    for(const [ox,oy] of [[-half,-half],[half,-half],[-half,half],[half,half]]){
+      const tx=Math.floor((nx+ox)/TS), ty=Math.floor((ny+oy)/TS);
+      if(tx<0||ty<0||tx>=MW||ty>=MH) continue;
+      if(isSolid(m[ty][tx])) return false;
+    } return true; };
+  if(dx!==0){ const nx=e.x+dx;
+    if(test(nx,e.y)) e.x=nx;
+    else if(slide){
+      if(test(nx,e.y+6)&&test(e.x,e.y+1.3)) e.y+=1.3;
+      else if(test(nx,e.y-6)&&test(e.x,e.y-1.3)) e.y-=1.3; } }
+  if(dy!==0){ const ny=e.y+dy;
+    if(test(e.x,ny)) e.y=ny;
+    else if(slide){
+      if(test(e.x+6,ny)&&test(e.x+1.3,e.y)) e.x+=1.3;
+      else if(test(e.x-6,ny)&&test(e.x-1.3,e.y)) e.x-=1.3; } }
+}
+function facingTile(){ const p=player;
+  const tx=Math.floor((p.x+p.fx*12)/TS), ty=Math.floor((p.y+p.fy*12)/TS);
+  return {tx,ty,ch:(tx<0||ty<0||tx>=MW||ty>=MH)?'#':G.liveMap[ty][tx]}; }
+function interact(){
+  const p=player;
+  // NPCs first
+  const npc=ents.find(e=>e.t==='npc'&&Math.hypot(e.x-p.x,e.y-p.y)<26);
+  if(npc){ const d=npc.def;
+    if(d.menu){
+      const seen=G.met[roomKey+npc.ch]; G.met[roomKey+npc.ch]=1;
+      if(d.menu==='marsha') menuMarsha(!seen);
+      else if(d.menu==='basti') menuBasti(seen?'':'open');
+      else if(d.menu==='rica') menuRica(!seen);
+      else if(d.menu==='bank') menuBank(!seen);
+      else if(d.menu==='library') menuLibrary(!seen);
+      else if(d.menu==='ticker') menuTicker();
+      return; }
+    const met=G.met[roomKey+npc.ch]; G.met[roomKey+npc.ch]=1;
+    if(d.kind==='hand'&&!G.flags.lucky){
+      startDialog(D.hand1, ()=>{ G.flags.lucky=1; SFX.chime();
+        toast('☘ the lucky coin warms your pocket — sell prices +10%, forever'); save(); });
+      return; }
+    startDialog(D[met?d.later:d.first]); return; }
+  // tiles
+  const {tx,ty,ch}=facingTile(); const id=roomKey+':'+tx+','+ty;
+  if(ch==='B'){ if(G.picked[id]===G.day){ toast('this bush needs a day to regrow.'); return; }
+    if(!spend(1)) return; G.picked[id]=G.day; G.inv.berries++; SFX.pick();
+    burst(tx*TS+8,ty*TS+8,'#b03a5e',5); toast('+1 berries'); return; }
+  if(ch==='a'){ if(G.picked[id]===G.day){ toast('this tree gave its apple today.'); return; }
+    if(!spend(1)) return; G.picked[id]=G.day; G.inv.apples++; SFX.pick();
+    burst(tx*TS+8,ty*TS+8,C.apple,5); toast('+1 apple'); return; }
+  if(ch==='P'){ const k=tx+','+ty, st=G.plots[k]||0;
+    if(st===0){ if(G.inv.seeds<1){ toast('no seeds — Basti at the market sells them.'); return; }
+      if(!spend(1)) return; G.inv.seeds--; G.plots[k]=1; SFX.plant(); toast('planted. sleep twice and it\'s wheat.'); }
+    else if(st===3){ if(!spend(1)) return; G.plots[k]=0; G.inv.wheat+=2; SFX.pick();
+      burst(tx*TS+8,ty*TS+8,C.gold,8); toast('+2 wheat'); }
+    else toast('growing... ('+st+'/3)'); return; }
+  if(ch==='~'&&roomKey!=='u'){ if(!spend(2)) return;
+    SFX.splash(); const r=Math.random();
+    if(r<.55){ G.inv.fish++; toast('a fish! silver as a good idea.'); burst(p.x,p.y,C.water,6); }
+    else if(r<.75){ G.inv.fish+=2; toast('TWO fish! the pond is feeling generous.'); }
+    else toast('...an old boot. worthless. (or is it? no. it is.)');
+    return; }
+  if(ch==='?'){ if(roomKey==='u'){ // resurface
+      loadRoom('2,1'); player.x=4.5*TS; player.y=6.5*TS; SFX.splash(); return; }
+    startDialog([["THE POND","Something glimmers far beneath the lily pads. The water is cold and patient.",[
+      {t:'dive', f:()=>{ SFX.splash(); loadRoom('u'); player.x=8*TS; player.y=8.5*TS; }},
+      {t:'not today', f:null}]]]);
+    return; }
+  if(ch==='z'){ menuBed(); return; }
+}
+function playerUpdate(){
+  const p=player; let dx=0,dy=0;
+  if(inp.left)dx--; if(inp.right)dx++; if(inp.up)dy--; if(inp.down)dy++;
+  if(dx||dy){ const l=Math.hypot(dx,dy); dx/=l; dy/=l;
+    p.fx=Math.abs(dx)>Math.abs(dy)?Math.sign(dx):0;
+    p.fy=Math.abs(dy)>=Math.abs(dx)?Math.sign(dy):0;
+    if(p.fx&&p.fy) p.fy=0;
+    p.walk++; moveBox(p,dx*1.25,dy*1.25,5,true); } else p.walk=0;
+  if(aPressed){ aPressed=false; interact(); if(state!=='play') return; }
+  // room transitions
+  const [cx,cy]=roomKey.split(',').map(Number);
+  let moved=null;
+  if(!isNaN(cx)){
+    if(p.x<2) moved=[cx-1,cy,VW-6,p.y];
+    else if(p.x>VW-2) moved=[cx+1,cy,6,p.y];
+    else if(p.y<2) moved=[cx,cy-1,p.x,VH-6];
+    else if(p.y>VH-2) moved=[cx,cy+1,p.x,6];
+  }
+  if(moved){ const nk=moved[0]+','+moved[1];
+    if(ROOMS[nk]){ p.x=moved[2]; p.y=moved[3]; loadRoom(nk); }
+    else { p.x=Math.max(4,Math.min(VW-4,p.x)); p.y=Math.max(4,Math.min(VH-4,p.y)); } }
+}
+
+/* ---------- particles ---------- */
+function burst(x,y,color,n){ for(let i=0;i<n;i++){ const a=Math.random()*6.283, s=.4+Math.random()*1.2;
+  particles.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,life:12+Math.random()*12,color}); } }
+
+/* ---------- rendering ---------- */
+function drawTile(ch,x,y,tx,ty){
+  const h=hash(tx*7+roomKey.length,ty*13), under=room().under;
+  const g1=under?'#2f7f96':C.grass, g2=under?'#2a7288':C.grass2;
+  // ground under everything
+  ctx.fillStyle=(tx+ty)%2?g1:g2; ctx.fillRect(x,y,TS,TS);
+  if(ch==='.'||ch===','){ if(h>.9&&!under){ ctx.fillStyle='#7cae5c'; ctx.fillRect(x+7,y+7,2,2); }
+    if(h>.82&&under){ ctx.fillStyle='#3d93ab'; ctx.fillRect(x+((h*90)|0)%12,y+((h*40)|0)%12,2,2);} }
+  else if(ch===':'){ ctx.fillStyle=C.path; ctx.fillRect(x,y,TS,TS);
+    ctx.fillStyle=C.path2; if(h>.5) ctx.fillRect(x+3+((h*10)|0)%8,y+5+((h*20)|0)%6,3,2); }
+  else if(ch==='#'){ ctx.fillStyle=C.hedge; ctx.fillRect(x,y,TS,TS);
+    ctx.fillStyle=C.hedgeHi; ctx.fillRect(x,y,TS,4);
+    if(h>.55){ ctx.fillRect(x+2+((h*30)|0)%9,y+6,3,3); }
+    if(h>.85){ ctx.fillStyle=C.blossom; ctx.fillRect(x+3+((h*50)|0)%8,y+5,2,2); } }
+  else if(ch==='o'){ ctx.fillStyle=C.stoneLo; ctx.fillRect(x+2,y+4,12,10);
+    ctx.fillStyle=C.stone; ctx.fillRect(x+3,y+5,10,4); }
+  else if(ch==='~'){ ctx.fillStyle=C.water; ctx.fillRect(x,y,TS,TS);
+    ctx.fillStyle=C.water2; ctx.fillRect(x,y,TS,2);
+    const w=Math.sin(frame/28+tx*2+ty*3)*2;
+    ctx.fillStyle='#bfe6f0'; ctx.fillRect(x+3+w,y+5+((tx+ty)%3)*3,5,1); }
+  else if(ch==='l'){ ctx.fillStyle=room().under?g1:C.water; ctx.fillRect(x,y,TS,TS);
+    if(!room().under){ctx.fillStyle=C.water2; ctx.fillRect(x,y,TS,2);}
+    ctx.fillStyle='#5f9e4c'; ctx.fillRect(x+3,y+5,10,7); ctx.fillRect(x+6,y+3,5,2);
+    ctx.fillStyle=C.blossomHi; ctx.fillRect(x+6,y+7,4,3);
+    ctx.fillStyle=C.rose; ctx.fillRect(x+7,y+8,2,1); }
+  else if(ch==='>'){ ctx.fillStyle=C.water; ctx.fillRect(x,y,TS,TS);
+    ctx.fillStyle='#a8794a'; ctx.fillRect(x,y+2,TS,12);
+    ctx.fillStyle='#8a6238'; for(let i=0;i<3;i++) ctx.fillRect(x,y+4+i*4,TS,1); }
+  else if(ch==='b'){ /* building block: ground only; facade drawn per-room */ }
+  else if(ch==='c'){ // cherry tree
+    ctx.fillStyle=C.trunk; ctx.fillRect(x+6,y+8,4,8);
+    ctx.fillStyle=C.blossom; ctx.fillRect(x+1,y-2,14,12);
+    ctx.fillStyle=C.blossomHi; ctx.fillRect(x+3,y,6,5);
+    if(h>.5){ ctx.fillStyle=C.rose; ctx.fillRect(x+4+((h*40)|0)%8,y+3+((h*70)|0)%6,2,2); } }
+  else if(ch==='a'){ // apple tree
+    ctx.fillStyle=C.trunk; ctx.fillRect(x+6,y+9,4,7);
+    ctx.fillStyle=C.leafT; ctx.fillRect(x+1,y-1,14,12);
+    ctx.fillStyle='#79bb69'; ctx.fillRect(x+3,y+1,6,4);
+    const id=roomKey+':'+tx+','+ty;
+    if(G.picked[id]!==G.day){ ctx.fillStyle=C.apple;
+      ctx.fillRect(x+4,y+4,3,3); ctx.fillRect(x+10,y+2,3,3); ctx.fillRect(x+8,y+7,3,3); } }
+  else if(ch==='B'){ // berry bush
+    ctx.fillStyle='#4f8747'; ctx.fillRect(x+2,y+4,12,10);
+    ctx.fillStyle='#61a057'; ctx.fillRect(x+3,y+5,10,4);
+    const id=roomKey+':'+tx+','+ty;
+    if(G.picked[id]!==G.day){ ctx.fillStyle='#b03a5e';
+      ctx.fillRect(x+4,y+7,2,2); ctx.fillRect(x+9,y+6,2,2); ctx.fillRect(x+7,y+10,2,2); } }
+  else if(ch==='P'){ ctx.fillStyle='#8a6238'; ctx.fillRect(x+1,y+1,14,14);
+    ctx.fillStyle='#7a5530'; for(let i=0;i<3;i++) ctx.fillRect(x+2,y+3+i*4,12,1);
+    const st=G.plots[tx+','+ty]||0;
+    if(st===1){ ctx.fillStyle='#8fce70'; ctx.fillRect(x+7,y+8,2,4); }
+    else if(st===2){ ctx.fillStyle='#7cbf5e'; ctx.fillRect(x+6,y+5,2,8); ctx.fillRect(x+9,y+7,2,6); }
+    else if(st===3){ ctx.fillStyle=C.gold; ctx.fillRect(x+5,y+3,2,10); ctx.fillRect(x+8,y+2,2,11); ctx.fillRect(x+11,y+4,2,9);
+      ctx.fillStyle='#e8b95c'; ctx.fillRect(x+5,y+3,2,3); ctx.fillRect(x+8,y+2,2,3); ctx.fillRect(x+11,y+4,2,3); } }
+  else if(ch==='F'){ ctx.fillStyle=C.stone; ctx.fillRect(x,y,TS,TS);
+    ctx.fillStyle=C.water; ctx.fillRect(x+2,y+2,12,12);
+    const s=((Math.sin(frame/8+tx)*3)+3)|0;
+    ctx.fillStyle='#dff4fa'; ctx.fillRect(x+6,y+4+(s%7),3,2); }
+  else if(ch==='?'){ ctx.fillStyle=roomKey==='u'?g1:C.water; ctx.fillRect(x,y,TS,TS);
+    if(roomKey!=='u'){ctx.fillStyle=C.water2; ctx.fillRect(x,y,TS,2);}
+    const tw=(frame>>3)%2;
+    ctx.fillStyle=tw?'#fff':'#ffe9a8';
+    ctx.fillRect(x+7,y+4,2,8); ctx.fillRect(x+4,y+7,8,2); }
+  else if(ch==='z'){ ctx.fillStyle='#a8794a'; ctx.fillRect(x,y,TS,TS);
+    ctx.fillStyle=C.rose; ctx.fillRect(x+2,y+3,12,7);
+    ctx.fillStyle=C.cream; ctx.fillRect(x+2,y+3,5,7);
+    ctx.fillStyle='#8a6238'; ctx.fillRect(x+1,y+10,14,3); }
+  else if(ch==='f'){ const c=[C.rose,'#e8c53f','#9b6fd0','#fff'][((h*40)|0)%4];
+    ctx.fillStyle='#6faf5e'; ctx.fillRect(x+7,y+9,2,4);
+    ctx.fillStyle=c; ctx.fillRect(x+5,y+5,3,3); ctx.fillRect(x+9,y+6,3,3);
+    if(h>.5){ ctx.fillRect(x+7,y+11,3,3); } }
+}
+/* big building facades, drawn over their 'b' footprints */
+function drawBuilding(){
+  const b=room().bld; if(!b) return;
+  if(b==='library'){ const x=3*TS,y=1*TS,w=10*TS,h=4*TS;
+    ctx.fillStyle=C.stone; ctx.fillRect(x,y,w,h);
+    ctx.fillStyle=C.stoneHi; ctx.fillRect(x,y,w,6);
+    // pediment
+    ctx.fillStyle=C.stoneLo; ctx.fillRect(x+8,y-6,w-16,8);
+    ctx.fillStyle=C.stoneHi; ctx.fillRect(x+12,y-4,w-24,3);
+    // columns
+    for(let i=0;i<5;i++){ ctx.fillStyle=C.stoneHi; ctx.fillRect(x+8+i*(w-24)/4,y+8,8,h-14);
+      ctx.fillStyle=C.stoneLo; ctx.fillRect(x+8+i*(w-24)/4,y+8,2,h-14); }
+    // door
+    ctx.fillStyle='#5c4326'; ctx.fillRect(x+w/2-8,y+h-22,16,22);
+    ctx.fillStyle=G.flags.restored?'#ffe9a8':'#403050';
+    // windows
+    ctx.fillRect(x+16,y+14,10,12); ctx.fillRect(x+w-26,y+14,10,12);
+    // banner if restored
+    if(G.flags.restored){ ctx.fillStyle=C.rose; ctx.fillRect(x+10,y+2,w-20,4);
+      ctx.fillStyle=C.gold; ctx.fillRect(x+w/2-2,y-10,4,6); }
+    // steps
+    ctx.fillStyle=C.stoneLo; ctx.fillRect(x+w/2-12,y+h,24,4);
+  }
+  else if(b==='cottage'){ const x=1*TS,y=1*TS,w=4*TS,h=3*TS;
+    ctx.fillStyle='#e7d9b8'; ctx.fillRect(x,y+8,w,h-8);
+    ctx.fillStyle=C.roof; ctx.fillRect(x-4,y-2,w+8,14);
+    ctx.fillStyle=C.roofHi; ctx.fillRect(x-4,y-2,w+8,4);
+    ctx.fillStyle='#8a6238'; ctx.fillRect(x+6,y+h-14,12,14); // door (above bed tile)
+    ctx.fillStyle=C.sky; ctx.fillRect(x+w-18,y+16,12,10);
+    ctx.fillStyle=C.cream; ctx.fillRect(x+w-18,y+20,12,2); ctx.fillRect(x+w-13,y+16,2,10);
+    ctx.fillStyle=C.stoneLo; ctx.fillRect(x+w-8,y-8,6,10); // chimney
+  }
+  else if(b==='church'){ const x=5*TS,y=2*TS,w=6*TS,h=4*TS;
+    ctx.fillStyle=C.stone; ctx.fillRect(x,y,w,h);
+    ctx.fillStyle=C.stoneHi; ctx.fillRect(x,y,w,5);
+    ctx.fillStyle=C.roof; ctx.fillRect(x-3,y-8,w+6,12);
+    // spire
+    ctx.fillStyle=C.stoneLo; ctx.fillRect(x+w/2-4,y-26,8,20);
+    ctx.fillStyle=C.gold; ctx.fillRect(x+w/2-1,y-32,2,7);
+    // rose window (stained glass)
+    const cxx=x+w/2, cyy=y+16;
+    ['#d96a8b','#6db3c9','#e8c53f','#9b6fd0','#5d9a54'].forEach((cl,i)=>{
+      const a=i/5*6.283; ctx.fillStyle=cl;
+      ctx.fillRect(cxx+Math.cos(a)*5-2, cyy+Math.sin(a)*5-2, 4,4); });
+    ctx.fillStyle='#fff'; ctx.fillRect(cxx-1,cyy-1,3,3);
+    // door
+    ctx.fillStyle='#5c4326'; ctx.fillRect(x+w/2-7,y+h-18,14,18);
+  }
+  else if(b==='bank'){ const x=5*TS,y=2*TS,w=6*TS,h=3*TS;
+    ctx.fillStyle=C.stoneHi; ctx.fillRect(x,y,w,h);
+    ctx.fillStyle=C.stoneLo; ctx.fillRect(x,y,w,5);
+    for(let i=0;i<3;i++){ ctx.fillStyle=C.stone; ctx.fillRect(x+8+i*(w-24)/2,y+8,7,h-14); }
+    ctx.fillStyle='#5c4326'; ctx.fillRect(x+w/2-6,y+h-14,12,14);
+    ctx.fillStyle=C.gold; ctx.fillRect(x+w/2-3,y+3,6,2); // the humble gold trim
+  }
+}
+function drawMargot(){
+  const p=player, bob=(p.walk>0)?((p.walk>>3)%2):0;
+  const x=p.x|0, y=(p.y|0)-bob, under=room().under;
+  ctx.fillStyle='rgba(58,48,80,.25)'; ctx.fillRect(x-5,(p.y|0)+5,10,3);
+  // dress
+  ctx.fillStyle=C.rose; ctx.fillRect(x-5,y-3,10,9);
+  ctx.fillStyle='#c25577'; ctx.fillRect(x-5,y+3,10,3);
+  ctx.fillStyle=C.cream; ctx.fillRect(x-2,y-2,4,5); // apron
+  // head
+  ctx.fillStyle='#ffe8d6'; ctx.fillRect(x-4,y-9,8,7);
+  // blonde hair
+  ctx.fillStyle=C.hair; ctx.fillRect(x-5,y-11,10,4);
+  ctx.fillRect(x-5,y-9,2,6); ctx.fillRect(x+3,y-9,2,6);
+  if(p.fy===1||(!p.fx&&!p.fy)){ ctx.fillStyle=C.ink; ctx.fillRect(x-2,y-6,2,2); ctx.fillRect(x+1,y-6,2,2); }
+  else if(p.fy===-1){ ctx.fillStyle=C.hair; ctx.fillRect(x-4,y-9,8,7); }
+  else if(p.fx===1){ ctx.fillStyle=C.ink; ctx.fillRect(x+1,y-6,2,2); }
+  else if(p.fx===-1){ ctx.fillStyle=C.ink; ctx.fillRect(x-3,y-6,2,2); }
+  if(under){ // bubbles while diving
+    if(frame%22===0) particles.push({x:x+3,y:y-10,vx:0,vy:-.5,life:30,color:'#dff4fa'}); }
+}
+function drawNpc(e){
+  const x=e.x|0,y=e.y|0,k=e.kind;
+  if(k==='claude'){
+    const b=Math.sin(frame/16)*1.5;
+    ctx.fillStyle='rgba(58,48,80,.25)'; ctx.fillRect(x-5,y+5,10,3);
+    ctx.fillStyle='#6b5fa8'; ctx.fillRect(x-5,y-3+(b|0),10,9);
+    ctx.fillStyle='#584d91'; ctx.fillRect(x-5,y+3+(b|0),10,3);
+    ctx.fillStyle='#efe9ff'; ctx.fillRect(x-4,y-9+(b|0),8,7);
+    ctx.fillStyle=C.ink; ctx.fillRect(x-2,y-6+(b|0),2,2); ctx.fillRect(x+1,y-6+(b|0),2,2);
+    const s=Math.sin(frame/10)*1.5;
+    ctx.fillStyle=C.gold; ctx.fillRect(x-1,y-13+(s|0),2,2); }
+  else if(k==='sheep'){
+    const b=(frame>>4)%2;
+    ctx.fillStyle='rgba(58,48,80,.2)'; ctx.fillRect(x-6,y+5,12,3);
+    ctx.fillStyle='#f4f0e4'; ctx.fillRect(x-7,y-4+b,14,9);
+    ctx.fillStyle='#fffdf6'; ctx.fillRect(x-6,y-5+b,12,4);
+    ctx.fillStyle='#3f3648'; ctx.fillRect(x+4,y-7+b,6,6); // head
+    ctx.fillStyle='#fff'; ctx.fillRect(x+7,y-6+b,2,2);
+    ctx.fillStyle=C.gold; ctx.fillRect(x+5,y+1+b,3,3); // the bell
+    ctx.fillStyle='#3f3648'; ctx.fillRect(x-5,y+5,2,3); ctx.fillRect(x+2,y+5,2,3); }
+  else if(k==='priest'){
+    ctx.fillStyle='rgba(58,48,80,.25)'; ctx.fillRect(x-5,y+5,10,3);
+    ctx.fillStyle='#4a4258'; ctx.fillRect(x-5,y-4,10,10);
+    ctx.fillStyle='#ffe8d6'; ctx.fillRect(x-3,y-9,6,6);
+    ctx.fillStyle='#d5cab4'; ctx.fillRect(x-4,y-11,8,3);
+    ctx.fillStyle=C.gold; ctx.fillRect(x-1,y-1,2,4); }
+  else if(k==='marsha'){
+    drawStall(x,y,C.rose);
+    ctx.fillStyle='#ffe8d6'; ctx.fillRect(x-3,y-8,6,6);
+    ctx.fillStyle='#8a5a2b'; ctx.fillRect(x-4,y-10,8,3);
+    ctx.fillStyle='#b03a5e'; ctx.fillRect(x-4,y-2,8,5); }
+  else if(k==='basti'){
+    drawStall(x,y,C.gold);
+    ctx.fillStyle='#ffe8d6'; ctx.fillRect(x-3,y-8,6,6);
+    ctx.fillStyle=C.cream; ctx.fillRect(x-4,y-12,8,5); // baker's hat
+    ctx.fillStyle='#7a6248'; ctx.fillRect(x-4,y-2,8,5); }
+  else if(k==='rica'){
+    ctx.fillStyle='rgba(58,48,80,.25)'; ctx.fillRect(x-5,y+5,10,3);
+    ctx.fillStyle='#5d9a54'; ctx.fillRect(x-5,y-3,10,9);
+    ctx.fillStyle='#ffe8d6'; ctx.fillRect(x-4,y-9,8,7);
+    ctx.fillStyle='#6b3f22'; ctx.fillRect(x-5,y-11,10,3); ctx.fillRect(x-5,y-9,2,5);
+    ctx.fillStyle=C.apple; ctx.fillRect(x+3,y-1,3,3); }
+  else if(k==='maynard'){
+    ctx.fillStyle='rgba(58,48,80,.25)'; ctx.fillRect(x-5,y+5,10,3);
+    ctx.fillStyle='#3f3648'; ctx.fillRect(x-5,y-3,10,9);
+    ctx.fillStyle=C.cream; ctx.fillRect(x-2,y-2,4,4);
+    ctx.fillStyle='#ffe8d6'; ctx.fillRect(x-4,y-9,8,7);
+    ctx.fillStyle='#2c2536'; ctx.fillRect(x-5,y-12,10,3); ctx.fillRect(x-3,y-14,6,3); // top hat
+    ctx.fillStyle=C.gold; ctx.fillRect(x+2,y,2,2); }
+  else if(k==='hand'){
+    const b=Math.sin(frame/18)*3;
+    ctx.globalAlpha=.5; ctx.fillStyle='#dff4fa';
+    ctx.fillRect(x-12,y-8+(b|0),24,20); // palm
+    for(let i=0;i<4;i++) ctx.fillRect(x-11+i*6,y-20+(b|0)+(i===0?6:i===3?4:0),5,14);
+    ctx.fillRect(x-18,y-2+(b|0),8,10); // thumb
+    ctx.globalAlpha=1;
+    const s=(frame>>3)%2;
+    ctx.fillStyle=s?'#fff':'#ffe9a8'; ctx.fillRect(x-1,y-26+(b|0),2,2); }
+  else if(k==='sign'){
+    ctx.fillStyle='#8a6238'; ctx.fillRect(x-1,y,2,7);
+    ctx.fillStyle='#a8794a'; ctx.fillRect(x-8,y-9,16,11);
+    ctx.fillStyle=C.cream; ctx.fillRect(x-6,y-7,12,7);
+    ctx.fillStyle=C.ink; ctx.fillRect(x-5,y-6,8,1); ctx.fillRect(x-5,y-4,10,1); ctx.fillRect(x-5,y-2,6,1); }
+  // interact hint
+  if(state==='play'&&Math.hypot(e.x-player.x,e.y-player.y)<26){
+    ctx.fillStyle=C.cream; const bb=Math.sin(frame/8)*1.5;
+    ctx.fillRect(x-1,y-19+(bb|0),2,4); ctx.fillRect(x-1,y-14+(bb|0),2,2); }
+}
+function drawStall(x,y,color){
+  ctx.fillStyle='#a8794a'; ctx.fillRect(x-10,y+2,20,6);
+  ctx.fillStyle=color; ctx.fillRect(x-11,y-15,22,4);
+  ctx.fillStyle=C.cream; for(let i=0;i<3;i++) ctx.fillRect(x-11+2+i*7,y-15,4,4);
+  ctx.fillStyle='#8a6238'; ctx.fillRect(x-10,y-12,2,15); ctx.fillRect(x+8,y-12,2,15);
+}
+function render(){
+  const R=room();
+  ctx.save();
+  for(let y=0;y<MH;y++) for(let x=0;x<MW;x++)
+    drawTile(G.liveMap[y][x],x*TS,y*TS,x,y);
+  drawBuilding();
+  const drawList=ents.slice().sort((a,b)=>a.y-b.y);
+  let margotDrawn=false;
+  for(const e of drawList){
+    if(!margotDrawn&&player.y<e.y){ drawMargot(); margotDrawn=true; }
+    drawNpc(e); }
+  if(!margotDrawn) drawMargot();
+  for(const p of particles){ ctx.globalAlpha=Math.min(1,p.life/12);
+    ctx.fillStyle=p.color; ctx.fillRect(p.x|0,p.y|0,2,2); }
+  ctx.globalAlpha=1;
+  if(R.under){ ctx.fillStyle='rgba(40,110,150,.28)'; ctx.fillRect(0,0,VW,VH); }
+  if(R.petals&&frame%9===0) particles.push({x:Math.random()*VW,y:-4,
+    vx:-.3-Math.random()*.3, vy:.4+Math.random()*.4, life:120, color:Math.random()<.5?C.blossom:C.blossomHi});
+  if(roomFadeIn>0){ ctx.fillStyle='rgba(246,239,226,'+(roomFadeIn/18)+')';
+    ctx.fillRect(0,0,VW,VH); }
+  ctx.restore();
+}
+function renderHUD(){
+  $('coins').textContent='● '+G.coins;
+  let e='';
+  for(let i=0;i<10;i++) e+= i<G.energy?'▮':'▯';
+  $('energy').innerHTML=e.replace(/▯/g,'<span class="off">▮</span>');
+  $('day').textContent='DAY '+G.day;
+  if(bagOpen) renderBag();
+}
+
+/* ---------- main loop ---------- */
+let acc=0,last=0;
+function loop(t){
+  requestAnimationFrame(loop);
+  if(!last)last=t;
+  acc+=Math.min(100,t-last); last=t;
+  while(acc>=16.67){
+    acc-=16.67; frame++;
+    if(state==='play'){ if(roomFadeIn>0)roomFadeIn--; playerUpdate(); aPressed=false; upPressed=downPressed=false; }
+    else if(state==='dialog'){ dialogTick(); }
+    else { aPressed=false; }
+    for(const p of particles){ p.x+=p.vx; p.y+=p.vy; p.life--; }
+    particles=particles.filter(p=>p.life>0&&p.y<VH+8);
+  }
+  if(state==='play'||state==='dialog'){ render(); renderHUD(); }
+}
+
+/* ---------- boot ---------- */
+function begin(g){
+  G=g; player=mkPlayer(G.px,G.py);
+  loadRoom(G.room);
+  $('titlescreen').classList.add('hidden');
+  state='play';
+  if(!G.flags.introSeen){ G.flags.introSeen=1;
+    startDialog([["BELLWETHER","Day 1 of spring. You are Margot. The valley is soft, the prices are honest-ish, and the library is a dream with a leaky roof.\n\nTalk to Claude by the cottage — the one with the little gold spark."]]); }
+  fitCanvas();
+}
+$('btnNew').addEventListener('click',()=>{ firstGesture(); store.del(); begin(freshGame()); });
+$('btnCont').addEventListener('click',()=>{ firstGesture(); begin(store.get()||freshGame()); });
+$('btnKeep').addEventListener('click',()=>{ $('endscreen').classList.add('hidden'); state='play'; });
+if(store.get()) $('btnCont').style.display='block';
+
+function spawnPetals(el,n){ if(!el) return;
+  for(let i=0;i<n;i++){ const s=document.createElement('span'); s.className='pt';
+    s.style.left=(Math.random()*104-2)+'vw';
+    s.style.animationDuration=(7+Math.random()*9)+'s';
+    s.style.animationDelay=(-Math.random()*16)+'s';
+    const k=.6+Math.random()*.9;
+    s.style.width=(7*k)+'px'; s.style.height=(5*k)+'px';
+    if(Math.random()<.4) s.style.background='#fbd3e0';
+    el.appendChild(s); } }
+spawnPetals($('petals'),34);
+
+function fitCanvas(){
+  const hudH=$('hud').offsetHeight;
+  const ctrl=$('controls');
+  const ctrlH=getComputedStyle(ctrl).display==='none'?0:Math.max(140,innerHeight*.22);
+  const availW=Math.min(innerWidth-8,820);
+  const availH=innerHeight-hudH-ctrlH-14;
+  const s=Math.min(availW/VW, availH/VH);
+  cv.style.width=(VW*s|0)+'px'; cv.style.height=(VH*s|0)+'px';
+}
+addEventListener('resize',fitCanvas);
+fitCanvas();
+requestAnimationFrame(loop);
+
+/* debug hook (harmless in play; lets tests drive the economy) */
+window._bw={get state(){return state}, get room(){return roomKey}, get g(){return G}, get p(){return player},
+  get ents(){return ents},
+  warp(k,x,y){ if(G&&ROOMS[k]){ player.x=(x||8)*TS; player.y=(y||8)*TS; loadRoom(k); } },
+  buy:doBuy, sell:doSell, sleep:advanceDay, sellPrice, buyPrice, netWorth};
+</script>
