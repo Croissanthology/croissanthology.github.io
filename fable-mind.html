@@ -442,10 +442,14 @@ function freshGame(){ return {
   hp:3, maxhp:3, tokens:0, keys:0, dmg:1, hasSword:false,
   collected:{}, unlocked:{}, met:{}, flags:{}, stats:{hits:0, kills:0},
 };}
-function save(){ try{ G.px=player.x; G.py=player.y; G.room=roomKey;
-  localStorage.setItem(SAVEKEY, JSON.stringify(G)); }catch(e){} }
-function loadSave(){ try{ const s=localStorage.getItem(SAVEKEY);
-  return s?JSON.parse(s):null; }catch(e){ return null; } }
+/* storage can THROW in sandboxed frames (e.g. artifact viewers) — never touch it bare */
+const store={
+  get(){ try{ const s=localStorage.getItem(SAVEKEY); return s?JSON.parse(s):null; }catch(e){ return null; } },
+  set(v){ try{ localStorage.setItem(SAVEKEY, JSON.stringify(v)); }catch(e){} },
+  del(){ try{ localStorage.removeItem(SAVEKEY); }catch(e){} },
+};
+function save(){ G.px=player.x; G.py=player.y; G.room=roomKey; store.set(G); }
+function loadSave(){ return store.get(); }
 
 /* ---------- audio (tiny synth) ---------- */
 let AC=null, muted=true, droneNodes=null;
@@ -996,12 +1000,12 @@ function begin(g){
     startDialog(D.intro, ()=>{G.hasSword=true; save();}); }
   fitCanvas();
 }
-$('btnNew').addEventListener('click',()=>{ firstGesture(); localStorage.removeItem(SAVEKEY); begin(freshGame()); });
+$('btnNew').addEventListener('click',()=>{ firstGesture(); store.del(); begin(freshGame()); });
 $('btnCont').addEventListener('click',()=>{ firstGesture(); const s=loadSave(); begin(s||freshGame()); });
 $('btnRespawn').addEventListener('click',()=>{
   $('deathscreen').classList.add('hidden');
   G.hp=G.maxhp; player=mkPlayer(7.5*TS,7*TS); loadRoom('1,3'); state='play'; });
-$('btnAgain').addEventListener('click',()=>{ localStorage.removeItem(SAVEKEY);
+$('btnAgain').addEventListener('click',()=>{ store.del();
   $('endscreen').classList.add('hidden'); begin(freshGame()); });
 if(loadSave()) $('btnCont').style.display='block';
 
