@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Le Mondial, pour Margot — the 2026 World Cup, explained</title>
+<meta name="description" content="An interactive, beginner-friendly explainer of six national teams at the 2026 World Cup — France, Belgium, Spain, Norway, England, Argentina — in the colors of France's 'Liberté' away kit.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,400;0,500;0,600;1,400&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="mondial.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚽</text></svg>">
+</head>
+<body>
+
+<!-- ============ HERO ============ -->
+<header class="hero">
+  <div class="pin-layer" aria-hidden="true"></div>
+  <div class="wrap">
+    <p class="eyebrow">Coupe du Monde 2026 · USA — Canada — Mexique</p>
+    <h1 class="display">Le Mondial,<br>pour <span class="accent">Margot</span></h1>
+    <p class="kicker">Six teams, one tournament happening <em>right now</em>, and everything you never learned as a wee lass — explained in the colors of France's <span class="fr">Liberté</span> away jersey: the mint green of the Statue of Liberty, and the copper she used to be.</p>
+    <div class="hero-meta">
+      <hr class="cuff" aria-hidden="true">
+      <span class="tnum" id="hero-date">As it stands on 10 July 2026 — quarterfinal week</span>
+    </div>
+  </div>
+  <svg class="ball" id="hero-ball" viewBox="0 0 100 100" role="button" tabindex="0" aria-label="A football. Tap to kick it.">
+    <circle cx="50" cy="50" r="47" fill="var(--card)" stroke="var(--ink)" stroke-width="2.5"/>
+    <polygon points="50,32 66,43 60,62 40,62 34,43" fill="var(--copper)"/>
+    <g stroke="var(--ink)" stroke-width="2" fill="none">
+      <path d="M50 32 L50 12 M66 43 L84 37 M60 62 L72 78 M40 62 L28 78 M34 43 L16 37"/>
+    </g>
+  </svg>
+  <div class="scroll-cue" aria-hidden="true">allez, on descend ↓</div>
+</header>
+
+<!-- ============ STICKY NAV ============ -->
+<nav class="team-nav" aria-label="Jump to a team">
+  <div class="wrap">
+    <div class="chip-row" id="nav-chips">
+      <a class="chip" href="#basics"><span class="dot" style="--accent: var(--copper)"></span>Le B.A.-BA</a>
+      <!-- team chips injected -->
+      <a class="chip" href="#compare"><span class="dot" style="--accent: var(--ink-3)"></span>Compare</a>
+      <a class="chip" href="#quiz"><span class="dot" style="--accent: var(--ink-3)"></span>Quiz</a>
+      <a class="chip" href="#penalty"><span class="dot" style="--accent: var(--ink-3)"></span>Penalty!</a>
+    </div>
+  </div>
+</nav>
+
+<main>
+
+<!-- ============ CHAPTER 0 : THE BASICS ============ -->
+<section id="basics">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <p class="eyebrow">Chapitre zéro</p>
+      <h2 class="display">Le football in 90 seconds</h2>
+      <p class="sub">Everything you actually need. No jargon without a translation, promise.</p>
+    </div>
+
+    <div class="prose reveal">
+      <p class="lede dropcap">Two teams of eleven. One ball. Ninety minutes. Whoever puts the ball in the other team's net more often wins — and you're not allowed to use your hands unless you're the goalkeeper, the one player dressed differently. That's genuinely the whole game. Everything else is detail, and the details are where it gets beautiful.</p>
+      <p>A football team is a little society: a <strong>goalkeeper</strong> guards the net, <strong>defenders</strong> protect the territory in front of it, <strong>midfielders</strong> run the economy — winning the ball, moving it, deciding the tempo — and <strong>forwards</strong> live for one thing only: goals. Tap around the pitch below to meet each tribe.</p>
+    </div>
+
+    <!-- interactive pitch anatomy -->
+    <div class="reveal" style="margin-top: 30px;">
+      <p class="block-label">Interactive — tap the pitch</p>
+      <div class="pitch-frame pinstripes" id="anatomy-frame">
+        <svg id="anatomy-pitch" viewBox="0 0 340 500" aria-label="A football pitch. Tap zones and positions to learn what they do."></svg>
+      </div>
+      <p class="callout" style="margin-top:12px;" id="anatomy-caption">Tap a glowing dot to meet a position, or a zone of the pitch to learn its name. <span class="fr">Vas-y, n'aie pas peur.</span></p>
+    </div>
+
+    <!-- rules cards -->
+    <div class="facts reveal" style="margin-top: 40px;" id="rules-facts"></div>
+
+    <!-- offside interactive -->
+    <div class="reveal" style="margin-top: 48px;">
+      <p class="block-label">Interactive — the offside rule, finally</p>
+      <div class="prose">
+        <p>Offside is the rule everyone pretends to understand. Here it is, honestly: when your teammate passes you the ball, <strong>at that exact moment</strong> you must not be closer to the goal than the last defender (goalkeeper aside). If you are — whistle, flag, everyone in the café groans. Drag the attacker and see for yourself:</p>
+      </div>
+      <div class="pitch-frame" style="margin-top: 14px;">
+        <svg id="offside-pitch" viewBox="0 0 340 240" aria-label="Offside demonstration. Use the slider to move the attacker."></svg>
+      </div>
+      <div class="offside-controls">
+        <input type="range" id="offside-slider" min="0" max="100" value="30" aria-label="Move the attacker up and down the pitch">
+        <p class="offside-verdict" id="offside-verdict" aria-live="polite"></p>
+      </div>
+    </div>
+
+    <!-- formation morpher -->
+    <div class="reveal" style="margin-top: 48px;">
+      <p class="block-label">Interactive — what's a “formation”?</p>
+      <div class="prose">
+        <p>When commentators say a team plays “4-3-3”, they're just counting bodies from the back: 4 defenders, 3 midfielders, 3 forwards (the goalkeeper goes without saying). The numbers are a personality test. Try a few:</p>
+      </div>
+      <div class="chip-row" id="formation-buttons" style="margin: 16px 0 14px;"></div>
+      <div class="pitch-frame pinstripes">
+        <svg id="formation-pitch" viewBox="0 0 340 440" aria-label="Formation diagram, animated"></svg>
+      </div>
+      <p class="callout" style="margin-top:12px;" id="formation-caption"></p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ THE TOURNAMENT ============ -->
+<section id="tournament" style="background: var(--ground-2);">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <p class="eyebrow">Le tournoi</p>
+      <h2 class="display">The 2026 World Cup</h2>
+      <p class="sub" id="tournament-sub"></p>
+    </div>
+
+    <div class="prose reveal" id="tournament-prose"></div>
+
+    <div class="reveal" style="margin-top: 36px;">
+      <p class="block-label">From 48 to 1</p>
+      <div class="funnel" id="format-funnel"></div>
+    </div>
+
+    <div class="reveal" style="margin-top: 44px;">
+      <p class="block-label">The bracket, as of 10 July — your six teams highlighted</p>
+      <div class="bracket-scroll card" style="padding: 14px;">
+        <svg id="bracket-svg" aria-label="2026 World Cup knockout bracket"></svg>
+      </div>
+      <p class="callout" style="margin-top: 12px;" id="bracket-note"></p>
+    </div>
+
+    <div class="reveal" style="margin-top: 40px;">
+      <p class="block-label">Les grandes histoires — storylines so far</p>
+      <div class="facts" id="storyline-facts"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ TEAM CHAPTERS (injected) ============ -->
+<div id="chapters"></div>
+
+<!-- ============ COMPARE ============ -->
+<section id="compare" style="background: var(--ground-2);">
+  <div class="wrap">
+    <div class="section-head reveal" style="text-align:center;">
+      <p class="eyebrow">Face à face</p>
+      <h2 class="display">Compare two teams</h2>
+      <p class="sub" style="margin: 0 auto;">Six ways to play football, side by side. Pick any two.</p>
+    </div>
+    <div class="compare-pickers reveal" id="compare-pickers"></div>
+    <div class="legend reveal" id="compare-legend"></div>
+    <div class="card reveal" style="max-width: 640px; margin: 0 auto;">
+      <div class="meters" id="compare-meters"></div>
+    </div>
+    <p class="callout reveal" style="max-width: 640px; margin: 16px auto 0;" id="compare-note"></p>
+  </div>
+</section>
+
+<!-- ============ QUIZ ============ -->
+<section id="quiz">
+  <div class="wrap">
+    <div class="section-head reveal" style="text-align:center;">
+      <p class="eyebrow">Le test</p>
+      <h2 class="display">Which team is <em>yours</em>?</h2>
+      <p class="sub" style="margin: 0 auto;">You never joined soccer as a wee lass — but it's never too late to adopt a team. Five questions.</p>
+    </div>
+    <div class="card quiz-card reveal" id="quiz-card"></div>
+  </div>
+</section>
+
+<!-- ============ PENALTY GAME ============ -->
+<section id="penalty" style="background: var(--ground-2);">
+  <div class="wrap">
+    <div class="section-head reveal" style="text-align:center;">
+      <p class="eyebrow">À toi de jouer</p>
+      <h2 class="display">Take your penalties</h2>
+      <p class="sub" style="margin: 0 auto;">World Cups are decided like this: five shots, one keeper, no mercy. Tap where you want to shoot — before the keeper guesses.</p>
+    </div>
+    <div class="reveal" style="max-width: 560px; margin: 0 auto;">
+      <div class="pitch-frame pen-stage">
+        <svg id="pen-svg" viewBox="0 0 340 230" aria-label="Penalty shootout game. Tap a zone of the goal to shoot."></svg>
+      </div>
+      <div class="pen-score" id="pen-score" aria-label="Your five shots"></div>
+      <p class="pen-msg" id="pen-msg" aria-live="polite"></p>
+      <p style="text-align:center; margin-top: 6px;"><button id="pen-reset" hidden>Rejouer</button></p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <hr class="cuff" style="margin-bottom: 22px;">
+    <p>Built with love (and an unreasonable quantity of research agents) in July 2026, mid-tournament. Scores and squads current as of <span class="tnum">10 July 2026</span>; football moves fast, so forgive anything the quarterfinals have since rewritten.</p>
+    <p>Colors borrowed from the France 2026 away kit, <span class="fr">« Liberté »</span> — mint for the Statue of Liberty as she is, copper for what she was.</p>
+    <p class="foot-sign">Pour Margot, qui aurait fait une excellente milieu de terrain. ⚽</p>
+  </div>
+</footer>
+
+<button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">●</button>
+
+<div class="bubble" id="bubble" role="status"></div>
+
+<script src="data.js"></script>
+<script src="mondial.js"></script>
+</body>
+</html>
