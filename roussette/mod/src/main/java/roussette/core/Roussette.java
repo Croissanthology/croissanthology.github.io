@@ -8,7 +8,7 @@ import roussette.core.Ports.Sensors;
  *  was arrived at by playing with it, so change them reluctantly. */
 public final class Roussette {
 
-    public enum State { HUNT, LATCHED, FLUNG, WEDGED, PATTED, KO }
+    public enum State { HUNT, LATCHED, FLUNG, WEDGED, PATTED, KO, SLEEPING }
 
     // --- movement -----------------------------------------------------------
     /** Load-bearing: descending doubles her speed and halves his. This single
@@ -57,6 +57,16 @@ public final class Roussette {
     public static final int BOUNCE_EXTENSION = 8;
     public static final int MAX_BOUNCES      = 4;
 
+    // --- bedtime --------------------------------------------------------------
+    /** When he gets into a bed she stops hunting, ports to his side, and flumps
+     *  over like something shot — except her eyes are shut and she is snoring.
+     *
+     *  This is the only state she enters voluntarily and the only one where she
+     *  is harmless on purpose rather than by accident. It does not soften her:
+     *  she is on his pillow, and she is awake again at dawn. */
+    public static final int SNORE_PERIOD = 70;   // ~3.5s between noises
+    public static final int SNORT_ONE_IN = 4;    // some of them are snorts
+
     private State state = State.HUNT;
     private int timer, latchCooldown, wedgeCooldown, angry, rage, clock;
     private int wallDebounce, bounces;
@@ -78,13 +88,22 @@ public final class Roussette {
 
         a.setGlowing(s.lightLevel() <= GLOW_LIGHT);
 
+        // He got into a bed. Whatever she was doing, she is going to come and
+        // sleep on him -- unless she is already out cold, or still in the air,
+        // in which case she finishes that first.
+        if (s.victimSleeping() && s.victimPresent()
+                && state != State.KO && state != State.FLUNG && state != State.SLEEPING) {
+            enterSleep(a);
+        }
+
         switch (state) {
-            case KO      -> koTick(a);
-            case PATTED  -> patTick(a);
-            case FLUNG   -> flungTick(s, a);
-            case WEDGED  -> wedgeTick(s, a);
-            case LATCHED -> latchTick(s, a);
-            case HUNT    -> huntTick(s, a);
+            case KO       -> koTick(a);
+            case SLEEPING -> sleepTick(s, a);
+            case PATTED   -> patTick(a);
+            case FLUNG    -> flungTick(s, a);
+            case WEDGED   -> wedgeTick(s, a);
+            case LATCHED  -> latchTick(s, a);
+            case HUNT     -> huntTick(s, a);
         }
     }
 
@@ -116,6 +135,11 @@ public final class Roussette {
             timer += KO_PAT_BONUS;
             a.sound("purr");
             a.particles("heart", 2);
+            return;
+        }
+        if (state == State.SLEEPING) {    // purrs in her sleep, does not wake
+            a.sound("purr");
+            a.particles("heart", 3);
             return;
         }
         endLatch(a);
@@ -163,6 +187,35 @@ public final class Roussette {
         if (--timer <= 0) { state = State.HUNT; a.setPupil(Pupil.ROUND); return; }
         a.spinYaw(2);
         if (timer % 20 == 0) a.particles("bubble", 3);
+    }
+
+    /** She ports to his side and goes down like a dropped bag of sand. */
+    private void enterSleep(Actuators a) {
+        endLatch(a);
+        state = State.SLEEPING;
+        timer = 0;
+        angry = 0;
+        rage = 0;
+        bounces = 0;
+        a.setPupil(Pupil.CLOSED);
+        a.flumpBeside();
+        a.sound("huff");            // the settling-down noise, reused
+        a.particles("heart", 2);
+    }
+
+    private void sleepTick(Sensors s, Actuators a) {
+        if (!s.victimSleeping()) {  // morning
+            state = State.HUNT;
+            a.setPupil(Pupil.ROUND);
+            a.sound("huff");
+            a.particles("splash", 4);
+            return;
+        }
+        a.flumpBeside();            // stay put even if the bed is jostled
+        if (clock % SNORE_PERIOD == 0) {
+            a.sound(roll(SNORT_ONE_IN) ? "snort" : "snore");
+            a.particles("bubble", 1);
+        }
     }
 
     private void patTick(Actuators a) {

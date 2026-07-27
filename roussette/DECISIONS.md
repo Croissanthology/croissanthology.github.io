@@ -75,7 +75,7 @@ entry points. Only the adapter has to not care who swung.
 
 The spec said "all recordings are Margot's own voice", which is right for the
 *vocal* half and impossible for the rest. Nobody can perform a wet impact against
-a wall. So the ten events split in two.
+a wall. So the twelve events split in two.
 
 **Margot records these — her voice, mono OGG Vorbis.** This is the half that
 cannot be substituted; it is the whole reason the mob is her and not a fish.
@@ -90,6 +90,8 @@ cannot be substituted; it is the whole reason the mob is her and not a fish.
 | `gnaw` | ×1 | latched, every 24 ticks |
 | `eep` | ×1 | **new** — the first ricochet |
 | `huff` | ×1 | **new** — "Ok. Ok. anyway.", on landing |
+| `snore` | ×2 | **new** — loops all night while he sleeps |
+| `snort` | ×2 | **new** — punctuates the snoring, ~1 in 4 |
 
 **Sourced, not performed.** Vanilla sound events referenced by ID need no files
 at all, which is the cheapest possible answer:
@@ -204,9 +206,38 @@ she reads more saturated in blocks than in her real palette: a painting can use
   alternative is letting a half-built temple be built over.
 - Persisted in world save data, so a restart does not reopen the door.
 
+### Bedtime
+
+When he gets into a bed she stops hunting, teleports to his pillow, flumps over
+on her side with her eyes shut, and snores until dawn.
+
+This is the only state she enters **voluntarily**, and the only one where she is
+harmless on purpose rather than by accident. It does not soften her and it is not
+a truce: she is on his pillow, and she is awake again at first light.
+
+Mechanically it falls out of the existing structure almost for free — a new state
+between KO and the rest, a fourth pupil (`CLOSED`), and one new actuator
+(`flumpBeside`). Three details worth keeping:
+
+- **Repellent outranks bedtime.** Being knocked out is unconsciousness, not
+  sleep; she gets X eyes, not shut ones.
+- **She can be punted off the bed**, and flumps straight back down, because the
+  sleep check re-fires the moment the fling ends. Nobody wrote that; it fell out
+  of the state priority.
+- **Patting her purrs without waking her**, exactly like patting her while she is
+  knocked out. The two kindness rules now rhyme.
+
+She is registered as a `Mob`, not a `Monster`, so vanilla's "you may not rest,
+there are monsters nearby" check ignores her. Without that she would make the bed
+unusable and the whole feature would be impossible.
+
+**Two new sounds:** `snore` ×2 and `snort` ×2, bringing Margot's recording list
+to 16 takes across 10 events. The snore loops every 3.5 seconds all night, so it
+is the sound he will hear more than any other in the mod.
+
 ## Still needed from Margot
 
-- **The eight vocal recordings** in the table above (eleven takes). Her voice is
+- **The ten vocal recordings** in the table above (sixteen takes). Her voice is
   the whole point and it is the one part of the mod that cannot be written. The
   wet noises are no longer on her list.
 - **The cousin's username**, so he can be protected explicitly. The brother's is

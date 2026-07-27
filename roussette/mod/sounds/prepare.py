@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """
-Split one long recording into the twelve sound files the mod wants.
+Split one long recording into the sixteen sound files the mod wants.
 
     python3 prepare.py margot-sounds.wav
 
-Give it a single recording containing the twelve takes in the documented order,
+Give it a single recording containing the sixteen takes in the documented order,
 separated by silence. It finds the gaps, cuts the clips out, names them, drops
 them next to this script, and rewrites sounds.json to use them instead of the
 vanilla placeholders.
@@ -19,7 +19,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 SOUNDS_JSON = os.path.join(HERE, '..', 'src', 'main', 'resources',
                            'assets', 'roussette', 'sounds.json')
 
-# Recording order. (event, take-count) -- 12 clips total.
+# Recording order. (event, take-count) -- 16 clips total.
 ORDER = [
     ('cry',     3),
     ('wail',    2),
@@ -29,6 +29,8 @@ ORDER = [
     ('gnaw',    1),
     ('eep',     1),
     ('huff',    1),
+    ('snore',   2),
+    ('snort',   2),
 ]
 EXPECTED = sum(n for _, n in ORDER)
 

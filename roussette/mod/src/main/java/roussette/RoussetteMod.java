@@ -96,6 +96,8 @@ public class RoussetteMod {
     public static final Supplier<SoundEvent> SND_GNAW    = sound("gnaw");
     public static final Supplier<SoundEvent> SND_EEP     = sound("eep");
     public static final Supplier<SoundEvent> SND_HUFF    = sound("huff");
+    public static final Supplier<SoundEvent> SND_SNORE   = sound("snore");
+    public static final Supplier<SoundEvent> SND_SNORT   = sound("snort");
     // The wet ones. sounds.json points these at vanilla slime/splash samples,
     // so no recording is needed -- see assets/roussette/sounds.json.
     public static final Supplier<SoundEvent> SND_SQUELCH = sound("squelch");

@@ -9,7 +9,7 @@ package roussette.core;
 public final class Ports {
     private Ports() {}
 
-    public enum Pupil { ROUND, SLIT, X }
+    public enum Pupil { ROUND, SLIT, X, CLOSED }
 
     /** Everything she can perceive. */
     public interface Sensors {
@@ -22,6 +22,8 @@ public final class Ports {
         boolean onFire();
         int     lightLevel();
         boolean victimSneaking();
+        /** Is he in a bed, right now? */
+        boolean victimSleeping();
         /** Victim health in half-hearts, 20 = full. */
         int     victimHealth();
     }
@@ -40,6 +42,8 @@ public final class Ports {
         void bounce(double retain);
         void teleportToVictim();
         void rideVictimFeet();
+        /** Flump over beside his bed and stay there, on her side, asleep. */
+        void flumpBeside();
         void sound(String event);
         void particles(String kind, int count);
         void slowVictim(int amplifier, int ticks);

@@ -54,7 +54,8 @@ public class RoussetteModel extends EntityModel<RoussetteEntity> {
 
     private final ModelPart root;
     private final ModelPart tail, earL, earR, pectL, pectR;
-    private final ModelPart eyeRoundL, eyeRoundR, eyeSlitL, eyeSlitR, eyeKoL, eyeKoR, tongue;
+    private final ModelPart eyeRoundL, eyeRoundR, eyeSlitL, eyeSlitR, eyeKoL, eyeKoR,
+                     eyeShutL, eyeShutR, tongue;
 
     public RoussetteModel(ModelPart root) {
         this.root = root;
@@ -69,6 +70,8 @@ public class RoussetteModel extends EntityModel<RoussetteEntity> {
         this.eyeSlitR  = root.getChild("eye_slit_r");
         this.eyeKoL    = root.getChild("eye_ko_l");
         this.eyeKoR    = root.getChild("eye_ko_r");
+        this.eyeShutL  = root.getChild("eye_shut_l");
+        this.eyeShutR  = root.getChild("eye_shut_r");
         this.tongue    = root.getChild("tongue");
     }
 
@@ -96,6 +99,8 @@ public class RoussetteModel extends EntityModel<RoussetteEntity> {
         addEye(root, "eye_slit_r",  80, 64, -1);
         addEye(root, "eye_ko_l",    96, 64, 1);
         addEye(root, "eye_ko_r",    96, 64, -1);
+        addEye(root, "eye_shut_l", 112, 64, 1);
+        addEye(root, "eye_shut_r", 112, 64, -1);
 
         // Mouth, and the tongue that lolls out when she is knocked out.
         root.addOrReplaceChild("mouth",
@@ -120,7 +125,7 @@ public class RoussetteModel extends EntityModel<RoussetteEntity> {
     }
 
     /**
-     * @param pupil  0 round, 1 slit, 2 knocked out
+     * @param pupil  0 round, 1 slit, 2 knocked out, 3 asleep
      * @param swim   how hard the tail is working, 0..1
      * @param age    ticks, for idle motion
      */
@@ -128,7 +133,18 @@ public class RoussetteModel extends EntityModel<RoussetteEntity> {
         eyeRoundL.visible = eyeRoundR.visible = pupil == 0;
         eyeSlitL.visible  = eyeSlitR.visible  = pupil == 1;
         eyeKoL.visible    = eyeKoR.visible    = pupil == 2;
+        eyeShutL.visible  = eyeShutR.visible  = pupil == 3;
         tongue.visible    = pupil == 2;
+
+        if (pupil == 3) {                       // asleep: slow, shallow breathing
+            float breath = (float) Math.sin(age * 0.055F);
+            tail.yRot  = breath * 0.06F;
+            pectL.zRot = 0.14F + breath * 0.03F;
+            pectR.zRot = 0.14F - breath * 0.03F;
+            earL.zRot  = 0.16F + breath * 0.02F;
+            earR.zRot  = 0.16F - breath * 0.02F;
+            return;
+        }
 
         float beat = 0.5F + swim * 2.6F;
         tail.yRot  = (float) Math.sin(age * 0.35F * beat) * (0.30F + swim * 0.55F);

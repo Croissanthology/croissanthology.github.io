@@ -32,6 +32,13 @@ public class RoussetteRenderer extends MobRenderer<RoussetteEntity, RoussetteMod
         // Geometry is in Minecraft pixels; models draw at 1/16 scale.
         pose.scale(1.0F, 1.0F, 1.0F);
 
+        // Bedtime: flumped over on her side beside his pillow, snoring.
+        if (entity.pupilState() == 3) {
+            pose.translate(0.0F, -0.18F, 0.0F);
+            pose.mulPose(com.mojang.math.Axis.XP.rotationDegrees(88.0F));
+            return;
+        }
+
         // As a repellent dose builds she visibly sags, so he can read her like
         // someone about to fall asleep. Spec §6.
         float droop = entity.drowsy();

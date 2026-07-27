@@ -159,6 +159,7 @@ public class RoussetteEntity extends Mob implements Ports.Sensors, Ports.Actuato
     @Override public boolean inWater()        { return this.isInWater(); }
     @Override public boolean onFire()         { return this.isOnFire(); }
     @Override public boolean victimSneaking() { return victim != null && victim.isShiftKeyDown(); }
+    @Override public boolean victimSleeping() { return victim != null && victim.isSleeping(); }
     @Override public int     victimHealth()   { return victim == null ? 20 : (int) Math.ceil(victim.getHealth()); }
 
     @Override
@@ -269,6 +270,29 @@ public class RoussetteEntity extends Mob implements Ports.Sensors, Ports.Actuato
         this.fallDistance = 0.0F;
     }
 
+    /**
+     * Bedtime. She ports to the side of his bed and goes down like a dropped
+     * bag of sand, and stays there all night.
+     *
+     * <p>She is a {@code Mob}, not a {@code Monster}, so vanilla's
+     * "you may not rest, there are monsters nearby" check does not see her —
+     * which is the whole reason this works. He can get into bed with a shark
+     * two feet away and the game will let him.
+     */
+    @Override
+    public void flumpBeside() {
+        if (victim == null) return;
+        // one step to his right, at mattress height
+        Vec3 side = victim.getLookAngle().yRot((float) (Math.PI / 2.0)).normalize().scale(0.62);
+        Vec3 spot = victim.position().add(side);
+        this.setPos(spot.x, victim.getY() + 0.14, spot.z);
+        this.setDeltaMovement(Vec3.ZERO);
+        this.setYRot(victim.getYRot());
+        this.yBodyRot = this.yHeadRot = victim.getYRot();
+        this.fallDistance = 0.0F;
+        this.setXRot(0.0F);
+    }
+
     @Override
     public void sound(String event) {
         SoundEvent se = switch (event) {
@@ -280,6 +304,8 @@ public class RoussetteEntity extends Mob implements Ports.Sensors, Ports.Actuato
             case "gnaw"    -> RoussetteMod.SND_GNAW.get();
             case "eep"     -> RoussetteMod.SND_EEP.get();
             case "huff"    -> RoussetteMod.SND_HUFF.get();
+            case "snore"   -> RoussetteMod.SND_SNORE.get();
+            case "snort"   -> RoussetteMod.SND_SNORT.get();
             case "squelch" -> RoussetteMod.SND_SQUELCH.get();
             case "reform"  -> RoussetteMod.SND_REFORM.get();
             default        -> null;
@@ -340,9 +366,10 @@ public class RoussetteEntity extends Mob implements Ports.Sensors, Ports.Actuato
     @Override
     public void setPupil(Ports.Pupil pupil) {
         this.entityData.set(PUPIL, switch (pupil) {
-            case ROUND -> 0;
-            case SLIT  -> 1;
-            case X     -> 2;
+            case ROUND  -> 0;
+            case SLIT   -> 1;
+            case X      -> 2;
+            case CLOSED -> 3;
         });
     }
 

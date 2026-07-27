@@ -1,6 +1,6 @@
 # Recording her voice
 
-**One file. Twelve takes. In this order. Two seconds of silence between each.**
+**One file. Sixteen takes. In this order. Two seconds of silence between each.**
 
 Then send it to me, or run `python3 prepare.py yourfile.wav` yourself — it finds
 the gaps, cuts the takes out, names them, and rewires `sounds.json`.
@@ -10,7 +10,7 @@ the gaps, cuts the takes out, names them, and rewires `sounds.json`.
 - **Quiet room.** Laptop or phone mic is completely fine. Room tone is fine;
   a fridge hum is fine. What ruins it is a fan or music, because the splitter
   finds takes by looking for gaps, and constant noise means there are no gaps.
-- **Stay the same distance from the mic** for all twelve, so the levels match.
+- **Stay the same distance from the mic** for all sixteen, so the levels match.
 - **Don't shout into it.** Clipping cannot be undone. Loud-but-not-blown.
 - **Two seconds of silence between takes.** More is fine. Less is risky.
 - **Start and end with two seconds of silence** too.
@@ -21,7 +21,7 @@ the gaps, cuts the takes out, names them, and rewires `sounds.json`.
 - Export **16-bit WAV** if you can. If you can only get m4a or mp3, that's fine
   too — `prepare.py` will convert it, as long as ffmpeg is installed.
 
-## The twelve takes, in order
+## The sixteen takes, in order
 
 | # | Name | Length | What it's for | How to do it |
 |---|---|---|---|---|
@@ -37,8 +37,17 @@ the gaps, cuts the takes out, names them, and rewires `sounds.json`.
 | 10 | **gnaw** | ~0.5 s | Latched onto his feet, every 1.2 s | The shoulder-chewing noise. Persistent, unbothered, a bit rhythmic. This is the one that plays over and over while she's attached, so make it something you'd tolerate hearing a lot. |
 | 11 | **eep** | ~0.3 s | First ricochet off a wall | **"EEEP!"** Startled, high, brief. The single funniest sound in the mod. |
 | 12 | **huff** | ~0.6 s | Landing, before she resumes hunting | The "Ok. Ok. anyway." — a sharp exhale through the nose, collecting herself. Dignity reassembling. No words. |
+| 13 | **snore** take 1 | ~1.5 s | He is asleep in a bed; loops all night | A full slow snore, in and out. Soft, contented, faintly ridiculous. This one repeats every 3.5 seconds for the whole night, so keep it gentle — it is a lullaby, not a joke. |
+| 14 | **snore** take 2 | ~1.5 s | ” | Same again, slightly different shape, so the loop doesn't feel mechanical. |
+| 15 | **snort** take 1 | ~0.4 s | Punctuates the snoring, roughly 1 in 4 | A sudden sharp snerk — the noise of nearly waking up and deciding not to. |
+| 16 | **snort** take 2 | ~0.4 s | ” | Again, different. Wetter, or higher. |
 
-**Total: about 30–40 seconds of recording**, most of which is silence.
+**Total: about 45–55 seconds of recording**, most of which is silence.
+
+The last four are the bedtime takes: when he gets into a bed, she teleports to
+his pillow, flumps over on her side with her eyes shut, and snores until dawn.
+He will hear 13–16 more than anything else in the mod, so they are the ones
+worth a second take.
 
 ## What you are *not* recording
 
@@ -55,7 +64,7 @@ python3 prepare.py margot-sounds.wav             # then do it for real
 ```
 
 `--dry-run` prints where it thinks each take starts and how long it is, without
-writing anything. **Always run that first** — if the count is not 12, the labels
+writing anything. **Always run that first** — if the count is not 16, the labels
 will be off by one and everything gets misnamed.
 
 If the count is wrong:
