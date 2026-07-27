@@ -13,7 +13,7 @@ A lavender catshark with cat ears, **1.95 blocks long**, built from **20 boxes**
 Hide `#C3ADEB`, fins `#8E6FC4`, belly `#F3ECFC`, cheeks and inner ears `#F2A8CE`,
 whiskers `#5B4383`, iris `#F0C64B`, pupil `#241832`.
 
-**15 hearts** (`MAX_HEALTH = 30` half-hearts).
+**8 hearts** (`MAX_HEALTH = 16` half-hearts).
 
 Her eyes are a status readout, readable across a room:
 
@@ -103,8 +103,10 @@ route to block, and no distance that helps.
 Any damage works. At zero health she plays `wail`, throws 40 particles, and
 vanishes — then **re-forms 30 ticks (1.5 s) later** with round eyes and no grudge.
 
-Killing her takes real commitment at 15 hearts, which is deliberate: casual
-whacking is supposed to just launch her, forever. Death is a very long fling.
+Eight hearts: enough that a casual whack launches her rather than killing her,
+so the fling stays the core loop, but low enough that killing her is a normal
+thing to do rather than a project. That works precisely because the return is so
+fast — a kill was never going to buy much peace anyway. Death is a long fling.
 
 ## 6. Shark repellent
 
@@ -219,11 +221,15 @@ Moves her onto a new victim. Refuses protected players.
 | `TempleBuilder` | world mapping, chunk batching, the run-once latch |
 | `Geometry` | the 20 boxes and the neoteny proportion bands |
 
-**Not written — everything that touches Minecraft:**
+**Written but never compiled — the Minecraft-facing half, in `mod/`:**
 
-the entity, model and renderer · the hitbox · items (can, treated armour) ·
-`roussette:shrine_stone` · the painting · sound registration · command
-registration · world save data · the actual block writes and chunk force-loading
-· `Ports.Sensors` and `Ports.Actuators` implemented against the real API
+the entity (implementing `Sensors`/`Actuators`) · model, renderer and textures ·
+the repellent can and its anvil recipe · `roussette:shrine_stone` · her painting
+· sound registration · all three commands · world save data · the temple runner
+with force-loading and per-tick block writes
 
-Nothing is installable yet.
+The authoring environment blocked `maven.neoforged.net`, so NeoForge could not be
+downloaded and this half has never seen a compiler. Expect the first build to
+fail; every unverified API call is tagged `// VERIFY:`. See
+[`mod/README-INSTALL.md`](mod/README-INSTALL.md) for the ranked list of where to
+look.

@@ -101,7 +101,10 @@ public class Tests {
         r.onReform(f);
         check("and she comes straight back, hunting", r.state() == Roussette.State.HUNT);
         check("with round eyes and no grudge", f.pupil == Pupil.ROUND);
-        check("killing her is a project, not an accident", Roussette.MAX_HEALTH >= 30);
+        check("she is killable without being a pushover", Roussette.MAX_HEALTH == 16);
+        check("a single hit never kills her, so the fling loop survives",
+              Roussette.MAX_HEALTH > 10);
+        check("she is back almost immediately", Roussette.REFORM_DELAY <= 40);
 
         // bystanders (the cousin) reach her through the same entry points
         f = new Fake(); r = new Roussette();

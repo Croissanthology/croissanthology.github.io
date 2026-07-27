@@ -38,11 +38,12 @@ public final class Roussette {
     // --- mortality ----------------------------------------------------------
     /** She can be defeated by any damage, and she simply comes back.
      *
-     *  This is deliberately a lot of health. Rule 2 says the fling is the core
-     *  loop and has to stay fun forever; if she died in two good hits nobody
-     *  would ever get to punt her again. So killing her is a project, and it
-     *  buys about ten seconds of peace. Being killed is just a very long fling. */
-    public static final int MAX_HEALTH   = 30;      // half-hearts, i.e. 15 hearts
+     *  Eight hearts: enough that a casual whack launches her rather than kills
+     *  her, so rule 2's core loop survives, but low enough that killing her is a
+     *  normal thing to do rather than a project. That works because the return
+     *  is so fast -- she is back in a second and a half, so a kill was never
+     *  going to be worth much anyway. Being killed is just a very long fling. */
+    public static final int MAX_HEALTH   = 16;      // half-hearts, i.e. 8 hearts
     public static final int REFORM_DELAY = 30;      // ticks between defeat and return
 
     // --- ricochet -----------------------------------------------------------

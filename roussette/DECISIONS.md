@@ -30,7 +30,8 @@ Target: **Minecraft Java 26.2 + NeoForge**. 26.3 is still in snapshot (Snapshot 
 
    This collides with rule 2 (the fling is the core loop and must stay fun
    *forever*) — if she dies in two hits, nobody gets to punt her. Resolved by
-   giving her **`MAX_HEALTH = 30` half-hearts (15 hearts)**: casual whacking just
+   giving her a real health pool — **`MAX_HEALTH = 16` half-hearts (8 hearts)**,
+   revised down from 15 hearts once it was clear how fast she returns. Casual whacking just
    launches her, and actually killing her is a deliberate project that buys about
    ten seconds of peace. Death is now simply a very long fling, and routes
    through the existing reform mechanism — `onDefeated` then `onReform` after
@@ -60,7 +61,9 @@ messages, no floating labels. There is a test (`she never says a word of it out
 loud`) asserting every sound she emits is one of the recorded takes, so a line of
 dialogue cannot leak in later by accident.
 
-**How tough? — 15 hearts.** See correction 1.
+**How tough? — 8 hearts.** Originally 15; revised down by Margot, because she
+respawns a second and a half later and a long fight for a one-second reward is
+just tedious. See correction 1.
 
 **The cousin gets full bystander powers.** He cannot be hunted, but he can
 headpat, spray repellent to rescue the victim, and punt the shark for fun. The
