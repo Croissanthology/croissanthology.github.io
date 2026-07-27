@@ -17,6 +17,7 @@ public class Tests {
     // --- test doubles -------------------------------------------------------
     static class Fake implements Ports.Sensors, Ports.Actuators {
         double dist = 10; boolean water=false, door=false, pass=true, sneak=false, fire=false;
+        boolean sleeping=false; int flumps=0;
         int light = 15, health = 20;
         List<String> sounds = new ArrayList<>();
         List<Double> bounceRetains = new ArrayList<>();
@@ -32,6 +33,7 @@ public class Tests {
         public boolean onFire() { return fire; }
         public int lightLevel() { return light; }
         public boolean victimSneaking() { return sneak; }
+        public boolean victimSleeping() { return sleeping; }
         public int victimHealth() { return health; }
 
         public void faceVictim() {} public void levelPitch() {}
@@ -42,6 +44,7 @@ public class Tests {
         public void bounce(double retain) { bounceRetains.add(retain); }
         public void teleportToVictim() { tps++; }
         public void rideVictimFeet() { rides++; }
+        public void flumpBeside() { flumps++; }
         public void sound(String e) { sounds.add(e); }
         public void particles(String k, int n) {}
         public void slowVictim(int a, int t) { slowCalls++; }
@@ -112,6 +115,48 @@ public class Tests {
         check("a bystander can drop her with repellent", r.isDown());
         r.onHeadpat(f);
         check("a bystander can pat her while she is down", r.timer() > Roussette.KO_TICKS);
+
+        // bedtime: he gets in a bed, she ports over and flumps
+        f = new Fake(); r = new Roussette(); f.dist = 20; f.sleeping = true;
+        run(r, f, 1);
+        check("he goes to bed and she comes to sleep on him",
+              r.state() == Roussette.State.SLEEPING);
+        check("she flumps over beside him", f.flumps > 0);
+        check("with her eyes shut, not X'd out", f.pupil == Pupil.CLOSED);
+        f.sounds.clear();
+        run(r, f, Roussette.SNORE_PERIOD * 6);
+        long snoozing = f.sounds.stream().filter(x -> x.equals("snore") || x.equals("snort")).count();
+        check("she snores on a loop while he sleeps", snoozing >= 4);
+        check("and some of them are snorts", f.sounds.contains("snort"));
+        check("she does not bite a sleeping person", f.damage == 0);
+        check("every sleeping noise is still a recorded one",
+              f.sounds.stream().allMatch(Tests::isRecordedNoise));
+
+        // a headpat at bedtime, mirroring the knocked-out rule
+        int before2 = f.sounds.size();
+        r.onHeadpat(f);
+        check("patting her at bedtime purrs without waking her",
+              r.state() == Roussette.State.SLEEPING && f.sounds.size() > before2);
+
+        // punting her out of bed works, and she comes straight back
+        r.onHit(f);
+        check("she can still be punted off the pillow", r.state() == Roussette.State.FLUNG);
+        run(r, f, Roussette.FLUNG_TICKS + 2);
+        check("and flumps back down again, because he is still asleep",
+              r.state() == Roussette.State.SLEEPING);
+
+        // morning
+        f.sleeping = false;
+        run(r, f, 1);
+        check("she is awake and hunting again in the morning",
+              r.state() == Roussette.State.HUNT);
+        check("with normal eyes", f.pupil == Pupil.ROUND);
+
+        // being knocked out beats bedtime -- she is unconscious, not asleep
+        f = new Fake(); r = new Roussette(); f.sleeping = true;
+        r.onRepellent(f);
+        run(r, f, 1);
+        check("repellent outranks bedtime", r.isDown() && f.pupil == Pupil.X);
 
         // fleeing: the Nether, the End, an ender pearl, /tp -- all one event.
         // She does not travel to him. She re-forms on him, wetly.
@@ -367,7 +412,8 @@ public class Tests {
     static final Set<String> VOICE = Set.of(
         "cry", "wail", "purr", "purreow", "chomp", "gnaw", "squelch", "reform",
         "eep",      // the ricochet yelp
-        "huff");    // the settling noise: "Ok. Ok. anyway."
+        "huff",     // the settling noise: "Ok. Ok. anyway."
+        "snore", "snort");   // bedtime
     static boolean isRecordedNoise(String s) { return VOICE.contains(s); }
 
     /** Mid-X of a placed temple, for checking it straddles its site. */

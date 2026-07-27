@@ -22,6 +22,7 @@ Her eyes are a status readout, readable across a room:
 | Round | 2.5 × 2.5 px | normal |
 | Slit | 1.0 × 3.1 px | she has just been hit — reverts after **4 seconds** |
 | X | two bars at ±45° on a pale disc, tongue out | knocked out |
+| Shut | a soft dark arc with a lash tick | asleep beside his bed |
 
 She **glows** — lavender outline — whenever the light level is **6 or below**.
 
@@ -65,6 +66,21 @@ On hitting a wall (7-tick debounce between impacts):
   of bounce and settles instead of pinballing forever.
 
 When it ends she plays **`huff`** — the "Ok. Ok. anyway." — and resumes hunting.
+
+### Asleep beside his bed — no timer
+He got into a bed, so she stopped hunting, teleported to his pillow and flumped
+over on her side with her eyes shut. **Snores every 3.5 seconds**, and roughly
+one in four is a snort instead. She does not bite, does not move, and does not
+leave. Ends when he wakes up, with a huff and round eyes — hunting again.
+
+Punting her off the bed works and is encouraged; she flumps straight back down
+because he is still asleep. Patting her purrs without waking her, mirroring the
+knocked-out rule. Repellent outranks bedtime — she can be unconscious *instead*
+of asleep.
+
+She is a `Mob`, not a `Monster`, so vanilla's "you may not rest, there are
+monsters nearby" check does not see her. He can get into bed with a shark two
+feet away and the game will allow it.
 
 ### Wedged in a doorway — no timer
 Rotates 9°/tick, wails once a second, completely helpless. Frees herself only
@@ -201,15 +217,16 @@ Moves her onto a new victim. Refuses protected players.
 
 ## 9. Sounds
 
-**Margot records these — 8 events, 11 takes, her voice:**
-`cry` ×3 · `wail` ×2 · `purr` · `purreow` · `chomp` ×2 · `gnaw` · `eep` · `huff`
+**Margot records these — 10 events, 16 takes, her voice:**
+`cry` ×3 · `wail` ×2 · `purr` · `purreow` · `chomp` ×2 · `gnaw` · `eep` · `huff` ·
+`snore` ×2 · `snort` ×2
 
 **Sourced, not performed — vanilla sound events, no files needed:**
 `squelch` (wall impacts, wedging free) · `reform` (rematerialising)
 
 ## 10. Build status
 
-**Written and tested — 105 assertions, no Minecraft required:**
+**Written and tested — 120 assertions, no Minecraft required:**
 
 | Module | What it covers |
 |---|---|
