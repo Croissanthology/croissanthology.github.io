@@ -62,52 +62,95 @@ dialogue cannot leak in later by accident.
 
 **How tough? — 15 hearts.** See correction 1.
 
-**The cousin gets full bystander powers.** She cannot be hunted, but she can
-headpat, spray repellent to rescue her cousin, and punt the shark for fun. The
+**The cousin gets full bystander powers.** He cannot be hunted, but he can
+headpat, spray repellent to rescue the victim, and punt the shark for fun. The
 brain needed no change for this: `onHit`, `onHeadpat` and `onRepellent` never
 knew who was calling them, so bystander interaction works through the same
 entry points. Only the adapter has to not care who swung.
 
-## Sound list — now ten events, up from eight
+## Sound list — split by who makes it
 
-`cry` ×3 · `wail` ×2 · `purr` · `purreow` · `chomp` ×2 · `gnaw` · `squelch` ×2 ·
-`reform` · **`eep`** · **`huff`**
+The spec said "all recordings are Margot's own voice", which is right for the
+*vocal* half and impossible for the rest. Nobody can perform a wet impact against
+a wall. So the ten events split in two.
 
-The two new ones are Margot's "EEEP!" and the little composure-regaining noise
-after it. All are still her own voice, mono OGG Vorbis.
+**Margot records these — her voice, mono OGG Vorbis.** This is the half that
+cannot be substituted; it is the whole reason the mob is her and not a fish.
+
+| Event | Takes | When |
+|---|---|---|
+| `cry` | ×3 | short yelp on being hit |
+| `wail` | ×2 | longer; three times while airborne, and on being defeated |
+| `purr` | ×1 | headpat, and patted while knocked out |
+| `purreow` | ×1 | mid-headpat |
+| `chomp` | ×2 | a bite lands |
+| `gnaw` | ×1 | latched, every 24 ticks |
+| `eep` | ×1 | **new** — the first ricochet |
+| `huff` | ×1 | **new** — "Ok. Ok. anyway.", on landing |
+
+**Sourced, not performed.** Vanilla sound events referenced by ID need no files
+at all, which is the cheapest possible answer:
+
+| Event | When | Candidate |
+|---|---|---|
+| `squelch` | wall impacts, wedging free | `entity.slime.squish` / `entity.slime.jump` |
+| `reform` | she rematerialises behind him | `entity.generic.splash` layered with a slime squish |
+
+Exact vanilla IDs must be verified against the 26.2 sound registry rather than
+trusted from memory. If the vanilla slime noises turn out too comedic-soft, these
+two are also the easiest to swap for free library recordings later — they are the
+only events in the mod with no attachment to a specific performance.
 
 ---
 
 ## Round two
 
-### The victim rule, and the one-T problem
+### The victim rule
 
-Margot's rule: *"any username with the string roussette, that's the enemy."*
-Her brother's username is **`I_eat_roussetes`** — **one T**.
+Margot's rule: *"any username with the string roussette, that's the enemy."* Her
+brother's username is **`I_eat_roussettes`**.
 
-`"I_eat_roussetes".contains("roussette")` is **false**. Implemented literally,
-the stated rule would have hunted nobody at all, and the mod would have shipped
-looking like it worked. He misspelled his own provocation.
+The trigger is the stem **`rousset`** rather than the full word, case-insensitive.
+This came out of a false alarm — the username was briefly transcribed here with
+one T, which the literal rule would not have matched — and the stem was kept
+afterwards deliberately. Spelling `roussette` correctly is evidently not
+something to rely on, including from the people writing the mod, and the stem
+costs nothing.
 
-The trigger is therefore the stem **`rousset`**, which catches `roussetes`,
-`roussette`, `roussettes` and every other near-miss. Case-insensitive.
+**Protection outranks the stem.** A protected player can never become the target,
+by taunt or by command, so rule 3 ("she is never actually a threat") is never one
+typo or one mistyped command away from failing. The cousin is protected
+explicitly rather than by absence, and bystanders keep full hit/pat/spray powers
+either way.
 
-**Protection outranks the stem.** A protected player is never hunted no matter
-what they are called, so rule 3 ("she is never actually a threat") is never one
-typo away from failing. The cousin is protected explicitly rather than by
-absence, and bystanders keep full hit/pat/spray powers either way.
+### `/new-target <name>` — she outlives her victims
 
-### A can holds 10 sprays — and that moved the anvil recipe
+The brother goes home tomorrow night; the shark does not retire. She hunts
+**exactly one player at a time**, per spec §4's "one roussette per victim":
 
-`SPRAYS_PER_CAN` 4 → **10**, as asked.
+- A taunting username adopts itself as the target, but **only if she has none** —
+  an existing victim is never silently swapped out from under her.
+- `/new-target <name>` moves her on deliberately, and she forgets the old victim.
+- It **refuses protected players**, and changes nothing on refusal.
+- Protecting the current victim calls her off immediately and retroactively.
 
-This quietly broke the anvil upgrade. At 4 sprays, trading a whole can for 6
-armour knockouts was an obvious win; at 10 sprays it becomes a *downgrade* —
-burning ten escapes to buy six — so nobody would ever use the recipe again.
-`ARMOUR_CHARGES` is therefore 6 → **15**, preserving the original 1.5× shape of
-the trade. Flagging it because it is a derived decision, not one Margot made: if
-she wants treated armour to be a sidegrade rather than an upgrade, this is the
-number to change.
+### Scarcity: one can per temple, no refills, Overworld only
+
+- `SPRAYS_PER_CAN` 4 → **10**.
+- **One can per temple**, in the chest at the bottom. That is it.
+- **The basin is gone.** Cans do not refill, ever. `Can.refill()` is deleted
+  rather than deprecated, so nothing can call it by accident.
+- **Temples are Overworld-only.**
+
+The world therefore contains a fixed, small, permanently shrinking supply of
+escapes, which is the point: he is meant to run out.
+
+This forced the anvil recipe back down. `ARMOUR_CHARGES` had been raised to 15 to
+keep a 10-spray can worth converting, but that only made sense while cans
+refilled. With a fixed supply, a recipe that turns 10 sprays into 15 knockouts
+manufactures escapes out of nothing and undoes the scarcity. It is back to
+**6** — a genuine sidegrade: fewer total uses, bought with not having to react in
+time. Flagging it as a derived decision, not one Margot made.
 
 ### Fleeing through dimensions — already specced, now tested
 
@@ -126,38 +169,56 @@ literally the same code path. Confirmed working at the brain level.
 - **One per biome, ≥1500 blocks apart**, already enforced by `SiteFinder`.
 - **Depth:** the shaft bottoms out 34 blocks below the surface, with the item
   chest at the bottom. Confirmed by test.
-- **3D:** the cross-section is a schematic, extruded 13 blocks along Z. Three
+- **Overworld only**, and **one can** in the bottom chest.
+- **3D:** the cross-section is a schematic, extruded 13 blocks along Z. Two
   things had to be special-cased or the building came out wrong: the extruded
   **ends need capping** (otherwise the pool drains into raw terrain on two
-  sides), **fittings must not repeat** (a naive extrude gives thirteen chests
-  and thirty-nine doors), and the **mosaic is a wall, not a stripe**.
+  sides), and **fittings must not repeat** (a naive extrude gives thirteen
+  chests and thirty-nine doors).
 - **Placement is incremental**, 512 blocks per tick, one chunk per batch so
-  exactly one chunk is force-loaded at a time, and the run-once flag survives a
-  restart.
+  exactly one chunk is force-loaded at a time.
 
-### Open: the mosaic does not fit
+### She is a painting, not a mosaic — problem deleted
 
-Spec §7 wants a **29×13** mosaic (377 blocks) filling the deepest wall. The
-bottom chamber in the cross-section has an interior of **13 wide × 5 tall** — 65
-blocks. A 29-wide mosaic cannot go in a 13-wide room.
+Spec §7 wanted a **29×13 block mosaic** on the deepest wall. It did not fit: the
+bottom chamber's interior is **13 wide × 5 tall**. The options were to grow the
+room substantially or shrink her.
 
-Currently built at the largest size that fits (13 × 5). To get the specced
-mosaic the bottom chamber has to grow to at least 29 × 13, which is a much
-bigger room and changes how the descent feels at the end. **Margot's call.**
+Margot's answer was better than either — *it was always meant to be a painting.*
+So `M` is now a single painting anchor on the back wall. This deletes the sizing
+problem outright, drops ~65 block placements, and removes the §9 complaint that
+she reads more saturated in blocks than in her real palette: a painting can use
+`#C3ADEB` exactly. The temple no longer needs a `mosaic_marker` block at all.
+
+### The command runs once per *world*, not once per player
+
+- The latch flips to `RUNNING` **before the first block is written**, not after
+  the last. Three players typing the command in the same second produce one set
+  of temples, not three overlapping sets carved through each other.
+- A second invocation mid-run is refused with a different message than one after
+  completion, so the player can tell "wait" from "too late".
+- A run interrupted by a crash stays `RUNNING` and stays refused. Deliberate: the
+  alternative is letting a half-built temple be built over.
+- Persisted in world save data, so a restart does not reopen the door.
 
 ## Still needed from Margot
 
-- **The ten sound recordings.** Nothing else can substitute — her voice is the
-  whole point, and this is the one part of the mod that cannot be written.
-- **Minecraft usernames** for her brother (the victim) and her cousin (protected),
-  so the victim registry can be seeded rather than guessed.
+- **The eight vocal recordings** in the table above (eleven takes). Her voice is
+  the whole point and it is the one part of the mod that cannot be written. The
+  wet noises are no longer on her list.
+- **The cousin's username**, so he can be protected explicitly. The brother's is
+  `I_eat_roussettes`.
+- **The painting art**, at some point — now that she is a painting rather than a
+  block mosaic it can be drawn at her true palette instead of approximated in
+  concrete. Not blocking; a placeholder works.
 - **The datapack and resource pack** from spec §10, if they still exist. Not
   blocking — `core/` already ports the brain and the timings — but they are the
   tuned reference for feel.
 
 ## Still open, inherited from spec §11
 
-- Whether shrines refill cans over time or are finite forever.
+- ~~Whether shrines refill cans over time or are finite forever.~~ **Answered:
+  finite forever.** One can per temple, no basin, no refills.
 - Whether she is nocturnal, like a real swellshark.
 - The befriending arc, now narrowed: since she does not fight mobs, a headpat
   counter could at most change *her* behaviour toward the victim, not turn her
