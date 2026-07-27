@@ -64,6 +64,7 @@ exclude:
   - .gitignore
   - archiver
   - .archiver
+  - roussette   # Minecraft mod source; lives here but is not part of the site
 
 # `archive/` is intentionally NOT excluded — those are the local copies
 # the archiver tool generates, and we want GitHub Pages to serve them

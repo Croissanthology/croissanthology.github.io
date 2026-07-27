@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>Catshark v5 — proposed entity model</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@400;600;700&display=swap" rel="stylesheet">
+<style>*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{
+  background:#120A22; color:#EDE4FA;
+  font-family:"IBM Plex Sans Condensed","Roboto Condensed","Helvetica Neue",Arial,sans-serif;
+  background-image:radial-gradient(120% 80% at 50% 0%, #2E1D52 0%, #120A22 66%);
+}
+#stage{position:fixed;inset:0}
+canvas{display:block;touch-action:none;cursor:grab}
+canvas:active{cursor:grabbing}
+.hud{position:fixed;left:0;right:0;pointer-events:none;padding:clamp(14px,3vw,26px)}
+.hud.top{top:0}
+.hud.bot{bottom:0}
+.tag{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:10.5px;
+  letter-spacing:.2em;text-transform:uppercase;color:#9A86BE}
+.tag b{color:#F2A8CE;font-weight:500}
+h1{font-size:clamp(24px,5vw,40px);font-weight:700;text-transform:uppercase;
+  letter-spacing:.02em;line-height:1;margin-top:6px}
+h1 span{color:#6E5A98}
+.sub{font-size:13px;color:#9A86BE;margin-top:6px;max-width:46ch}
+.bar{pointer-events:auto;display:flex;gap:8px;flex-wrap:wrap;align-items:center;
+  background:rgba(30,18,54,.82);border:1px solid #3A2A63;border-radius:2px;
+  padding:9px;backdrop-filter:blur(8px);width:fit-content}
+button{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.15em;
+  text-transform:uppercase;color:#BCA9DD;background:transparent;border:1px solid #3A2A63;
+  border-radius:2px;padding:8px 13px;cursor:pointer;
+  transition:color .15s,border-color .15s,background .15s}
+button:hover{color:#EDE4FA;border-color:#6B4FA8}
+button[aria-pressed="true"]{color:#1B0F30;background:#C3ADEB;border-color:#C3ADEB;font-weight:600}
+#btnHunt[aria-pressed="true"]{background:#F2A8CE;border-color:#F2A8CE}
+button:focus-visible{outline:2px solid #F2A8CE;outline-offset:3px}
+.sep{width:1px;height:26px;background:#3A2A63;margin:0 3px}
+.hint{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.16em;
+  text-transform:uppercase;color:#6E5A98;margin-top:10px}
+@media (max-width:640px){ .sub{display:none} }
+</style></head>
+<body>
+<div id="stage"></div>
+<div class="hud top">
+  <div class="tag" id="tagline">Model v5 &middot; elegant pass &nbsp;/&nbsp; <b>not yet in game</b></div>
+  <h1>Cat<span>shark</span></h1>
+  <p class="sub" id="note">&nbsp;</p>
+</div>
+<div class="hud bot">
+  <div class="bar">
+    <button id="btnVer" aria-pressed="true">v5 elegant</button>
+    <button id="btnEye" aria-pressed="true">Round eyes</button>
+    <div class="sep"></div>
+    <button id="btnLight" aria-pressed="false">White light</button>
+    <div class="sep"></div>
+    <button id="btnHit">Hit her</button>
+    <button id="btnRepel">Repellent</button>
+    <button id="btnFlop" aria-pressed="false">Flop</button>
+    <button id="btnBall" aria-pressed="false">Inflate</button>
+    <button id="btnHunt" aria-pressed="false">Hunt</button>
+    <div class="sep"></div>
+    <button id="btnCage" aria-pressed="true">Block</button>
+    <button id="btnReset">Reset view</button>
+  </div>
+  <div class="hint">Drag to orbit &nbsp;&middot;&nbsp; scroll to zoom</div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>const BUILDS = {"v4": {"parts": [{"n": "snout", "s": [3.4, 4.6, 6.2], "p": [10.4, -0.6, 0], "r": [0, 0, 0], "c": 12824043, "swell": 0}, {"n": "head", "s": [8.8, 8.8, 9.4], "p": [5.4, 0.2, 0], "r": [0, 0, 0], "c": 12824043, "swell": 0}, {"n": "cheekL", "s": [2.2, 2.0, 0.6], "p": [8.2, -1.9, 4.7], "r": [0, 0, 0], "c": 15902926, "swell": 0}, {"n": "cheekR", "s": [2.2, 2.0, 0.6], "p": [8.2, -1.9, -4.7], "r": [0, 0, 0], "c": 15902926, "swell": 0}, {"n": "earL", "s": [2.6, 3.0, 2.6], "p": [4.6, 5.3, 3.1], "r": [0.3, 0, 0.16], "c": 12824043, "swell": 0}, {"n": "earR", "s": [2.6, 3.0, 2.6], "p": [4.6, 5.3, -3.1], "r": [-0.3, 0, 0.16], "c": 12824043, "swell": 0}, {"n": "earInL", "s": [1.3, 1.7, 0.6], "p": [4.6, 5.5, 4.5], "r": [0.3, 0, 0.16], "c": 15902926, "swell": 0}, {"n": "earInR", "s": [1.3, 1.7, 0.6], "p": [4.6, 5.5, -4.5], "r": [-0.3, 0, 0.16], "c": 15902926, "swell": 0}, {"n": "trunk", "s": [8.4, 8.8, 8.8], "p": [-2.4, -0.2, 0], "r": [0, 0, 0], "c": 12824043, "swell": 1}, {"n": "belly", "s": [8.0, 4.0, 8.4], "p": [-2.4, -4.3, 0], "r": [0, 0, 0], "c": 15985916, "swell": 1}, {"n": "rear", "s": [4.6, 6.0, 5.6], "p": [-7.8, 0.2, 0], "r": [0, 0, 0], "c": 12824043, "swell": 0}, {"n": "peduncle", "s": [2.6, 3.8, 3.0], "p": [-10.8, 0.5, 0], "r": [0, 0, 0], "c": 12824043, "swell": 0}, {"n": "caudal", "s": [5.0, 7.2, 1.0], "p": [-13.2, 1.2, 0], "r": [0, 0, 0.26], "c": 9334724, "swell": 0}, {"n": "dorsal1", "s": [3.8, 3.2, 1.0], "p": [-4.0, 5.4, 0], "r": [0, 0, 0], "c": 9334724, "swell": 0}, {"n": "dorsal2", "s": [2.8, 2.2, 1.0], "p": [-8.4, 4.4, 0], "r": [0, 0, 0], "c": 9334724, "swell": 0}, {"n": "anal", "s": [2.6, 2.0, 1.0], "p": [-7.6, -3.9, 0], "r": [0, 0, 0], "c": 9334724, "swell": 0}, {"n": "pelvicL", "s": [2.4, 0.9, 2.8], "p": [-4.2, -4.9, 2.7], "r": [0.34, 0, 0], "c": 9334724, "swell": 0}, {"n": "pelvicR", "s": [2.4, 0.9, 2.8], "p": [-4.2, -4.9, -2.7], "r": [-0.34, 0, 0], "c": 9334724, "swell": 0}, {"n": "pectL", "s": [3.6, 0.9, 4.2], "p": [1.6, -3.0, 4.8], "r": [0.46, 0, 0.14], "c": 9334724, "swell": 0}, {"n": "pectR", "s": [3.6, 0.9, 4.2], "p": [1.6, -3.0, -4.8], "r": [-0.46, 0, 0.14], "c": 9334724, "swell": 0}, {"n": "whiskL", "s": [5.0, 0.3, 0.3], "p": [13.0, -1.6, 2.0], "r": [0, 0.3, 0.14], "c": 5981059, "swell": 0}, {"n": "whiskR", "s": [5.0, 0.3, 0.3], "p": [13.0, -1.6, -2.0], "r": [0, -0.3, 0.14], "c": 5981059, "swell": 0}], "slit": [{"s": [0.6, 0.8, 4.6], "p": [9.9, -3.6, 0], "c": 2365490, "n": "mouth", "r": [0, 0, 0], "swell": 0}, {"n": "eyeRim", "s": [4.6, 4.6, 0.5], "p": [8.0, -0.3, 4.5], "r": [0, 0, 0], "c": 6967200, "swell": 0}, {"n": "iris", "s": [3.9, 3.9, 0.5], "p": [8.0, -0.3, 4.8], "r": [0, 0, 0], "c": 15779403, "swell": 0}, {"n": "pupil", "s": [1.0, 3.1, 0.5], "p": [8.0, -0.3, 4.96], "r": [0, 0, 0], "c": 2365490, "swell": 0}, {"n": "shine", "s": [1.2, 1.2, 0.5], "p": [9.2, 0.8999999999999999, 5.02], "r": [0, 0, 0], "c": 16777215, "swell": 0}, {"n": "eyeRim", "s": [4.6, 4.6, 0.5], "p": [8.0, -0.3, -4.5], "r": [0, 0, 0], "c": 6967200, "swell": 0}, {"n": "iris", "s": [3.9, 3.9, 0.5], "p": [8.0, -0.3, -4.8], "r": [0, 0, 0], "c": 15779403, "swell": 0}, {"n": "pupil", "s": [1.0, 3.1, 0.5], "p": [8.0, -0.3, -4.96], "r": [0, 0, 0], "c": 2365490, "swell": 0}, {"n": "shine", "s": [1.2, 1.2, 0.5], "p": [9.2, 0.8999999999999999, -5.02], "r": [0, 0, 0], "c": 16777215, "swell": 0}], "round": [{"s": [0.6, 0.8, 4.6], "p": [9.9, -3.6, 0], "c": 2365490, "n": "mouth", "r": [0, 0, 0], "swell": 0}, {"n": "eyeRim", "s": [4.6, 4.6, 0.5], "p": [8.0, -0.3, 4.5], "r": [0, 0, 0], "c": 6967200, "swell": 0}, {"n": "iris", "s": [3.9, 3.9, 0.5], "p": [8.0, -0.3, 4.8], "r": [0, 0, 0], "c": 15779403, "swell": 0}, {"n": "pupil", "s": [2.5, 2.5, 0.5], "p": [8.0, -0.3, 4.96], "r": [0, 0, 0], "c": 2365490, "swell": 0}, {"n": "shine", "s": [1.2, 1.2, 0.5], "p": [9.2, 0.8999999999999999, 5.02], "r": [0, 0, 0], "c": 16777215, "swell": 0}, {"n": "eyeRim", "s": [4.6, 4.6, 0.5], "p": [8.0, -0.3, -4.5], "r": [0, 0, 0], "c": 6967200, "swell": 0}, {"n": "iris", "s": [3.9, 3.9, 0.5], "p": [8.0, -0.3, -4.8], "r": [0, 0, 0], "c": 15779403, "swell": 0}, {"n": "pupil", "s": [2.5, 2.5, 0.5], "p": [8.0, -0.3, -4.96], "r": [0, 0, 0], "c": 2365490, "swell": 0}, {"n": "shine", "s": [1.2, 1.2, 0.5], "p": [9.2, 0.8999999999999999, -5.02], "r": [0, 0, 0], "c": 16777215, "swell": 0}], "ko": [{"s": [0.6, 0.8, 4.6], "p": [9.9, -3.6, 0], "c": 2365490, "n": "mouth", "r": [0, 0, 0], "swell": 0}, {"n": "tongue", "s": [1.8, 0.5, 2.4], "p": [10.2, -4.5, 0], "r": [0, 0, 0.22], "c": 15902926, "swell": 0}, {"n": "koRim", "s": [4.6, 4.6, 0.5], "p": [8.0, -0.3, 4.5], "r": [0, 0, 0], "c": 6967200, "swell": 0}, {"n": "koPale", "s": [3.9, 3.9, 0.5], "p": [8.0, -0.3, 4.8], "r": [0, 0, 0], "c": 15985916, "swell": 0}, {"n": "koBar1", "s": [0.95, 4.0, 0.5], "p": [8.0, -0.3, 4.96], "r": [0, 0, 0.785], "c": 2365490, "swell": 0}, {"n": "koBar2", "s": [0.95, 4.0, 0.5], "p": [8.0, -0.3, 4.9799999999999995], "r": [0, 0, -0.785], "c": 2365490, "swell": 0}, {"n": "koRim", "s": [4.6, 4.6, 0.5], "p": [8.0, -0.3, -4.5], "r": [0, 0, 0], "c": 6967200, "swell": 0}, {"n": "koPale", "s": [3.9, 3.9, 0.5], "p": [8.0, -0.3, -4.8], "r": [0, 0, 0], "c": 15985916, "swell": 0}, {"n": "koBar1", "s": [0.95, 4.0, 0.5], "p": [8.0, -0.3, -4.96], "r": [0, 0, 0.785], "c": 2365490, "swell": 0}, {"n": "koBar2", "s": [0.95, 4.0, 0.5], "p": [8.0, -0.3, -4.9799999999999995], "r": [0, 0, -0.785], "c": 2365490, "swell": 0}], "tex": "w4", "label": "v4 \u00b7 cute pass", "note": "23 boxes. Two dorsals, pelvics, anal fin, slab tail, busy hide."}, "v5": {"parts": [{"n": "snout", "s": [3.4, 4.6, 6.0], "p": [10.4, -0.6, 0], "r": [0, 0, 0], "c": 12824043, "swell": 0}, {"n": "head", "s": [8.8, 8.8, 9.2], "p": [5.4, 0.2, 0], "r": [0, 0, 0], "c": 12824043, "swell": 0}, {"n": "cheekL", "s": [2.2, 2.0, 0.6], "p": [8.2, -1.9, 4.6], "r": [0, 0, 0], "c": 15902926, "swell": 0}, {"n": "cheekR", "s": [2.2, 2.0, 0.6], "p": [8.2, -1.9, -4.6], "r": [0, 0, 0], "c": 15902926, "swell": 0}, {"n": "earL", "s": [2.6, 3.0, 2.6], "p": [4.6, 5.3, 3.1], "r": [0.3, 0, 0.16], "c": 12824043, "swell": 0}, {"n": "earR", "s": [2.6, 3.0, 2.6], "p": [4.6, 5.3, -3.1], "r": [-0.3, 0, 0.16], "c": 12824043, "swell": 0}, {"n": "earInL", "s": [1.3, 1.7, 0.6], "p": [4.6, 5.5, 4.5], "r": [0.3, 0, 0.16], "c": 15902926, "swell": 0}, {"n": "earInR", "s": [1.3, 1.7, 0.6], "p": [4.6, 5.5, -4.5], "r": [-0.3, 0, 0.16], "c": 15902926, "swell": 0}, {"n": "trunk", "s": [8.4, 8.8, 8.2], "p": [-2.4, -0.2, 0], "r": [0, 0, 0], "c": 12824043, "swell": 1}, {"n": "belly", "s": [8.0, 4.0, 7.8], "p": [-2.4, -4.3, 0], "r": [0, 0, 0], "c": 15985916, "swell": 1}, {"n": "rear", "s": [4.6, 6.0, 5.2], "p": [-7.8, 0.2, 0], "r": [0, 0, 0], "c": 12824043, "swell": 0}, {"n": "peduncle", "s": [3.0, 3.6, 2.8], "p": [-10.8, 0.5, 0], "r": [0, 0, 0], "c": 12824043, "swell": 0}, {"n": "dorsal", "s": [4.2, 3.6, 1.0], "p": [-3.2, 5.6, 0], "r": [0, 0, 0], "c": 9334724, "swell": 0}, {"n": "tailUp", "s": [4.6, 3.0, 1.0], "p": [-13.4, 3.0, 0], "r": [0, 0, 0.52], "c": 9334724, "swell": 0}, {"n": "tailLo", "s": [4.2, 2.6, 1.0], "p": [-13.2, -1.6, 0], "r": [0, 0, -0.48], "c": 9334724, "swell": 0}, {"n": "tailMid", "s": [2.2, 2.0, 1.0], "p": [-12.2, 0.7, 0], "r": [0, 0, 0], "c": 9334724, "swell": 0}, {"n": "pectL", "s": [3.6, 0.9, 4.0], "p": [1.6, -3.0, 4.6], "r": [0.46, 0, 0.14], "c": 9334724, "swell": 0}, {"n": "pectR", "s": [3.6, 0.9, 4.0], "p": [1.6, -3.0, -4.6], "r": [-0.46, 0, 0.14], "c": 9334724, "swell": 0}, {"n": "whiskL", "s": [5.0, 0.3, 0.3], "p": [13.0, -1.6, 2.0], "r": [0, 0.3, 0.14], "c": 5981059, "swell": 0}, {"n": "whiskR", "s": [5.0, 0.3, 0.3], "p": [13.0, -1.6, -2.0], "r": [0, -0.3, 0.14], "c": 5981059, "swell": 0}], "slit": [{"s": [0.6, 0.8, 4.2], "p": [9.9, -3.6, 0], "c": 2365490, "n": "mouth", "r": [0, 0, 0], "swell": 0}, {"n": "eyeRim", "s": [4.6, 4.6, 0.5], "p": [8.0, -0.3, 4.4], "r": [0, 0, 0], "c": 6967200, "swell": 0}, {"n": "iris", "s": [3.9, 3.9, 0.5], "p": [8.0, -0.3, 4.7], "r": [0, 0, 0], "c": 15779403, "swell": 0}, {"n": "pupil", "s": [1.0, 3.1, 0.5], "p": [8.0, -0.3, 4.86], "r": [0, 0, 0], "c": 2365490, "swell": 0}, {"n": "shine", "s": [1.2, 1.2, 0.5], "p": [9.2, 0.8999999999999999, 4.92], "r": [0, 0, 0], "c": 16777215, "swell": 0}, {"n": "eyeRim", "s": [4.6, 4.6, 0.5], "p": [8.0, -0.3, -4.4], "r": [0, 0, 0], "c": 6967200, "swell": 0}, {"n": "iris", "s": [3.9, 3.9, 0.5], "p": [8.0, -0.3, -4.7], "r": [0, 0, 0], "c": 15779403, "swell": 0}, {"n": "pupil", "s": [1.0, 3.1, 0.5], "p": [8.0, -0.3, -4.86], "r": [0, 0, 0], "c": 2365490, "swell": 0}, {"n": "shine", "s": [1.2, 1.2, 0.5], "p": [9.2, 0.8999999999999999, -4.92], "r": [0, 0, 0], "c": 16777215, "swell": 0}], "round": [{"s": [0.6, 0.8, 4.2], "p": [9.9, -3.6, 0], "c": 2365490, "n": "mouth", "r": [0, 0, 0], "swell": 0}, {"n": "eyeRim", "s": [4.6, 4.6, 0.5], "p": [8.0, -0.3, 4.4], "r": [0, 0, 0], "c": 6967200, "swell": 0}, {"n": "iris", "s": [3.9, 3.9, 0.5], "p": [8.0, -0.3, 4.7], "r": [0, 0, 0], "c": 15779403, "swell": 0}, {"n": "pupil", "s": [2.5, 2.5, 0.5], "p": [8.0, -0.3, 4.86], "r": [0, 0, 0], "c": 2365490, "swell": 0}, {"n": "shine", "s": [1.2, 1.2, 0.5], "p": [9.2, 0.8999999999999999, 4.92], "r": [0, 0, 0], "c": 16777215, "swell": 0}, {"n": "eyeRim", "s": [4.6, 4.6, 0.5], "p": [8.0, -0.3, -4.4], "r": [0, 0, 0], "c": 6967200, "swell": 0}, {"n": "iris", "s": [3.9, 3.9, 0.5], "p": [8.0, -0.3, -4.7], "r": [0, 0, 0], "c": 15779403, "swell": 0}, {"n": "pupil", "s": [2.5, 2.5, 0.5], "p": [8.0, -0.3, -4.86], "r": [0, 0, 0], "c": 2365490, "swell": 0}, {"n": "shine", "s": [1.2, 1.2, 0.5], "p": [9.2, 0.8999999999999999, -4.92], "r": [0, 0, 0], "c": 16777215, "swell": 0}], "ko": [{"s": [0.6, 0.8, 4.2], "p": [9.9, -3.6, 0], "c": 2365490, "n": "mouth", "r": [0, 0, 0], "swell": 0}, {"n": "tongue", "s": [1.8, 0.5, 2.4], "p": [10.2, -4.5, 0], "r": [0, 0, 0.22], "c": 15902926, "swell": 0}, {"n": "koRim", "s": [4.6, 4.6, 0.5], "p": [8.0, -0.3, 4.4], "r": [0, 0, 0], "c": 6967200, "swell": 0}, {"n": "koPale", "s": [3.9, 3.9, 0.5], "p": [8.0, -0.3, 4.7], "r": [0, 0, 0], "c": 15985916, "swell": 0}, {"n": "koBar1", "s": [0.95, 4.0, 0.5], "p": [8.0, -0.3, 4.86], "r": [0, 0, 0.785], "c": 2365490, "swell": 0}, {"n": "koBar2", "s": [0.95, 4.0, 0.5], "p": [8.0, -0.3, 4.88], "r": [0, 0, -0.785], "c": 2365490, "swell": 0}, {"n": "koRim", "s": [4.6, 4.6, 0.5], "p": [8.0, -0.3, -4.4], "r": [0, 0, 0], "c": 6967200, "swell": 0}, {"n": "koPale", "s": [3.9, 3.9, 0.5], "p": [8.0, -0.3, -4.7], "r": [0, 0, 0], "c": 15985916, "swell": 0}, {"n": "koBar1", "s": [0.95, 4.0, 0.5], "p": [8.0, -0.3, -4.86], "r": [0, 0, 0.785], "c": 2365490, "swell": 0}, {"n": "koBar2", "s": [0.95, 4.0, 0.5], "p": [8.0, -0.3, -4.88], "r": [0, 0, -0.785], "c": 2365490, "swell": 0}], "tex": "w5", "label": "v5 \u00b7 elegant pass", "note": "20 boxes. One dorsal, forked tail, 11 rosettes instead of 150."}};
+const TEXES = {
+  w4:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAC5ElEQVR4nKVXP2vbUBD/SQgMXYzxJygIY3ANwqKbwZs/QZcO3T116JjMXTuG7Bky+Qt4MzFkKDIC12CMoB8gMUEEDIKAMphT7p3uPavNgbB0fvf/3vvd864u7sthHAIANkkGeifaJBkAYLfPMIpirNME/V5YWyeJ5Fyy7W4L/ng6sBoHYPDWaWI12O62anLnZPNDAe9u/lByb7lQu9tCfiiMaABgPB0gPxTGGhfZ9ANAsEky7PamAVr08dMHpMsCwzg0DK0W22rNOeOa0zxAnz5GUVzz+O+fY8UjYXKYR0XvmySrHvqOJh0M49AwTuXKDwUCYtpqRJHTL0XOUzmMQ2iZBIDL2W2tabkzATUhJ20xF5Il4UTdzvVwfbLZA15PG5GQq5mIjsfcGgzPEvEDySCSEcp9LWXofbfPqpRzHTxyIwP9XljrUC29vL6ypqScG5A6NOMATrtgtdgaTNvWGkUxfl5/rfG1TEid5KikgEcmo5K8dZpgPTsdpy6StebHudQZ8K611UmmzYYXtjS7dHnfv9yUgFlX7ohtu9mwowlxWe/q4r6U3jU5399rmMgnxng6MI5Il5L/JS1jPv3RBNGaGKc1Ep5tFPAPzYlo0sHNr99WxHQ5cW5dhYauyDgiaojJ32n70UNG+C+n/FCcHNAAiS8i4ojpkuGOamDGyY8mnQpuNaLO7ffenmEcYrXYVjLSGdfoJsm7mz+UkhlNOkiXT05BDawkYmpTUCMH3kubJMN4OkATqPeeH19KHq12FkhYJXJBODXkuRHeT5dPxiyXHwpDCd/XpPTbj8+1uZA73e62qr7RmpXrVadiis42+c6v99aI+Hp+wNmATp2KtZTxlDbt8mjSOavTe358KS9ntxXTVTOZcg09bSgpe4sCct6MbMS33L9CsmzUCozG04F10NAilxcUeSnR9ACo9URAHslG00ZoLgi8lUtrZH4IuS69vu2kom1kG6/k7ReoY0AT+H4F+15atT18hu4AAAAASUVORK5CYII=", f4:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAC50lEQVR4nKVXu2rjQBQ9EmKKKRIVuwkkTdRsIWFwt7D+B//H/lD2P/wPgWxnMHKRRo1duLMLTyEMs4W5s3fuPCySA0L2aO7c92OKWr9YVWkAwHgxoN+E8WKw/xiwWQGzJdy7aTvkMF4MAGRptapR1vopyRyAt7ZZpRlqVQd0t2jNeETxcNfaYdu7Ra6ZVjXMeHRWIHTzBcx49PbkkDofAIrzzlouHTfR4dTj8f6/uYjRsO1vuoBjvBjU+ikQVKsaJWfMCQCg+b5wa5z5ZuVrRfuHbe8eWj+ceqhKe8zJXWY8oqLFlI9Ic3o3bRdYQFXaCUYgIf7+CS3GhSm7+QKzJdzz/KPxgoc2c6Km7YKgI3BLNm0XZAy3HABU/fot0EaCMoSn1tQYkMzJfbRevL9aG8trHnQyC1K1gBjQN3kGuYrTFeedtTytJHN+MEEy5zWEGExJTwDXLOjXb95iinC2BH7+Dte520gweSYJFwiwWSFIK+CqFfmcsFldo/oWZKqOFxNNX4AVolgGpKSXvidBOe2w7YPzYgWseH+1FvD9yn2a8mWqd0wBpy3Ou6sAXLOpAfQVxoSSmHbzhVcic4d8FjGLFQ93rbNATvNcDEgBVaUnW7Hif2IEh1MPs0dQ51NC8IKVC2qAdcOcWXlHjHVM/ptSjZ79x+DcGusdZjxeBaCpKAZuFW6FHA0XNNbMOCoaOnLpRi2Y0LSdN2TIYSM3ukl4QUjgk1AKUmDebAiyx0wW4Ksg68hWH0N5OPm1Was6CBj+X45dsX2q0ujXb9HaHwjweN95h5rx6PVwinCtahfl+jnewPikTNNQN19Agp9bxWY5yl/KYelHs88q5fanZgZeG6JTcax48GlnapRz96bOLKy1lvf43LVLmjzWPVNdUvYZUih7M0ohNd9NgbzguDSMFSJiENNKDqC3BpbYpVdVGsXLt182ViwkA0lIkzIxl0PrlCIEAGVqU+xSAcCLZPlN9oAps8M/piRoJxxVfq8AAAAASUVORK5CYII=",
+  w5:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAA/0lEQVR4nNWXMRKDIBBFvxkOwVh6AgsOnlOksvAEKR2K3CGpcIA4wIdFk9ehq/tZ4K8Oj/vrDZJ1ecJudh/rUWM2E/0OAFBscgn8CVQJmM2EdQnHtVRXoCWpiIAW/ApeIsCJ2AW4HenfSMHE52JVfKTWJf1SJr4k9paU30CcHADsZoOKdBVQimLPtKQHAMBQY8WllFh212NYUq3uPpBbous34VWJf7sds9bcwpcA1prFBUhzVM3T2nGqmkE79pG22hyHFeidNCtAir+w4ioBkj5BC5D2CaoZlX5mMSj38Jk7H/CakZtRb8uNk7u81BLMZoIedXCt5s/Yh96E0k75AV3qoFVCo3O8AAAAAElFTkSuQmCC", f5:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAA+ElEQVR4nO1XMQ6DMAy8VFm7dWdrxEd4NB9BGZH6hc50cmsCInGwmw69BQUF7uL4LuBu1/sCIeYpIo6fcRiArg/idwCAl5JrgC+gSkDXh/cKaFyL6gqcIeVwNT2gAapgMwEEz9UAZaWVzM/Ndc/HskgsJbFgydzLofwTSMkBII7ripgKKIWXelozAwBjF5T0gLkNsy5onQPtm7AV8W8fx5o2y2EjILXOPEVTEeZbsFdNHmamAo6qSdeNAO2ozWG3AtakHP8ormpCzR4RC9DOCdFhVPqZJYGnh7/Z+QA7jGhF1pGbkhOvaAu6PiAM63s1f8Yc4ibUTsoXacmYQbj2op4AAAAASUVORK5CYII="
+};
+let build = "v5", pupil = "round";
+
+const stage = document.getElementById('stage');
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 500);
+const renderer = new THREE.WebGLRenderer({antialias:true, alpha:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+stage.appendChild(renderer.domElement);
+
+const loader = new THREE.TextureLoader();
+function tex(url){
+  const t = loader.load(url);
+  t.magFilter = t.minFilter = THREE.NearestFilter;
+  t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  return t;
+}
+const T = { w4:tex(TEXES.w4), f4:tex(TEXES.f4), w5:tex(TEXES.w5), f5:tex(TEXES.f5) };
+function texW(){ return build==="v4" ? T.w4 : T.w5; }
+function texF(){ return build==="v4" ? T.f4 : T.f5; }
+
+const shark = new THREE.Group();
+let hideMeshes = [], swellers = [], faceMeshes = [];
+
+function construct(){
+  [...hideMeshes, ...faceMeshes].forEach(m=>{ shark.remove(m); m.geometry.dispose(); m.material.dispose(); });
+  hideMeshes = []; swellers = []; faceMeshes = [];
+  const B = BUILDS[build];
+  B.parts.forEach(d=>{
+    const m = new THREE.MeshLambertMaterial({map:texW(), color:d.c});
+    const mesh = new THREE.Mesh(new THREE.BoxGeometry(d.s[0], d.s[1], d.s[2]), m);
+    mesh.position.set(...d.p); mesh.rotation.set(...d.r); mesh.userData = d;
+    shark.add(mesh); hideMeshes.push(mesh);
+    if(d.swell) swellers.push(mesh);
+  });
+  B[pupil].forEach(d=>{
+    const m = new THREE.MeshBasicMaterial({color:d.c});
+    const mesh = new THREE.Mesh(new THREE.BoxGeometry(d.s[0], d.s[1], d.s[2]), m);
+    mesh.position.set(...d.p); mesh.rotation.set(...(d.r||[0,0,0])); mesh.userData = d;
+    shark.add(mesh); faceMeshes.push(mesh);
+  });
+  note.textContent = B.note;
+  tagline.innerHTML = 'Model ' + B.label.replace("\u00b7","&middot;") + ' &nbsp;/&nbsp; <b>not yet in game</b>';
+  setMode(mode);
+}
+scene.add(shark);
+
+const bubbles = [];
+const bubbleGeo = new THREE.BoxGeometry(0.55,0.55,0.55);
+const bubbleMat = new THREE.MeshBasicMaterial({color:0xCFE6FF, transparent:true, opacity:0.72});
+for(let i=0;i<14;i++){
+  const b = new THREE.Mesh(bubbleGeo, bubbleMat);
+  b.visible = false; b.userData.t = Math.random();
+  scene.add(b); bubbles.push(b);
+}
+
+const cage = new THREE.LineSegments(
+  new THREE.EdgesGeometry(new THREE.BoxGeometry(16,16,16)),
+  new THREE.LineBasicMaterial({color:0x5B4383}));
+scene.add(cage);
+
+const hemi = new THREE.HemisphereLight(0xFFF6FF, 0x3A2A63, 0.78);
+const key  = new THREE.DirectionalLight(0xFFF0FF, 0.92); key.position.set(24,26,32);
+const rim  = new THREE.DirectionalLight(0xC9A6FF, 0.40); rim.position.set(-30,10,-24);
+const amb  = new THREE.AmbientLight(0x2E1D52, 0.55);
+const blue = new THREE.PointLight(0x5B7BFF, 2.6, 170); blue.position.set(26,14,34);
+scene.add(hemi, key, rim, amb, blue);
+
+let mode = 'white';
+function setMode(next){
+  if(!hideMeshes) return;
+  mode = next;
+  const f = mode === 'fluor';
+  hideMeshes.forEach(m=>{
+    m.material.map = f ? texF() : texW();
+    m.material.color.setHex(f ? 0xffffff : m.userData.c);
+    m.material.emissive.setHex(f ? 0x6B4FA8 : 0x000000);
+    m.material.emissiveMap = f ? texF() : null;
+    m.material.emissiveIntensity = f ? 1.2 : 0;
+    m.material.needsUpdate = true;
+  });
+  hemi.intensity = f?0.10:0.78; key.intensity = f?0.10:0.92;
+  rim.intensity  = f?0.06:0.40; amb.intensity = f?0.20:0.55;
+  blue.intensity = f?2.6:0.0;
+  cage.material.color.setHex(f?0x2A1B4A:0x5B4383);
+  document.body.style.background = f?'#07040F':'#120A22';
+  btnLight.textContent = f?'Dive light':'White light';
+  btnLight.setAttribute('aria-pressed', f);
+}
+
+// hand-rolled orbit — OrbitControls isn't in this three build
+let theta=0.78, phi=1.22, dist=58, dragging=false, px=0, py=0, idle=true;
+function place(){
+  camera.position.set(dist*Math.sin(phi)*Math.cos(theta), dist*Math.cos(phi),
+                      dist*Math.sin(phi)*Math.sin(theta));
+  camera.lookAt(0,0,0);
+}
+const cv = renderer.domElement;
+cv.addEventListener('pointerdown', e=>{dragging=true; idle=false; px=e.clientX; py=e.clientY; cv.setPointerCapture(e.pointerId);});
+cv.addEventListener('pointerup',   ()=>{dragging=false;});
+cv.addEventListener('pointermove', e=>{
+  if(!dragging) return;
+  theta -= (e.clientX-px)*0.008;
+  phi = Math.max(0.22, Math.min(2.92, phi-(e.clientY-py)*0.008));
+  px=e.clientX; py=e.clientY;
+});
+cv.addEventListener('wheel', e=>{e.preventDefault(); dist=Math.max(26,Math.min(150,dist+e.deltaY*0.06));},{passive:false});
+
+let flopping=false, inflating=false, hunting=false, swell=1, t=0;
+let flung=0, angry=0, spin=0, ko=0;
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+function frame(){
+  requestAnimationFrame(frame);
+  t += 0.016;
+  if(idle && !reduce) theta += 0.0022;
+
+  if(ko>0){
+    ko -= 1;
+    // belly up, drifting, thoroughly out of it
+    shark.rotation.x += (Math.PI - shark.rotation.x)*0.14;
+    shark.rotation.z = Math.sin(t*1.1)*0.10;
+    shark.rotation.y = Math.sin(t*0.7)*0.06;
+    shark.position.y += ((Math.sin(t*1.4)*0.8 - 1.5) - shark.position.y)*0.06;
+    shark.position.x += (0 - shark.position.x)*0.06;
+    bubbles.forEach((b,i)=>{
+      b.visible = true;
+      const u = ((t*0.32 + b.userData.t + i*0.07) % 1);
+      b.position.set(6 - i*0.9, -4 + u*18, Math.sin(i*2.1)*3.2);
+      b.scale.setScalar(0.6 + u*0.9);
+      b.material.opacity = 0.72*(1-u);
+    });
+    btnRepel.textContent = "Out cold \u00b7 " + (ko/60).toFixed(1) + "s";
+    if(ko===0){ bubbles.forEach(b=>b.visible=false); btnRepel.textContent="Repellent";
+      pupil = prevPupil; construct(); hunting = true; btnHunt.setAttribute('aria-pressed', true); }
+  } else if(flung>0){
+    flung -= 1;
+    spin += 0.42;
+    shark.rotation.z = spin;
+    shark.rotation.x = spin*0.55;
+    const k = flung/70;
+    shark.position.x = -26*(1-k)*(1-k*0.2);
+    shark.position.y = 34*k*(1-k) - 2;
+    if(flung===0){ spin=0; shark.rotation.z=0; shark.rotation.x=0; }
+  } else if(flopping){
+    shark.rotation.x = Math.PI*0.42 + Math.sin(t*11)*0.55;
+    shark.rotation.z = Math.sin(t*11+0.6)*0.16;
+    shark.position.y = Math.abs(Math.sin(t*11))*2.6 - 4;
+    shark.rotation.y = 0;
+  } else if(hunting){
+    // locked on: nose down, tail thrashing hard, closing distance
+    shark.rotation.x += (0 - shark.rotation.x)*0.15;
+    shark.rotation.z += (-0.14 - shark.rotation.z)*0.12;
+    shark.rotation.y = Math.sin(t*9)*0.20;
+    shark.position.y += ((Math.sin(t*9)*0.5) - shark.position.y)*0.2;
+    shark.position.x = Math.sin(t*2.2)*2.2;
+  } else {
+    shark.rotation.x += (0-shark.rotation.x)*0.12;
+    shark.rotation.z += (Math.sin(t*1.6)*0.03 - shark.rotation.z)*0.08;
+    shark.position.y += ((reduce?0:Math.sin(t*1.3)*0.7) - shark.position.y)*0.08;
+    shark.position.x += (0 - shark.position.x)*0.1;
+    shark.rotation.z += (0 - shark.rotation.z)*0.12;
+    shark.rotation.y = reduce?0:Math.sin(t*1.1)*0.05;
+  }
+
+  const target = inflating ? 1.85 : 1;
+  swell += (target-swell)*0.09;
+  swellers.forEach(m=>m.scale.set(1, swell, swell));
+
+  if(angry>0 && ko===0){ angry -= 1; if(angry===0 && pupil==='slit'){ pupil='round'; construct();
+    btnEye.textContent='Round eyes'; btnEye.setAttribute('aria-pressed', true); } }
+  place();
+  renderer.render(scene, camera);
+}
+function resize(){
+  camera.aspect = innerWidth/innerHeight; camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+}
+addEventListener('resize', resize); resize();
+
+const btnLight=document.getElementById('btnLight'), btnFlop=document.getElementById('btnFlop'),
+      btnBall=document.getElementById('btnBall'),  btnHunt=document.getElementById('btnHunt'),
+      btnCage=document.getElementById('btnCage'),  btnReset=document.getElementById('btnReset');
+btnLight.onclick=()=>setMode(mode==='white'?'fluor':'white');
+btnFlop.onclick =()=>{flopping=!flopping; if(flopping)hunting=false;
+  btnFlop.setAttribute('aria-pressed',flopping); btnHunt.setAttribute('aria-pressed',hunting);};
+btnHunt.onclick =()=>{hunting=!hunting; if(hunting)flopping=false;
+  btnHunt.setAttribute('aria-pressed',hunting); btnFlop.setAttribute('aria-pressed',flopping);};
+btnBall.onclick =()=>{inflating=!inflating; btnBall.setAttribute('aria-pressed',inflating);};
+btnCage.onclick =()=>{cage.visible=!cage.visible; btnCage.setAttribute('aria-pressed',cage.visible);};
+btnReset.onclick=()=>{theta=0.78; phi=1.22; dist=58; idle=true;};
+const btnRepel = document.getElementById('btnRepel');
+let prevPupil = 'round';
+btnRepel.onclick = ()=>{
+  if(ko>0) return;
+  prevPupil = pupil === 'ko' ? 'round' : pupil;
+  ko = 600; flung = 0; hunting = false; flopping = false; inflating = false;
+  btnHunt.setAttribute('aria-pressed', false); btnFlop.setAttribute('aria-pressed', false);
+  btnBall.setAttribute('aria-pressed', false);
+  pupil = 'ko'; construct();
+};
+const btnHit = document.getElementById('btnHit');
+btnHit.onclick = ()=>{
+  flung = 70; angry = 260; spin = 0; hunting = false; flopping = false;
+  btnHunt.setAttribute('aria-pressed', false); btnFlop.setAttribute('aria-pressed', false);
+  if(pupil !== 'slit'){ pupil='slit'; construct();
+    btnEye.textContent='Slit eyes'; btnEye.setAttribute('aria-pressed', false); }
+};
+
+const note = document.getElementById('note');
+const tagline = document.getElementById('tagline');
+const btnVer = document.getElementById('btnVer'), btnEye = document.getElementById('btnEye');
+btnVer.onclick = ()=>{ build = build==="v5" ? "v4" : "v5";
+  btnVer.textContent = build==="v5" ? "v5 elegant" : "v4 cute";
+  btnVer.setAttribute('aria-pressed', build==="v5"); construct(); };
+btnEye.onclick = ()=>{ pupil = pupil==="round" ? "slit" : "round";
+  btnEye.textContent = pupil==="round" ? "Round eyes" : "Slit eyes";
+  btnEye.setAttribute('aria-pressed', pupil==="round"); construct(); };
+
+mode = 'white';
+construct();
+btnVer.setAttribute('aria-pressed', true);
+btnEye.setAttribute('aria-pressed', true);
+btnCage.setAttribute('aria-pressed', true);
+frame();
+</script>
+</body></html>
