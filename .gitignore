@@ -19,3 +19,4 @@ archiver/launchd/maintain.log
 # load-bearing subset gets pushed to GitHub. Everything else is insurance
 # against future rot in your own future citations, kept local.
 archive/
+roussette/roussette-mod.zip

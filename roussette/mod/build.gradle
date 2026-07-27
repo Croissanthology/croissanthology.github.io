@@ -1,0 +1,77 @@
+plugins {
+    id 'java'
+    // ModDevGradle. Check https://projects.neoforged.net/neoforged/ModDevGradle
+    // for the current version if this one is stale.
+    id 'net.neoforged.moddev' version '2.0.141'
+}
+
+version = mod_version
+group = mod_group_id
+
+java {
+    toolchain.languageVersion = JavaLanguageVersion.of(21)
+}
+
+neoForge {
+    // Must match the NeoForge build for the Minecraft version in
+    // gradle.properties. If the build fails resolving this, look up the current
+    // 26.2 build at https://projects.neoforged.net/neoforged/neoforge
+    version = neo_version
+
+    parchment {
+        // Human-readable parameter names. Purely a developer nicety; delete
+        // these two lines if the mappings are not published for this version.
+        minecraftVersion = parchment_minecraft
+        mappingsVersion = parchment_version
+    }
+
+    runs {
+        client { client() }
+        server { server() }
+    }
+
+    mods {
+        roussette {
+            sourceSet sourceSets.main
+        }
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+// Substitute the versions from gradle.properties into neoforge.mods.toml so the
+// two can never drift apart.
+tasks.named('processResources', ProcessResources).configure {
+    def expandProps = [
+        minecraft_version      : minecraft_version,
+        minecraft_version_range: minecraft_version_range,
+        neo_version            : neo_version,
+        neo_version_range      : neo_version_range,
+        loader_version_range   : loader_version_range,
+        mod_id                 : mod_id,
+        mod_name               : mod_name,
+        mod_license            : mod_license,
+        mod_version            : mod_version,
+        mod_authors            : mod_authors,
+        mod_description        : mod_description
+    ]
+    inputs.properties(expandProps)
+    filesMatching(['META-INF/neoforge.mods.toml']) {
+        expand expandProps
+    }
+}
+
+jar {
+    manifest {
+        attributes([
+            'Specification-Title'     : mod_id,
+            'Specification-Vendor'    : mod_authors,
+            'Specification-Version'   : '1',
+            'Implementation-Title'    : mod_name,
+            'Implementation-Version'  : mod_version,
+            'Implementation-Vendor'   : mod_authors
+        ])
+    }
+}

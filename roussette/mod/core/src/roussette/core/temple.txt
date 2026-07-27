@@ -1,0 +1,50 @@
+                                 
+                                 
+                                 
+                                 
+                                 
+                                 
+        CCCCCCCCCCCCCCCCC        
+        CS             SC        
+        C               C        
+        C               C        
+                        C        
+          F           F C        
+        C###~~~~~~~~~###C        
+gggggggggggR~~~~~~~~~Rggggggggggg
+sssssssssssR~~~~~~~~~Rsssssssssss
+sssssssssssR~~~~~~~~~Rsssssssssss
+sssssssssssR~~~~~~~~~Rsssssssssss
+sssssssssssR~~~~~~~~~Rsssssssssss
+sssssssRRRRR~~~~~~~~~Rsssssssssss
+ssssssRSaaaDA~~~~~~~~Rsssssssssss
+ssssssRaaaaD~~~~~~~~~Rsssssssssss
+ssssssRaaaaR~~~~~~~~ARsssssssssss
+sssssssRRRRRA~~~~~~~~Rsssssssssss
+sssssssssssR~~~~~~~~~Rsssssssssss
+sssssssssssR~~~~~~~~~Rsssssssssss
+sssssssssssR~~~~~~~~~Rsssssssssss
+sssssssssssR~~~~~~~~ARsssssssssss
+sssssssssssRA~~~~~~~~RRRRRsssssss
+sssssssssssR~~~~~~~~~DaaaSRssssss
+sssssssssssR~~~~~~~~ADaaaaRssssss
+sssssssssssRA~~~~~~~~RaaaaRssssss
+sssssssssssR~~~~~~~~~RRRRRsssssss
+sssssssssssRA~~~~~~~~Rsssssssssss
+sssssssssssRA~~~~~~~~Rsssssssssss
+sssssssssssR~~~~~~~~ARsssssssssss
+sssssssssssRA~~~~~~~~Rsssssssssss
+sssssssRRRRR~~~~~~~~~Rsssssssssss
+ssssssRSaaaD~~~~~~~~ARsssssssssss
+ssssssRaaaaDA~~~~~~~~Rsssssssssss
+ssssssRaaaaR~~~~~~~~ARsssssssssss
+sssssssRRRRRRRRRRRRRRRRRsssssssss
+sssssssssR~~~~~~~~~~~~~Rsssssssss
+sssssssssRMMMMMMMMMMMMMRsssssssss
+sssssssssR~~~~~~~~~~~~~Rsssssssss
+sssssssssR~~F~~~H~~~F~~Rsssssssss
+sssssssssRS~~~~~~~~~~~SRsssssssss
+sssssssssBBBBBBBBBBBBBBBsssssssss
+sssssssssssssssssssssssssssssssss
+sssssssssssssssssssssssssssssssss
+sssssssssssssssssssssssssssssssss
