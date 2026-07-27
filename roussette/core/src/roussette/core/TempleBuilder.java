@@ -101,14 +101,56 @@ public final class TempleBuilder {
         }
     }
 
-    /** "Runs once, ever." Persisted in world save data by the adapter; this is
-     *  just the latch, so the refusal path can be tested without a world. */
+    /** Temples exist in the Overworld only. */
+    public static final String HOME_DIMENSION = "minecraft:overworld";
+
+    public static boolean canBuildIn(String dimension) {
+        return HOME_DIMENSION.equals(dimension);
+    }
+
+    public enum RunState { NEVER_RUN, RUNNING, COMPLETED }
+
+    /**
+     * "Runs once, ever" — per <em>world</em>, not per player.
+     *
+     * <p>The latch flips to RUNNING <em>before</em> the first block is written,
+     * not after the last one. That ordering is the whole point: three players
+     * typing the command in the same second must produce one set of temples,
+     * not three overlapping sets carved through each other. The second and
+     * third invocations are refused while the first is still placing.
+     *
+     * <p>Persisted in world save data, so a restart part-way through a run does
+     * not reopen the door either. A run interrupted by a crash stays RUNNING
+     * and stays refused — deliberately, because the alternative is letting a
+     * half-built temple be built over.
+     */
     public static final class OneShot {
-        private boolean fired;
-        /** @return true if this invocation may proceed. */
-        public boolean tryFire() { if (fired) return false; fired = true; return true; }
-        public boolean fired()   { return fired; }
+        private RunState state = RunState.NEVER_RUN;
+
+        /** @return true if this invocation may proceed. Flips the latch. */
+        public boolean tryFire() {
+            if (state != RunState.NEVER_RUN) return false;
+            state = RunState.RUNNING;
+            return true;
+        }
+
+        /** Called once the last batch has been written. */
+        public void complete() { state = RunState.COMPLETED; }
+
+        public RunState state()  { return state; }
+        public boolean fired()   { return state != RunState.NEVER_RUN; }
+
         /** Restore from save data on server start. */
-        public void restore(boolean value) { fired = value; }
+        public void restore(RunState s) { state = s; }
+
+        /** What the refused player is told. */
+        public String refusal() {
+            return switch (state) {
+                case NEVER_RUN -> "";
+                case RUNNING   -> "The temples are being built right now. Wait.";
+                case COMPLETED -> "The temples have already been built in this world. "
+                                + "They only ever appear once.";
+            };
+        }
     }
 }

@@ -6,8 +6,10 @@ The half of the mod that has no Minecraft in it — and is therefore **tested**.
 cd roussette/core
 javac -d out $(find src test -name '*.java') && java -cp out roussette.Tests
 ```
-→ **90 passed, 0 failed.** (Run it from `roussette/core`; the blueprint test
+→ **105 passed, 0 failed.** (Run it from `roussette/core`; the blueprint test
 reads `src/roussette/core/temple.txt` by relative path.)
+
+For what the mod actually does, concretely, see [`../WHAT-IT-DOES.md`](../WHAT-IT-DOES.md).
 
 ## Why this is split off
 
@@ -30,7 +32,7 @@ Minecraft, targeting NeoForge instead of Fabric changes only the adapter.
 | `SiteFinder.java` | Temple placement: spiral search, flatness test, one per biome, 1500-block spacing. |
 | `Blueprint.java` | Parses `temple.txt`, and extrudes it into the real 3D building. |
 | `TempleBuilder.java` | Coordinate mapping, chunk grouping, per-tick batching, run-once latch. |
-| `VictimRegistry.java` | Who she hunts, who is permanently safe. Read the one-T note. |
+| `VictimRegistry.java` | Who she hunts, `/new-target`, and who is permanently safe. |
 | `Geometry.java` | The 20 boxes, the palette, the three pupil states. |
 | `temple.txt` | The temple cross-section as a readable block grid. |
 
@@ -46,8 +48,9 @@ Target is **Minecraft Java 26.2 + NeoForge** (see `../DECISIONS.md`).
    `MAX_HEALTH = 30` half-hearts. No attack goals and no mob aggro in either
    direction: she does not fight mobs and does not attract them.
 3. **Victim registry.** She hunts exactly one registered player, persisted in
-   world save data. Every other player is a bystander who can still hit, pat and
-   spray her. Bystanders must never be selectable as the victim by accident.
+   world save data, retargetable with `/new-target`. Every other player is a
+   bystander who can still hit, pat and spray her. Protected players must never
+   be selectable as the victim, by taunt or by command.
 4. **Death and return.** On zero health call `onDefeated`, remove her, and bring
    her back `REFORM_DELAY` ticks later through `onReform`. Same path as a
    dimension change, a teleport, or burning alive.

@@ -169,18 +169,20 @@ public class Tests {
         Repellent.Can can = new Repellent.Can();
         int n = 0; while (can.spray()) n++;
         check("a can holds exactly 10 sprays", n == 10);
-        can.refill();
-        check("a shrine basin refills it", can.sprays() == 10);
+        check("and once it is empty it stays empty, forever", can.empty());
+        check("one can per temple -- that is the whole supply",
+              Repellent.CANS_PER_TEMPLE == 1);
+        check("the anvil recipe is a sidegrade, not a multiplier",
+              Repellent.ARMOUR_CHARGES < Repellent.SPRAYS_PER_CAN);
 
-        Repellent.TreatedArmour armour = Repellent.TreatedArmour.applyCan(can);
-        check("applying a can consumes the whole thing", can.empty());
+        Repellent.Can fresh = new Repellent.Can();
+        Repellent.TreatedArmour armour = Repellent.TreatedArmour.applyCan(fresh);
+        check("applying a can consumes the whole thing", fresh.empty());
         int knockouts = 0;
         int budget = Repellent.DOSE_TICKS * (Repellent.ARMOUR_CHARGES + 2);
         for (int i = 0; i < budget && !armour.spent(); i++)
             if (armour.tick(3.0, false)) knockouts++;
-        check("treated armour gives exactly 15 knockouts", knockouts == 15);
-        check("treating armour still beats carrying the can",
-              Repellent.ARMOUR_CHARGES > Repellent.SPRAYS_PER_CAN);
+        check("treated armour gives exactly 6 knockouts", knockouts == 6);
         check("and then the treatment is spent", armour.spent());
         check("the tint fades to nothing as it goes", armour.tint() == 0.0);
 
@@ -197,25 +199,38 @@ public class Tests {
         check("NO tolerance buildup -- every dose costs the same", first == second);
 
         System.out.println("\nVICTIM");
-        // The one-T problem. Her brother misspelled his own provocation, so the
-        // literal rule "any username containing roussette" matches nobody.
-        check("the stated rule would have missed him entirely",
-              !"i_eat_roussetes".contains("roussette"));
-        check("but the stem catches him", VictimRegistry.isTaunt("I_eat_roussetes"));
-        check("and catches the correct spelling too", VictimRegistry.isTaunt("Roussette_Hater"));
-        check("and is case-insensitive", VictimRegistry.isTaunt("ROUSSETTES_R_FOOD"));
-        check("an innocent name is not a taunt", VictimRegistry.isTaunt("Margot") == false);
+        // The stem matches however the word gets spelled -- two Ts, one T,
+        // plural, any case. Nobody has to get it right for the mod to work.
+        check("the real username taunts her", VictimRegistry.isTaunt("I_eat_roussettes"));
+        check("a one-T misspelling still taunts her", VictimRegistry.isTaunt("I_eat_roussetes"));
+        check("so does the singular", VictimRegistry.isTaunt("Roussette_Hater"));
+        check("and it is case-insensitive", VictimRegistry.isTaunt("ROUSSETTES_R_FOOD"));
+        check("an innocent name is not a taunt", !VictimRegistry.isTaunt("Margot"));
 
         VictimRegistry reg = new VictimRegistry();
         reg.protect("LittleCousin");
-        check("the brother is prey", reg.isVictim("I_eat_roussetes"));
+        check("a taunting name picks the fight by itself",
+              reg.adoptIfTaunting("I_eat_roussettes"));
+        check("the brother is prey", reg.isVictim("I_eat_roussettes"));
         check("the cousin is not", !reg.isVictim("LittleCousin"));
-        reg.protect("Sneaky_roussette_fan");
+        check("she hunts exactly one person at a time",
+              !reg.adoptIfTaunting("Another_roussette_enjoyer"));
+
+        // /new-target, for when the current victim goes home
+        check("/new-target moves her on", reg.newTarget("SomeoneElse"));
+        check("and she forgets the old one entirely", !reg.isVictim("I_eat_roussettes"));
+        check("the new target is hunted", reg.isVictim("SomeoneElse"));
+        check("/new-target refuses a protected player", !reg.newTarget("LittleCousin"));
+        check("and the refusal changes nothing", reg.isVictim("SomeoneElse"));
+
+        VictimRegistry reg2 = new VictimRegistry();
+        reg2.newTarget("Someone_roussette");
+        reg2.protect("Someone_roussette");
+        check("protecting the current victim calls her off immediately",
+              !reg2.isVictim("Someone_roussette"));
         check("protection beats the taunt stem, so rule 3 is never one typo away",
-              !reg.isVictim("Sneaky_roussette_fan"));
-        reg.designate("SomeoneElse");
-        check("anyone can be designated by hand", reg.isVictim("SomeoneElse"));
-        check("nobody is hunted by default", !reg.isVictim("RandomPlayer"));
+              !reg2.adoptIfTaunting("Someone_roussette"));
+        check("nobody is hunted by default", !new VictimRegistry().hasTarget());
 
         System.out.println("\nTEMPLE BUILD");
         try {
@@ -231,9 +246,8 @@ public class Tests {
                   Blueprint.count3(solid, "minecraft:copper_door") == 6);
             check("still four votive frames",
                   Blueprint.count3(solid, "roussette:votive_frame") == 4);
-            check("the mosaic became a wall instead of a stripe",
-                  Blueprint.count3(solid, "roussette:mosaic_marker")
-                      == 13 * Blueprint.MOSAIC_ROWS);
+            check("she hangs on the deepest wall as exactly one painting",
+                  Blueprint.count3(solid, Blueprint.PAINTING) == 1);
 
             // the shaft must not be open to raw terrain at the extruded ends
             boolean capped = true;
@@ -276,10 +290,24 @@ public class Tests {
 
         TempleBuilder.OneShot once = new TempleBuilder.OneShot();
         check("/roussette-temples runs the first time", once.tryFire());
-        check("and refuses every time after", !once.tryFire());
+        check("a second player typing it mid-run is refused", !once.tryFire());
+        check("and told why", once.refusal().contains("being built"));
+        once.complete();
+        check("and it is still refused after it finishes", !once.tryFire());
+        check("with a different message", once.refusal().contains("already"));
+
         TempleBuilder.OneShot restored = new TempleBuilder.OneShot();
-        restored.restore(true);
+        restored.restore(TempleBuilder.RunState.COMPLETED);
         check("the refusal survives a server restart", !restored.tryFire());
+        TempleBuilder.OneShot crashed = new TempleBuilder.OneShot();
+        crashed.restore(TempleBuilder.RunState.RUNNING);
+        check("a run interrupted by a crash does not reopen the door",
+              !crashed.tryFire());
+
+        check("temples are an Overworld thing",
+              TempleBuilder.canBuildIn("minecraft:overworld"));
+        check("...not a Nether thing", !TempleBuilder.canBuildIn("minecraft:the_nether"));
+        check("...nor an End thing", !TempleBuilder.canBuildIn("minecraft:the_end"));
 
         System.out.println("\nTEMPLE SITES");
         SiteFinder sf = new SiteFinder();

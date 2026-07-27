@@ -25,7 +25,10 @@ public final class Blueprint {
         LEGEND.put('S', "minecraft:sea_lantern");
         LEGEND.put('A', "minecraft:amethyst_cluster");
         LEGEND.put('D', "minecraft:copper_door");
-        LEGEND.put('M', "roussette:mosaic_marker");
+        // 'M' marks where she hangs. It is a PAINTING, not a block mosaic -- so
+        // the glyphs themselves are just the pool water they sit in, and expand()
+        // emits a single painting anchor on the back wall behind them.
+        LEGEND.put('M', "minecraft:water");
         LEGEND.put('F', "roussette:votive_frame");
         LEGEND.put('H', "minecraft:chest");
         LEGEND.put('B', "minecraft:bedrock");
@@ -70,9 +73,15 @@ public final class Blueprint {
 
     /** How far the cross-section is extruded along Z. */
     public static final int DEPTH = 13;
-    /** Rows of mosaic hanging below the marker row. Five is what actually fits
-     *  in the bottom chamber -- see the note on MOSAIC in the class docs. */
-    public static final int MOSAIC_ROWS = 5;
+
+    /** She hangs on the deepest wall as a painting.
+     *
+     *  The spec asked for a 29x13 block mosaic, which does not fit -- the bottom
+     *  chamber's interior is 13x5. A painting sidesteps the problem completely:
+     *  it is one entity on the back wall, any art we like, at whatever size the
+     *  painting itself declares, with no room-resizing and no palette
+     *  compromises from building her out of concrete. */
+    public static final String PAINTING = "roussette:painting_anchor";
 
     /** Glyphs that describe the *shape* of the building and are extruded all the
      *  way through. Everything else is a fitting, placed on one slice only. */
@@ -81,7 +90,7 @@ public final class Blueprint {
     }
     /** Glyphs that are enclosed space, and therefore need the extruded ends
      *  capping or the shaft would be open to raw terrain on two sides. */
-    private static boolean interior(char c) { return c == '~' || c == 'a'; }
+    private static boolean interior(char c) { return c == '~' || c == 'a' || c == 'M'; }
 
     /**
      * Extrude the cross-section into a real 3D structure.
@@ -138,12 +147,17 @@ public final class Blueprint {
                     // lights and crystals live on the two end walls
                     out.add(new Placement3(x, y, 0,    block));
                     out.add(new Placement3(x, y, back, block));
-                } else if (c == 'M') {
-                    for (int r = 0; r < MOSAIC_ROWS; r++)
-                        out.add(new Placement3(x, y + r, back, block));
                 }
                 // 'g', 's' and ' ' leave the world alone
             }
+        }
+
+        // One painting, centred on the run of 'M' glyphs, hung on the back wall.
+        for (int y = 0; y < rows.length; y++) {
+            int lo = rows[y].indexOf('M');
+            if (lo < 0) continue;
+            int hi = rows[y].lastIndexOf('M');
+            out.add(new Placement3((lo + hi) / 2, y, back, PAINTING));
         }
         return out;
     }

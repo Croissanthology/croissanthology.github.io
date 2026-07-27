@@ -10,14 +10,21 @@ public final class Repellent {
 
     public static final int SPRAYS_PER_CAN   = 10;    // Margot's call, up from 4
 
-    /** Applying a whole can at an anvil has to stay worth doing.
+    /** ONE can per temple, and no refilling. The basin is gone.
      *
-     *  At 4 sprays a can, trading it for 6 knockouts was an obvious upgrade. At
-     *  10 sprays it would have been a downgrade -- you would be burning ten
-     *  escapes to buy six -- which quietly kills the anvil recipe. So the
-     *  charges scale with the can and the trade keeps its original 1.5x shape:
-     *  hands-free, and more total knockouts than you put in. */
-    public static final int ARMOUR_CHARGES   = 15;    // was 6, when a can held 4
+     *  This is where all the scarcity lives now: a dozen temples in the world,
+     *  one can each, ten sprays a can, and that is the entire supply forever.
+     *  He is meant to run out. */
+    public static final int CANS_PER_TEMPLE  = 1;
+
+    /** The anvil recipe is a SIDEGRADE, not an upgrade.
+     *
+     *  Trading ten manual sprays for six automatic knockouts is a real loss of
+     *  total uses, bought with not having to react in time. When cans refilled
+     *  this could afford to be generous; now that the world contains a fixed
+     *  and small number of them, a recipe that multiplied doses would undo the
+     *  scarcity that makes running out mean anything. */
+    public static final int ARMOUR_CHARGES   = 6;
     public static final int DOSE_TICKS       = 900;   // 45s of proximity
     public static final double DOSE_RANGE    = 6.0;
 
@@ -28,8 +35,6 @@ public final class Repellent {
         public boolean empty(){ return sprays <= 0; }
         /** @return true if a spray was actually released. */
         public boolean spray() { return sprays > 0 && sprays-- > 0; }
-        /** Shrine basins refill empties. */
-        public void refill() { sprays = SPRAYS_PER_CAN; }
         /** Mining the wrong block in a temple bursts the can. */
         public void rupture() { sprays = 0; }
     }
