@@ -3,100 +3,74 @@
     "category": "hostile",
     "subtitle": "subtitles.roussette.cry",
     "sounds": [
-      {
-        "name": "entity.cat.hurt",
-        "type": "event"
-      }
+      "roussette:cry1",
+      "roussette:cry2",
+      "roussette:cry3"
     ]
   },
   "wail": {
     "category": "hostile",
     "subtitle": "subtitles.roussette.wail",
     "sounds": [
-      {
-        "name": "entity.cat.stray_ambient",
-        "type": "event"
-      }
+      "roussette:wail1",
+      "roussette:wail2"
     ]
   },
   "purr": {
     "category": "hostile",
     "subtitle": "subtitles.roussette.purr",
     "sounds": [
-      {
-        "name": "entity.cat.purr",
-        "type": "event"
-      }
+      "roussette:purr"
     ]
   },
   "purreow": {
     "category": "hostile",
     "subtitle": "subtitles.roussette.purr",
     "sounds": [
-      {
-        "name": "entity.cat.purreow",
-        "type": "event"
-      }
+      "roussette:purreow"
     ]
   },
   "chomp": {
     "category": "hostile",
     "subtitle": "subtitles.roussette.chomp",
     "sounds": [
-      {
-        "name": "entity.generic.eat",
-        "type": "event"
-      }
+      "roussette:chomp1",
+      "roussette:chomp2"
     ]
   },
   "gnaw": {
     "category": "hostile",
     "subtitle": "subtitles.roussette.chomp",
     "sounds": [
-      {
-        "name": "entity.generic.eat",
-        "type": "event"
-      }
+      "roussette:gnaw"
     ]
   },
   "eep": {
     "category": "hostile",
     "subtitle": "subtitles.roussette.eep",
     "sounds": [
-      {
-        "name": "entity.cat.hurt",
-        "type": "event"
-      }
+      "roussette:eep"
     ]
   },
   "huff": {
     "category": "hostile",
     "subtitle": "subtitles.roussette.huff",
     "sounds": [
-      {
-        "name": "entity.cat.ambient",
-        "type": "event"
-      }
+      "roussette:huff"
     ]
   },
   "snore": {
     "category": "hostile",
     "subtitle": "subtitles.roussette.snore",
     "sounds": [
-      {
-        "name": "entity.cat.purr",
-        "type": "event"
-      }
+      "roussette:snore"
     ]
   },
   "snort": {
     "category": "hostile",
     "subtitle": "subtitles.roussette.snort",
     "sounds": [
-      {
-        "name": "entity.horse.breathe",
-        "type": "event"
-      }
+      "roussette:snore"
     ]
   },
   "squelch": {
