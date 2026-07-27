@@ -110,6 +110,19 @@ public class Tests {
         r.onHeadpat(f);
         check("a bystander can pat her while she is down", r.timer() > Roussette.KO_TICKS);
 
+        // fleeing: the Nether, the End, an ender pearl, /tp -- all one event.
+        // She does not travel to him. She re-forms on him, wetly.
+        f = new Fake(); r = new Roussette();
+        f.dist = 5000;                        // he changed dimension
+        run(r, f, 1);
+        check("fleeing to another dimension just makes her re-form on him", f.tps == 1);
+        check("and the splat announces itself", f.sounds.contains("reform"));
+        check("she never tries to pathfind there", f.moved == 0);
+        check("any distance past the leash counts as fleeing", 5000 > Roussette.LEASH);
+        f = new Fake(); r = new Roussette(); f.dist = Roussette.LEASH - 1; f.pass = true;
+        run(r, f, 1);
+        check("but normal chasing distance does not teleport her", f.tps == 0 && f.moved > 0);
+
         // the two ways to treat a knocked-out shark
         f = new Fake(); r = new Roussette();
         r.onRepellent(f);
@@ -155,16 +168,19 @@ public class Tests {
         System.out.println("\nREPELLENT");
         Repellent.Can can = new Repellent.Can();
         int n = 0; while (can.spray()) n++;
-        check("a can holds exactly 4 sprays", n == 4);
+        check("a can holds exactly 10 sprays", n == 10);
         can.refill();
-        check("a shrine basin refills it", can.sprays() == 4);
+        check("a shrine basin refills it", can.sprays() == 10);
 
         Repellent.TreatedArmour armour = Repellent.TreatedArmour.applyCan(can);
         check("applying a can consumes the whole thing", can.empty());
         int knockouts = 0;
-        for (int i = 0; i < Repellent.DOSE_TICKS * 10 && !armour.spent(); i++)
+        int budget = Repellent.DOSE_TICKS * (Repellent.ARMOUR_CHARGES + 2);
+        for (int i = 0; i < budget && !armour.spent(); i++)
             if (armour.tick(3.0, false)) knockouts++;
-        check("treated armour gives exactly 6 knockouts", knockouts == 6);
+        check("treated armour gives exactly 15 knockouts", knockouts == 15);
+        check("treating armour still beats carrying the can",
+              Repellent.ARMOUR_CHARGES > Repellent.SPRAYS_PER_CAN);
         check("and then the treatment is spent", armour.spent());
         check("the tint fades to nothing as it goes", armour.tint() == 0.0);
 
@@ -179,6 +195,91 @@ public class Tests {
         countTicksToKnockout(a3);
         int second = countTicksToKnockout(a3);
         check("NO tolerance buildup -- every dose costs the same", first == second);
+
+        System.out.println("\nVICTIM");
+        // The one-T problem. Her brother misspelled his own provocation, so the
+        // literal rule "any username containing roussette" matches nobody.
+        check("the stated rule would have missed him entirely",
+              !"i_eat_roussetes".contains("roussette"));
+        check("but the stem catches him", VictimRegistry.isTaunt("I_eat_roussetes"));
+        check("and catches the correct spelling too", VictimRegistry.isTaunt("Roussette_Hater"));
+        check("and is case-insensitive", VictimRegistry.isTaunt("ROUSSETTES_R_FOOD"));
+        check("an innocent name is not a taunt", VictimRegistry.isTaunt("Margot") == false);
+
+        VictimRegistry reg = new VictimRegistry();
+        reg.protect("LittleCousin");
+        check("the brother is prey", reg.isVictim("I_eat_roussetes"));
+        check("the cousin is not", !reg.isVictim("LittleCousin"));
+        reg.protect("Sneaky_roussette_fan");
+        check("protection beats the taunt stem, so rule 3 is never one typo away",
+              !reg.isVictim("Sneaky_roussette_fan"));
+        reg.designate("SomeoneElse");
+        check("anyone can be designated by hand", reg.isVictim("SomeoneElse"));
+        check("nobody is hunted by default", !reg.isVictim("RandomPlayer"));
+
+        System.out.println("\nTEMPLE BUILD");
+        try {
+            String grid = new String(java.nio.file.Files.readAllBytes(
+                java.nio.file.Path.of("src/roussette/core/temple.txt")));
+            Blueprint bp = new Blueprint(grid);
+            List<Blueprint.Placement3> solid = bp.expand(Blueprint.DEPTH);
+
+            check("extruding gives a real building", solid.size() > 5000);
+            check("there is still exactly ONE chest, not thirteen",
+                  Blueprint.count3(solid, "minecraft:chest") == 1);
+            check("still three doors, not thirty-nine",
+                  Blueprint.count3(solid, "minecraft:copper_door") == 6);
+            check("still four votive frames",
+                  Blueprint.count3(solid, "roussette:votive_frame") == 4);
+            check("the mosaic became a wall instead of a stripe",
+                  Blueprint.count3(solid, "roussette:mosaic_marker")
+                      == 13 * Blueprint.MOSAIC_ROWS);
+
+            // the shaft must not be open to raw terrain at the extruded ends
+            boolean capped = true;
+            int back = Blueprint.DEPTH - 1;
+            for (Blueprint.Placement3 p : solid)
+                if ((p.z() == 0 || p.z() == back) && p.block().equals("minecraft:water"))
+                    capped = false;
+            check("the ends are capped, so the pool cannot drain into the ground", capped);
+
+            SiteFinder.Site site = new SiteFinder.Site(1000, -2000, "plains", 70);
+            List<TempleBuilder.Abs> world = TempleBuilder.toWorld(
+                solid, site, bp.groundRow(), bp.centreColumn(), Blueprint.DEPTH);
+            check("world mapping keeps every block", world.size() == solid.size());
+
+            int lo = Integer.MAX_VALUE, hi = Integer.MIN_VALUE;
+            for (TempleBuilder.Abs a : world) { lo = Math.min(lo, a.y()); hi = Math.max(hi, a.y()); }
+            check("the pool really is deep", (site.surfaceY() - lo) >= 30);
+            check("the above-ground part is a squat lip, not a tower",
+                  (hi - site.surfaceY()) <= 8);
+            check("it is built around the site, not off to one side",
+                  Math.abs(centreOf(world) - site.x()) <= 2);
+
+            TempleBuilder.Schedule sch = new TempleBuilder.Schedule(
+                world, TempleBuilder.BLOCKS_PER_TICK);
+            check("the work is split over many chunks", sch.chunkCount() > 1);
+            int batches = 0, blocks = 0; boolean oneChunkAtATime = true;
+            TempleBuilder.Batch b;
+            while ((b = sch.next()) != null) {
+                batches++; blocks += b.blocks().size();
+                if (b.blocks().size() > TempleBuilder.BLOCKS_PER_TICK) oneChunkAtATime = false;
+                for (TempleBuilder.Abs a : b.blocks())
+                    if (a.chunkX() != b.chunkX() || a.chunkZ() != b.chunkZ()) oneChunkAtATime = false;
+            }
+            check("no tick ever writes more than its budget", oneChunkAtATime);
+            check("a batch never spans two chunks, so only one is force-loaded", oneChunkAtATime);
+            check("every block gets written exactly once", blocks == world.size());
+            check("and it takes several ticks instead of hanging the server", batches > 1);
+            check("progress reaches 100%", sch.done() && sch.progress() == 1.0);
+        } catch (Exception e) { check("temple build: " + e, false); }
+
+        TempleBuilder.OneShot once = new TempleBuilder.OneShot();
+        check("/roussette-temples runs the first time", once.tryFire());
+        check("and refuses every time after", !once.tryFire());
+        TempleBuilder.OneShot restored = new TempleBuilder.OneShot();
+        restored.restore(true);
+        check("the refusal survives a server restart", !restored.tryFire());
 
         System.out.println("\nTEMPLE SITES");
         SiteFinder sf = new SiteFinder();
@@ -237,6 +338,13 @@ public class Tests {
         "eep",      // the ricochet yelp
         "huff");    // the settling noise: "Ok. Ok. anyway."
     static boolean isRecordedNoise(String s) { return VOICE.contains(s); }
+
+    /** Mid-X of a placed temple, for checking it straddles its site. */
+    static double centreOf(List<TempleBuilder.Abs> world) {
+        int lo = Integer.MAX_VALUE, hi = Integer.MIN_VALUE;
+        for (TempleBuilder.Abs a : world) { lo = Math.min(lo, a.x()); hi = Math.max(hi, a.x()); }
+        return (lo + hi) / 2.0;
+    }
 
     static double measureSpeed(Roussette r, boolean water) {
         Fake f = new Fake(); f.dist = 10; f.water = water;
