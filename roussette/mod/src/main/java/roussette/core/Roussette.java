@@ -64,7 +64,8 @@ public final class Roussette {
      *  This is the only state she enters voluntarily and the only one where she
      *  is harmless on purpose rather than by accident. It does not soften her:
      *  she is on his pillow, and she is awake again at dawn. */
-    public static final int SNORE_PERIOD = 70;   // ~3.5s between noises
+    public static final int SNORE_PERIOD = 180;  // 9s -- must exceed the take's
+                                                 // length or it overlaps itself
     public static final int SNORT_ONE_IN = 4;    // some of them are snorts
 
     private State state = State.HUNT;
