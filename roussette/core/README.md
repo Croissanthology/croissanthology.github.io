@@ -6,7 +6,7 @@ The half of the mod that has no Minecraft in it — and is therefore **tested**.
 cd roussette/core
 javac -d out $(find src test -name '*.java') && java -cp out roussette.Tests
 ```
-→ **55 passed, 0 failed.** (Run it from `roussette/core`; the blueprint test
+→ **90 passed, 0 failed.** (Run it from `roussette/core`; the blueprint test
 reads `src/roussette/core/temple.txt` by relative path.)
 
 ## Why this is split off
@@ -28,7 +28,9 @@ Minecraft, targeting NeoForge instead of Fabric changes only the adapter.
 | `Roussette.java` | The brain. Full state machine, every tuned constant, no Minecraft imports. |
 | `Repellent.java` | Can and treated-armour accounting. Deliberately has **no** tolerance mechanic. |
 | `SiteFinder.java` | Temple placement: spiral search, flatness test, one per biome, 1500-block spacing. |
-| `Blueprint.java` | Parses `temple.txt` into block placements. |
+| `Blueprint.java` | Parses `temple.txt`, and extrudes it into the real 3D building. |
+| `TempleBuilder.java` | Coordinate mapping, chunk grouping, per-tick batching, run-once latch. |
+| `VictimRegistry.java` | Who she hunts, who is permanently safe. Read the one-T note. |
 | `Geometry.java` | The 20 boxes, the palette, the three pupil states. |
 | `temple.txt` | The temple cross-section as a readable block grid. |
 
@@ -51,9 +53,11 @@ Target is **Minecraft Java 26.2 + NeoForge** (see `../DECISIONS.md`).
    dimension change, a teleport, or burning alive.
 5. **Register `roussette:shrine_stone`** — bedrock-like hardness. Do *not* use
    reinforced deepslate; it breaks in about a minute and drops nothing.
-6. **The `/roussette-temples` command.** The genuinely hard part — see §8 of the
-   spec. Force-load chunks, place incrementally across ticks, persist a
-   one-shot flag in world save data.
+6. **The `/roussette-temples` command.** The bookkeeping is done in
+   `TempleBuilder`: call `Blueprint.expand`, `toWorld`, then pump
+   `Schedule.next()` once per tick, force-loading `batch.chunkX/chunkZ` and
+   releasing it when `batch.last()`. The adapter supplies only the force-load
+   call, the block writes, and persisting `OneShot` in world save data.
 7. **Items:** the can, the anvil recipe, the treated-armour tint.
 8. **Sounds:** ten events, Margot's own recordings, mono OGG Vorbis.
 

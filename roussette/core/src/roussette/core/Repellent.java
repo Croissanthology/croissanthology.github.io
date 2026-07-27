@@ -8,8 +8,16 @@ package roussette.core;
  *  forever. All scarcity lives in the supply of cans. */
 public final class Repellent {
 
-    public static final int SPRAYS_PER_CAN   = 4;
-    public static final int ARMOUR_CHARGES   = 6;
+    public static final int SPRAYS_PER_CAN   = 10;    // Margot's call, up from 4
+
+    /** Applying a whole can at an anvil has to stay worth doing.
+     *
+     *  At 4 sprays a can, trading it for 6 knockouts was an obvious upgrade. At
+     *  10 sprays it would have been a downgrade -- you would be burning ten
+     *  escapes to buy six -- which quietly kills the anvil recipe. So the
+     *  charges scale with the can and the trade keeps its original 1.5x shape:
+     *  hands-free, and more total knockouts than you put in. */
+    public static final int ARMOUR_CHARGES   = 15;    // was 6, when a can held 4
     public static final int DOSE_TICKS       = 900;   // 45s of proximity
     public static final double DOSE_RANGE    = 6.0;
 
