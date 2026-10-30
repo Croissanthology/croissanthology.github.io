@@ -329,7 +329,7 @@ fn print_info() {
     println!("  runs nightly via launchd · gwern.net/archiving for the design lineage");
     println!(
         "  built by {} at {} with {}",
-        "margot".bright_magenta(),
+        "croiss".bright_magenta(),
         "croissanthology.com".bright_cyan(),
         "claude".bright_yellow(),
     );

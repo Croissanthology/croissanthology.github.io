@@ -93,7 +93,7 @@ pub fn append_substack_todo(items: &[DeadItem]) -> Result<Option<PathBuf>> {
 
 pub fn render_mail_body(items: &[DeadItem]) -> String {
     let mut body = String::from(
-        "hi margot — these substack posts cite links that have gone dead.\n\
+        "hi croiss — these substack posts cite links that have gone dead.\n\
          local archives are already live on croissanthology.com.\n\
          update substack manually when you get a sec.\n\n",
     );
