@@ -173,12 +173,47 @@ def list_posts():
     return out
 
 
+def image_key(url):
+    """The upload behind a Substack image URL (one picture reaches posts through several CDN URLs)."""
+    u = original_url(url or "")
+    m = re.search(r"/images/([0-9a-f]{8}-[0-9a-f-]{27})", u)
+    return m.group(1) if m else u
+
+
+def fingerprint(site_path):
+    """A 16x16 light/dark pattern of a saved image, to spot the same picture uploaded twice."""
+    if Image is None or not site_path:
+        return None
+    try:
+        with Image.open(ROOT / site_path.lstrip("/")) as im:
+            px = im.convert("L").resize((16, 16)).tobytes()
+    except Exception:  # noqa: BLE001
+        return None
+    mean = sum(px) / len(px)
+    return [p > mean for p in px]
+
+
+def cover_in_body(cover_url, cover_path, body_images):
+    """True when the post shows its cover image itself, so the page shouldn't show it twice.
+    body_images: (remote url, local path) for every image in the post."""
+    if not cover_path:
+        return False
+    if any(image_key(u) == image_key(cover_url) for u, _ in body_images):
+        return True
+    fp = fingerprint(cover_path)
+    return fp is not None and any(
+        (other := fingerprint(p)) is not None and sum(a != b for a, b in zip(fp, other)) <= 12
+        for _, p in body_images)
+
+
 def front_matter(fields):
     lines = ["---"]
     for k, v in fields.items():
         if v is None or v == "":
             continue
-        if isinstance(v, list):
+        if isinstance(v, bool):
+            lines.append(f"{k}: {'true' if v else 'false'}")
+        elif isinstance(v, list):
             lines.append(f"{k}:")
             lines.extend(f"  - {json.dumps(x, ensure_ascii=False)}" for x in v)
         elif isinstance(v, (int, float)):
@@ -258,9 +293,14 @@ def main():
         cover = covers.get(slug)
         cw, ch = image_size(cover)
 
-        html = translate(body,
-                         download_image=lambda u, s=slug: save_image(u, IMAGES / s),
-                         local_href=local_href, thumb_for=thumb_for)
+        body_images = []
+
+        def grab(u, s=slug, seen=body_images):
+            local = save_image(u, IMAGES / s)
+            seen.append((u, local))
+            return local
+
+        html = translate(body, download_image=grab, local_href=local_href, thumb_for=thumb_for)
         html = html.replace("{%", "{&#37;").replace("{{", "{&#123;")  # nothing in a post is Liquid
 
         redirects = []
@@ -281,6 +321,7 @@ def main():
             "cover": cover,
             "cover_width": cw,
             "cover_height": ch,
+            "cover_in_body": cover_in_body(raw.get("cover_image"), cover, body_images) or None,
             "permalink": f"/subslop/{slug}/",
             "redirect_from": redirects,
         }) + "\n" + html + "\n"

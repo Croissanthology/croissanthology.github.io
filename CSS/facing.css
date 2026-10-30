@@ -1,6 +1,6 @@
 /* Facing Pages — croissanthology.com's book layout (homepage + Substack posts).
-   Folded / phones: one column, notes under their paragraph. Unfolded / wide (720px+): facing pages,
-   the crease is the spine. Colours follow the reader's device unless they pick ○ or ●. */
+   Folded / phones: one column, notes under their paragraph. Unfolded / wide (720px+): two
+   columns, the essay on the left and its notes and figures on the right. Colours follow the reader's device unless they pick ○ or ●. */
 
 :root {
   --wide-at: 720;
@@ -39,7 +39,7 @@
 }
 
 * { box-sizing: border-box; }
-html { -webkit-text-size-adjust: 100%; background: var(--night); }
+html { -webkit-text-size-adjust: 100%; background: var(--page); }
 body { margin: 0; background: var(--page); color: var(--ink); font: 17px/1.62 var(--body); font-optical-sizing: auto; }
 a { color: inherit; text-decoration-color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: .2em; }
 a:hover { color: var(--accent-ink); }
@@ -48,7 +48,6 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 h1, h2, h3 { margin: 0; font-weight: 400; text-wrap: balance; }
 
 .book { position: relative; max-width: 30rem; margin: 0 auto; padding: 1.8rem var(--gutter-r) 3rem var(--gutter-l); }
-.spine { display: none; }
 .runfoot { display: flex; justify-content: space-between; align-items: baseline; margin: 2rem 0 0; font-family: var(--display); font-size: .74rem; letter-spacing: .18em; text-transform: uppercase; color: var(--muted); }
 .runfoot .pg { font-family: var(--body); letter-spacing: 0; text-transform: none; font-style: italic; }
 .theme { text-transform: uppercase; letter-spacing: .18em; text-decoration: underline; text-decoration-style: dotted; }
@@ -79,7 +78,6 @@ h1, h2, h3 { margin: 0; font-weight: 400; text-wrap: balance; }
 .plainlist { flex-direction: row; flex-wrap: wrap; gap: .2rem 1.1rem; font-size: .92rem; }
 .more { display: inline-block; margin-top: .35rem; font-size: .84rem; font-style: italic; color: var(--muted); }
 
-[data-layout="wide"] body.home { background: var(--night); }
 [data-layout="wide"] .book { max-width: 66rem; display: grid; grid-template-columns: 1fr 1fr; padding: 0; min-height: 100vh; background: var(--page); }
 [data-layout="wide"] .leaf { background: var(--page); padding: 1.9rem 2.4rem 1.6rem; }
 [data-layout="wide"] .verso { position: sticky; top: 0; height: 100vh; align-self: start; }
@@ -87,10 +85,6 @@ h1, h2, h3 { margin: 0; font-weight: 400; text-wrap: balance; }
 [data-layout="wide"] .runfoot { margin-top: auto; padding-top: 1.4rem; }
 [data-layout="wide"] .titling { margin: clamp(2.5rem, 17vh, 10rem) 0 1.9rem; }
 [data-layout="wide"] .intro { font-size: .9rem; line-height: 1.55; }
-[data-layout="wide"] .spine {
-  display: block; position: absolute; top: 0; bottom: 0; left: calc(var(--hinge-x, 50%) - 30px); width: 60px; pointer-events: none;
-  background: linear-gradient(90deg, transparent 0%, color-mix(in srgb, var(--spine) 35%, transparent) 40%, var(--spine) 50%, color-mix(in srgb, var(--spine) 35%, transparent) 60%, transparent 100%);
-}
 
 /* ------------------------------------------------ reader */
 .runhead { display: flex; justify-content: space-between; gap: 1rem; font-family: var(--display); font-size: .72rem; letter-spacing: .2em; text-transform: uppercase; color: var(--muted); padding-bottom: .9rem; border-bottom: 1px solid var(--rule); }
@@ -106,7 +100,7 @@ h1, h2, h3 { margin: 0; font-weight: 400; text-wrap: balance; }
 .post-head .meta a:hover { color: var(--accent-ink); }
 .dek { margin: .1rem 0 0; max-width: 30em; font-style: italic; color: var(--ink-soft); line-height: 1.5; text-wrap: balance; }
 
-.flow { min-width: 0; hyphens: auto; }
+.flow { min-width: 0; hyphens: auto; overflow-wrap: break-word; }  /* long bare URLs wrap instead of running into the margin */
 .flow > p { margin: 0; text-indent: 1.3em; text-align: justify; }
 .flow > p:first-child, .flow > :is(blockquote, figure, h2, h3) + p { text-indent: 0; }
 .flow blockquote { margin: 1.1em 1.3em; font-size: .92em; color: var(--ink-soft); font-style: italic; }
@@ -140,7 +134,7 @@ figure.plate img { display: block; width: 100%; height: auto; border: 1px solid 
 .note-n { position: absolute; left: .2em; top: .1em; color: var(--accent-ink); font-feature-settings: "lnum"; }
 .note.hot .note-body { color: var(--ink); }
 
-[data-layout="wide"] body.reader { background: var(--night); font-size: 16.5px; }
+[data-layout="wide"] body.reader { font-size: 16.5px; }
 [data-layout="wide"] .post {
   max-width: 66rem; display: grid; padding: 0; min-height: 100vh;
   grid-template-columns: 1fr 1fr; grid-template-rows: auto auto 1fr;
@@ -156,7 +150,6 @@ figure.plate img { display: block; width: 100%; height: auto; border: 1px solid 
 [data-layout="wide"] figure.plate { width: auto; }
 [data-layout="wide"] figure.plate .ph { max-width: 260px; }
 [data-layout="wide"] .post .cover img { border: 1px solid var(--rule); }
-[data-layout="wide"] .spine { display: block; }
 [data-layout="wide"] .flow > figure.plate + p { text-indent: 1.3em; }
 [data-layout="wide"] .flow > figure.plate + p::before { content: "fig. \2192"; float: right; margin: .25em 0 0 .6em; font-size: .7em; font-style: italic; color: var(--accent-ink); text-indent: 0; }
 [data-layout="wide"] .flow > figure.embed + p::before { content: "post \2192"; }
