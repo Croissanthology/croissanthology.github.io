@@ -1,0 +1,41 @@
+name: Site check
+
+# Builds the site the way GitHub Pages does (github-pages gem) on every branch except main,
+# so a broken layout shows up as a red check on the pull request instead of on croissanthology.com.
+on:
+  push:
+    branches-ignore: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+
+      - name: Install GitHub Pages' Jekyll
+        run: |
+          printf 'source "https://rubygems.org"\ngem "github-pages", group: :jekyll_plugins\ngem "webrick"\n' > "$RUNNER_TEMP/Gemfile"
+          BUNDLE_GEMFILE="$RUNNER_TEMP/Gemfile" bundle install --jobs 4
+
+      - name: Build
+        run: |
+          # Pages ignores plugins it doesn't support (jekyll-minifier); do the same here
+          printf 'plugins:\n  - jekyll-feed\n  - jekyll-redirect-from\n' > "$RUNNER_TEMP/ci.yml"
+          BUNDLE_GEMFILE="$RUNNER_TEMP/Gemfile" bundle exec jekyll build --config "_config.yml,$RUNNER_TEMP/ci.yml" --trace
+
+      - name: Check the Facing Pages output
+        run: |
+          set -e
+          test -f _site/index.html
+          grep -q 'class="book"' _site/index.html || { echo "::error::homepage did not get the Facing Pages layout"; exit 1; }
+          n=$(ls -d _site/subslop/*/ 2>/dev/null | wc -l)
+          echo "::notice::built ${n} subslop pages"
+          for f in $(ls _site/subslop/*/index.html | head -200); do
+            if grep -q '{{\|{%' "$f"; then echo "::error file=$f::unrendered Liquid in $f"; exit 1; fi
+          done
