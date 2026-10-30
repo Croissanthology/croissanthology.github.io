@@ -1,4 +1,5 @@
 mod archive;
+mod bluesky;
 mod check;
 mod cli;
 mod config;

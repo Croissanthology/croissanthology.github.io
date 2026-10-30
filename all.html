@@ -23,6 +23,18 @@ title: "All Posts"
   
 </div>
 
+<h2 style="text-align:center; margin-top:3rem;">Subslop</h2>
+<div class="post-container" style="margin-top:1rem;">
+  <ul class="all-posts-list" style="list-style:none; margin:0; padding:0;">
+    {% for p in site.data.subslop %}
+      <li style="margin-bottom:1em;">
+        <a href="{{ p.url | relative_url }}">{{ p.title }}</a>
+        <span style="font-style:italic;">({{ p.date | date: "%B %d, %Y" }})</span>
+      </li>
+    {% endfor %}
+  </ul>
+</div>
+
 <!-- Optional image at the top -->
 <div class="image-container" style="max-width:800px; margin:0 auto;">
   <img src="/images/scrooge.jpg" alt="Scrooge" style="width:100%;">

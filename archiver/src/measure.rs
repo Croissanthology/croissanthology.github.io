@@ -262,7 +262,7 @@ fn make_id(url: &str) -> String {
 }
 
 pub fn measurement_path() -> PathBuf {
-    config::repo_root().join(".archiver").join(MEASUREMENT_FILE)
+    config::data_root().join(".archiver").join(MEASUREMENT_FILE)
 }
 
 pub fn load() -> Result<MeasurementFile> {

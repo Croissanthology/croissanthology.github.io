@@ -1,15 +1,15 @@
 # Archiver — handoff doc
 
-This file exists so that **Claude running on Margot's local Mac CLI** can pick
+This file exists so that **Claude running on Croiss's local Mac CLI** can pick
 up the project without having seen the cloud-session conversation that built
-it. Margot moved from a web/iPhone Claude session into a local terminal
+it. Croiss moved from a web/iPhone Claude session into a local terminal
 session, which means the conversation history doesn't travel — only the repo
 does. Everything below is what the previous Claude knew. Read it top to
 bottom before doing anything.
 
 ---
 
-## 1. The project, in Margot's own words
+## 1. The project, in Croiss's own words
 
 These are her literal messages from the cloud session, pasted verbatim and in
 order. Treat them as the source of truth — if anything in this doc seems to
@@ -31,7 +31,7 @@ disagree with these, the quotes win.
 > (not just a network error or something, in which case the archive postpones)
 > dead, it GENERATES a version of the dead link by uploading the local copy
 > of it to my github and hosting it on my website. Got it? I think this'll be
-> pretty epic and useful. I'm Margot by the way. And blogs are
+> pretty epic and useful. I'm Croiss by the way. And blogs are
 > croissanthology.substack.com and croissanthology.com, those are the things
 > that require checking. Things like YouTube videos can be locally
 > snapshotted but obviously not downloaded as MP4 lmao. Also for inspiration:
@@ -48,7 +48,7 @@ disagree with these, the quotes win.
 > in my blog should have a local copy, be backed up to the large internet
 > archives, and swoop in in case of multiple errors. Since the code can't
 > directly edit Substack I suppose what would be best is an email to
-> margotwarrenbancquart@gmail.com along with a notification on the terminal
+> [my email, which lives in the local .archiver config] along with a notification on the terminal
 > app interface. Ok
 >
 > Yeah let's just dive in for now. Please make the terminal interface very
@@ -94,7 +94,7 @@ skimming before any design changes. Gwern's three habits I copied:
 
 1. **Three layers of archive**: a local self-contained copy, plus
    Wayback Machine, plus archive.is. Redundancy wins against link rot.
-2. **Auto-detect dead links and substitute archives**. Margot wants the
+2. **Auto-detect dead links and substitute archives**. Croiss wants the
    substitution to happen on her own site so her citations keep working.
 3. **Track everything in a small structured index** — Gwern uses a flat
    archive directory; we use `.archiver/index.json`.
@@ -146,7 +146,7 @@ archive/             # output: served by Jekyll at /archive/<slug>/
 | `archiver` | interactive prompt with the ASCII cat |
 | `archiver add <url>` | archive one URL |
 | `archiver add --paywall <url>` | with bypass chain |
-| `archiver post <url>` | archive every outbound link on a post (post itself not archived — appropriate for Margot's own posts) |
+| `archiver post <url>` | archive every outbound link on a post (post itself not archived — appropriate for Croiss's own posts) |
 | `archiver post --all <url>` | …and also archive the post itself (use for external posts like SSC, where the post is at risk of rot too) |
 | `archiver scan` | walk every post in the repo + `subslop/`, archive new outbound links |
 | `archiver check [--dry-run]` | link-rot check on everything; dry-run skips state save |
@@ -170,7 +170,7 @@ auto-detected and treated as `archiver post <url>` (outlinks only).
   message`. Uses whatever account Mail.app is signed into. **First run will
   trigger a one-time macOS Automation permission prompt.**
 - **`SUBSTACK_DEAD_LINKS.md`** at the repo root — append-only checklist with
-  date headers. Margot ticks boxes as she patches the live substack posts.
+  date headers. Croiss ticks boxes as she patches the live substack posts.
 - **Terminal bell** (`\x07`) so an open terminal blips when the cron runs.
 
 `lettre` and `~/.archiver.env` are gone. No SMTP creds anywhere.
@@ -180,12 +180,12 @@ auto-detected and treated as `archiver post <url>` (outlinks only).
 - **A link is "dead" only after 3 consecutive HTTP 404/410/451 or DNS
   NXDOMAIN.** 5xx, timeouts, 401/403 (paywall/login walls), DNS transient
   failures — all classified as `Transient` and retried next month, never
-  trigger a rehost. This is the "not just a network error" rule Margot
+  trigger a rehost. This is the "not just a network error" rule Croiss
   asked for.
 - **Tracking-param stripping** (`utm_*`, `fbclid`, `gclid`, `mc_cid`, etc.)
   happens during `canonicalize()` so the same article shared two ways
   doesn't get double-archived.
-- **Margot's own domains are skipped** during outbound-link extraction.
+- **Croiss's own domains are skipped** during outbound-link extraction.
   See `config::settings().own_domains` (loaded from `.archiver/config.toml`)
   + `config::is_own_host()`. Currently her config has:
   `croissanthology.com`, `www.croissanthology.com`,
@@ -206,18 +206,18 @@ auto-detected and treated as `archiver post <url>` (outlinks only).
 
 ### Things I deferred / would do next
 
-In rough priority order if Margot wants more polish:
+In rough priority order if Croiss wants more polish:
 
 1. **Tests**, especially for `state::canonicalize()`, `state::make_slug()`,
    `extract::from_markdown()`, `extract::from_html()`, and the markdown
    rehost rewriter. Zero tests in the first cut.
 2. **Better HTML rewriter** — current one is conservative-but-heuristic.
    Switching to `scraper` for parse + rewrite would be more correct.
-3. **`--dry-run` flag on `check` and `rehost`** so Margot can preview
+3. **`--dry-run` flag on `check` and `rehost`** so Croiss can preview
    what would happen before files get touched.
 4. **Concurrency** — `scan` and `check` are serial. Could be parallel
    with a small worker pool, but be polite to Wayback / archive.is.
-5. **YouTube enrichment** — Margot explicitly accepted that YouTube
+5. **YouTube enrichment** — Croiss explicitly accepted that YouTube
    pages get snapshotted as HTML only, no MP4. A nice addition would be
    capturing title + transcript via the YouTube oEmbed endpoint, stored
    as a sidecar `.json`. Out of scope for v1.
@@ -239,7 +239,7 @@ brew install monolith
 
 # Build and link the binary.
 # Apple-Silicon macs: brew prefix is /opt/homebrew, and /usr/local/bin
-# usually doesn't exist. Use /opt/homebrew/bin (margot already owns it,
+# usually doesn't exist. Use /opt/homebrew/bin (you already own it,
 # no sudo). On Intel macs swap in /usr/local/bin.
 cd archiver
 cargo build --release
@@ -290,7 +290,7 @@ permission prompt → click **Allow**.
 
 ---
 
-## 6. Margot's tone preferences
+## 6. Croiss's tone preferences
 
 From the conversation:
 

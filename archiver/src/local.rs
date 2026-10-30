@@ -8,6 +8,12 @@ pub fn save_local(url: &str, dest: &Path, user_agent: Option<&str>) -> Result<Pa
     if let Some(parent) = dest.parent() {
         std::fs::create_dir_all(parent).context("create archive output dir")?;
     }
+    // Bluesky posts render with JavaScript; ask Bluesky's open API for the post instead.
+    if crate::bluesky::is_post_url(url) {
+        ui::info("bluesky → public api");
+        crate::bluesky::save_post(url, dest)?;
+        return Ok(dest.to_path_buf());
+    }
     let fetch_url = rewrite_for_local(url);
     if fetch_url != url {
         ui::info(&format!("twitter → {}", config::settings().nitter_host.as_str()));
