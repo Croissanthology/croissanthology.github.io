@@ -14,7 +14,7 @@ layout: facing
       <p>You can email me at croissanthology [at] gmail.com. All my writing is <a href="{{ '/all' | relative_url }}">here</a>. If you wish to make me happy, <a href="https://patreon.com/croissanthology">my Patreon is here</a> :)</p>
       <p class="switch">Switch to <span class="modes" role="group" aria-label="Colour theme"><button type="button" data-mode="light" aria-pressed="false" title="Light" aria-label="Light"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="5.6" fill="none" stroke="currentColor" stroke-width="1.25"/></svg></button><button type="button" data-mode="dark" aria-pressed="false" title="Dark" aria-label="Dark"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.2" fill="currentColor"/></svg></button><button type="button" data-mode="system" aria-pressed="false" title="Match your device" aria-label="Match your device"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="5.6" fill="none" stroke="currentColor" stroke-width="1.25"/><path d="M8 2.4a5.6 5.6 0 0 0 0 11.2z" fill="currentColor"/></svg></button></span></p>
     </div>
-    <p class="runfoot"><span>croissanthology.com</span><span class="pg">i</span></p>
+    <p class="runfoot"><span></span><span class="pg">i</span></p>
   </section>
 
   <nav class="leaf recto toc" aria-label="Contents">
@@ -25,7 +25,7 @@ layout: facing
       <p class="year">{{ year.name }}</p>
       <ol class="leaders">
         {%- for p in year.items %}
-        <li><a href="{{ p.url | relative_url }}"><span class="t">{{ p.title | escape }}</span><span class="dots" aria-hidden="true"></span><span class="folio">{{ p.date | date: "%b %-d" }}</span></a></li>
+        <li><a href="{{ p.url | relative_url }}"><span class="t">{{ p.title | escape }}</span></a></li>
         {%- endfor %}
       </ol>
       {%- endfor %}
@@ -38,6 +38,7 @@ layout: facing
         <li><a href="https://gwern.net">Gwern</a></li>
         <li><a href="https://mingyuan.substack.com/">Mingyuan</a></li>
         <li><a href="https://niplav.site/">Niplav</a></li>
+        <li><a href="https://norvidstudies.substack.com/">Norvid</a></li>
       </ul>
     </section>
     <p class="runfoot"><a href="https://croissanthology.substack.com">also on Substack</a><span class="pg">ii</span></p>

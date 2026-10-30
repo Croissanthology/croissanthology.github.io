@@ -66,6 +66,8 @@ h1, h2, h3 { margin: 0; font-weight: 400; text-wrap: balance; }
 .toc h2 { font-family: var(--display); text-transform: uppercase; letter-spacing: .26em; font-size: 1.1rem; text-align: center; padding-left: .26em; }
 .toc h3 { font-size: .78rem; font-variant-caps: all-small-caps; letter-spacing: .12em; color: var(--muted); font-size: .95rem; margin-bottom: .35rem; }
 .leaders, .plainlist { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: .3rem; }
+.leaders li { font-size: .92rem; line-height: 1.38; }
+.leaders li a { text-decoration: none; }
 .leaders a, .toc .try {
   display: flex; align-items: last baseline; gap: .45em; text-decoration: none; font-size: .92rem; line-height: 1.38;
 }
@@ -99,10 +101,13 @@ h1, h2, h3 { margin: 0; font-weight: 400; text-wrap: balance; }
 .runhead a.home { color: var(--berry); }
 .runhead a.home:hover { color: var(--berry); text-decoration: none; }
 .runhead span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.post-head { padding-block: 2.2rem 1.8rem; display: flex; flex-direction: column; gap: .5rem; }
-.post-head .meta { order: -1; margin: 0; font-size: .8rem; font-variant-caps: all-small-caps; letter-spacing: .08em; color: var(--muted); }
-.post-title { font-size: clamp(1.7rem, 7vw, 2.15rem); line-height: 1.12; font-weight: 500; letter-spacing: -.01em; }
-.dek { margin: 0; font-style: italic; color: var(--ink-soft); }
+/* title block, gwern-style: centred small-caps title, a tiny grey line of metadata, the subtitle in italics */
+.post-head { padding-block: 2.6rem 2rem; display: flex; flex-direction: column; align-items: center; gap: .7rem; text-align: center; }
+.post-title { font-size: clamp(1.75rem, 7.4vw, 2.3rem); line-height: 1.14; font-weight: 600; letter-spacing: .005em; font-variant-caps: small-caps; text-wrap: balance; }
+.post-head .meta { margin: 0; font-size: .74rem; letter-spacing: .02em; color: var(--muted); font-variant-numeric: lining-nums; }
+.post-head .meta a { color: inherit; text-decoration-style: dotted; text-decoration-color: currentColor; }
+.post-head .meta a:hover { color: var(--accent-ink); }
+.dek { margin: .1rem 0 0; max-width: 30em; font-style: italic; color: var(--ink-soft); line-height: 1.5; text-wrap: balance; }
 
 .flow { min-width: 0; hyphens: auto; }
 .flow > p { margin: 0; text-indent: 1.3em; text-align: justify; }
