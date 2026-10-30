@@ -311,7 +311,38 @@ def translate(body_html, *, download_image=None, local_href=None, thumb_for=None
         if a.get("target") == "_self":
             del a["target"]
 
-    # 8. tidy: empty paragraphs, Substack data attributes
+    # 8. a blank line typed inside a paragraph on Substack (<br><br>) starts a new paragraph here
+    for p in list(root.find_all("p", recursive=False)):
+        if len(p.find_all("br", recursive=False)) < 2:
+            continue
+        parts, current, pending_br = [], [], None
+        for child in list(p.contents):
+            if isinstance(child, Tag) and child.name == "br":
+                if pending_br is not None:
+                    parts.append(current)
+                    current, pending_br = [], None
+                else:
+                    pending_br = child
+                continue
+            if isinstance(child, NavigableString) and not child.strip() and pending_br is not None:
+                continue
+            if pending_br is not None:
+                current.append(pending_br)
+                pending_br = None
+            current.append(child)
+        parts.append(current)
+        if len(parts) < 2:
+            continue
+        for chunk in parts:
+            if not any((c.get_text(strip=True) if isinstance(c, Tag) else str(c).strip()) for c in chunk):
+                continue
+            np_ = soup.new_tag("p")
+            for c in chunk:
+                np_.append(c.extract() if c.parent is not None else c)
+            p.insert_before(np_)
+        p.decompose()
+
+    # 9. tidy: empty paragraphs, Substack data attributes
     for p in root.find_all("p"):
         if not p.get_text(strip=True) and not p.find(["img", "a", "figure"]):
             p.decompose()
