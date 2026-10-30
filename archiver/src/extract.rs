@@ -30,6 +30,30 @@ pub fn from_html(html: &str) -> BTreeSet<String> {
             }
         }
     }
+    for url in embed_links(&doc) {
+        if let Some(s) = normalize_outbound(&url) {
+            out.insert(s);
+        }
+    }
+    out
+}
+
+/// Substack embeds Bluesky posts and tweets as iframes with no `<a href>`; the post they show
+/// is only named in the wrapper's `data-attrs` JSON. Turn those back into ordinary URLs.
+fn embed_links(doc: &Html) -> Vec<String> {
+    let mut out = vec![];
+    let sel = Selector::parse(".bluesky-wrap[data-attrs], div.tweet[data-attrs]").unwrap();
+    for el in doc.select(&sel) {
+        let Some(raw) = el.value().attr("data-attrs") else { continue };
+        let Ok(v) = serde_json::from_str::<serde_json::Value>(raw) else { continue };
+        if el.value().classes().any(|c| c == "bluesky-wrap") {
+            if let (Some(h), Some(id)) = (v["authorHandle"].as_str(), v["postId"].as_str()) {
+                out.push(format!("https://bsky.app/profile/{}/post/{}", h, id));
+            }
+        } else if let Some(u) = v["url"].as_str() {
+            out.push(u.to_string());
+        }
+    }
     out
 }
 
@@ -173,6 +197,15 @@ pub fn from_file(path: &Path) -> Result<BTreeSet<String>> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn substack_embeds_become_links() {
+        let html = r#"<div class="bluesky-wrap outer" data-attrs="{&quot;postId&quot;:&quot;3mewqx6gwjc2u&quot;,&quot;authorHandle&quot;:&quot;lefttheprairie.bsky.social&quot;}"><iframe src="https://embed.bsky.app/x"></iframe></div>
+<div class="tweet" data-attrs="{&quot;url&quot;:&quot;https://x.com/someone/status/123&quot;}"></div>"#;
+        let links = from_html(html);
+        assert!(links.iter().any(|l| l.contains("bsky.app/profile/lefttheprairie.bsky.social/post/3mewqx6gwjc2u")), "{:?}", links);
+        assert!(links.iter().any(|l| l.contains("x.com/someone/status/123")), "{:?}", links);
+    }
 
     #[test]
     fn markdown_extracts_plain_links() {

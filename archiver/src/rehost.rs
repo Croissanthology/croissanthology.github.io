@@ -15,6 +15,7 @@ pub struct RehostReport {
 
 pub fn rehost_dead(state: &mut State, dry_run: bool) -> Result<RehostReport> {
     let repo = config::repo_root();
+    let data = config::data_root();
     let mut report = RehostReport {
         rewritten: vec![],
         substack_pending: vec![],
@@ -34,7 +35,7 @@ pub fn rehost_dead(state: &mut State, dry_run: bool) -> Result<RehostReport> {
                 .push(format!("no local copy: {}", entry.canonical_url));
             continue;
         };
-        let local_abs = repo.join(&local_rel);
+        let local_abs = data.join(&local_rel);
         if !local_abs.exists() {
             report
                 .skipped
@@ -81,7 +82,7 @@ pub fn rehost_dead(state: &mut State, dry_run: bool) -> Result<RehostReport> {
             }
         }
         if needs_publish && !dry_run {
-            if let Some(dir) = publish_archive(&repo, &local_rel) {
+            if let Some(dir) = publish_archive(&repo, &data, &local_rel) {
                 report.published_archives.push(dir);
             }
         }
@@ -96,9 +97,13 @@ pub fn rehost_dead(state: &mut State, dry_run: bool) -> Result<RehostReport> {
 /// Stage the archive directory backing `local_rel` so the `<repo>/archive/<slug>/`
 /// path actually exists on the live site (the directory is gitignored by default;
 /// only load-bearing archives get pushed). Returns the relative dir we staged,
-/// or None on git failure (gracefully ignored — the email still tells the user).
-fn publish_archive(repo: &Path, local_rel: &str) -> Option<String> {
+/// or None on git failure (gracefully ignored — the checklist still tells the user).
+/// When the archive lives elsewhere (ARCHIVER_DATA), the directory is copied into the repo first.
+fn publish_archive(repo: &Path, data: &Path, local_rel: &str) -> Option<String> {
     let archive_dir = local_rel.rsplit_once('/').map(|(d, _)| d).unwrap_or(local_rel);
+    if data != repo {
+        copy_dir(&data.join(archive_dir), &repo.join(archive_dir)).ok()?;
+    }
     let status = Command::new("git")
         .args(["add", "-f", "--", archive_dir])
         .current_dir(repo)
@@ -109,6 +114,20 @@ fn publish_archive(repo: &Path, local_rel: &str) -> Option<String> {
     } else {
         None
     }
+}
+
+fn copy_dir(from: &Path, to: &Path) -> std::io::Result<()> {
+    fs::create_dir_all(to)?;
+    for entry in fs::read_dir(from)? {
+        let entry = entry?;
+        let dest = to.join(entry.file_name());
+        if entry.file_type()?.is_dir() {
+            copy_dir(&entry.path(), &dest)?;
+        } else {
+            fs::copy(entry.path(), dest)?;
+        }
+    }
+    Ok(())
 }
 
 /// Append a small `[archived]` link next to every occurrence of `dead_url`
