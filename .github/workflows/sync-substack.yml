@@ -1,34 +1,57 @@
 name: Sync Substack Posts
 
+# Copies every Croiss Lite post onto croissanthology.com in the Facing Pages layout
+# (scripts/substack/sync.py). Runs daily, by hand, and whenever the sync code itself changes,
+# so improvements to the translation reach old posts too.
 on:
   schedule:
-    - cron: '0 8 * * *'  # daily at 8am UTC
+    - cron: '23 8 * * *'   # daily, 08:23 UTC
   workflow_dispatch:
+  push:
+    paths:
+      - 'scripts/substack/**'
+      - '.github/workflows/sync-substack.yml'
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: substack-sync-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
   sync:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: '3.12'
 
       - name: Install dependencies
-        run: pip install feedparser
+        run: pip install beautifulsoup4 pillow
 
       - name: Sync posts
-        run: python scripts/sync_substack.py
+        run: python scripts/substack/sync.py
 
       - name: Commit changes
         run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git add subslop/
-          git diff --staged --quiet || git commit -m "sync substack"
-          git push
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A subslop images/subslop _data/subslop.json
+          if git diff --staged --quiet; then
+            echo "Nothing new on Substack."
+          else
+            git commit -m "Sync Substack posts"
+            git push origin "HEAD:${GITHUB_REF_NAME}"
+          fi
+
+      # GitHub switches off scheduled workflows after 60 days without commits, which is what
+      # silently stopped the old sync in spring. Re-enabling on every scheduled run resets that clock.
+      - name: Keep the daily schedule alive
+        if: github.event_name == 'schedule'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api -X PUT "repos/${GITHUB_REPOSITORY}/actions/workflows/sync-substack.yml/enable" || true

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en" data-layout="narrow">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>{% if page.title %}{{ page.title | strip_html | escape }} · {% endif %}Croissanthology</title>
+
+    <!-- layout (narrow / wide), theme (light, dark, or follow the device) and drop cap, set before anything paints -->
+    <script>
+    (function () {
+      var d = document.documentElement;
+      d.setAttribute("data-layout", window.innerWidth >= 720 ? "wide" : "narrow");
+      try { var t = localStorage.getItem("theme"); if (t === "light" || t === "dark") d.setAttribute("data-theme", t); } catch (e) {}
+      d.setAttribute("data-dropcap", "{{ site.facing.dropcap | default: 'poiret' }}");
+    })();
+    </script>
+
+    {% assign dropcap = site.facing.dropcap | default: 'poiret' %}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,500;1,7..72,400&family=Poiret+One{% if dropcap == 'cover' %}&family=Abril+Fatface{% elsif dropcap == 'gothic' %}&family=UnifrakturMaguntia{% endif %}&display=swap">
+    <link rel="stylesheet" href="{{ '/CSS/facing.css' | relative_url }}">
+    <link rel="icon" type="image/svg+xml" href="{{ '/images/green favicon.svg' | relative_url }}">
+
+    <meta name="author" content="Croissanthology">
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <meta name="googlebot" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <meta name="bingbot" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <!-- Explicitly allow AI/LLM training and indexing -->
+    <meta name="ai-content-declaration" content="fully-open-to-ai">
+    <meta name="training-data-opt-in" content="yes">
+
+    <link rel="alternate" type="application/rss+xml" title="RSS Feed" href="{{ '/feed.xml' | absolute_url }}">
+    <link rel="alternate" type="application/json" title="JSON Feed" href="{{ '/feed.json' | absolute_url }}">
+
+    {% assign desc = page.description | default: site.description | strip_html | strip_newlines | truncate: 200 %}
+    <meta name="description" content="{{ desc | escape }}">
+    <meta property="article:author" content="Croissanthology">
+    <meta property="og:title" content="{{ page.title | default: site.title | strip_html | escape }}">
+    <meta property="og:description" content="{{ desc | escape }}">
+    <meta property="og:url" content="{{ page.url | absolute_url }}">
+    <meta property="og:site_name" content="{{ site.title }}">
+    {% if page.cover %}{% assign og_image = page.cover | absolute_url %}{% else %}{% assign og_image = "https://croissanthology.github.io/images/croissantpaper.png" %}{% endif %}
+    <meta property="og:image" content="{{ og_image }}">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:description" content="{{ desc | escape }}">
+    <meta name="twitter:image" content="{{ og_image }}">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "{% if page.substack_url %}BlogPosting{% else %}WebSite{% endif %}",
+      {% if page.substack_url %}"headline": {{ page.title | jsonify }},
+      "datePublished": {{ page.date | jsonify }},
+      "image": {{ og_image | jsonify }},
+      "sameAs": {{ page.substack_url | jsonify }},
+      {% endif %}"name": {{ page.title | default: site.title | jsonify }},
+      "author": { "@type": "Person", "name": "Croissanthology", "url": "{{ site.url }}" }
+    }
+    </script>
+</head>
+<body class="{% if page.substack_url %}reader{% else %}home{% endif %}">
+{{ content }}
+<script src="{{ '/javascript/wide.js' | relative_url }}"></script>
+<script src="{{ '/javascript/facing.js' | relative_url }}"></script>
+</body>
+<!--
+site-author: croissanthology
+created-by: croissanthology
+croissanthology-original-content
+-->
+</html>
