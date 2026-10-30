@@ -75,7 +75,7 @@ def _card(soup, href, title, date_text, thumb=None, kicker=None):
     return a
 
 
-def _quote_card(soup, name, handle, text, href, where, date):
+def _quote_card(soup, name, handle, text, href, where, date, images=()):
     fig = soup.new_tag("figure", attrs={"class": "plate embed"})
     bq = soup.new_tag("blockquote", attrs={"class": "bsky"})
     who = soup.new_tag("p", attrs={"class": "who"})
@@ -92,6 +92,11 @@ def _quote_card(soup, name, handle, text, href, where, date):
     src.string = f"{where} · {nice_date(date)} ↗" if date else f"{where} ↗"
     bq.append(who)
     bq.append(said)
+    if images:
+        shots = soup.new_tag("span", attrs={"class": "shots"})
+        for src_url in images:
+            shots.append(soup.new_tag("img", attrs={"src": src_url, "alt": "", "loading": "lazy"}))
+        bq.append(shots)
     bq.append(src)
     fig.append(bq)
     return fig
@@ -176,9 +181,13 @@ def translate(body_html, *, download_image=None, local_href=None, thumb_for=None
     for wrap in root.select(".bluesky-wrap"):
         at = _attrs(wrap)
         handle = at.get("authorHandle", "")
+        imgs = at.get("imageUrls") or []
+        if isinstance(imgs, str):
+            imgs = [imgs]
+        local_imgs = [download_image(u) or u for u in imgs if isinstance(u, str) and u]
         wrap.replace_with(_quote_card(soup, at.get("authorName", ""), handle, at.get("text", ""),
                                       f"https://bsky.app/profile/{handle}/post/{at.get('postId', '')}",
-                                      "Bluesky", at.get("createdAt", "")))
+                                      "Bluesky", at.get("createdAt", ""), local_imgs))
     for wrap in root.select(".tweet, .twitter-embed, .tweet-wrap"):
         at = _attrs(wrap)
         if not at:

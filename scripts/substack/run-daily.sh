@@ -1,7 +1,10 @@
 #!/bin/bash
 # Daily Substack -> croissanthology.com sync. launchd runs this once a day (see install-mac.sh).
 # It works in its own copy of the repo, so it never touches the folder you edit in.
+# Then, if the archiver is set up, it archives every outbound link of each post it just fetched.
 set -euo pipefail
+# launchd starts jobs with a bare PATH; the archiver needs monolith from Homebrew.
+export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
 
 STATE="$HOME/Library/Application Support/croissanthology-sync"
 REPO="$STATE/repo"
@@ -25,14 +28,29 @@ if [ ! -f scripts/substack/sync.py ]; then
   exit 0
 fi
 
-"$VENV/bin/python" scripts/substack/sync.py
+NEW="$STATE/new-posts.txt"
+"$VENV/bin/python" scripts/substack/sync.py --report "$NEW"
 
 git add -A subslop images/subslop _data/subslop.json _substack
 if git diff --cached --quiet; then
   echo "Nothing new on Substack."
-  exit 0
+else
+  git -c user.name="Croissanthology" -c user.email="croissanthology@gmail.com" \
+    commit --quiet -m "Sync Substack posts"
+  git push --quiet origin main
+  echo "Pushed."
 fi
-git -c user.name="Croissanthology" -c user.email="croissanthology@gmail.com" \
-  commit --quiet -m "Sync Substack posts"
-git push --quiet origin main
-echo "Pushed."
+
+# Archive the outbound links of every post fetched today (new posts, plus edits and anything
+# under two weeks old). Links the archiver already has are skipped, so repeats are cheap.
+# The archive lives in your own checkout (archive/ and .archiver/ are gitignored, so
+# nothing here gets committed).
+ARCHIVER="$STATE/archiver"
+if [ -x "$ARCHIVER" ] && [ -f "$STATE/archiver-repo" ] && [ -s "$NEW" ]; then
+  export ARCHIVER_REPO="$(cat "$STATE/archiver-repo")"
+  while read -r url; do
+    [ -n "$url" ] || continue
+    echo "-- archiving the links in $url"
+    "$ARCHIVER" post "$url" </dev/null || echo "   (the archiver hit an error on this post; see above)"
+  done < "$NEW"
+fi

@@ -128,6 +128,8 @@ figure.plate img { display: block; width: 100%; height: auto; border: 1px solid 
 .bsky .name { font-weight: 500; }
 .bsky .handle, .bsky .src { color: var(--muted); }
 .bsky .src { font-size: .86em; text-decoration: none; }
+.bsky .shots { display: grid; grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr)); gap: .35em; margin: .25em 0 .1em; }
+.bsky .shots img { display: block; width: 100%; height: auto; border-radius: 6px; border: 0; }
 .bsky .src:hover { color: var(--accent-ink); }
 .toc .year { margin: 1rem 0 .35rem; font-size: .95rem; font-variant-caps: all-small-caps; letter-spacing: .12em; color: var(--muted); }
 .toc section > .year:first-child { margin-top: 0; }

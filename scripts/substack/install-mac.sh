@@ -4,8 +4,10 @@
 #     bash scripts/substack/install-mac.sh
 #
 # It (1) makes a small Python environment for the sync, (2) copies your Substack posts into the
-# branch you're on right now and pushes them, and (3) installs a launchd job that does the same
-# for main every day at 09:41 (or when the Mac next wakes up, if it was asleep).
+# branch you're on right now and pushes them, (3) builds the archiver from this checkout so the
+# daily job can archive the outbound links of new posts, and (4) installs a launchd job that
+# syncs main every day at 09:41 (or when the Mac next wakes up, if it was asleep).
+# Run it again whenever you want the daily job to use a newer archiver.
 # Undo: launchctl bootout "gui/$(id -u)/com.croissanthology.substack-sync"
 #       rm ~/Library/LaunchAgents/com.croissanthology.substack-sync.plist
 set -euo pipefail
@@ -22,12 +24,12 @@ if [ -z "$PY" ]; then
   exit 1
 fi
 
-echo "1/3  Python environment"
+echo "1/4  Python environment"
 "$PY" -m venv "$STATE/venv"
 "$STATE/venv/bin/pip" install --quiet --upgrade pip
 "$STATE/venv/bin/pip" install --quiet beautifulsoup4 pillow
 
-echo "2/3  Copying your Substack posts into this branch ($(git branch --show-current))"
+echo "2/4  Copying your Substack posts into this branch ($(git branch --show-current))"
 git remote get-url origin > "$STATE/origin"
 cp scripts/substack/run-daily.sh "$STATE/run-daily.sh"
 "$STATE/venv/bin/python" scripts/substack/sync.py --refresh
@@ -39,7 +41,28 @@ if ! git diff --cached --quiet; then
   echo "     pushed"
 fi
 
-echo "3/3  Daily job"
+echo "3/4  Archiver"
+# The archive itself (archive/, .archiver/config.toml and index.json) lives in your main checkout,
+# even when you run this from a worktree.
+MAIN="$(dirname "$(git rev-parse --path-format=absolute --git-common-dir)")"
+CARGO="$(command -v cargo || echo "$HOME/.cargo/bin/cargo")"
+if [ ! -f "$MAIN/.archiver/config.toml" ]; then
+  echo "     no .archiver/config.toml in $MAIN, so the daily job won't archive links"
+  rm -f "$STATE/archiver" "$STATE/archiver-repo"
+elif [ -f archiver/Cargo.toml ] && [ -x "$CARGO" ] && (cd archiver && "$CARGO" build --release --quiet); then
+  cp archiver/target/release/archiver "$STATE/archiver"
+  echo "$MAIN" > "$STATE/archiver-repo"
+  echo "     built; new posts' links will be archived into $MAIN/archive"
+elif [ -x "$MAIN/archiver/target/release/archiver" ]; then
+  cp "$MAIN/archiver/target/release/archiver" "$STATE/archiver"
+  echo "$MAIN" > "$STATE/archiver-repo"
+  echo "     couldn't build it here, so using the one already built in $MAIN"
+else
+  echo "     no archiver binary found, so the daily job won't archive links"
+fi
+command -v monolith >/dev/null || echo "     (monolith isn't installed, so only Wayback and archive.is copies: brew install monolith)"
+
+echo "4/4  Daily job"
 cat > "$PLIST" <<PLIST
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
