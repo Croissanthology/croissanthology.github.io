@@ -62,4 +62,13 @@ layout: null
     <priority>0.9</priority>
   </url>
   {% endfor %}
+  <!-- Subslop (Substack posts copied home) -->
+  {% for p in site.data.subslop %}
+  <url>
+    <loc>{{ site.url }}{{ p.url }}</loc>
+    <lastmod>{{ p.date }}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  {% endfor %}
 </urlset>

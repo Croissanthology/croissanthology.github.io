@@ -57,9 +57,18 @@ defaults:
     values:
       layout: "default"
 
+# Facing Pages (homepage + Substack posts): which drop cap opens each post.
+#   poiret  thin lavender initial, like the old site
+#   cover   the letter is cut out of the post's cover image
+#   gothic  blackletter, in berry
+#   none
+facing:
+  dropcap: poiret
+
 # Exclude files from processing
 exclude:
   - README.md
+  - scripts
   - LICENSE
   - .gitignore
   - archiver
