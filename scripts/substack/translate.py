@@ -162,16 +162,21 @@ def translate(body_html, *, download_image=None, local_href=None, thumb_for=None
     # 3. embeds of posts (yours become local cards with your cover as thumbnail)
     for emb in root.select(".embedded-post-wrap, .digest-post-embed"):
         at = _attrs(emb)
-        url = (at.get("url") or "").split("?")[0]
+        # embedded-post-wrap names the post in "url"/"date"; the newer digest-post-embed in
+        # "canonical_url"/"post_date" (and carries the cover)
+        url = (at.get("url") or at.get("canonical_url") or "").split("?")[0]
         link = emb.find("a", href=True)
         if not url and link:
             url = link["href"].split("?")[0]
-        title = at.get("title") or (emb.get_text(" ", strip=True)[:120] if emb else "")
+        title = (at.get("title") or (emb.get_text(" ", strip=True)[:120] if emb else "")).strip()
+        date = nice_date(at.get("date") or at.get("post_date") or "")
         slug = own_slug(url)
         if slug:
-            card = _card(soup, local_href(slug) or url, title, nice_date(at.get("date") or ""), thumb_for(slug))
+            thumb = thumb_for(slug) or (download_image(at["cover_image"]) if at.get("cover_image") else None)
+            card = _card(soup, local_href(slug) or url, title, date, thumb)
         else:
-            card = _card(soup, url, title, nice_date(at.get("date") or ""), None,
+            pic = at.get("cover_image") or at.get("publication_logo_url")
+            card = _card(soup, url, title, date, download_image(pic) if pic else None,
                          kicker=at.get("publication_name") or None)
         holder = soup.new_tag("figure", attrs={"class": "plate embed own"})
         holder.append(card)
