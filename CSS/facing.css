@@ -55,12 +55,11 @@ h1, h2, h3 { margin: 0; font-weight: 400; text-wrap: balance; }
 
 /* ------------------------------------------------ home */
 .leaf { display: flex; flex-direction: column; min-width: 0; }
-.frontis { margin: 0 auto 1.6rem; width: min(100%, 17rem); border: 1px solid var(--rule); padding: 6px; background: var(--night); }
-.frontis img { display: block; width: 100%; height: auto; aspect-ratio: 590 / 512; object-fit: cover; }
-.titling { text-align: center; display: flex; flex-direction: column; gap: .45rem; margin-bottom: 1.5rem; }
+.titling { text-align: center; display: flex; flex-direction: column; gap: .45rem; margin: 1.6rem 0 1.7rem; }
 .titling h1 { font-family: var(--display); text-transform: uppercase; letter-spacing: .26em; font-size: clamp(1.35rem, 6.4vw, 1.75rem); padding-left: .26em; }
 .intro p { margin: 0; text-indent: 1.3em; text-align: justify; hyphens: auto; }
 .intro p:first-child { text-indent: 0; }
+.intro .addr { hyphens: manual; }  /* break at the spaces, never inside gmail.com */
 
 .toc { margin-top: 2.6rem; gap: 1.4rem; }
 .toc h2 { font-family: var(--display); text-transform: uppercase; letter-spacing: .26em; font-size: 1.1rem; text-align: center; padding-left: .26em; }
@@ -86,9 +85,7 @@ h1, h2, h3 { margin: 0; font-weight: 400; text-wrap: balance; }
 [data-layout="wide"] .verso { position: sticky; top: 0; height: 100vh; align-self: start; }
 [data-layout="wide"] .toc { margin-top: 0; }
 [data-layout="wide"] .runfoot { margin-top: auto; padding-top: 1.4rem; }
-[data-layout="wide"] .frontis { width: 100%; margin: 0 0 1.3rem; }
-[data-layout="wide"] .frontis img { aspect-ratio: 16 / 7; object-position: 50% 30%; }
-[data-layout="wide"] .titling { margin-bottom: 1.1rem; }
+[data-layout="wide"] .titling { margin: clamp(2.5rem, 17vh, 10rem) 0 1.9rem; }
 [data-layout="wide"] .intro { font-size: .9rem; line-height: 1.55; }
 [data-layout="wide"] .spine {
   display: block; position: absolute; top: 0; bottom: 0; left: calc(var(--hinge-x, 50%) - 30px); width: 60px; pointer-events: none;
