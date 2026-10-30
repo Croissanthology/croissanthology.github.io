@@ -4,10 +4,11 @@
 #     bash scripts/substack/install-mac.sh
 #
 # It (1) makes a small Python environment for the sync, (2) copies your Substack posts into the
-# branch you're on right now and pushes them, (3) builds the archiver from this checkout so the
-# daily job can archive the outbound links of new posts, and (4) installs a launchd job that
-# syncs main every day at 09:41 (or when the Mac next wakes up, if it was asleep).
-# Run it again whenever you want the daily job to use a newer archiver.
+# branch you're on right now and pushes them, (3) builds the archiver from this checkout, and
+# (4) installs the morning job: every day at 09:41 (or when the Mac next wakes up, if it was
+# asleep) it syncs Substack onto main and runs the archiver's scan + maintenance pass. That
+# replaces the archiver's old 3am job, which this turns off.
+# Run it again whenever you want the morning job to use a newer archiver.
 # Undo: launchctl bootout "gui/$(id -u)/com.croissanthology.substack-sync"
 #       rm ~/Library/LaunchAgents/com.croissanthology.substack-sync.plist
 set -euo pipefail
@@ -46,21 +47,25 @@ echo "3/4  Archiver"
 # even when you run this from a worktree.
 MAIN="$(dirname "$(git rev-parse --path-format=absolute --git-common-dir)")"
 CARGO="$(command -v cargo || echo "$HOME/.cargo/bin/cargo")"
+rm -f "$STATE/archiver-repo"  # from an earlier version of this script
 if [ ! -f "$MAIN/.archiver/config.toml" ]; then
-  echo "     no .archiver/config.toml in $MAIN, so the daily job won't archive links"
-  rm -f "$STATE/archiver" "$STATE/archiver-repo"
+  echo "     no .archiver/config.toml in $MAIN, so the morning job won't run the archiver"
+  rm -f "$STATE/archiver" "$STATE/archiver-data"
 elif [ -f archiver/Cargo.toml ] && [ -x "$CARGO" ] && (cd archiver && "$CARGO" build --release --quiet); then
   cp archiver/target/release/archiver "$STATE/archiver"
-  echo "$MAIN" > "$STATE/archiver-repo"
-  echo "     built; new posts' links will be archived into $MAIN/archive"
-elif [ -x "$MAIN/archiver/target/release/archiver" ]; then
-  cp "$MAIN/archiver/target/release/archiver" "$STATE/archiver"
-  echo "$MAIN" > "$STATE/archiver-repo"
-  echo "     couldn't build it here, so using the one already built in $MAIN"
+  echo "$MAIN" > "$STATE/archiver-data"
+  echo "     built; it will keep archiving into $MAIN/archive"
 else
-  echo "     no archiver binary found, so the daily job won't archive links"
+  echo "     couldn't build the archiver (is Rust installed?), so the morning job won't run it"
+  rm -f "$STATE/archiver" "$STATE/archiver-data"
 fi
 command -v monolith >/dev/null || echo "     (monolith isn't installed, so only Wayback and archive.is copies: brew install monolith)"
+OLD="$HOME/Library/LaunchAgents/com.croissanthology.archiver.plist"
+if [ -f "$STATE/archiver-data" ] && [ -f "$OLD" ]; then
+  launchctl bootout "gui/$(id -u)/com.croissanthology.archiver" 2>/dev/null || true
+  mv "$OLD" "$STATE/old-3am-archiver.plist"
+  echo "     turned off the old 3am archiver job (its plist is saved in $STATE)"
+fi
 
 echo "4/4  Daily job"
 cat > "$PLIST" <<PLIST
@@ -80,4 +85,4 @@ cat > "$PLIST" <<PLIST
 PLIST
 launchctl bootout "gui/$(id -u)/$LABEL" 2>/dev/null || true
 launchctl bootstrap "gui/$(id -u)" "$PLIST"
-echo "Done. It runs every day at 09:41; the log is ~/Library/Logs/croissanthology-sync.log"
+echo "Done. The morning job runs every day at 09:41; the log is ~/Library/Logs/croissanthology-sync.log"

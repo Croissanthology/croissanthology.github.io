@@ -404,7 +404,7 @@ fn archive_single(
     }
 
     let dest_rel = format!("archive/{}/index.html", entry_slug);
-    let dest_abs = config::repo_root().join(&dest_rel);
+    let dest_abs = config::data_root().join(&dest_rel);
 
     let local_outcome = if paywall {
         paywall::save_local_with_bypass(url, &dest_abs)
@@ -729,19 +729,10 @@ fn maintain(dry_run: bool) -> Result<()> {
             Err(e) => ui::warn(&format!("substack todo file failed: {}", e)),
         }
 
-        // Apple Mail summary (no creds; uses whatever account Mail.app has set up).
-        let body = notify::render_mail_body(&pending);
-        let subject = format!(
-            "[archiver] {} dead substack link(s) need a manual patch",
-            pending.len()
-        );
-        let to = config::settings().notify_email.as_str();
-        match notify::apple_mail(to, &subject, &body) {
-            Ok(()) => ui::success("emailed via Mail.app", to),
-            Err(e) => ui::warn(&format!("Apple Mail send failed: {}", e)),
-        }
+        // Email notification intentionally disabled — dead links are surfaced
+        // via the SUBSTACK_DEAD_LINKS.md checklist + the macOS banner instead.
 
-        // Mark notified so we don't re-spam next run.
+        // Mark notified so we don't re-append the checklist next run.
         for (_, dead, _) in &pending {
             if let Ok(c) = state::canonicalize(dead) {
                 if let Some(e) = st.archives.get_mut(&c) {

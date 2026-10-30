@@ -108,6 +108,8 @@ free thereafter.
 
 ## Monthly automation (launchd)
 
+(croissanthology.com now uses [the morning job](#the-morning-job-croissanthologycom) instead.)
+
 ```sh
 # substitute your actual path. Render into LaunchAgents/ without mutating
 # the tracked template, so future clones still have the placeholder.
@@ -157,12 +159,19 @@ still get the original URL.
 Substack shows embedded Bluesky posts and tweets as iframes with no ordinary link, so
 `archiver post` reads the post they show from the embed itself and archives that too.
 
-## New Substack posts, automatically
+## The morning job (croissanthology.com)
 
-`scripts/substack/install-mac.sh` copies a build of the archiver next to the daily Substack sync.
-Every morning, after the sync has fetched new or edited posts, it runs `archiver post` on each of
-them with `ARCHIVER_REPO` pointing at your main checkout, so their outbound links land in your
-usual `archive/` without you typing anything. Re-run the installer to update that build.
+`scripts/substack/install-mac.sh` builds the archiver and installs one launchd job that runs every
+morning at 09:41, in its own clone of `main`: it copies new Substack posts onto the site, then
+runs `archiver scan` (so new posts' links get archived) and `archiver maintain`, and pushes what
+changed. It sets `ARCHIVER_REPO` to that clone and `ARCHIVER_DATA` to your usual checkout, so the
+archive (`.archiver/`, `archive/`) stays where it always was while the edits land on `main`.
+It replaces the 3am job below, which the installer turns off. Re-run the installer to update the
+archiver it uses.
+
+`ARCHIVER_DATA` works for anyone: point it at the folder that holds `.archiver/` and `archive/`
+when you want them kept apart from the repo the archiver edits and commits in. `rehost` copies the
+archive dirs it publishes into the repo before staging them.
 
 ## The Substack hole
 

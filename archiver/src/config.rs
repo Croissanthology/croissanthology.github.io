@@ -70,7 +70,23 @@ fn try_load() -> Result<Settings> {
 }
 
 pub fn config_path() -> PathBuf {
-    repo_root().join(".archiver").join("config.toml")
+    data_root().join(".archiver").join("config.toml")
+}
+
+/// Where the archive's own files live: `.archiver/` (config, index) and `archive/` (local
+/// copies). Normally that's the site repo itself. Set ARCHIVER_DATA to keep them in one checkout
+/// while ARCHIVER_REPO points at another (the daily Substack job works in its own clone of main
+/// but archives into your usual checkout).
+pub fn data_root() -> PathBuf {
+    if let Ok(v) = std::env::var("ARCHIVER_DATA") {
+        let p = PathBuf::from(v);
+        if p.join(".archiver").is_dir() {
+            return p;
+        }
+        eprintln!("archiver: ARCHIVER_DATA points to {:?} but there's no .archiver/ in it", p);
+        std::process::exit(2);
+    }
+    repo_root()
 }
 
 pub fn repo_root() -> PathBuf {
@@ -124,7 +140,7 @@ pub fn repo_root() -> PathBuf {
 }
 
 pub fn state_path() -> PathBuf {
-    repo_root().join(".archiver").join("index.json")
+    data_root().join(".archiver").join("index.json")
 }
 
 pub fn is_own_host(host: &str) -> bool {

@@ -4,7 +4,6 @@ Copy every Croiss Lite post from Substack onto croissanthology.com.
 Runs once a day from your Mac (scripts/substack/install-mac.sh sets that up), or by hand:
     python3 scripts/substack/sync.py            # new and recently edited posts
     python3 scripts/substack/sync.py --refresh  # re-download every post
-    python3 scripts/substack/sync.py --report new.txt  # also list the posts it downloaded
 
 Substack refuses requests from GitHub's servers, so this can't run in GitHub Actions.
 
@@ -215,7 +214,7 @@ def main():
 
     # 1. download only what is new or changed; keep a raw copy of each post
     downloaded, failed = 0, 0
-    raws, fresh = {}, []
+    raws = {}
     for entry in posts:
         slug = entry["slug"]
         cache = RAW / f"{slug}.json"
@@ -229,16 +228,12 @@ def main():
                 write_if_changed(cache, json.dumps(keep, ensure_ascii=False, indent=1) + "\n")
                 cached = keep
                 downloaded += 1
-                fresh.append(slug)
             except Exception as e:  # noqa: BLE001
                 log("warning", f"{slug}: could not fetch the post ({e}); kept the previous copy")
                 failed += 1
         if cached:
             raws[slug] = cached
     log("notice", f"{len(posts)} posts on Substack, {downloaded} downloaded, {failed} failed")
-    if "--report" in sys.argv:  # --report FILE: the posts downloaded this run, one URL per line
-        report = Path(sys.argv[sys.argv.index("--report") + 1])
-        report.write_text("".join(f"{BASE}/p/{s}\n" for s in fresh))
 
     # 2. covers (embeds of one post inside another use them as thumbnails)
     covers = {s: save_image(r.get("cover_image"), IMAGES / s, name="cover", max_w=1400, as_jpeg=True)
