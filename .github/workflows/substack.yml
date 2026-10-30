@@ -10,7 +10,7 @@ on:
   push:
     paths:
       - 'scripts/substack/**'
-      - '.github/workflows/sync-substack.yml'
+      - '.github/workflows/substack.yml'
 
 permissions:
   contents: write
@@ -54,4 +54,4 @@ jobs:
         if: github.event_name == 'schedule'
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh api -X PUT "repos/${GITHUB_REPOSITORY}/actions/workflows/sync-substack.yml/enable" || true
+        run: gh api -X PUT "repos/${GITHUB_REPOSITORY}/actions/workflows/substack.yml/enable" || true
