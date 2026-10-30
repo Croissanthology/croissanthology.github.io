@@ -146,6 +146,24 @@ launchctl unload ~/Library/LaunchAgents/com.croissanthology.archiver.plist
 
 `twitter.com` and `x.com` require client-side JS to render tweets, so monolith can't capture them directly. The archiver detects these hosts and silently rewrites the URL to a nitter mirror **for the local copy only** — wayback and archive.is still receive the original twitter URL, so the state semantically tracks the original tweet. If nitter.net goes down, change `nitter_host` in `.archiver/config.toml` to another instance (xcancel.com, nitter.poast.org, etc.).
 
+## Bluesky
+
+`bsky.app` is also a JavaScript app, so monolith would save an empty page. For Bluesky post links
+(`https://bsky.app/profile/<handle>/post/<id>`) the archiver asks Bluesky's open API
+(`public.api.bsky.app`, no account needed) for the post and writes a small standalone page instead:
+author, text, date, images (saved next to it), any quoted post and link card. Wayback and archive.is
+still get the original URL.
+
+Substack shows embedded Bluesky posts and tweets as iframes with no ordinary link, so
+`archiver post` reads the post they show from the embed itself and archives that too.
+
+## New Substack posts, automatically
+
+`scripts/substack/install-mac.sh` copies a build of the archiver next to the daily Substack sync.
+Every morning, after the sync has fetched new or edited posts, it runs `archiver post` on each of
+them with `ARCHIVER_REPO` pointing at your main checkout, so their outbound links land in your
+usual `archive/` without you typing anything. Re-run the installer to update that build.
+
 ## The Substack hole
 
 Substack has no public write API. Once a post is published there, you cannot
