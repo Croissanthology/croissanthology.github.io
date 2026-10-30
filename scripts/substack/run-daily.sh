@@ -1,7 +1,12 @@
 #!/bin/bash
-# Daily Substack -> croissanthology.com sync. launchd runs this once a day (see install-mac.sh).
-# It works in its own copy of the repo, so it never touches the folder you edit in.
-# Then, if the archiver is set up, it archives every outbound link of each post it just fetched.
+# The morning job (launchd runs it once a day; see install-mac.sh). In its own clone of main, so it
+# never touches the folder you edit in, it:
+#   1. copies new and edited Substack posts onto the site, and pushes them;
+#   2. runs the archiver: archives every outbound link it hasn't seen yet (new posts included),
+#      checks the old ones for rot, and for dead ones puts the archived copy on the site and adds
+#      an [archived] link beside the original (or a line in SUBSTACK_DEAD_LINKS.md for Substack
+#      posts, which can only be fixed by hand). Then pushes that too.
+# The archive itself (.archiver/ and archive/) stays in your usual checkout.
 set -euo pipefail
 # launchd starts jobs with a bare PATH; the archiver needs monolith from Homebrew.
 export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
@@ -28,29 +33,31 @@ if [ ! -f scripts/substack/sync.py ]; then
   exit 0
 fi
 
-NEW="$STATE/new-posts.txt"
-"$VENV/bin/python" scripts/substack/sync.py --report "$NEW"
+commit_and_push() {
+  if git diff --cached --quiet; then
+    echo "$2"
+  else
+    git -c user.name="Croissanthology" -c user.email="croissanthology@gmail.com" \
+      commit --quiet -m "$1"
+    git push --quiet origin main
+    echo "Pushed: $1"
+  fi
+}
 
+# 1. Substack
+"$VENV/bin/python" scripts/substack/sync.py || echo "(the Substack sync failed; see above)"
 git add -A subslop images/subslop _data/subslop.json _substack
-if git diff --cached --quiet; then
-  echo "Nothing new on Substack."
-else
-  git -c user.name="Croissanthology" -c user.email="croissanthology@gmail.com" \
-    commit --quiet -m "Sync Substack posts"
-  git push --quiet origin main
-  echo "Pushed."
-fi
+commit_and_push "Sync Substack posts" "Nothing new on Substack."
 
-# Archive the outbound links of every post fetched today (new posts, plus edits and anything
-# under two weeks old). Links the archiver already has are skipped, so repeats are cheap.
-# The archive lives in your own checkout (archive/ and .archiver/ are gitignored, so
-# nothing here gets committed).
+# 2. Archiver
 ARCHIVER="$STATE/archiver"
-if [ -x "$ARCHIVER" ] && [ -f "$STATE/archiver-repo" ] && [ -s "$NEW" ]; then
-  export ARCHIVER_REPO="$(cat "$STATE/archiver-repo")"
-  while read -r url; do
-    [ -n "$url" ] || continue
-    echo "-- archiving the links in $url"
-    "$ARCHIVER" post "$url" </dev/null || echo "   (the archiver hit an error on this post; see above)"
-  done < "$NEW"
+if [ -x "$ARCHIVER" ] && [ -f "$STATE/archiver-data" ]; then
+  export ARCHIVER_REPO="$REPO" ARCHIVER_DATA="$(cat "$STATE/archiver-data")"
+  "$ARCHIVER" scan </dev/null || echo "(archiver scan hit an error; see above)"
+  "$ARCHIVER" maintain </dev/null || echo "(archiver maintain hit an error; see above)"
+  # Only the archiver has touched tracked files since the reset; the archive dirs that back
+  # rehosted links were already staged by the archiver itself.
+  git add -u
+  [ -f SUBSTACK_DEAD_LINKS.md ] && git add SUBSTACK_DEAD_LINKS.md
+  commit_and_push "archiver: daily maintenance" "No dead links to rehost."
 fi

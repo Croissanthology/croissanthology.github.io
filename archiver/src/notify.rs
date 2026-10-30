@@ -19,6 +19,10 @@ end run"#;
     run_osascript(script, &[("AS_TITLE", title), ("AS_MSG", message)])
 }
 
+// Currently unused: email notification is disabled in `archiver maintain`
+// (dead links surface via SUBSTACK_DEAD_LINKS.md + macOS banner instead).
+// Kept so re-enabling is a one-line change in cli.rs.
+#[allow(dead_code)]
 pub fn apple_mail(to: &str, subject: &str, body: &str) -> Result<()> {
     let script = r#"on run
     set theSubject to (system attribute "AS_SUBJECT")
@@ -91,6 +95,7 @@ pub fn append_substack_todo(items: &[DeadItem]) -> Result<Option<PathBuf>> {
     Ok(Some(path))
 }
 
+#[allow(dead_code)]
 pub fn render_mail_body(items: &[DeadItem]) -> String {
     let mut body = String::from(
         "hi croiss — these substack posts cite links that have gone dead.\n\
