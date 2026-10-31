@@ -15,6 +15,11 @@
  *   .fn-ref > a[href="#fn-N"]                  the superscript in the text
  *   aside.note#fn-N > .note-inner              the note, right after its paragraph
  *   figure.plate                               placed in the rail too when the root has data-plates="rail"
+ *
+ * Summon (wide only): each figure in the rail gets a "fig. N →" marker in the paragraph it sits
+ * beside. Hovering that marker or a footnote number slides its figure or note level with it, over
+ * the others, which stay where they are and dim. Moving away puts it back. On touch screens a tap
+ * does the same, and a tap anywhere else puts it back.
  */
 (function () {
   "use strict";
@@ -67,6 +72,7 @@
 
   function anchorFor(el) {
     if (el.dataset.anchor) return document.querySelector(el.dataset.anchor);
+    if (el._marker && layout === "wide") return el._marker;
     if (el.classList.contains("note")) {
       return document.getElementById(el.dataset.for) || el.previousElementSibling;
     }
@@ -76,6 +82,7 @@
   }
 
   function place() {
+    if (summoned) release(false);
     document.querySelectorAll("[data-wide-root]").forEach(function (root) {
       var items = placed(root);
       if (layout !== "wide") {
@@ -102,6 +109,140 @@
       });
       root.style.minHeight = items.length ? Math.ceil(floor + GAP) + "px" : "";
     });
+  }
+
+  /* --- summon --- */
+  var summoned = null, pinned = false, leaveTimer = 0;
+
+  function markFigures() {
+    var n = 0;
+    document.querySelectorAll("[data-wide-root]").forEach(function (root) {
+      if (root.dataset.plates !== "rail") return;
+      placed(root).forEach(function (el, i) {
+        if (el.classList.contains("note") || el.classList.contains("cover") || el.dataset.marked) return;
+        // the marker goes at the end of the paragraph the figure followed in the text
+        // (or, if there's none, at the start of the next one)
+        var prev = el.previousElementSibling;
+        while (prev && (prev.classList.contains("note") || prev.classList.contains("plate"))) prev = prev.previousElementSibling;
+        var host = null, atEnd = true;
+        if (prev && !prev.closest(".note, figure") && !/^H[1-6]$/.test(prev.tagName)) {
+          host = prev.matches("ul, ol") ? prev.querySelector(":scope > li:last-child")
+               : prev.matches("blockquote, div") ? (Array.prototype.slice.call(prev.querySelectorAll("p")).pop() || prev) : prev;
+        }
+        if (!host) {
+          var a = anchorFor(el);
+          if (!a || !root.contains(a) || a.closest(".note, figure")) return;
+          host = a.matches("ul, ol") ? a.querySelector("li") : a.matches("blockquote, div") ? (a.querySelector("p") || a) : a;
+          atEnd = false;
+        }
+        if (!host) return;
+        if (!el.id) el.id = "plate-" + i;
+        el.dataset.marked = "1";
+        var label = el.querySelector(".own-card") ? "post" : el.querySelector("blockquote") ? "quote" : "fig. " + (++n);
+        var m = document.createElement("button");
+        m.type = "button";
+        m.className = "fig-ref";
+        m.dataset.for = el.id;
+        m.setAttribute("aria-label", "Show " + label + " beside this paragraph");
+        m.textContent = label + " \u2192";
+        // several figures after one paragraph share one holder, in order
+        var holder = atEnd ? host.lastElementChild : host.firstElementChild;
+        if (!holder || !holder.classList.contains("fig-refs")) {
+          holder = document.createElement("span");
+          holder.className = "fig-refs";
+          if (atEnd) host.appendChild(holder); else host.insertBefore(holder, host.firstChild);
+        }
+        holder.appendChild(m);
+        el._marker = m;
+      });
+    });
+  }
+
+  function triggerFor(t) {
+    var a = t && t.closest && t.closest(".fn-ref a, .fig-ref");
+    if (!a) return null;
+    var id = a.classList.contains("fig-ref") ? a.dataset.for : (a.getAttribute("href") || "").slice(1);
+    var item = id && document.getElementById(id);
+    if (!item || !item.style.top) return null;  // only things that are actually in the margin
+    return { trigger: a, item: item };
+  }
+
+  function release(quick) {
+    clearTimeout(leaveTimer);
+    if (!summoned) return;
+    var root = summoned.root;
+    if (quick !== false) root.classList.add("releasing");
+    placed(root).forEach(function (el) { el.style.transform = ""; el.classList.remove("summoned"); });
+    summoned.trigger.classList.remove("hot");
+    root.classList.remove("summoning");
+    summoned = null;
+    pinned = false;
+    setTimeout(function () { root.classList.remove("releasing"); }, 260);
+  }
+
+  function summon(trigger, item) {
+    clearTimeout(leaveTimer);
+    if (layout !== "wide") return;
+    if (summoned && summoned.item === item) return;
+    if (summoned) release(false);
+    var root = item.closest("[data-wide-root]");
+    var items = placed(root);
+    var idx = items.indexOf(item);
+    if (idx < 0) return;
+    var box = root.getBoundingClientRect();
+    var rail = root.querySelector(".rail").getBoundingClientRect();
+    var railTop = rail.top - box.top;
+    var top = parseFloat(item.style.top) || 0;
+    var h = item.offsetHeight;
+    var lift = item.classList.contains("note") ? (parseFloat(getComputedStyle(item).getPropertyValue("--lift")) || 0) : 6;
+
+    // level with the marker, but kept on screen if it's tall; nothing else moves
+    var markTop = trigger.getBoundingClientRect().top - box.top;
+    var want = markTop - lift;
+    var viewTop = -box.top + 12, viewBottom = window.innerHeight - box.top - 12;
+    if (want + h > viewBottom) want = Math.max(viewTop, viewBottom - h);
+    want = Math.max(railTop, Math.min(want, markTop));
+
+    summoned = { root: root, item: item, trigger: trigger };
+    root.classList.remove("releasing");
+    root.classList.add("summoning");
+    var d = want - top;
+    item.style.transform = Math.abs(d) > 0.5 ? "translateY(" + d + "px)" : "";
+    item.classList.add("summoned");
+    trigger.classList.add("hot");
+  }
+
+  function wireSummon() {
+    var finePointer = window.matchMedia("(hover: hover)");
+    document.addEventListener("mouseover", function (e) {
+      if (!finePointer.matches || layout !== "wide") return;
+      var t = triggerFor(e.target);
+      if (t) { summon(t.trigger, t.item); return; }
+      if (summoned && summoned.item.contains(e.target)) clearTimeout(leaveTimer);
+    });
+    document.addEventListener("mouseout", function (e) {
+      if (!summoned || pinned) return;
+      var to = e.relatedTarget;
+      if (to && (summoned.trigger.contains(to) || summoned.item.contains(to))) return;
+      var from = e.target;
+      if (!(summoned.trigger.contains(from) || summoned.item.contains(from))) return;
+      clearTimeout(leaveTimer);
+      leaveTimer = setTimeout(release, 160);  // long enough to reach a link inside the note
+    });
+    document.addEventListener("click", function (e) {
+      if (layout !== "wide") return;
+      var t = triggerFor(e.target);
+      if (t) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        if (summoned && summoned.item === t.item && pinned) { release(); return; }
+        summon(t.trigger, t.item);
+        pinned = true;
+        return;
+      }
+      if (summoned && !summoned.item.contains(e.target)) release();
+    }, true);
+    window.addEventListener("keydown", function (e) { if (e.key === "Escape") release(); });
   }
 
   /* --- the switch --- */
@@ -181,9 +322,20 @@
 
   function boot() {
     nameTravellers();
+    markFigures();
     wireNotes();
+    wireSummon();
     apply(wanted());
-    if (document.fonts && document.fonts.ready) document.fonts.ready.then(place);
+    // show the margin once, all at once, after the fonts that decide where everything goes
+    var shown = false;
+    function show() {
+      if (shown) return;
+      shown = true;
+      place();
+      document.querySelectorAll("[data-wide-root]").forEach(function (r) { r.classList.add("ready"); });
+    }
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(show);
+    setTimeout(show, 900);
     window.addEventListener("load", place);
     window.addEventListener("resize", onResize);
     if (window.ResizeObserver) {

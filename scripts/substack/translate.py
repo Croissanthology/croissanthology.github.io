@@ -59,7 +59,7 @@ def _card(soup, href, title, date_text, thumb=None, kicker=None):
     a = soup.new_tag("a", attrs={"class": "own-card", "href": href})
     if thumb:
         a.append(soup.new_tag("img", attrs={"class": "own-thumb", "src": thumb, "alt": "",
-                                            "width": "240", "height": "240", "loading": "lazy"}))
+                                            "width": "240", "height": "240"}))
     text = soup.new_tag("span", attrs={"class": "own-text"})
     t = soup.new_tag("span", attrs={"class": "own-title"})
     t.string = title or href
@@ -95,7 +95,7 @@ def _quote_card(soup, name, handle, text, href, where, date, images=()):
     if images:
         shots = soup.new_tag("span", attrs={"class": "shots"})
         for src_url in images:
-            shots.append(soup.new_tag("img", attrs={"src": src_url, "alt": "", "loading": "lazy"}))
+            shots.append(soup.new_tag("img", attrs={"src": src_url, "alt": ""}))
         bq.append(shots)
     bq.append(src)
     fig.append(bq)
@@ -237,7 +237,7 @@ def translate(body_html, *, download_image=None, local_href=None, thumb_for=None
             if m:
                 w, h = m.group(1), m.group(2)
             new_img = soup.new_tag("img", attrs={"src": local or remote, "alt": img.get("alt", "") or "",
-                                                 "loading": "lazy", "decoding": "async"})
+                                                 "decoding": "async"})
             if w and h:
                 try:
                     new_img["width"], new_img["height"] = str(int(float(w))), str(int(float(h)))
