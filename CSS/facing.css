@@ -129,7 +129,7 @@ figure.plate img { display: block; width: 100%; height: auto; border: 1px solid 
 
 .fn-ref a { color: var(--accent-ink); font: 650 .76em/1 var(--sans); vertical-align: .55em; font-variant-numeric: lining-nums;
   text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 2px; }
-.fn-ref a[aria-expanded="true"], .fn-ref a.hot { background: var(--flash); }
+.fn-ref a[aria-expanded="true"], .fn-ref a.hot { color: var(--ink); text-decoration-thickness: 2px; }
 .note-body { position: relative; margin: .5em 0 1em; padding: .1em 0 .1em 1.7em; font-size: .85em; line-height: 1.5; color: var(--ink-soft); }
 .note-body p { margin: 0 0 .45em; }
 .note-body p:last-child { margin: 0; }
@@ -157,21 +157,24 @@ figure.plate img { display: block; width: 100%; height: auto; border: 1px solid 
 /* "fig. 2 →" markers (made by wide.js) for figures and embeds that live in the margin.
    Hover one, or a footnote number, and its figure or note slides level with it (wide.js: summon). */
 .fig-refs { display: none; }
-[data-layout="wide"] .fig-refs { display: flex; gap: .3em; float: right; margin: .3em 0 0 .5em; text-indent: 0; }
+[data-layout="wide"] .fig-refs { display: flex; gap: .7em; float: right; margin: .35em 0 0 .6em; text-indent: 0; }
 [data-layout="wide"] .fig-ref {
-  padding: .12em .45em;
+  padding: 0; background: none; border: 0; cursor: pointer;
   font: 650 .66em/1.3 var(--sans); letter-spacing: .02em; color: var(--accent-ink);
-  background: none; border: 1px solid color-mix(in srgb, var(--accent-ink) 35%, transparent); border-radius: 999px; cursor: pointer;
+  text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 2px;
 }
-[data-layout="wide"] .fig-ref:hover, [data-layout="wide"] .fig-ref.hot { background: var(--flash); border-color: var(--accent-ink); }
-[data-layout="wide"] [data-wide-root] :is(.note, figure.plate) { transition: transform .42s cubic-bezier(.2, .8, .2, 1), opacity .3s ease, box-shadow .3s ease; }
-[data-layout="wide"] [data-wide-root].releasing :is(.note, figure.plate) { transition-duration: .22s; }
-[data-layout="wide"] [data-wide-root].summoning :is(.note, figure.plate):not(.summoned) { opacity: .5; }
+[data-layout="wide"] .fig-ref:hover, [data-layout="wide"] .fig-ref.hot { color: var(--ink); text-decoration-thickness: 2px; }
+
+/* only the summoned note or figure moves; it slides over the others, which stay put and dim */
+[data-layout="wide"] [data-wide-root] :is(.note, figure.plate) { transition: transform .38s cubic-bezier(.2, .8, .2, 1), opacity .25s ease; }
+[data-layout="wide"] [data-wide-root].releasing :is(.note, figure.plate) { transition-duration: .2s; }
+[data-layout="wide"] [data-wide-root].summoning :is(.note, figure.plate):not(.summoned) { opacity: .3; }
 [data-layout="wide"] .summoned { z-index: 2; }
-[data-layout="wide"] .note.summoned .note-body, [data-layout="wide"] figure.plate.summoned {
-  background: var(--page); box-shadow: 0 0 0 8px var(--page), 0 0 0 9px var(--rule), 0 14px 34px -14px rgba(40, 20, 70, .45); border-radius: 2px;
-}
+[data-layout="wide"] .note.summoned .note-body, [data-layout="wide"] figure.plate.summoned { background: var(--page); box-shadow: 0 0 0 10px var(--page); }
 [data-layout="wide"] .note.summoned .note-body { color: var(--ink); }
+
+/* the margin shows up all at once, already in place, instead of piece by piece */
+[data-layout="wide"] [data-wide-root]:not(.ready) :is(.note, figure.plate) { visibility: hidden; }
 
 /* your own earlier posts, embedded like Substack does: thumbnail, title, date, read link */
 .own-card { display: flex; gap: .9em; align-items: center; text-decoration: none; color: var(--ink); }
