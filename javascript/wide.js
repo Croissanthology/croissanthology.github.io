@@ -72,6 +72,7 @@
 
   function anchorFor(el) {
     if (el.dataset.anchor) return document.querySelector(el.dataset.anchor);
+    if (el._marker && layout === "wide") return el._marker;
     if (el.classList.contains("note")) {
       return document.getElementById(el.dataset.for) || el.previousElementSibling;
     }
@@ -119,9 +120,21 @@
       if (root.dataset.plates !== "rail") return;
       placed(root).forEach(function (el, i) {
         if (el.classList.contains("note") || el.classList.contains("cover") || el.dataset.marked) return;
-        var a = anchorFor(el);
-        if (!a || !root.contains(a) || a.closest(".note, figure")) return;
-        var host = a.matches("ul, ol") ? a.querySelector("li") : a.matches("blockquote, div") ? (a.querySelector("p") || a) : a;
+        // the marker goes at the end of the paragraph the figure followed in the text
+        // (or, if there's none, at the start of the next one)
+        var prev = el.previousElementSibling;
+        while (prev && (prev.classList.contains("note") || prev.classList.contains("plate"))) prev = prev.previousElementSibling;
+        var host = null, atEnd = true;
+        if (prev && !prev.closest(".note, figure") && !/^H[1-6]$/.test(prev.tagName)) {
+          host = prev.matches("ul, ol") ? prev.querySelector(":scope > li:last-child")
+               : prev.matches("blockquote, div") ? (Array.prototype.slice.call(prev.querySelectorAll("p")).pop() || prev) : prev;
+        }
+        if (!host) {
+          var a = anchorFor(el);
+          if (!a || !root.contains(a) || a.closest(".note, figure")) return;
+          host = a.matches("ul, ol") ? a.querySelector("li") : a.matches("blockquote, div") ? (a.querySelector("p") || a) : a;
+          atEnd = false;
+        }
         if (!host) return;
         if (!el.id) el.id = "plate-" + i;
         el.dataset.marked = "1";
@@ -132,14 +145,15 @@
         m.dataset.for = el.id;
         m.setAttribute("aria-label", "Show " + label + " beside this paragraph");
         m.textContent = label + " \u2192";
-        // one float per paragraph, so several markers read left to right in order
-        var holder = host.firstElementChild;
+        // several figures after one paragraph share one holder, in order
+        var holder = atEnd ? host.lastElementChild : host.firstElementChild;
         if (!holder || !holder.classList.contains("fig-refs")) {
           holder = document.createElement("span");
           holder.className = "fig-refs";
-          host.insertBefore(holder, host.firstChild);
+          if (atEnd) host.appendChild(holder); else host.insertBefore(holder, host.firstChild);
         }
         holder.appendChild(m);
+        el._marker = m;
       });
     });
   }
