@@ -47,16 +47,17 @@
     }
   }
 
-  /* --- name everything that should travel, once --- */
-  function nameTravellers() {
+  /* --- name everything that should travel, only for the unfold itself; with no names at rest,
+         moving to another page is one soft crossfade instead of pieces flying about --- */
+  function nameTravellers(on) {
     document.querySelectorAll(".note").forEach(function (n) {
-      n.style.viewTransitionName = "note-" + (n.dataset.n || n.id);
+      n.style.viewTransitionName = on ? "note-" + (n.dataset.n || n.id) : "";
     });
     document.querySelectorAll("figure.plate").forEach(function (f, i) {
-      f.style.viewTransitionName = "plate-" + i;
+      f.style.viewTransitionName = on ? "plate-" + i : "";
     });
     document.querySelectorAll("[data-vt]").forEach(function (el) {
-      el.style.viewTransitionName = el.dataset.vt;
+      el.style.viewTransitionName = on ? el.dataset.vt : "";
     });
   }
 
@@ -259,8 +260,9 @@
     if (!animate || reduce.matches) { apply(next); return; }
     doc.setAttribute("data-going", next);
     if (document.startViewTransition) {
+      nameTravellers(true);
       var t = document.startViewTransition(function () { apply(next); });
-      t.finished.finally(function () { doc.removeAttribute("data-going"); });
+      t.finished.finally(function () { doc.removeAttribute("data-going"); nameTravellers(false); });
     } else {
       apply(next);
       fallback();
@@ -321,7 +323,6 @@
   }
 
   function boot() {
-    nameTravellers();
     markFigures();
     wireNotes();
     wireSummon();
@@ -332,7 +333,10 @@
       if (shown) return;
       shown = true;
       place();
-      document.querySelectorAll("[data-wide-root]").forEach(function (r) { r.classList.add("ready"); });
+      document.querySelectorAll("[data-wide-root]").forEach(function (r) {
+        r.classList.add("ready", "revealing");
+        setTimeout(function () { r.classList.remove("revealing"); }, 400);
+      });
     }
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(show);
     setTimeout(show, 900);
