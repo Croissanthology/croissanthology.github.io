@@ -266,6 +266,13 @@ figure.plate img.own-thumb, .note-body img.own-thumb { flex: none; width: 4.4em;
 @keyframes vt-in { from { opacity: 0; } }
 @keyframes vt-out { to { opacity: 0; } }
 
+/* moving between pages: one slow, soft crossfade of the whole page */
+::view-transition-old(root), ::view-transition-new(root) { animation-duration: .45s; animation-timing-function: ease; }
+
+/* the margin fades in with the page instead of popping in */
+[data-layout="wide"] [data-wide-root].revealing :is(.note, figure.plate) { animation: rail-in .35s ease backwards; }
+@keyframes rail-in { from { opacity: 0; } }
+
 @media (prefers-reduced-motion: reduce) {
   ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; }
 }
