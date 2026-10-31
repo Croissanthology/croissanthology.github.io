@@ -19,6 +19,7 @@
   --ph-bg: #1f1b25; --ph-line: #3a3344; --ph-ink: #9890a8;
   --display: "Poiret One", "Josefin Sans", "Century Gothic", sans-serif;
   --body: "Literata", "Iowan Old Style", Georgia, serif;
+  --sans: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Segoe UI", Arial, sans-serif;
   --gutter-l: max(18px, env(safe-area-inset-left, 0px));
   --gutter-r: max(18px, env(safe-area-inset-right, 0px));
   color-scheme: dark;
@@ -127,12 +128,13 @@ figure.plate img { display: block; width: 100%; height: auto; border: 1px solid 
 .toc section > .year:first-child { margin-top: 0; }
 .flow figcaption { font-size: .78em; line-height: 1.4; color: var(--muted); font-style: italic; }
 
-.fn-ref a { color: var(--accent-ink); font-size: .78em; font-weight: 500; vertical-align: .45em; font-feature-settings: "lnum"; }
-.fn-ref a[aria-expanded="true"], .fn-ref a.hot { background: var(--flash); }
+.fn-ref a { color: var(--accent-ink); font: 650 .76em/1 var(--sans); vertical-align: .55em; font-variant-numeric: lining-nums;
+  text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 2px; }
+.fn-ref a[aria-expanded="true"], .fn-ref a.hot { color: var(--ink); text-decoration-thickness: 2px; }
 .note-body { position: relative; margin: .5em 0 1em; padding: .1em 0 .1em 1.7em; font-size: .85em; line-height: 1.5; color: var(--ink-soft); }
 .note-body p { margin: 0 0 .45em; }
 .note-body p:last-child { margin: 0; }
-.note-n { position: absolute; left: .2em; top: .1em; color: var(--accent-ink); font-feature-settings: "lnum"; }
+.note-n { position: absolute; left: .2em; top: .15em; color: var(--accent-ink); font: 650 .9em/1.5 var(--sans); }
 .note.hot .note-body { color: var(--ink); }
 
 [data-layout="wide"] body.reader { font-size: 16.5px; }
@@ -152,8 +154,29 @@ figure.plate img { display: block; width: 100%; height: auto; border: 1px solid 
 [data-layout="wide"] figure.plate .ph { max-width: 260px; }
 [data-layout="wide"] .post .cover img { border: 1px solid var(--rule); }
 [data-layout="wide"] .flow > figure.plate + p { text-indent: 1.3em; }
-[data-layout="wide"] .flow > figure.plate + p::before { content: "fig. \2192"; float: right; margin: .25em 0 0 .6em; font-size: .7em; font-style: italic; color: var(--accent-ink); text-indent: 0; }
-[data-layout="wide"] .flow > figure.embed + p::before { content: "post \2192"; }
+
+/* "fig. 2 →" markers (made by wide.js) for figures and embeds that live in the margin.
+   Hover one, or a footnote number, and its figure or note slides level with it (wide.js: summon). */
+.fig-refs { display: none; }
+[data-layout="wide"] .fig-refs { display: inline; margin-left: .4em; white-space: nowrap; }
+[data-layout="wide"] .fig-ref + .fig-ref { margin-left: .6em; }
+[data-layout="wide"] .fig-ref {
+  padding: 0; background: none; border: 0; cursor: pointer;
+  font: 650 .68em/1 var(--sans); letter-spacing: .02em; color: var(--accent-ink); vertical-align: .12em;
+  text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 2px;
+}
+[data-layout="wide"] .fig-ref:hover, [data-layout="wide"] .fig-ref.hot { color: var(--ink); text-decoration-thickness: 2px; }
+
+/* only the summoned note or figure moves; it slides over the others, which stay put and dim */
+[data-layout="wide"] [data-wide-root] :is(.note, figure.plate) { transition: transform .38s cubic-bezier(.2, .8, .2, 1), opacity .25s ease; }
+[data-layout="wide"] [data-wide-root].releasing :is(.note, figure.plate) { transition-duration: .2s; }
+[data-layout="wide"] [data-wide-root].summoning :is(.note, figure.plate):not(.summoned) { opacity: .3; }
+[data-layout="wide"] .summoned { z-index: 2; }
+[data-layout="wide"] .note.summoned .note-body, [data-layout="wide"] figure.plate.summoned { background: var(--page); box-shadow: 0 0 0 10px var(--page); }
+[data-layout="wide"] .note.summoned .note-body { color: var(--ink); }
+
+/* the margin shows up all at once, already in place, instead of piece by piece */
+[data-layout="wide"] [data-wide-root]:not(.ready) :is(.note, figure.plate) { visibility: hidden; }
 
 /* your own earlier posts, embedded like Substack does: thumbnail, title, date, read link */
 .own-card { display: flex; gap: .9em; align-items: center; text-decoration: none; color: var(--ink); }
@@ -204,8 +227,8 @@ figure.plate img.own-thumb, .note-body img.own-thumb { flex: none; width: 4.4em;
 
 /* notes are always shown: inline (smaller, indented) when narrow, in the margin when wide */
 .note { display: block; view-transition-class: note; }
-.fn-ref { line-height: 0; }
-.fn-ref a { text-decoration: none; padding: .2em .18em; margin: -.2em -.06em; border-radius: 3px; }
+.fn-ref { line-height: 0; font-size: 1em; vertical-align: baseline; }
+.fn-ref a { padding: .2em .18em; margin: -.2em -.02em; border-radius: 3px; }
 
 .rail { display: none; }
 [data-layout="wide"] [data-wide-root] { position: relative; }
