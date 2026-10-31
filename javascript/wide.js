@@ -17,9 +17,9 @@
  *   figure.plate                               placed in the rail too when the root has data-plates="rail"
  *
  * Summon (wide only): each figure in the rail gets a "fig. N →" marker in the paragraph it sits
- * beside. Hovering that marker or a footnote number slides its figure or note level with it; the
- * rest of the margin makes room and keeps its order. Moving away puts everything back. On touch
- * screens a tap does the same, and a tap anywhere else puts it back.
+ * beside. Hovering that marker or a footnote number slides its figure or note level with it, over
+ * the others, which stay where they are and dim. Moving away puts it back. On touch screens a tap
+ * does the same, and a tap anywhere else puts it back.
  */
 (function () {
   "use strict";
@@ -178,43 +178,22 @@
     var box = root.getBoundingClientRect();
     var rail = root.querySelector(".rail").getBoundingClientRect();
     var railTop = rail.top - box.top;
-    var pos = items.map(function (el) { return parseFloat(el.style.top) || 0; });
-    var next = pos.slice();
+    var top = parseFloat(item.style.top) || 0;
     var h = item.offsetHeight;
     var lift = item.classList.contains("note") ? (parseFloat(getComputedStyle(item).getPropertyValue("--lift")) || 0) : 6;
 
-    // level with the marker, but kept on screen if it's tall
+    // level with the marker, but kept on screen if it's tall; nothing else moves
     var markTop = trigger.getBoundingClientRect().top - box.top;
     var want = markTop - lift;
     var viewTop = -box.top + 12, viewBottom = window.innerHeight - box.top - 12;
     if (want + h > viewBottom) want = Math.max(viewTop, viewBottom - h);
     want = Math.max(railTop, Math.min(want, markTop));
-    next[idx] = want;
-
-    // what came before moves up out of the way if it can; otherwise it goes just below
-    var ceiling = want, overflow = [], i;
-    for (i = idx - 1; i >= 0; i--) {
-      var y = Math.min(pos[i], ceiling - GAP - items[i].offsetHeight);
-      if (y < railTop) { overflow.unshift(i); continue; }
-      next[i] = y;
-      ceiling = y;
-    }
-    // what came after (and anything that didn't fit above) moves down only as far as it must
-    var floor = want + h, below = overflow.slice();
-    for (i = idx + 1; i < items.length; i++) below.push(i);
-    below.forEach(function (j) {
-      var yy = overflow.indexOf(j) >= 0 ? floor + GAP : Math.max(pos[j], floor + GAP);
-      next[j] = yy;
-      floor = yy + items[j].offsetHeight;
-    });
 
     summoned = { root: root, item: item, trigger: trigger };
     root.classList.remove("releasing");
     root.classList.add("summoning");
-    items.forEach(function (el, k) {
-      var d = next[k] - pos[k];
-      el.style.transform = Math.abs(d) > 0.5 ? "translateY(" + d + "px)" : "";
-    });
+    var d = want - top;
+    item.style.transform = Math.abs(d) > 0.5 ? "translateY(" + d + "px)" : "";
     item.classList.add("summoned");
     trigger.classList.add("hot");
   }
@@ -333,7 +312,16 @@
     wireNotes();
     wireSummon();
     apply(wanted());
-    if (document.fonts && document.fonts.ready) document.fonts.ready.then(place);
+    // show the margin once, all at once, after the fonts that decide where everything goes
+    var shown = false;
+    function show() {
+      if (shown) return;
+      shown = true;
+      place();
+      document.querySelectorAll("[data-wide-root]").forEach(function (r) { r.classList.add("ready"); });
+    }
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(show);
+    setTimeout(show, 900);
     window.addEventListener("load", place);
     window.addEventListener("resize", onResize);
     if (window.ResizeObserver) {
