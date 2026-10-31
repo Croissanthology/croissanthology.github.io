@@ -15,6 +15,11 @@
  *   .fn-ref > a[href="#fn-N"]                  the superscript in the text
  *   aside.note#fn-N > .note-inner              the note, right after its paragraph
  *   figure.plate                               placed in the rail too when the root has data-plates="rail"
+ *
+ * Summon (wide only): each figure in the rail gets a "fig. N →" marker in the paragraph it sits
+ * beside. Hovering that marker or a footnote number slides its figure or note level with it; the
+ * rest of the margin makes room and keeps its order. Moving away puts everything back. On touch
+ * screens a tap does the same, and a tap anywhere else puts it back.
  */
 (function () {
   "use strict";
@@ -76,6 +81,7 @@
   }
 
   function place() {
+    if (summoned) release(false);
     document.querySelectorAll("[data-wide-root]").forEach(function (root) {
       var items = placed(root);
       if (layout !== "wide") {
@@ -102,6 +108,148 @@
       });
       root.style.minHeight = items.length ? Math.ceil(floor + GAP) + "px" : "";
     });
+  }
+
+  /* --- summon --- */
+  var summoned = null, pinned = false, leaveTimer = 0;
+
+  function markFigures() {
+    var n = 0;
+    document.querySelectorAll("[data-wide-root]").forEach(function (root) {
+      if (root.dataset.plates !== "rail") return;
+      placed(root).forEach(function (el, i) {
+        if (el.classList.contains("note") || el.classList.contains("cover") || el.dataset.marked) return;
+        var a = anchorFor(el);
+        if (!a || !root.contains(a) || a.closest(".note, figure")) return;
+        var host = a.matches("ul, ol") ? a.querySelector("li") : a.matches("blockquote, div") ? (a.querySelector("p") || a) : a;
+        if (!host) return;
+        if (!el.id) el.id = "plate-" + i;
+        el.dataset.marked = "1";
+        var label = el.querySelector(".own-card") ? "post" : el.querySelector("blockquote") ? "quote" : "fig. " + (++n);
+        var m = document.createElement("button");
+        m.type = "button";
+        m.className = "fig-ref";
+        m.dataset.for = el.id;
+        m.setAttribute("aria-label", "Show " + label + " beside this paragraph");
+        m.textContent = label + " \u2192";
+        // one float per paragraph, so several markers read left to right in order
+        var holder = host.firstElementChild;
+        if (!holder || !holder.classList.contains("fig-refs")) {
+          holder = document.createElement("span");
+          holder.className = "fig-refs";
+          host.insertBefore(holder, host.firstChild);
+        }
+        holder.appendChild(m);
+      });
+    });
+  }
+
+  function triggerFor(t) {
+    var a = t && t.closest && t.closest(".fn-ref a, .fig-ref");
+    if (!a) return null;
+    var id = a.classList.contains("fig-ref") ? a.dataset.for : (a.getAttribute("href") || "").slice(1);
+    var item = id && document.getElementById(id);
+    if (!item || !item.style.top) return null;  // only things that are actually in the margin
+    return { trigger: a, item: item };
+  }
+
+  function release(quick) {
+    clearTimeout(leaveTimer);
+    if (!summoned) return;
+    var root = summoned.root;
+    if (quick !== false) root.classList.add("releasing");
+    placed(root).forEach(function (el) { el.style.transform = ""; el.classList.remove("summoned"); });
+    summoned.trigger.classList.remove("hot");
+    root.classList.remove("summoning");
+    summoned = null;
+    pinned = false;
+    setTimeout(function () { root.classList.remove("releasing"); }, 260);
+  }
+
+  function summon(trigger, item) {
+    clearTimeout(leaveTimer);
+    if (layout !== "wide") return;
+    if (summoned && summoned.item === item) return;
+    if (summoned) release(false);
+    var root = item.closest("[data-wide-root]");
+    var items = placed(root);
+    var idx = items.indexOf(item);
+    if (idx < 0) return;
+    var box = root.getBoundingClientRect();
+    var rail = root.querySelector(".rail").getBoundingClientRect();
+    var railTop = rail.top - box.top;
+    var pos = items.map(function (el) { return parseFloat(el.style.top) || 0; });
+    var next = pos.slice();
+    var h = item.offsetHeight;
+    var lift = item.classList.contains("note") ? (parseFloat(getComputedStyle(item).getPropertyValue("--lift")) || 0) : 6;
+
+    // level with the marker, but kept on screen if it's tall
+    var markTop = trigger.getBoundingClientRect().top - box.top;
+    var want = markTop - lift;
+    var viewTop = -box.top + 12, viewBottom = window.innerHeight - box.top - 12;
+    if (want + h > viewBottom) want = Math.max(viewTop, viewBottom - h);
+    want = Math.max(railTop, Math.min(want, markTop));
+    next[idx] = want;
+
+    // what came before moves up out of the way if it can; otherwise it goes just below
+    var ceiling = want, overflow = [], i;
+    for (i = idx - 1; i >= 0; i--) {
+      var y = Math.min(pos[i], ceiling - GAP - items[i].offsetHeight);
+      if (y < railTop) { overflow.unshift(i); continue; }
+      next[i] = y;
+      ceiling = y;
+    }
+    // what came after (and anything that didn't fit above) moves down only as far as it must
+    var floor = want + h, below = overflow.slice();
+    for (i = idx + 1; i < items.length; i++) below.push(i);
+    below.forEach(function (j) {
+      var yy = overflow.indexOf(j) >= 0 ? floor + GAP : Math.max(pos[j], floor + GAP);
+      next[j] = yy;
+      floor = yy + items[j].offsetHeight;
+    });
+
+    summoned = { root: root, item: item, trigger: trigger };
+    root.classList.remove("releasing");
+    root.classList.add("summoning");
+    items.forEach(function (el, k) {
+      var d = next[k] - pos[k];
+      el.style.transform = Math.abs(d) > 0.5 ? "translateY(" + d + "px)" : "";
+    });
+    item.classList.add("summoned");
+    trigger.classList.add("hot");
+  }
+
+  function wireSummon() {
+    var finePointer = window.matchMedia("(hover: hover)");
+    document.addEventListener("mouseover", function (e) {
+      if (!finePointer.matches || layout !== "wide") return;
+      var t = triggerFor(e.target);
+      if (t) { summon(t.trigger, t.item); return; }
+      if (summoned && summoned.item.contains(e.target)) clearTimeout(leaveTimer);
+    });
+    document.addEventListener("mouseout", function (e) {
+      if (!summoned || pinned) return;
+      var to = e.relatedTarget;
+      if (to && (summoned.trigger.contains(to) || summoned.item.contains(to))) return;
+      var from = e.target;
+      if (!(summoned.trigger.contains(from) || summoned.item.contains(from))) return;
+      clearTimeout(leaveTimer);
+      leaveTimer = setTimeout(release, 160);  // long enough to reach a link inside the note
+    });
+    document.addEventListener("click", function (e) {
+      if (layout !== "wide") return;
+      var t = triggerFor(e.target);
+      if (t) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        if (summoned && summoned.item === t.item && pinned) { release(); return; }
+        summon(t.trigger, t.item);
+        pinned = true;
+        return;
+      }
+      if (summoned && !summoned.item.contains(e.target)) release();
+    }, true);
+    window.addEventListener("keydown", function (e) { if (e.key === "Escape") release(); });
   }
 
   /* --- the switch --- */
@@ -181,7 +329,9 @@
 
   function boot() {
     nameTravellers();
+    markFigures();
     wireNotes();
+    wireSummon();
     apply(wanted());
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(place);
     window.addEventListener("load", place);
