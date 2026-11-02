@@ -226,7 +226,7 @@ figure.plate img.own-thumb, .note-body img.own-thumb { flex: none; width: 4.4em;
 @view-transition { navigation: auto; }
 
 /* notes are always shown: inline (smaller, indented) when narrow, in the margin when wide */
-.note { display: block; view-transition-class: note; }
+.note { display: block; }
 .fn-ref { line-height: 0; font-size: 1em; vertical-align: baseline; }
 .fn-ref a { padding: .2em .18em; margin: -.2em -.02em; border-radius: 3px; }
 
@@ -253,18 +253,12 @@ figure.plate img.own-thumb, .note-body img.own-thumb { flex: none; width: 4.4em;
 }
 .ph span { background: var(--ph-bg); padding: .45em .8em; }
 
-/* ---- the unfold: View Transitions ---- */
-[data-vt] { view-transition-class: text; }
-::view-transition-group(*) { animation-duration: .62s; animation-timing-function: cubic-bezier(.22, .8, .2, 1); }
-::view-transition-old(*.text), ::view-transition-new(*.text),
-::view-transition-old(*.note), ::view-transition-new(*.note) { inline-size: auto; block-size: auto; }
-::view-transition-old(*.text) { animation: vt-out .24s ease both; }
-::view-transition-new(*.text) { animation: vt-in .46s .1s ease both; }
-::view-transition-group(*.note) { animation-duration: .82s; }
-::view-transition-old(*.note) { animation: vt-out .18s ease both; }
-::view-transition-new(*.note) { animation: vt-in .5s .14s ease both; }
-@keyframes vt-in { from { opacity: 0; } }
-@keyframes vt-out { to { opacity: 0; } }
+/* moving between pages: one slow, soft crossfade of the whole page */
+::view-transition-old(root), ::view-transition-new(root) { animation-duration: .45s; animation-timing-function: ease; }
+
+/* the margin fades in with the page instead of popping in */
+[data-layout="wide"] [data-wide-root].revealing :is(.note, figure.plate) { animation: rail-in .35s ease backwards; }
+@keyframes rail-in { from { opacity: 0; } }
 
 @media (prefers-reduced-motion: reduce) {
   ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; }
