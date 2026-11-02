@@ -75,7 +75,7 @@ def _card(soup, href, title, date_text, thumb=None, kicker=None):
     return a
 
 
-def _quote_card(soup, name, handle, text, href, where, date, images=()):
+def _quote_card(soup, name, handle, text, href, where, date, images=(), quoted=None, video=None):
     fig = soup.new_tag("figure", attrs={"class": "plate embed"})
     bq = soup.new_tag("blockquote", attrs={"class": "bsky"})
     who = soup.new_tag("p", attrs={"class": "who"})
@@ -97,6 +97,25 @@ def _quote_card(soup, name, handle, text, href, where, date, images=()):
         for src_url in images:
             shots.append(soup.new_tag("img", attrs={"src": src_url, "alt": ""}))
         bq.append(shots)
+    if video:
+        v = soup.new_tag("p", attrs={"class": "video"})
+        v.string = "▶ video"
+        bq.append(v)
+    if quoted and (quoted.get("text") or quoted.get("name")):
+        q = soup.new_tag("span", attrs={"class": "quoted"})
+        qw = soup.new_tag("span", attrs={"class": "who"})
+        qn = soup.new_tag("span", attrs={"class": "name"})
+        qn.string = quoted.get("name") or ""
+        qh = soup.new_tag("span", attrs={"class": "handle"})
+        qh.string = ("@" + quoted["handle"]) if quoted.get("handle") else ""
+        qw.append(qn)
+        qw.append(" ")
+        qw.append(qh)
+        qs = soup.new_tag("span", attrs={"class": "said"})
+        qs.string = quoted.get("text") or ""
+        q.append(qw)
+        q.append(qs)
+        bq.append(q)
     bq.append(src)
     fig.append(bq)
     return fig
@@ -197,9 +216,19 @@ def translate(body_html, *, download_image=None, local_href=None, thumb_for=None
         at = _attrs(wrap)
         if not at:
             continue
-        wrap.replace_with(_quote_card(soup, at.get("name", ""), at.get("username", ""),
-                                      at.get("full_text") or at.get("text", ""),
-                                      (at.get("url") or "").split("?")[0], "X", at.get("date", "")))
+        photos = [p for p in (at.get("photos") or []) if isinstance(p, dict) and p.get("img_url")]
+        text = at.get("full_text") or at.get("text", "")
+        # X appends a t.co link for each attached photo; the photos are shown, so drop those links
+        for p in photos:
+            if p.get("link_url"):
+                text = text.replace(p["link_url"], "")
+        qt = at.get("quoted_tweet") or None
+        quoted = {"name": qt.get("name", ""), "handle": qt.get("username", ""),
+                  "text": re.sub(r"\s*https://t\.co/\S+\s*$", "", qt.get("full_text", "") or "")} if isinstance(qt, dict) else None
+        wrap.replace_with(_quote_card(soup, at.get("name", ""), at.get("username", ""), text.strip(),
+                                      (at.get("url") or "").split("?")[0], "X", at.get("date", ""),
+                                      [download_image(p["img_url"]) or p["img_url"] for p in photos],
+                                      quoted, at.get("video_url")))
     for yt in root.select(".youtube-wrap"):
         at = _attrs(yt)
         vid = at.get("videoId") or (yt.get("id", "").replace("youtube2-", ""))
