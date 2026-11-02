@@ -14,6 +14,13 @@
       d.setAttribute("data-dropcap", "{{ site.facing.dropcap | default: 'gothic' }}");
     })();
     </script>
+    <!-- the page colour before the stylesheet arrives, so moving between pages never flashes white -->
+    <meta name="color-scheme" content="dark light">
+    <style>
+      html { background: #18151d; }
+      @media (prefers-color-scheme: light) { html:not([data-theme="dark"]) { background: #f0ebf4; } }
+      html[data-theme="light"] { background: #f0ebf4; }
+    </style>
 
     {% assign dropcap = site.facing.dropcap | default: 'gothic' %}
     <link rel="preconnect" href="https://fonts.googleapis.com">
