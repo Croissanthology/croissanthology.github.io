@@ -58,7 +58,7 @@ h1, h2, h3 { margin: 0; font-weight: 400; text-wrap: balance; }
 .titling { text-align: center; display: flex; flex-direction: column; gap: .45rem; margin: 1.6rem 0 1.7rem; }
 .titling h1 { font-family: var(--display); text-transform: uppercase; letter-spacing: .26em; font-size: clamp(1.35rem, 6.4vw, 1.75rem); padding-left: .26em; }
 .titling h1 .anth { color: var(--berry); }  /* two-tone: CROISS in ink, ANTHOLOGY in the drop cap's berry */
-.intro p { margin: 0; text-indent: 1.3em; text-align: justify; hyphens: auto; }
+.intro p { margin: 0; text-indent: 1.3em; text-align: left; text-wrap: pretty; hyphens: auto; hyphenate-limit-chars: 7 3 3; }
 .intro p:first-child { text-indent: 0; }
 .intro .addr { hyphens: manual; }  /* break at the spaces, never inside gmail.com */
 
@@ -102,8 +102,9 @@ h1, h2, h3 { margin: 0; font-weight: 400; text-wrap: balance; }
 .post-head .meta a:hover { color: var(--accent-ink); }
 .dek { margin: .1rem 0 0; max-width: 30em; font-style: italic; color: var(--ink-soft); line-height: 1.5; text-wrap: balance; }
 
-.flow { min-width: 0; hyphens: auto; overflow-wrap: break-word; }  /* long bare URLs wrap instead of running into the margin */
-.flow > p { margin: 0; text-indent: 1.3em; text-align: justify; }
+.flow { min-width: 0; hyphens: auto; hyphenate-limit-chars: 7 3 3; overflow-wrap: break-word; }  /* long bare URLs wrap instead of running into the margin */
+/* ragged right: even word spacing, lines end where they end; "pretty" evens out the rag and avoids one-word last lines */
+.flow > p { margin: 0; text-indent: 1.3em; text-align: left; text-wrap: pretty; }
 .flow > p:first-child, .flow > :is(blockquote, figure, h2, h3) + p { text-indent: 0; }
 .flow blockquote { margin: 1.1em 1.3em; font-size: .92em; color: var(--ink-soft); font-style: italic; }
 .flow blockquote p { margin: 0; }
@@ -118,12 +119,22 @@ figure.plate img { display: block; width: 100%; height: auto; border: 1px solid 
   font-size: .86em; line-height: 1.45; display: flex; flex-direction: column; gap: .3em;
 }
 .bsky p { margin: 0; }
+.bsky .said { white-space: pre-line; }  /* keep the line breaks people put in their posts */
 .bsky .name { font-weight: 500; }
 .bsky .handle, .bsky .src { color: var(--muted); }
 .bsky .src { font-size: .86em; text-decoration: none; }
 .bsky .shots { display: grid; grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr)); gap: .35em; margin: .25em 0 .1em; }
 .bsky .shots img { display: block; width: 100%; height: auto; border-radius: 6px; border: 0; }
+.bsky .quoted { display: flex; flex-direction: column; gap: .15em; margin: .2em 0 .1em; padding: .55em .75em; border: 1px solid var(--rule); border-radius: 8px; font-size: .94em; }
+.bsky .video { color: var(--muted); font-size: .9em; }
 .bsky .src:hover { color: var(--accent-ink); }
+/* the whole card opens the post: the link's clickable area is stretched over the card */
+.flow .bsky { position: relative; transition: border-color .15s ease; }
+.bsky .src::after { content: ""; position: absolute; inset: 0; border-radius: 10px; }
+.flow .bsky:hover { border-color: color-mix(in srgb, var(--accent-ink) 55%, var(--rule)); }
+.flow .bsky:hover .src { color: var(--accent-ink); }
+.bsky .src:focus-visible { outline: none; }
+.bsky .src:focus-visible::after { outline: 2px solid var(--accent-ink); outline-offset: 2px; }
 .toc .year { margin: 1rem 0 .35rem; font-size: .95rem; font-variant-caps: all-small-caps; letter-spacing: .12em; color: var(--muted); }
 .toc section > .year:first-child { margin-top: 0; }
 .flow figcaption { font-size: .78em; line-height: 1.4; color: var(--muted); font-style: italic; }
@@ -143,11 +154,12 @@ figure.plate img { display: block; width: 100%; height: auto; border: 1px solid 
   grid-template-columns: 1fr 1fr; grid-template-rows: auto auto 1fr;
   background: linear-gradient(90deg, var(--page) 0 0) no-repeat; background-color: var(--page);
 }
-[data-layout="wide"] .runhead { grid-column: 1 / -1; grid-row: 1; padding: 1.3rem 2.4rem .8rem; }
-[data-layout="wide"] .runhead span { text-align: right; max-width: 45%; }
+/* the running head and its rule line up exactly with the text on the left and the margin on the right */
+[data-layout="wide"] .runhead { grid-column: 1 / -1; grid-row: 1; padding: 1.3rem 0 .8rem; margin-inline: 2.4rem; }
+[data-layout="wide"] .runhead span { text-align: right; max-width: 45%; margin-right: -.2em; }  /* cancel the trailing letter-spacing so the last letter meets the rule's end */
 [data-layout="wide"] .post-head { grid-column: 1; grid-row: 2; padding: 1.6rem 2.4rem 1.4rem; }
 [data-layout="wide"] .flow { grid-column: 1; grid-row: 3; padding: 0 2.4rem 3rem; }
-[data-layout="wide"] .rail { grid-column: 2; grid-row: 2 / 4; margin: 1.6rem 2.6rem 3rem; }
+[data-layout="wide"] .rail { grid-column: 2; grid-row: 2 / 4; margin: 1.6rem 2.4rem 3rem 2.6rem; }
 [data-layout="wide"] .note { --lift: 4px; }
 [data-layout="wide"] .note-body { margin: 0; font-size: .82em; }
 [data-layout="wide"] figure.plate { width: auto; }
