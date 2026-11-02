@@ -298,8 +298,7 @@
       shown = true;
       place();
       document.querySelectorAll("[data-wide-root]").forEach(function (r) {
-        r.classList.add("ready", "revealing");
-        setTimeout(function () { r.classList.remove("revealing"); }, 400);
+        r.classList.add("ready");
       });
     }
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(show);
