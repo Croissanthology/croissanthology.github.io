@@ -58,7 +58,7 @@ h1, h2, h3 { margin: 0; font-weight: 400; text-wrap: balance; }
 .titling { text-align: center; display: flex; flex-direction: column; gap: .45rem; margin: 1.6rem 0 1.7rem; }
 .titling h1 { font-family: var(--display); text-transform: uppercase; letter-spacing: .26em; font-size: clamp(1.35rem, 6.4vw, 1.75rem); padding-left: .26em; }
 .titling h1 .anth { color: var(--berry); }  /* two-tone: CROISS in ink, ANTHOLOGY in the drop cap's berry */
-.intro p { margin: 0; text-indent: 1.3em; text-align: justify; hyphens: auto; }
+.intro p { margin: 0; text-indent: 1.3em; text-align: left; text-wrap: pretty; hyphens: auto; hyphenate-limit-chars: 7 3 3; }
 .intro p:first-child { text-indent: 0; }
 .intro .addr { hyphens: manual; }  /* break at the spaces, never inside gmail.com */
 
@@ -102,8 +102,9 @@ h1, h2, h3 { margin: 0; font-weight: 400; text-wrap: balance; }
 .post-head .meta a:hover { color: var(--accent-ink); }
 .dek { margin: .1rem 0 0; max-width: 30em; font-style: italic; color: var(--ink-soft); line-height: 1.5; text-wrap: balance; }
 
-.flow { min-width: 0; hyphens: auto; overflow-wrap: break-word; }  /* long bare URLs wrap instead of running into the margin */
-.flow > p { margin: 0; text-indent: 1.3em; text-align: justify; }
+.flow { min-width: 0; hyphens: auto; hyphenate-limit-chars: 7 3 3; overflow-wrap: break-word; }  /* long bare URLs wrap instead of running into the margin */
+/* ragged right: even word spacing, lines end where they end; "pretty" evens out the rag and avoids one-word last lines */
+.flow > p { margin: 0; text-indent: 1.3em; text-align: left; text-wrap: pretty; }
 .flow > p:first-child, .flow > :is(blockquote, figure, h2, h3) + p { text-indent: 0; }
 .flow blockquote { margin: 1.1em 1.3em; font-size: .92em; color: var(--ink-soft); font-style: italic; }
 .flow blockquote p { margin: 0; }
