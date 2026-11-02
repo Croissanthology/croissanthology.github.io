@@ -119,11 +119,14 @@ figure.plate img { display: block; width: 100%; height: auto; border: 1px solid 
   font-size: .86em; line-height: 1.45; display: flex; flex-direction: column; gap: .3em;
 }
 .bsky p { margin: 0; }
+.bsky .said { white-space: pre-line; }  /* keep the line breaks people put in their posts */
 .bsky .name { font-weight: 500; }
 .bsky .handle, .bsky .src { color: var(--muted); }
 .bsky .src { font-size: .86em; text-decoration: none; }
 .bsky .shots { display: grid; grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr)); gap: .35em; margin: .25em 0 .1em; }
 .bsky .shots img { display: block; width: 100%; height: auto; border-radius: 6px; border: 0; }
+.bsky .quoted { display: flex; flex-direction: column; gap: .15em; margin: .2em 0 .1em; padding: .55em .75em; border: 1px solid var(--rule); border-radius: 8px; font-size: .94em; }
+.bsky .video { color: var(--muted); font-size: .9em; }
 .bsky .src:hover { color: var(--accent-ink); }
 /* the whole card opens the post: the link's clickable area is stretched over the card */
 .flow .bsky { position: relative; transition: border-color .15s ease; }
