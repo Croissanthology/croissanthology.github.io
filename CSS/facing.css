@@ -125,6 +125,13 @@ figure.plate img { display: block; width: 100%; height: auto; border: 1px solid 
 .bsky .shots { display: grid; grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr)); gap: .35em; margin: .25em 0 .1em; }
 .bsky .shots img { display: block; width: 100%; height: auto; border-radius: 6px; border: 0; }
 .bsky .src:hover { color: var(--accent-ink); }
+/* the whole card opens the post: the link's clickable area is stretched over the card */
+.flow .bsky { position: relative; transition: border-color .15s ease; }
+.bsky .src::after { content: ""; position: absolute; inset: 0; border-radius: 10px; }
+.flow .bsky:hover { border-color: color-mix(in srgb, var(--accent-ink) 55%, var(--rule)); }
+.flow .bsky:hover .src { color: var(--accent-ink); }
+.bsky .src:focus-visible { outline: none; }
+.bsky .src:focus-visible::after { outline: 2px solid var(--accent-ink); outline-offset: 2px; }
 .toc .year { margin: 1rem 0 .35rem; font-size: .95rem; font-variant-caps: all-small-caps; letter-spacing: .12em; color: var(--muted); }
 .toc section > .year:first-child { margin-top: 0; }
 .flow figcaption { font-size: .78em; line-height: 1.4; color: var(--muted); font-style: italic; }
