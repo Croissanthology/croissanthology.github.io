@@ -143,11 +143,12 @@ figure.plate img { display: block; width: 100%; height: auto; border: 1px solid 
   grid-template-columns: 1fr 1fr; grid-template-rows: auto auto 1fr;
   background: linear-gradient(90deg, var(--page) 0 0) no-repeat; background-color: var(--page);
 }
-[data-layout="wide"] .runhead { grid-column: 1 / -1; grid-row: 1; padding: 1.3rem 2.4rem .8rem; }
-[data-layout="wide"] .runhead span { text-align: right; max-width: 45%; }
+/* the running head and its rule line up exactly with the text on the left and the margin on the right */
+[data-layout="wide"] .runhead { grid-column: 1 / -1; grid-row: 1; padding: 1.3rem 0 .8rem; margin-inline: 2.4rem; }
+[data-layout="wide"] .runhead span { text-align: right; max-width: 45%; margin-right: -.2em; }  /* cancel the trailing letter-spacing so the last letter meets the rule's end */
 [data-layout="wide"] .post-head { grid-column: 1; grid-row: 2; padding: 1.6rem 2.4rem 1.4rem; }
 [data-layout="wide"] .flow { grid-column: 1; grid-row: 3; padding: 0 2.4rem 3rem; }
-[data-layout="wide"] .rail { grid-column: 2; grid-row: 2 / 4; margin: 1.6rem 2.6rem 3rem; }
+[data-layout="wide"] .rail { grid-column: 2; grid-row: 2 / 4; margin: 1.6rem 2.4rem 3rem 2.6rem; }
 [data-layout="wide"] .note { --lift: 4px; }
 [data-layout="wide"] .note-body { margin: 0; font-size: .82em; }
 [data-layout="wide"] figure.plate { width: auto; }
