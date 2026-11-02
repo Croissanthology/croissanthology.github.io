@@ -226,7 +226,7 @@ def translate(body_html, *, download_image=None, local_href=None, thumb_for=None
         quoted = {"name": qt.get("name", ""), "handle": qt.get("username", ""),
                   "text": re.sub(r"\s*https://t\.co/\S+\s*$", "", qt.get("full_text", "") or "")} if isinstance(qt, dict) else None
         wrap.replace_with(_quote_card(soup, at.get("name", ""), at.get("username", ""), text.strip(),
-                                      (at.get("url") or "").split("?")[0], "X", at.get("date", ""),
+                                      (at.get("url") or "").split("?")[0], "Twitter", at.get("date", ""),
                                       [download_image(p["img_url"]) or p["img_url"] for p in photos],
                                       quoted, at.get("video_url")))
     for yt in root.select(".youtube-wrap"):
