@@ -5,8 +5,8 @@
  *   wide   (unfolded Duo, laptop): notes (and, if asked, figures) move to a rail
  *          beside the text, each level with the line that cites it
  *
- * When the window crosses the breakpoint (unfolding), the switch runs inside a
- * View Transition, so every note travels from its spot in the text to the margin.
+ * When the window crosses the breakpoint (folding or unfolding), the page simply switches
+ * layout, with no animation.
  *
  * Markup contract:
  *   <html data-layout="narrow|wide">          set by the inline head script, then here
@@ -45,20 +45,6 @@
       doc.style.removeProperty("--hinge-w");
       doc.removeAttribute("data-hinge");
     }
-  }
-
-  /* --- name everything that should travel, only for the unfold itself; with no names at rest,
-         moving to another page is one soft crossfade instead of pieces flying about --- */
-  function nameTravellers(on) {
-    document.querySelectorAll(".note").forEach(function (n) {
-      n.style.viewTransitionName = on ? "note-" + (n.dataset.n || n.id) : "";
-    });
-    document.querySelectorAll("figure.plate").forEach(function (f, i) {
-      f.style.viewTransitionName = on ? "plate-" + i : "";
-    });
-    document.querySelectorAll("[data-vt]").forEach(function (el) {
-      el.style.viewTransitionName = on ? el.dataset.vt : "";
-    });
   }
 
   /* --- margin placement --- */
@@ -255,31 +241,9 @@
     document.dispatchEvent(new CustomEvent("wide:layout", { detail: next }));
   }
 
-  function switchTo(next, animate) {
+  function switchTo(next) {
     if (next === layout) { place(); return; }
-    if (!animate || reduce.matches) { apply(next); return; }
-    doc.setAttribute("data-going", next);
-    if (document.startViewTransition) {
-      nameTravellers(true);
-      var t = document.startViewTransition(function () { apply(next); });
-      t.finished.finally(function () { doc.removeAttribute("data-going"); nameTravellers(false); });
-    } else {
-      apply(next);
-      fallback();
-      setTimeout(function () { doc.removeAttribute("data-going"); }, 700);
-    }
-  }
-
-  /* browsers without View Transitions still get a soft arrival */
-  function fallback() {
-    if (!Element.prototype.animate) return;
-    placed(document).forEach(function (el, i) {
-      el.animate([{ opacity: 0, transform: "translateX(-18px)" }, { opacity: 1, transform: "none" }],
-        { duration: 480, delay: 60 * i, easing: "cubic-bezier(.2,.8,.2,1)", fill: "backwards" });
-    });
-    document.querySelectorAll("[data-vt]").forEach(function (el, i) {
-      el.animate([{ opacity: 0.35 }, { opacity: 1 }], { duration: 420, delay: 40 * i, fill: "backwards" });
-    });
+    apply(next);
   }
 
   /* --- notes: tap to open when narrow, light up when wide --- */
@@ -318,7 +282,7 @@
     queued = true;
     requestAnimationFrame(function () {
       queued = false;
-      switchTo(wanted(), true);
+      switchTo(wanted());
     });
   }
 
