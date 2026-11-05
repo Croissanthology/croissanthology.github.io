@@ -271,7 +271,7 @@ figure.plate img.own-thumb, .note-body img.own-thumb { flex: none; width: 4.4em;
 [data-dropcap="poiret"] { --cap-face: "Poiret One", "Josefin Sans", sans-serif; --cap-ink: var(--lav); }
 [data-dropcap="cover"] { --cap-face: "Abril Fatface", "Bodoni Moda", Didot, serif; --cap-ink: var(--accent-ink); }
 
-[data-layout="wide"]:not([data-dropcap="none"]) .opening:not(.has-pixcap)::first-letter {
+[data-layout="wide"]:not([data-dropcap="none"]) .opening:not(.has-pixcap):not(.has-catcap)::first-letter {
   font-family: var(--cap-face); font-weight: 400; color: var(--cap-ink);
   -webkit-initial-letter: 3; initial-letter: 3; margin-right: .07em;
 }
@@ -293,13 +293,36 @@ figure.plate img.own-thumb, .note-body img.own-thumb { flex: none; width: 4.4em;
 .pixcap svg.blink .lid { animation: pixcap-blink 1.5s ease-in-out; }
 @keyframes pixcap-blink { 0% { opacity: 0 } 22% { opacity: 1 } 68% { opacity: 1 } 100% { opacity: 0 } }
 @media (prefers-reduced-motion: reduce) { .pixcap svg.blink .lid { animation-duration: .9s; } }
+
+/* cat initials (data-dropcap="cats", drawn by catcaps.js): the blackletter at full smoothness with a cat in every
+   letter. Placed like initial-letter: the font's cap height spans the first line's cap height to the third line's
+   baseline (2lh + 1cap); --k and --t, set per letter, size the SVG and lift it so the ears can poke above.
+   Tap for a headpat: it squishes and the eyes go ^^; three quick pats and it melts. */
+.catcap svg { display: none; }
+[data-layout="wide"]:not([data-dropcap="none"]) .catcap svg {
+  display: block; float: left; width: auto; overflow: visible; fill: var(--cap-ink); cursor: pointer;
+  touch-action: manipulation; -webkit-tap-highlight-color: transparent; transform-origin: 50% 100%;
+  height: calc(3.6em * var(--k)); margin: calc(.45em - 3.6em * var(--t)) .1em 0 -.06em;
+  height: calc((2lh + 1cap) * var(--k)); margin-top: calc(.5lh - .295em - (2lh + 1cap) * var(--t));
+}
+[data-layout="wide"]:not([data-dropcap="none"]) .catcap-l {
+  position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap;
+}
+.catcap .heart { opacity: 0; }
+.catcap svg.pat { animation: catcap-pat .55s ease-out; }
+.catcap svg.melt { animation: catcap-melt 1.8s cubic-bezier(.3, .7, .3, 1); }
+.catcap svg.melt .heart { animation: catcap-heart 1.7s ease-out; }
+@keyframes catcap-pat { 0% { transform: scale(1, 1) } 22% { transform: scale(1.07, .86) } 48% { transform: scale(.97, 1.05) } 72% { transform: scale(1.015, .985) } 100% { transform: scale(1, 1) } }
+@keyframes catcap-melt { 0% { transform: scale(1, 1) } 16% { transform: scale(1.1, .82) } 34% { transform: scale(1.17, .7) } 66% { transform: scale(1.17, .7) } 80% { transform: scale(.96, 1.06) } 90% { transform: scale(1.02, .98) } 100% { transform: scale(1, 1) } }
+@keyframes catcap-heart { 0% { opacity: 0; transform: translateY(0) scale(.5) } 20% { opacity: 1; transform: translateY(-20px) scale(1) } 100% { opacity: 0; transform: translateY(-150px) scale(1.15) } }
+@media (prefers-reduced-motion: reduce) { .catcap svg.pat, .catcap svg.melt, .catcap svg.melt .heart { animation: none; } }
 [data-layout="wide"][data-dropcap="cover"] .flow.has-cover .opening::first-letter {
   background-image: var(--cover); background-size: 180% auto; background-position: 30% 55%;
   -webkit-background-clip: text; background-clip: text; color: transparent;
 }
 @supports not ((initial-letter: 3) or (-webkit-initial-letter: 3)) {
   [data-layout="wide"]:not([data-dropcap="none"]) .opening { display: flow-root; }
-  [data-layout="wide"]:not([data-dropcap="none"]) .opening:not(.has-pixcap)::first-letter {
+  [data-layout="wide"]:not([data-dropcap="none"]) .opening:not(.has-pixcap):not(.has-catcap)::first-letter {
     float: left; font-size: 4.3em; line-height: .8; margin: .04em .07em -.04em -.02em;
   }
 }
