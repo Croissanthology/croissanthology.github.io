@@ -45,6 +45,7 @@
   --ink: #ebe6f2;
   --ink-soft: #c0b8ce;
   --muted: #8f87a0;
+  --heading: #a9a9ad;  /* section headings: grey, gwern-style */
   --accent: #f4a63c;
   --accent-ink: #f4a63c;
   --berry: #f96a7a;
@@ -64,14 +65,14 @@
 }
 @media (prefers-color-scheme: light) {
   :root:not([data-theme="dark"]) {
-    --night: #e4dde9; --page: #f0ebf4; --ink: #24202b; --ink-soft: #4f4860; --muted: #786f87;
+    --night: #e4dde9; --page: #f0ebf4; --ink: #24202b; --ink-soft: #4f4860; --muted: #786f87; --heading: #5d5d61;
     --accent: #f4a63c; --accent-ink: #a5650c; --berry: #cf3f58; --lav: #77698f; --rule: #dad4e4; --spine: rgba(60, 40, 90, .22); --flash: #ece4f5;
     --ph-bg: #f0edf5; --ph-line: #d9d2e4; --ph-ink: #786f87;
     color-scheme: light;
   }
 }
 :root[data-theme="light"] {
-  --night: #e4dde9; --page: #f0ebf4; --ink: #24202b; --ink-soft: #4f4860; --muted: #786f87;
+  --night: #e4dde9; --page: #f0ebf4; --ink: #24202b; --ink-soft: #4f4860; --muted: #786f87; --heading: #5d5d61;
   --accent: #f4a63c; --accent-ink: #a5650c; --berry: #cf3f58; --lav: #77698f; --rule: #dad4e4; --spine: rgba(60, 40, 90, .22); --flash: #ece4f5;
   --ph-bg: #f0edf5; --ph-line: #d9d2e4; --ph-ink: #786f87;
   color-scheme: light;
@@ -146,7 +147,17 @@ h1, h2, h3 { margin: 0; font-weight: 400; text-wrap: balance; }
 .flow { min-width: 0; hyphens: auto; hyphenate-limit-chars: 7 3 3; overflow-wrap: break-word; }  /* long bare URLs wrap instead of running into the margin */
 /* ragged right: even word spacing, lines end where they end; "pretty" evens out the rag and avoids one-word last lines */
 .flow > p { margin: 0; text-indent: 1.3em; text-align: left; text-wrap: pretty; }
-.flow > p:first-child, .flow > :is(blockquote, figure, h2, h3) + p { text-indent: 0; }
+.flow > p:first-child, .flow > :is(blockquote, figure, h1, h2, h3, h4, h5, h6) + p { text-indent: 0; }
+/* section headings, gwern-style: the title's small caps, set smaller, right-aligned, grey, ruled underneath,
+   with room above and below. h1 gets a solid rule, h2 a dotted one; anything deeper is just small caps. */
+.flow > :is(h1, h2, h3, h4, h5, h6) {
+  font-family: var(--body); font-weight: 600; font-variant-caps: small-caps; letter-spacing: .01em;
+  text-align: right; color: var(--heading); line-height: 1.2; margin: 2.2em 0 1em; padding: 0 .05em .12em 1.25em;
+}
+.flow > h1 { font-size: 1.32em; border-bottom: 1px solid color-mix(in srgb, var(--heading) 55%, transparent); }
+.flow > h2 { font-size: 1.16em; border-bottom: 1px dotted color-mix(in srgb, var(--heading) 70%, transparent); }
+.flow > :is(h3, h4, h5, h6) { font-size: 1.04em; margin-top: 1.8em; }
+.flow > :is(h1, h2, h3, h4, h5, h6):first-child { margin-top: 0; }
 .flow blockquote { margin: 1.1em 1.3em; font-size: .92em; color: var(--ink-soft); font-style: italic; }
 .flow blockquote p { margin: 0; }
 .flow figure.plate, .post .cover { margin: 1.5em auto; width: 100%; display: flex; flex-direction: column; gap: .5em; }
