@@ -58,12 +58,13 @@ defaults:
       layout: "default"
 
 # Facing Pages (homepage + Substack posts): which drop cap opens each post when the page is wide.
+#   pixel   the blackletter redrawn as pixel art, each letter hiding a cat that slow-blinks (javascript/pixcaps.js)
 #   gothic  blackletter, in berry
 #   poiret  thin lavender initial, like the old site
 #   cover   the letter is cut out of the post's cover image
 #   none
 facing:
-  dropcap: gothic
+  dropcap: pixel
 
 # Exclude files from processing
 exclude:

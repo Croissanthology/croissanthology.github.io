@@ -260,17 +260,35 @@ figure.plate img.own-thumb, .note-body img.own-thumb { flex: none; width: 4.4em;
 [data-dropcap="poiret"] { --cap-face: "Poiret One", "Josefin Sans", sans-serif; --cap-ink: var(--lav); }
 [data-dropcap="cover"] { --cap-face: "Abril Fatface", "Bodoni Moda", Didot, serif; --cap-ink: var(--accent-ink); }
 
-[data-layout="wide"]:not([data-dropcap="none"]) .opening::first-letter {
+[data-layout="wide"]:not([data-dropcap="none"]) .opening:not(.has-pixcap)::first-letter {
   font-family: var(--cap-face); font-weight: 400; color: var(--cap-ink);
   -webkit-initial-letter: 3; initial-letter: 3; margin-right: .07em;
 }
+
+/* pixel initials (data-dropcap="pixel", drawn by pixcaps.js): the same blackletter, hand-drawn on a 24-row grid,
+   each with a cat that slow-blinks on hover or tap. Three lines deep like initial-letter: the top sits at the
+   first line's cap height (Literata: ascent 1.18em, descent .31em, cap .73em) and the bottom on the third
+   line's baseline. Folded and on phones the SVG hides and the real letter shows, so the paragraph just starts. */
+.pixcap svg { display: none; }
+[data-layout="wide"]:not([data-dropcap="none"]) .pixcap svg {
+  display: block; float: left; width: auto; fill: var(--cap-ink); shape-rendering: crispEdges; cursor: default;
+  height: 3.6em; margin: .45em .14em 0 0;
+  height: calc(2lh + 1cap); margin-top: calc(.5lh - .295em);
+}
+[data-layout="wide"]:not([data-dropcap="none"]) .pixcap-l {
+  position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap;
+}
+.pixcap .lid { opacity: 0; }
+.pixcap svg.blink .lid { animation: pixcap-blink 1.5s ease-in-out; }
+@keyframes pixcap-blink { 0% { opacity: 0 } 22% { opacity: 1 } 68% { opacity: 1 } 100% { opacity: 0 } }
+@media (prefers-reduced-motion: reduce) { .pixcap svg.blink .lid { animation-duration: .9s; } }
 [data-layout="wide"][data-dropcap="cover"] .flow.has-cover .opening::first-letter {
   background-image: var(--cover); background-size: 180% auto; background-position: 30% 55%;
   -webkit-background-clip: text; background-clip: text; color: transparent;
 }
 @supports not ((initial-letter: 3) or (-webkit-initial-letter: 3)) {
   [data-layout="wide"]:not([data-dropcap="none"]) .opening { display: flow-root; }
-  [data-layout="wide"]:not([data-dropcap="none"]) .opening::first-letter {
+  [data-layout="wide"]:not([data-dropcap="none"]) .opening:not(.has-pixcap)::first-letter {
     float: left; font-size: 4.3em; line-height: .8; margin: .04em .07em -.04em -.02em;
   }
 }
