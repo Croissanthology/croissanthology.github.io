@@ -155,14 +155,18 @@ def image_size(site_path):
 
 
 def list_posts():
-    posts, offset = [], 0
-    while True:
-        batch = get_json(f"/api/v1/archive?sort=new&search=&offset={offset}&limit=50")
-        if not batch:
-            break
+    # Substack's archive API pages by cursor ({"posts": [...], "nextCursor": ...}) since Nov 2026;
+    # it now rejects ?offset= with HTTP 400. A bare list is the old shape, kept just in case.
+    posts, cursor = [], None
+    for _ in range(100):
+        q = "/api/v1/archive?sort=new&search=&limit=50"
+        if cursor:
+            q += "&cursor=" + urllib.parse.quote(str(cursor))
+        page = get_json(q)
+        batch = page if isinstance(page, list) else page.get("posts") or []
         posts.extend(batch)
-        offset += len(batch)
-        if offset > 2000:
+        cursor = None if isinstance(page, list) else page.get("nextCursor")
+        if not batch or not cursor:
             break
     keep = [p for p in posts if p.get("type", "newsletter") == "newsletter" and p.get("slug")]
     seen, out = set(), []
