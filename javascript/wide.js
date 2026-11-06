@@ -106,7 +106,7 @@
     document.querySelectorAll("[data-wide-root]").forEach(function (root) {
       if (root.dataset.plates !== "rail") return;
       placed(root).forEach(function (el, i) {
-        if (el.classList.contains("note") || el.classList.contains("cover") || el.dataset.marked) return;
+        if (el.classList.contains("note") || el.classList.contains("cover") || el.dataset.anchor || el.dataset.marked) return;
         // the marker goes at the end of the paragraph the figure followed in the text
         // (or, if there's none, at the start of the next one)
         var prev = el.previousElementSibling;
