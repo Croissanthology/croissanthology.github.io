@@ -46,6 +46,7 @@
   --ink-soft: #c0b8ce;
   --muted: #8f87a0;
   --heading: #a9a9ad;  /* section headings: grey, gwern-style */
+  --moon: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Ccircle cx=%2216%22 cy=%2216%22 r=%2214%22 fill=%22%23808080%22 fill-opacity=%22.5%22/%3E%3Cpath fill=%22%23f96a7a%22 d=%22M16 2A14 14 0 0 1 30 16 14 14 0 0 1 16 30 14 14 0 0 0 24 16 14 14 0 0 0 16 2%22/%3E%3C/svg%3E");  /* the favicon, after links to my own pages */
   --accent: #f4a63c;
   --accent-ink: #f4a63c;
   --berry: #f96a7a;
@@ -65,14 +66,14 @@
 }
 @media (prefers-color-scheme: light) {
   :root:not([data-theme="dark"]) {
-    --night: #e4dde9; --page: #f0ebf4; --ink: #24202b; --ink-soft: #4f4860; --muted: #786f87; --heading: #5d5d61;
+    --night: #e4dde9; --page: #f0ebf4; --ink: #24202b; --ink-soft: #4f4860; --muted: #786f87; --heading: #5d5d61; --moon: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Ccircle cx=%2216%22 cy=%2216%22 r=%2214%22 fill=%22%23808080%22 fill-opacity=%22.5%22/%3E%3Cpath fill=%22%23cf3f58%22 d=%22M16 2A14 14 0 0 1 30 16 14 14 0 0 1 16 30 14 14 0 0 0 24 16 14 14 0 0 0 16 2%22/%3E%3C/svg%3E");
     --accent: #f4a63c; --accent-ink: #a5650c; --berry: #cf3f58; --lav: #77698f; --rule: #dad4e4; --spine: rgba(60, 40, 90, .22); --flash: #ece4f5;
     --ph-bg: #f0edf5; --ph-line: #d9d2e4; --ph-ink: #786f87;
     color-scheme: light;
   }
 }
 :root[data-theme="light"] {
-  --night: #e4dde9; --page: #f0ebf4; --ink: #24202b; --ink-soft: #4f4860; --muted: #786f87; --heading: #5d5d61;
+  --night: #e4dde9; --page: #f0ebf4; --ink: #24202b; --ink-soft: #4f4860; --muted: #786f87; --heading: #5d5d61; --moon: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Ccircle cx=%2216%22 cy=%2216%22 r=%2214%22 fill=%22%23808080%22 fill-opacity=%22.5%22/%3E%3Cpath fill=%22%23cf3f58%22 d=%22M16 2A14 14 0 0 1 30 16 14 14 0 0 1 16 30 14 14 0 0 0 24 16 14 14 0 0 0 16 2%22/%3E%3C/svg%3E");
   --accent: #f4a63c; --accent-ink: #a5650c; --berry: #cf3f58; --lav: #77698f; --rule: #dad4e4; --spine: rgba(60, 40, 90, .22); --flash: #ece4f5;
   --ph-bg: #f0edf5; --ph-line: #d9d2e4; --ph-ink: #786f87;
   color-scheme: light;
@@ -148,6 +149,13 @@ h1, h2, h3 { margin: 0; font-weight: 400; text-wrap: balance; }
 /* ragged right: even word spacing, lines end where they end; "pretty" evens out the rag and avoids one-word last lines */
 .flow > p { margin: 0; text-indent: 1.3em; text-align: left; text-wrap: pretty; }
 .flow > p:first-child, .flow > :is(blockquote, figure, h1, h2, h3, h4, h5, h6) + p { text-indent: 0; }
+/* a paragraph set apart by a blank line (class="gap"): the line does the indent's job, so no indent */
+.flow > p.gap { margin-top: 1.62em; margin-top: 1lh; text-indent: 0; }
+/* links to my own pages get a tiny favicon moon after them, like gwern.net's site icon on internal links */
+:is(.flow, .rail) a:is(.internal, [href^="/"]:not([href^="//"])):not(.own-card, :has(img))::after {
+  content: ""; display: inline-block; width: .7em; height: .7em; margin-left: .12em; vertical-align: .3em;
+  background: var(--moon) center / contain no-repeat;
+}
 /* section headings, gwern-style: the title's small caps, set smaller, right-aligned, grey, ruled underneath,
    with room above and below. h1 gets a solid rule, h2 a dotted one; anything deeper is just small caps. */
 .flow > :is(h1, h2, h3, h4, h5, h6) {
