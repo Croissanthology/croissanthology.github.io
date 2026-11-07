@@ -241,7 +241,8 @@ def front_matter(fields):
 def needs_download(entry, cached, refresh):
     if refresh or cached is None:
         return True
-    if any((entry.get(k) or "") != (cached.get(k) or "") for k in LIST_FIELDS):
+    seen = cached.get("list") or cached  # older caches stored the list fields at the top level
+    if any((entry.get(k) or "") != (seen.get(k) or "") for k in LIST_FIELDS):
         return True
     try:
         published = time.mktime(time.strptime((entry.get("post_date") or "")[:10], "%Y-%m-%d"))
@@ -273,8 +274,17 @@ def main():
                 full = get_json(f"/api/v1/posts/{urllib.parse.quote(slug)}")
                 keep = {k: full.get(k) for k in ("slug", "title", "subtitle", "description", "post_date",
                                                  "cover_image", "canonical_url", "wordcount", "audience", "body_html")}
-                keep.update({k: entry.get(k) for k in LIST_FIELDS})  # compare like with like next time
+                # what the archive list said, kept apart for needs_download to compare like with like.
+                # Never merged over the post itself: the list can lag (Nov 2026: a changed cover still
+                # showed the old image there while the post had the new one).
+                keep["list"] = {k: entry.get(k) for k in LIST_FIELDS}
                 write_if_changed(cache, json.dumps(keep, ensure_ascii=False, indent=1) + "\n")
+                if cached and cached.get("cover_image") != keep.get("cover_image"):
+                    # the cover is saved as cover.jpg and save_image keeps an existing file, so a
+                    # new cover on Substack would never come through without this
+                    for old_cover in (IMAGES / slug).glob("cover.*"):
+                        old_cover.unlink()
+                    log("notice", f"{slug}: new cover image")
                 cached = keep
                 downloaded += 1
             except Exception as e:  # noqa: BLE001
