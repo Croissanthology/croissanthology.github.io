@@ -4,6 +4,7 @@ Copy every Croiss Lite post from Substack onto croissanthology.com.
 Runs once a day from your Mac (scripts/substack/install-mac.sh sets that up), or by hand:
     python3 scripts/substack/sync.py            # every post, so edits to old posts come through too
     python3 scripts/substack/sync.py --quick    # only new posts, ones changed in the list, and the last 14 days
+    python3 scripts/substack/sync.py --offline  # ask Substack nothing; rebuild every page from _substack/
 
 Substack refuses requests from GitHub's servers, so this can't run in GitHub Actions.
 
@@ -48,6 +49,7 @@ RAW = ROOT / "_substack"
 RECENT_DAYS = 14
 LIST_FIELDS = ("title", "subtitle", "cover_image", "post_date", "wordcount")
 UA = "croissanthology.com archive sync (+https://croissanthology.com)"
+OFFLINE = "--offline" in sys.argv  # rebuild from the raw copies; images not already here stay remote
 
 try:
     from PIL import Image
@@ -117,6 +119,8 @@ def save_image(remote, dest_dir, name=None, max_w=1600, as_jpeg=False):
     stem = name or hashlib.sha1(url.encode()).hexdigest()[:12]
     for existing in dest_dir.glob(stem + ".*"):
         return "/" + existing.relative_to(ROOT).as_posix()
+    if OFFLINE:
+        return None
     try:
         raw = fetch(url, binary=True)
     except Exception as e:  # noqa: BLE001
@@ -252,6 +256,13 @@ def needs_download(entry, cached, refresh):
 
 def main():
     refresh = "--quick" not in sys.argv  # by default, every post (see the top of this file); --refresh still works
+    if OFFLINE:
+        raws = {}
+        for cache in sorted(RAW.glob("*.json")):
+            raw = json.loads(cache.read_text())
+            raws[raw.get("slug") or cache.stem] = raw
+        log("notice", f"offline: rebuilding {len(raws)} posts from {RAW.name}/")
+        return rebuild(raws)
     try:
         posts = list_posts()
     except Exception as e:  # noqa: BLE001
@@ -283,7 +294,10 @@ def main():
         if cached:
             raws[slug] = cached
     log("notice", f"{len(posts)} posts on Substack, {downloaded} downloaded, {failed} failed")
+    rebuild(raws)
 
+
+def rebuild(raws):
     # 2. covers (embeds of one post inside another use them as thumbnails)
     covers = {s: save_image(r.get("cover_image"), IMAGES / s, name="cover", max_w=1400, as_jpeg=True)
               for s, r in raws.items()}
