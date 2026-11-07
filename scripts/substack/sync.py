@@ -2,13 +2,16 @@
 Copy every Croiss Lite post from Substack onto croissanthology.com.
 
 Runs once a day from your Mac (scripts/substack/install-mac.sh sets that up), or by hand:
-    python3 scripts/substack/sync.py            # new and recently edited posts
-    python3 scripts/substack/sync.py --refresh  # re-download every post
+    python3 scripts/substack/sync.py            # every post, so edits to old posts come through too
+    python3 scripts/substack/sync.py --quick    # only new posts, ones changed in the list, and the last 14 days
 
 Substack refuses requests from GitHub's servers, so this can't run in GitHub Actions.
 
-How few requests it makes: it reads the archive list (one or two requests), and only downloads a
-post that is new, changed in the list, or published in the last 14 days. Everything it downloads is
+Requests: it reads the archive list (one or two requests), then downloads every post, one request each,
+0.4 s apart (under half a minute for the whole blog). That way an edit to any post, however old, reaches
+the site the next morning; Substack's list doesn't say when a post was last edited, so there's no cheaper
+way to notice a fixed typo. With --quick it only downloads a post that is new, changed in the list, or
+published in the last 14 days. Everything it downloads is
 kept in _substack/<slug>.json (a raw copy of each post, which Jekyll doesn't publish), and every page
 is rebuilt from those copies on every run, so changes to translate.py or the layout reach old posts
 without asking Substack again. Files are only written when their content changes.
@@ -241,7 +244,7 @@ def needs_download(entry, cached, refresh):
 
 
 def main():
-    refresh = "--refresh" in sys.argv
+    refresh = "--quick" not in sys.argv  # by default, every post (see the top of this file); --refresh still works
     try:
         posts = list_posts()
     except Exception as e:  # noqa: BLE001

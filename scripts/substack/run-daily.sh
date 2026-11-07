@@ -1,7 +1,7 @@
 #!/bin/bash
 # The morning job (launchd runs it once a day; see install-mac.sh). In its own clone of main, so it
 # never touches the folder you edit in, it:
-#   1. copies new and edited Substack posts onto the site, and pushes them;
+#   1. copies new and edited Substack posts onto the site (old posts too), and pushes them;
 #   2. runs the archiver: archives every outbound link it hasn't seen yet (new posts included),
 #      checks the old ones for rot, and for dead ones puts the archived copy on the site and adds
 #      an [archived] link beside the original (or a line in SUBSTACK_DEAD_LINKS.md for Substack
