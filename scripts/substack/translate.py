@@ -75,23 +75,76 @@ def _card(soup, href, title, date_text, thumb=None, kicker=None):
     return a
 
 
-def _quote_card(soup, name, handle, text, href, where, date, images=(), quoted=None, video=None):
+ARROW = "\u2197\ufe0e"  # the north-east arrow; U+FE0E asks for the text glyph, or Apple draws it as a boxed emoji
+
+
+def _post_text(text):
+    """Split a post's text into (handles it replies to, [(kind, value), ...]).
+
+    Substack hands over X's text as HTML, with each @mention wrapped in <span class="tweet-fake-link">.
+    A reply starts with the handles it answers; X shows those as "Replying to @a and @b" above the
+    text, so they're pulled out here. kind is "text" or "at"."""
+    frag = BeautifulSoup(text or "", "html.parser")
+    chunks = []
+    for node in frag.contents:
+        if isinstance(node, Tag):
+            mention = node.name == "a" or "tweet-fake-link" in (node.get("class") or [])
+            chunks.append(("at" if mention else "text", node.get_text()))
+        else:
+            chunks.append(("text", str(node)))
+    replying = []
+    while chunks:
+        kind, value = chunks[0]
+        if kind == "at" and value.startswith("@"):
+            replying.append(value)
+        elif kind != "text" or value.strip():
+            break
+        chunks.pop(0)
+    if chunks and chunks[0][0] == "text":
+        chunks[0] = ("text", chunks[0][1].lstrip())
+    return replying, chunks
+
+
+def _fill(soup, parent, chunks):
+    for kind, value in chunks:
+        if kind == "at":
+            at = soup.new_tag("span", attrs={"class": "at"})
+            at.string = value
+            parent.append(at)
+        else:
+            parent.append(value)
+
+
+def _quote_card(soup, name, handle, text, href, where, date, images=(), quoted=None, video=None, avatar=None):
     fig = soup.new_tag("figure", attrs={"class": "plate embed"})
     bq = soup.new_tag("blockquote", attrs={"class": "bsky"})
     who = soup.new_tag("p", attrs={"class": "who"})
+    if avatar:
+        who.append(soup.new_tag("img", attrs={"class": "avatar", "src": avatar, "alt": "", "width": "48", "height": "48"}))
+    names = soup.new_tag("span", attrs={"class": "names"})
     n = soup.new_tag("span", attrs={"class": "name"})
     n.string = name or ""
     h = soup.new_tag("span", attrs={"class": "handle"})
     h.string = ("@" + handle) if handle else ""
-    who.append(n)
-    who.append(" ")
-    who.append(h)
-    said = soup.new_tag("p", attrs={"class": "said"})
-    said.string = text or ""
-    src = soup.new_tag("a", attrs={"class": "src", "href": href})
-    src.string = f"{where} · {nice_date(date)} ↗" if date else f"{where} ↗"
+    names.append(n)
+    names.append(h)
+    who.append(names)
     bq.append(who)
-    bq.append(said)
+    replying, chunks = _post_text(text)
+    if replying:
+        reply = soup.new_tag("p", attrs={"class": "reply"})
+        reply.append("Replying to ")
+        for k, at in enumerate(replying):
+            if k:
+                reply.append(" and " if k == len(replying) - 1 else ", ")
+            _fill(soup, reply, [("at", at)])
+        bq.append(reply)
+    if chunks:
+        said = soup.new_tag("p", attrs={"class": "said"})
+        _fill(soup, said, chunks)
+        bq.append(said)
+    src = soup.new_tag("a", attrs={"class": "src", "href": href})
+    src.string = f"{where} \u00b7 {nice_date(date)} {ARROW}" if date else f"{where} {ARROW}"
     if images:
         shots = soup.new_tag("span", attrs={"class": "shots"})
         for src_url in images:
@@ -99,7 +152,7 @@ def _quote_card(soup, name, handle, text, href, where, date, images=(), quoted=N
         bq.append(shots)
     if video:
         v = soup.new_tag("p", attrs={"class": "video"})
-        v.string = "▶ video"
+        v.string = "\u25b6 video"
         bq.append(v)
     if quoted and (quoted.get("text") or quoted.get("name")):
         q = soup.new_tag("span", attrs={"class": "quoted"})
@@ -112,7 +165,7 @@ def _quote_card(soup, name, handle, text, href, where, date, images=(), quoted=N
         qw.append(" ")
         qw.append(qh)
         qs = soup.new_tag("span", attrs={"class": "said"})
-        qs.string = quoted.get("text") or ""
+        _fill(soup, qs, _post_text(quoted.get("text") or "")[1])
         q.append(qw)
         q.append(qs)
         bq.append(q)
@@ -209,9 +262,13 @@ def translate(body_html, *, download_image=None, local_href=None, thumb_for=None
         if isinstance(imgs, str):
             imgs = [imgs]
         local_imgs = [download_image(u) or u for u in imgs if isinstance(u, str) and u]
-        wrap.replace_with(_quote_card(soup, at.get("authorName", ""), handle, at.get("text", ""),
+        pic = at.get("authorAvatarUrl") or None
+        small = pic.replace("/img/avatar/", "/img/avatar_thumbnail/") if pic else None  # not the full-size upload
+        wrap.replace_with(_quote_card(soup, at.get("authorName", ""), handle,
+                                      html.escape(at.get("text", ""), quote=False),  # plain text, unlike X's
                                       f"https://bsky.app/profile/{handle}/post/{at.get('postId', '')}",
-                                      "Bluesky", at.get("createdAt", ""), local_imgs))
+                                      "Bluesky", at.get("createdAt", ""), local_imgs,
+                                      avatar=(small != pic and download_image(small)) or (download_image(pic) or pic) if pic else None))
     for wrap in root.select(".tweet, .twitter-embed, .tweet-wrap"):
         at = _attrs(wrap)
         if not at:
@@ -225,22 +282,25 @@ def translate(body_html, *, download_image=None, local_href=None, thumb_for=None
         qt = at.get("quoted_tweet") or None
         quoted = {"name": qt.get("name", ""), "handle": qt.get("username", ""),
                   "text": re.sub(r"\s*https://t\.co/\S+\s*$", "", qt.get("full_text", "") or "")} if isinstance(qt, dict) else None
+        pic = at.get("profile_image_url") or None
+        # X's "_normal" picture is 48 px, soft on a sharp screen; "_bigger" is the 73 px one
+        big = re.sub(r"_normal(\.\w+)$", r"_bigger\1", pic) if pic else None
         wrap.replace_with(_quote_card(soup, at.get("name", ""), at.get("username", ""), text.strip(),
                                       (at.get("url") or "").split("?")[0], "Twitter", at.get("date", ""),
                                       [download_image(p["img_url"]) or p["img_url"] for p in photos],
-                                      quoted, at.get("video_url")))
+                                      quoted, at.get("video_url"), avatar=(big != pic and download_image(big)) or (download_image(pic) or pic) if pic else None))
     for yt in root.select(".youtube-wrap"):
         at = _attrs(yt)
         vid = at.get("videoId") or (yt.get("id", "").replace("youtube2-", ""))
         p = soup.new_tag("p", attrs={"class": "embed-link"})
         a = soup.new_tag("a", attrs={"href": f"https://www.youtube.com/watch?v={vid}"})
-        a.string = "Video on YouTube ↗"
+        a.string = f"Video on YouTube {ARROW}"
         p.append(a)
         yt.replace_with(p)
     for fr in root.find_all("iframe"):
         src = (fr.get("src") or "").split("?")[0]
         a = soup.new_tag("a", attrs={"href": src or "#"})
-        a.string = "Embedded content ↗"
+        a.string = f"Embedded content {ARROW}"
         wrapper = fr.find_parent("div")
         if wrapper is not None and wrapper.parent is root and not wrapper.find("p"):
             p = soup.new_tag("p", attrs={"class": "embed-link"})
