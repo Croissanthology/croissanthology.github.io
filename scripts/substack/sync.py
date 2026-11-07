@@ -160,12 +160,19 @@ def image_size(site_path):
 def list_posts():
     # Substack's archive API pages by cursor ({"posts": [...], "nextCursor": ...}) since Nov 2026;
     # it now rejects ?offset= with HTTP 400. A bare list is the old shape, kept just in case.
-    posts, cursor = [], None
-    for _ in range(100):
-        q = "/api/v1/archive?sort=new&search=&limit=50"
+    # It also caps ?limit= (Nov 2026: 25 works, 30 is a 400), so ask for 20 and drop to 10 if refused.
+    posts, cursor, limit = [], None, 20
+    for _ in range(200):
+        q = f"/api/v1/archive?sort=new&search=&limit={limit}"
         if cursor:
             q += "&cursor=" + urllib.parse.quote(str(cursor))
-        page = get_json(q)
+        try:
+            page = get_json(q)
+        except urllib.error.HTTPError as e:
+            if e.code == 400 and limit > 10:
+                limit = 10
+                continue
+            raise
         batch = page if isinstance(page, list) else page.get("posts") or []
         posts.extend(batch)
         cursor = None if isinstance(page, list) else page.get("nextCursor")
