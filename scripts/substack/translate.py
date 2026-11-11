@@ -8,6 +8,8 @@ What comes out:
   * embedded posts of yours become small cards (thumbnail, title, date) linking to the
     copy on this site; other people's posts become plain cards linking out
   * Bluesky and Twitter/X embeds become static quote cards (no third-party iframes)
+  * an image whose caption links an Our World in Data chart becomes that live chart (the one
+    iframe allowed: Substack can't embed OWID, so posts carry a screenshot plus the link)
   * @mentions keep their names (Substack stores them in data-attrs)
   * subscribe widgets, share buttons and Substack's image chrome are dropped
   * the first paragraph is marked .opening for the drop cap
@@ -20,6 +22,7 @@ from bs4 import BeautifulSoup, NavigableString, Tag
 
 MONTHS = "Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec".split()
 OWN_HOSTS = ("croissanthology.substack.com",)
+OWID_GRAPHER = re.compile(r"https?://(?:www\.)?ourworldindata\.org/grapher/([\w-]+)(\?[^#\s]*)?")
 
 
 def nice_date(iso):
@@ -289,6 +292,24 @@ def translate(body_html, *, download_image=None, local_href=None, thumb_for=None
         for a in ("srcset", "sizes", "data-attrs"):
             if a in img.attrs:
                 del img[a]
+
+    # 5b. screenshot of an Our World in Data chart, captioned with its link -> the live chart.
+    # The screenshot stays inside <noscript> for readers without scripts (the chart needs them).
+    for fig in root.select("figure.plate"):
+        cap = fig.find("figcaption")
+        imgs = fig.find_all("img", recursive=False)
+        link = cap and cap.find("a", href=OWID_GRAPHER)
+        if not link or len(imgs) != 1:
+            continue
+        m = OWID_GRAPHER.match(link["href"])
+        frame = soup.new_tag("iframe", attrs={
+            "class": "owid", "src": f"https://ourworldindata.org/grapher/{m.group(1)}{m.group(2) or '?tab=chart'}",
+            "title": cap.get_text(" ", strip=True) or "Our World in Data chart",
+            "loading": "lazy", "allow": "web-share; clipboard-write"})
+        noscript = soup.new_tag("noscript")
+        imgs[0].replace_with(frame)
+        frame.insert_after(noscript)
+        noscript.append(imgs[0])
 
     # 6. footnotes -> sidenotes after the citing paragraph
     notes = {}
