@@ -78,10 +78,70 @@ def _card(soup, href, title, date_text, thumb=None, kicker=None):
     return a
 
 
-def _quote_card(soup, name, handle, text, href, where, date, images=(), quoted=None, video=None):
+def _tweet_text(soup, raw, drop=()):
+    """Substack stores tweet text as HTML: @mentions as <span class="tweet-fake-link">, links as
+    <a class="tweet-url">. Returns (handles this replies to, nodes for the text). The run of
+    @mentions a reply starts with becomes "Replying to", as on X; other mentions link to the person."""
+    frag = BeautifulSoup(raw or "", "html.parser")
+    for a in frag.find_all("a"):
+        if a.get("href") in drop:  # X's t.co links for attached photos, which are shown anyway
+            a.decompose()
+    for t in frag.find_all(string=True):
+        for u in drop:
+            if u in t:
+                t.replace_with(t.replace(u, ""))
+    replying = []
+    while frag.contents:
+        first = frag.contents[0]
+        if isinstance(first, NavigableString) and not first.strip():
+            first.extract()
+        elif isinstance(first, Tag) and "tweet-fake-link" in (first.get("class") or []):
+            replying.append(first.get_text().lstrip("@"))
+            first.extract()
+        else:
+            break
+    for span in frag.select("span.tweet-fake-link"):
+        handle = span.get_text().lstrip("@")
+        a = soup.new_tag("a", attrs={"href": f"https://x.com/{handle}"})
+        a.string = "@" + handle
+        span.replace_with(a)
+    for tag in frag.find_all(True):
+        if tag.name == "a" and tag.get("href"):
+            tag.attrs = {"href": tag["href"]}
+        elif tag.name != "br":
+            tag.unwrap()
+    while frag.contents and isinstance(frag.contents[-1], NavigableString) and not frag.contents[-1].strip():
+        frag.contents[-1].extract()
+    if frag.contents and isinstance(frag.contents[-1], NavigableString):
+        frag.contents[-1].replace_with(frag.contents[-1].rstrip())
+    if frag.contents and isinstance(frag.contents[0], NavigableString):
+        frag.contents[0].replace_with(frag.contents[0].lstrip())
+    return replying, [n.extract() for n in list(frag.contents)]
+
+
+def _replying_line(soup, handles):
+    p = soup.new_tag("p", attrs={"class": "reply"})
+    p.append("Replying to ")
+    shown = handles[:3]
+    for i, h in enumerate(shown):
+        if i:
+            p.append(", " if i < len(shown) - 1 or len(handles) > 3 else " and ")
+        a = soup.new_tag("a", attrs={"href": f"https://x.com/{h}"})
+        a.string = "@" + h
+        p.append(a)
+    if len(handles) > 3:
+        p.append(f" and {len(handles) - 3} others")
+    return p
+
+
+def _quote_card(soup, name, handle, text, href, where, date, images=(), quoted=None, video=None,
+                avatar=None, replying=()):
     fig = soup.new_tag("figure", attrs={"class": "plate embed"})
     bq = soup.new_tag("blockquote", attrs={"class": "bsky"})
     who = soup.new_tag("p", attrs={"class": "who"})
+    if avatar:
+        who.append(soup.new_tag("img", attrs={"class": "avatar", "src": avatar, "alt": "",
+                                              "width": "36", "height": "36", "loading": "lazy"}))
     n = soup.new_tag("span", attrs={"class": "name"})
     n.string = name or ""
     h = soup.new_tag("span", attrs={"class": "handle"})
@@ -90,11 +150,18 @@ def _quote_card(soup, name, handle, text, href, where, date, images=(), quoted=N
     who.append(" ")
     who.append(h)
     said = soup.new_tag("p", attrs={"class": "said"})
-    said.string = text or ""
+    if isinstance(text, list):  # nodes from _tweet_text
+        for node in text:
+            said.append(node)
+    else:
+        said.string = text or ""
     src = soup.new_tag("a", attrs={"class": "src", "href": href})
     src.string = f"{where} · {nice_date(date)} ↗" if date else f"{where} ↗"
     bq.append(who)
-    bq.append(said)
+    if replying:
+        bq.append(_replying_line(soup, list(replying)))
+    if said.contents:
+        bq.append(said)
     if images:
         shots = soup.new_tag("span", attrs={"class": "shots"})
         for src_url in images:
@@ -115,7 +182,12 @@ def _quote_card(soup, name, handle, text, href, where, date, images=(), quoted=N
         qw.append(" ")
         qw.append(qh)
         qs = soup.new_tag("span", attrs={"class": "said"})
-        qs.string = quoted.get("text") or ""
+        qtext = quoted.get("text") or ""
+        if isinstance(qtext, list):
+            for node in qtext:
+                qs.append(node)
+        else:
+            qs.string = qtext
         q.append(qw)
         q.append(qs)
         bq.append(q)
@@ -220,18 +292,20 @@ def translate(body_html, *, download_image=None, local_href=None, thumb_for=None
         if not at:
             continue
         photos = [p for p in (at.get("photos") or []) if isinstance(p, dict) and p.get("img_url")]
-        text = at.get("full_text") or at.get("text", "")
-        # X appends a t.co link for each attached photo; the photos are shown, so drop those links
-        for p in photos:
-            if p.get("link_url"):
-                text = text.replace(p["link_url"], "")
+        replying, text = _tweet_text(soup, at.get("full_text") or at.get("text", ""),
+                                     drop=[p["link_url"] for p in photos if p.get("link_url")])
         qt = at.get("quoted_tweet") or None
-        quoted = {"name": qt.get("name", ""), "handle": qt.get("username", ""),
-                  "text": re.sub(r"\s*https://t\.co/\S+\s*$", "", qt.get("full_text", "") or "")} if isinstance(qt, dict) else None
-        wrap.replace_with(_quote_card(soup, at.get("name", ""), at.get("username", ""), text.strip(),
+        quoted = None
+        if isinstance(qt, dict):
+            qtext = re.sub(r"\s*https://t\.co/\S+\s*$", "", qt.get("full_text", "") or "")
+            quoted = {"name": qt.get("name", ""), "handle": qt.get("username", ""),
+                      "text": _tweet_text(soup, qtext)[1]}
+        pic = at.get("profile_image_url") or ""
+        avatar = download_image(pic.replace("_normal.", "_bigger.")) if pic else None
+        wrap.replace_with(_quote_card(soup, at.get("name", ""), at.get("username", ""), text,
                                       (at.get("url") or "").split("?")[0], "Twitter", at.get("date", ""),
                                       [download_image(p["img_url"]) or p["img_url"] for p in photos],
-                                      quoted, at.get("video_url")))
+                                      quoted, at.get("video_url"), avatar=avatar, replying=replying))
     for yt in root.select(".youtube-wrap"):
         at = _attrs(yt)
         vid = at.get("videoId") or (yt.get("id", "").replace("youtube2-", ""))

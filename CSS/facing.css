@@ -178,11 +178,18 @@ figure.plate iframe.owid { display: block; width: 100%; height: 600px; max-heigh
 }
 .bsky p { margin: 0; }
 .bsky .said { white-space: pre-line; }  /* keep the line breaks people put in their posts */
+.bsky .who { display: flex; align-items: center; gap: .55em; flex-wrap: wrap; line-height: 1.25; }
+.bsky .quoted .who { display: block; }
+.bsky .avatar { width: 2.25em; height: 2.25em; border-radius: 50%; border: 0; flex: none; object-fit: cover; }
 .bsky .name { font-weight: 500; }
+.bsky .reply { color: var(--muted); font-size: .9em; margin-top: -.1em; }
+/* links inside a tweet sit above the card-wide link, so they stay clickable */
+.bsky .said a, .bsky .reply a { position: relative; z-index: 1; color: var(--accent-ink); text-decoration: none; }
+.bsky .said a:hover, .bsky .reply a:hover { text-decoration: underline; }
 .bsky .handle, .bsky .src { color: var(--muted); }
 .bsky .src { font-size: .86em; text-decoration: none; }
 .bsky .shots { display: grid; grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr)); gap: .35em; margin: .25em 0 .1em; }
-.bsky .shots img { display: block; width: 100%; height: auto; border-radius: 6px; border: 0; }
+.bsky .shots img { display: block; width: 100%; height: auto; max-height: 22rem; object-fit: cover; border-radius: 6px; border: 0; }
 .bsky .quoted { display: flex; flex-direction: column; gap: .15em; margin: .2em 0 .1em; padding: .55em .75em; border: 1px solid var(--rule); border-radius: 8px; font-size: .94em; }
 .bsky .video { color: var(--muted); font-size: .9em; }
 .bsky .src:hover { color: var(--accent-ink); }
