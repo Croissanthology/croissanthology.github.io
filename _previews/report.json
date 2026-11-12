@@ -1,14 +1,10 @@
 {
  "date": "2026-11-12",
- "looked_up": 69,
+ "looked_up": 6,
  "this_run": {
-  "tweet": 52,
-  "post": 10,
   "profile": 6
  },
- "skipped_this_run": {
-  "not a tweet": 1
- },
+ "skipped_this_run": {},
  "all_links": {
   "tweet": 52,
   "wiki": 56,
