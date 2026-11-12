@@ -253,36 +253,18 @@ figure.plate iframe.owid { display: block; width: 100%; height: 600px; max-heigh
 [data-layout="wide"] .note.summoned .note-body, [data-layout="wide"] figure.plate.summoned { background: var(--page); box-shadow: 0 0 0 10px var(--page); }
 [data-layout="wide"] .note.summoned .note-body { color: var(--ink); }
 
-/* preview on hover (wide.js: peek): the linked page's cover, title and opening lines, in the margin beside its
-   link. Like a summoned note it sits on the page colour over the notes and figures, which dim; no card, no
-   frame. It is cut off at a fixed height and fades out at the bottom. Clicking anywhere on it opens the page. */
+/* preview on hover (wide.js: peek): a box in the margin, beside the link, holding the page the link leads to.
+   One small line on top (what it is, and "open"), then the page itself in an iframe, which scrolls. Like a
+   summoned note the box sits on the page colour over the notes and figures, which dim. It appears and goes
+   at once, with no fade. */
 .peek { display: none; }
-[data-layout="wide"] .peek { display: block; position: absolute; top: 0; z-index: 3; height: min(27rem, calc(100vh - 24px)); overflow: hidden; visibility: hidden; pointer-events: none; background: var(--page); box-shadow: 0 0 0 10px var(--page); }
-[data-layout="wide"] .peek.open { visibility: visible; pointer-events: auto; }
+[data-layout="wide"] .peek.open { display: flex; flex-direction: column; position: absolute; top: 0; z-index: 3; height: min(38rem, calc(100vh - 2rem)); background: var(--page); box-shadow: 0 0 0 10px var(--page); }
 [data-layout="wide"] [data-wide-root].summoning :is(.note, figure.plate).peek-host { opacity: 1; }
-.peek-body { display: block; width: 100%; }
-.peek-body.loading { position: absolute; inset: 0 auto auto 0; visibility: hidden; }
-.peek-page { font-size: 15px; line-height: 1.6; }
-.peek-page p { margin: 0; }
-.peek-page .peek-cover { display: block; width: 100%; height: 9.5rem; object-fit: cover; margin-bottom: 1.1rem; }
-.peek-page .peek-title { font-size: 1.5rem; line-height: 1.14; font-weight: 600; letter-spacing: .005em; font-variant-caps: small-caps; text-align: center; text-wrap: balance; }
-.peek-page .peek-meta { margin-top: .45rem; font-size: .74rem; letter-spacing: .02em; color: var(--muted); text-align: center; font-variant-numeric: lining-nums; }
-.peek-page .peek-dek { margin: .5rem auto 0; max-width: 30em; font-style: italic; color: var(--ink-soft); line-height: 1.5; text-align: center; text-wrap: balance; }
-.peek-text { margin-top: 1rem; hyphens: auto; hyphenate-limit-chars: 7 3 3; overflow-wrap: break-word; }
-.peek-text p { text-indent: 1.3em; text-wrap: pretty; }
-.peek-text p:first-child { text-indent: 0; }
-.peek-text img { max-width: 100%; height: auto; }
-.peek-go { position: absolute; inset: 0; z-index: 1; }
-.peek:not(.wiki)::after { content: ""; position: absolute; inset: auto 0 0; height: 5rem; pointer-events: none; background: linear-gradient(color-mix(in srgb, var(--page) 0%, transparent), var(--page)); }
-[data-layout="wide"] .peek.wiki { height: auto; max-height: min(27rem, calc(100vh - 24px)); }
-.peek-wiki { font-size: .82em; line-height: 1.5; color: var(--ink-soft); }
-.peek-wiki::after { content: ""; display: block; clear: both; }
-.peek-wiki p { margin: 0; }
-.peek-wiki img { float: right; width: 6.5em; height: auto; margin: .3em 0 .4em 1em; border: 1px solid var(--rule); }
-.peek-kicker { font-family: var(--display); font-size: .82em; letter-spacing: .2em; text-transform: uppercase; color: var(--muted); }
-.peek-wiki .peek-title { font-size: 1.3em; line-height: 1.2; font-weight: 600; font-variant-caps: small-caps; color: var(--ink); margin-top: .25em; }
-.peek-desc { font-style: italic; color: var(--muted); }
-.peek-wiki .peek-extract { margin-top: .5em; text-wrap: pretty; }
+.peek-bar { flex: none; display: flex; justify-content: space-between; align-items: baseline; gap: 1.2em; padding-bottom: .5rem; font: 500 .72rem/1.3 var(--sans); color: var(--muted); }
+.peek-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.peek-open { flex: none; color: var(--accent-ink); text-decoration: none; }
+.peek-open:hover { text-decoration: underline; }
+.peek-frame { flex: 1 1 auto; min-height: 0; width: 100%; border: 1px solid var(--rule); }
 @media (prefers-reduced-motion: reduce) {
   [data-layout="wide"] [data-wide-root] :is(.note, figure.plate) { transition: none; }
 }
