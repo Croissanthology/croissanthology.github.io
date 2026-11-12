@@ -1,0 +1,54 @@
+{
+ "date": "2026-11-12",
+ "looked_up": 333,
+ "this_run": {
+  "tweet": 52,
+  "wiki": 56,
+  "page": 40,
+  "page (framed)": 115,
+  "post": 10,
+  "repo": 4,
+  "image": 4
+ },
+ "skipped_this_run": {
+  "couldn't connect (ReadTimeout)": 7,
+  "robots.txt says no": 2,
+  "status 405": 1,
+  "handled on the page": 7,
+  "not a tweet": 7,
+  "refused (403)": 16,
+  "no title, and it can't be framed": 1,
+  "status 404": 1,
+  "couldn't connect (ConnectionError)": 2,
+  "not a page (application/pdf)": 5,
+  "not a post": 2,
+  "status 418": 1
+ },
+ "all_links": {
+  "tweet": 52,
+  "wiki": 56,
+  "page": 40,
+  "page (framed)": 115,
+  "post": 10,
+  "no preview": 52,
+  "repo": 4,
+  "image": 4
+ },
+ "sites_that_refused": [
+  "gizmodo.com",
+  "importai.substack.com",
+  "josephheath.substack.com",
+  "lesswrong.substack.com",
+  "marginalrevolution.com",
+  "mingyuan.substack.com",
+  "openai.com",
+  "patreon.com",
+  "sexmoneyart.substack.com",
+  "substack.com",
+  "thezvi.substack.com",
+  "vishalblog.substack.com",
+  "www.forbes.com",
+  "www.metaculus.com",
+  "www.patreon.com"
+ ]
+}

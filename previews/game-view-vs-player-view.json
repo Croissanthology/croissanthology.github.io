@@ -1,3 +1,18 @@
 {
-
+"https://en.wikipedia.org/wiki/Anthropic_principle": {"kind":"wiki","site":"Wikipedia","title":"Anthropic principle","desc":"Hypothesis about sapient life and the universe","html":"<p>In cosmology and philosophy of science, the <b>anthropic principle</b> (also known as the <b>observation selection effect</b>) is the proposition that the range of possible observations made about a universe is limited by the fact that observations can only be made if that universe is capable of developing observers in the first place. Proponents of the anthropic principle argue that it explains why the universe has the age and the fundamental physical constants necessary to accommodate intelligent life. If either had been significantly different, no one would have been around to make observations. Anthropic reasoning has been used to address the question as to why certain measured physical constants take the values that they do, rather than some other arbitrary values, and to explain a perception that the universe appears to be finely tuned for the existence of life.\n</p><p>There are many different formulations of the anthropic principle. Philosopher Nick Bostrom counts thirty, but the underlying principles can be divided into \"weak\" and \"strong\" forms, depending on the types of cosmological claims they entail.\n</p>"},
+"https://paulgraham.com/identity.html": {"kind":"page","frame":true},
+"https://paulgraham.com/procrastination.html": {"kind":"page","frame":true},
+"https://slatestarcodex.com/2013/06/14/the-virtue-of-silence/": {"kind":"page","frame":true},
+"https://slatestarcodex.com/2014/03/24/should-you-reverse-any-advice-you-hear/": {"kind":"page","frame":true},
+"https://slatestarcodex.com/2017/09/27/against-individual-iq-worries/": {"kind":"page","frame":true},
+"https://slatestarcodex.com/2018/09/12/in-the-balance/": {"kind":"page","frame":true},
+"https://slatestarcodex.com/2019/11/26/mental-mountains/": {"kind":"page","frame":true},
+"https://www.lesswrong.com/posts/6ddcsdA2c2XpNpE5x/newcomb-s-problem-and-regret-of-rationality": {"kind":"page","frame":true},
+"https://www.lesswrong.com/posts/8prPryf3ranfALBBp/don-t-mock-yourself": {"kind":"page","frame":true},
+"https://www.lesswrong.com/posts/AYbhqi65SWzHzy7Xx/transhumanist-fables": {"kind":"page","frame":true},
+"https://www.lesswrong.com/posts/L22jhyY9ocXQNLqyE/science-as-curiosity-stopper": {"kind":"page","frame":true},
+"https://www.lesswrong.com/posts/PkRXkhsEHwcGqRJ9Z/emotions-make-sense": {"kind":"page","frame":true},
+"https://www.lesswrong.com/posts/gvNnE6Th594kfdB3z/on-green": {"kind":"page","frame":true},
+"https://www.lesswrong.com/posts/niPHLviGAWzzZTzit/you-don-t-get-to-have-cool-flaws": {"kind":"page","frame":true},
+"https://www.lesswrong.com/posts/p7x32SEt43ZMC9r7r/embedded-agents": {"kind":"page","frame":true}
 }

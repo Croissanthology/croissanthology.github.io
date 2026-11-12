@@ -1,3 +1,8 @@
 {
-
+"https://data.worldbank.org/indicator/NY.GDP.MKTP.CD": {"kind":"page","site":"World Bank Open Data","title":"World Bank Open Data","desc":"Free and open access to global development data","img":["https://data.worldbank.org/assets/images/logo-wb-header-en.svg"]},
+"https://equilibriabook.com": {"kind":"page","frame":true},
+"https://guzey.com/theses-on-sleep/": {"kind":"page","frame":true},
+"https://gwern.net/improvement": {"kind":"page","frame":true},
+"https://www.lesswrong.com/posts/bX7q9NcoGpb5KdZzQ/if-i-wanted-to-spend-way-more-on-ai-what-would-i-spend-it-on?commentId=rWDffqwcaCiMfpTTt": {"kind":"page","frame":true},
+"https://www.lesswrong.com/w/conservation-of-expected-evidence": {"kind":"page","frame":true}
 }

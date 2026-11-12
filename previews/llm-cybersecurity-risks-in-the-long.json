@@ -1,3 +1,9 @@
 {
-
+"https://github.com/KeygraphHQ/shannon": {"kind":"repo","site":"GitHub","title":"KeygraphHQ/shannon","desc":"Shannon is an AI pentester for web applications and APIs. It analyzes your source code, identifies attack vectors, and executes real exploits to prove vulnerabilities before they reach production.","text":"TypeScript · ★ 51,783 · updated 11 Nov 2026"},
+"https://recursion.wtf/posts/shadow_queen/": {"kind":"page","frame":true},
+"https://www.anthropic.com/news/claude-code-security": {"kind":"page","site":"anthropic.com","title":"Making frontier cybersecurity capabilities available to defenders","desc":"Claude Code Security is one step towards our goal of more secure codebases and a higher security baseline across the industry.","date":"20 Feb 2026","img":["https://assets.claude.com/6d4a0d28992ade92d6fa63646fd9c9d318245c6c.jpg"]},
+"https://www.anthropic.com/news/disrupting-AI-espionage": {"kind":"page","site":"anthropic.com","title":"Disrupting an AI-orchestrated cyber espionage campaign","desc":"A report describing a highly sophisticated AI-led cyberattack and how we disrupted it.","date":"13 Nov 2025","img":["https://assets.claude.com/54a4c043c20d11033683a3d92263c09a8ac0683e.jpg"]},
+"https://www.lesswrong.com/posts/6ZnznCaTcbGYsCmqu/the-rise-of-parasitic-ai": {"kind":"page","frame":true},
+"https://www.lesswrong.com/posts/tz5AmWbEcMBQpiEjY/why-you-don-t-believe-in-xhosa-prophecies": {"kind":"page","frame":true},
+"https://xkcd.com/538/": {"kind":"page","frame":true}
 }
