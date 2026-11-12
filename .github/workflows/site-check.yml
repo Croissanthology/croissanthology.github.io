@@ -39,6 +39,7 @@ jobs:
           # every post page says where its link previews are, and that file is there
           for d in _site/subslop/*/; do
             slug=$(basename "$d")
+            grep -q 'class="book post"' "$d/index.html" || continue   # an old address that only redirects
             grep -q "data-previews=\"/previews/${slug}.json\"" "$d/index.html" || { echo "::error::$slug doesn't point at its previews file"; exit 1; }
             if [ -d _site/previews ]; then test -f "_site/previews/${slug}.json" || echo "::warning::no previews file for $slug yet"; fi
           done
