@@ -21,11 +21,17 @@
  * the others, which stay where they are and dim. Moving away puts it back. On touch screens a tap
  * does the same, and a tap anywhere else puts it back.
  *
- * Peek (wide only, pointers that can hover): resting on a link shows the page it leads to in a box
- * in the rail, level with the link, over the notes and figures, which dim just as they do for a
- * summon. The box is the real page in an iframe, so it scrolls and its links work. Sites that
- * refuse to be shown inside another page are on a list and get no box. Nothing loads until the
- * pointer has rested on a link.
+ * Peek (wide only, pointers that can hover): resting on a link opens a box in the rail, level with
+ * the link, over the notes and figures, which dim just as they do for a summon. What's in the box
+ * depends on the link:
+ *   another page of this site, or a site that allows it    the real page, in an iframe that scrolls
+ *   Wikipedia                                               the article's lead, set in this site's type
+ *   a tweet, a Bluesky post, a Substack post, GitHub        a small card: who, when, what it says
+ *   an image                                                the image
+ *   a page that refuses to be framed                        its title, description and picture
+ * The cards come from previews/<post>.json, which scripts/previews/index.py builds ahead of time
+ * (it also notes which pages can be framed). That file is fetched the first time it's needed.
+ * Nothing loads until the pointer has rested on a link.
  */
 (function () {
   "use strict";
@@ -76,7 +82,7 @@
 
   function place() {
     if (summoned) release(false);
-    if (layout !== "wide") closePeek(); else if (peek) fitPeek(peek.root);
+    if (layout !== "wide") closePeek(); else if (peek) placePeek(parseFloat(peekEl.style.top));
     document.querySelectorAll("[data-wide-root]").forEach(function (root) {
       var items = placed(root);
       if (layout !== "wide") {
@@ -247,8 +253,8 @@
   /* --- peek: preview on hover --- */
 
   // Sites that refuse to be shown inside another page (the box would just say "refused to connect").
-  // Links to these, and to anything under them (docs.google.com, old.reddit.com...), get no box.
-  // When a box comes up empty for some other site, add its domain here.
+  // The previews file says, link by link, what can be framed; this list is only for links it hasn't
+  // looked up yet. A link here with nothing in the file gets no box.
   var NO_FRAME = [
     "x.com", "twitter.com", "t.co", "github.com", "google.com", "blog.google", "youtube.com", "youtu.be",
     "facebook.com", "instagram.com", "linkedin.com", "reddit.com", "amazon.com", "apple.com", "patreon.com",
@@ -256,11 +262,13 @@
     "archive.is", "archive.ph", "archive.today", "imgur.com", "substack.com"
   ];
   var OURS = /^(www\.)?croissanthology\.com$|^croissanthology\.github\.io$/;
-  var FILES = /\.(png|jpe?g|gif|webp|avif|svg|ico|pdf|zip|gz|mp3|m4a|wav|ogg|mp4|mov|webm|json|xml|rss|csv|txt|epub|docx?|xlsx?|pptx?)$/i;
+  var IMAGES = /\.(png|jpe?g|gif|webp|avif)$/i;
+  var FILES = /\.(svg|ico|pdf|zip|gz|mp3|m4a|wav|ogg|mp4|mov|webm|json|xml|rss|csv|txt|epub|docx?|xlsx?|pptx?)$/i;
 
   var peek = null;        // what's showing: { root, link, host }
   var peekEl = null;      // the one box, made on first use and reused
   var peekWait = null, peekTimer = 0, peekLeave = 0, pointerY = 0;
+  var known = null;       // this post's previews file, once asked for (a promise)
 
   // where this page's links resolve from (normally just its own address)
   function baseURL() {
@@ -274,7 +282,19 @@
 
   function tidy(text) { return (text || "").replace(/\s+/g, " ").trim(); }
 
-  // what, if anything, hovering this element should show: { link, root, src, name, ours }
+  // what the indexer found for this post's links, by href; fetched once, on the first hover that needs it
+  function previews(root) {
+    if (!known) {
+      var at = root.getAttribute("data-previews");
+      known = !at ? Promise.resolve({}) : fetch(new URL(at, baseURL()).href)
+        .then(function (r) { return r.ok ? r.json() : {}; })
+        .catch(function () { return {}; });
+    }
+    return known;
+  }
+
+  // what hovering this element might show: { link, root, ours, src, name, image }
+  // (src is the address to frame, or "" when the page can't be framed and only a card will do)
   function peekTarget(t) {
     var a = t && t.closest && t.closest("a[href]");
     if (!a || a.hasAttribute("download") || a.closest(".peek, .runhead, .fn-ref")) return null;
@@ -283,32 +303,35 @@
     var u;
     try { u = new URL(a.href); } catch (e) { return null; }
     if (u.protocol !== "http:" && u.protocol !== "https:") return null;
-    if (FILES.test(u.pathname)) return null;
     var base = baseURL(), host = u.hostname.replace(/^www\./, "");
 
     // another page of this site: the page itself
     if (u.origin === base.origin || (OURS.test(u.hostname) && OURS.test(base.hostname))) {
-      if (samePage(u.pathname)) return null;
+      if (samePage(u.pathname) || IMAGES.test(u.pathname) || FILES.test(u.pathname)) return null;
       var title = a.querySelector(".own-title") || a;
       return { link: a, root: root, ours: true, src: base.origin + u.pathname + u.search + u.hash, name: tidy(title.textContent) };
     }
 
-    if (u.protocol !== "https:") return null;  // a plain http page can't be shown inside an https one
-    var src = u.href, m;
-    if ((m = /^([a-z-]+)\.(?:m\.)?(wikipedia|wiktionary)\.org$/.exec(u.hostname))) {
-      // Wikipedia and Wiktionary: the phone version, which fits a narrow box
-      src = "https://" + m[1] + ".m." + m[2] + ".org" + u.pathname + u.search + u.hash;
+    var out = { link: a, root: root, ours: false, src: "", name: host, image: false }, m;
+    if (IMAGES.test(u.pathname)) {
+      out.image = u.protocol === "https:";
+    } else if (u.protocol !== "https:" || FILES.test(u.pathname)) {
+      // a plain http page can't be shown inside an https one, and a file isn't a page
+    } else if ((m = /^([a-z-]+)\.(?:m\.)?(wikipedia|wiktionary)\.org$/.exec(u.hostname))) {
+      // Wikipedia not looked up yet, and Wiktionary: the phone version, which fits a narrow box
+      out.src = "https://" + m[1] + ".m." + m[2] + ".org" + u.pathname + u.search + u.hash;
     } else if (/^(m\.|music\.)?youtube\.com$/.test(host) && u.pathname === "/watch" && u.searchParams.get("v")) {
-      src = "https://www.youtube-nocookie.com/embed/" + encodeURIComponent(u.searchParams.get("v"));
+      out.src = "https://www.youtube-nocookie.com/embed/" + encodeURIComponent(u.searchParams.get("v"));
     } else if (host === "youtu.be" && u.pathname.length > 1) {
-      src = "https://www.youtube-nocookie.com/embed/" + encodeURIComponent(u.pathname.slice(1).split("/")[0]);
+      out.src = "https://www.youtube-nocookie.com/embed/" + encodeURIComponent(u.pathname.slice(1).split("/")[0]);
     } else {
+      out.src = u.href;
       for (var i = 0; i < NO_FRAME.length; i++) {
-        if (host === NO_FRAME[i] || host.slice(-NO_FRAME[i].length - 1) === "." + NO_FRAME[i]) return null;
+        if (host === NO_FRAME[i] || host.slice(-NO_FRAME[i].length - 1) === "." + NO_FRAME[i]) out.src = "";
       }
-      if (/^\/p\/[^/]+\/?$/.test(u.pathname)) return null;  // a Substack on its own domain: posts live at /p/...
+      if (/^\/p\/[^/]+\/?$/.test(u.pathname)) out.src = "";  // a Substack on its own domain: posts live at /p/...
     }
-    return { link: a, root: root, ours: false, src: src, name: host };
+    return out;
   }
 
   function peekBox(root) {
@@ -329,14 +352,110 @@
     return peekEl;
   }
 
-  function fitPeek(root) {
-    var box = root.getBoundingClientRect();
-    var r = root.querySelector(".rail").getBoundingClientRect();
-    peekEl.style.left = (r.left - box.left) + "px";
-    peekEl.style.width = r.width + "px";
+  // the real page, in an iframe
+  function frameFor(t, src) {
+    var frame = document.createElement("iframe");
+    frame.className = "peek-body peek-frame";
+    frame.title = "Preview: " + t.name;
+    // someone else's page may run its scripts, but may not take this page somewhere else
+    if (!t.ours) frame.setAttribute("sandbox", "allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-forms");
+    else frame.addEventListener("load", function () {
+      // one of this site's pages: name the box after the page rather than the link's words
+      try {
+        var title = tidy(frame.contentDocument.title.replace(/\s*[-·|]\s*Croissanthology\s*$/, ""));
+        if (title && frame.isConnected) peekEl.querySelector(".peek-name").textContent = title;
+      } catch (e) {}
+    });
+    frame.src = src;
+    return frame;
   }
 
-  function showPeek(t) {
+  // text from the previews file with only its harmless tags kept (it was cleaned when it was stored; this is the second lock)
+  function plain(html) {
+    var t = document.createElement("template");
+    t.innerHTML = html;
+    Array.prototype.slice.call(t.content.querySelectorAll("*")).forEach(function (el) {
+      if (/^(P|B|I|EM|STRONG|SUB|SUP|UL|OL|LI|BR)$/.test(el.tagName)) {
+        while (el.attributes.length) el.removeAttribute(el.attributes[0].name);
+      } else if (/^(SCRIPT|STYLE)$/.test(el.tagName)) {
+        el.remove();
+      } else {
+        while (el.firstChild) el.parentNode.insertBefore(el.firstChild, el);
+        el.remove();
+      }
+    });
+    return t.content;
+  }
+
+  // a card set in this site's own type, from what the indexer stored (or just the image, for an image link)
+  function cardFor(rec) {
+    var card = document.createElement("div");
+    card.className = "peek-body peek-card k-" + rec.kind;
+    function add(cls, text) {
+      if (!text) return null;
+      var el = document.createElement("p");
+      el.className = cls;
+      el.textContent = text;
+      card.appendChild(el);
+      return el;
+    }
+    function picture(cls, src, w, h) {
+      if (!/^https:\/\//.test(src || "")) return;
+      var img = document.createElement("img");
+      img.className = cls;
+      img.alt = "";
+      img.referrerPolicy = "no-referrer";
+      if (w && h) { img.width = w; img.height = h; }
+      img.addEventListener("load", function () { if (card.isConnected) placePeek(); });  // it may have grown
+      img.addEventListener("error", function () { img.remove(); if (card.isConnected) placePeek(); });
+      img.src = src;
+      card.appendChild(img);
+    }
+    var img = rec.img || [];
+    if (rec.kind === "image") { picture("peek-image", img[0]); return card; }
+    picture(rec.kind === "wiki" ? "peek-thumb" : "peek-cover", img[0], img[1], img[2]);
+    add("peek-title", rec.title);
+    add("peek-desc", rec.desc);
+    add("peek-by", [rec.by, rec.handle, rec.date].filter(Boolean).join(" · "));
+    if (rec.html || rec.text) {
+      var text = document.createElement("div");
+      text.className = "peek-text";
+      if (rec.html) text.appendChild(plain(rec.html));
+      else rec.text.split("\n").forEach(function (line) {
+        var p = document.createElement("p");
+        p.textContent = line;
+        text.appendChild(p);
+      });
+      card.appendChild(text);
+    }
+    (rec.imgs || []).forEach(function (src) { picture("peek-shot", src); });
+    add("peek-more", rec.more);
+    return card;
+  }
+
+  // what to put in the box for this link, given what the indexer found (rec, possibly nothing). null: no box.
+  function bodyFor(t, rec) {
+    if (t.ours) return frameFor(t, t.src);
+    if (t.image) return cardFor({ kind: "image", img: [t.link.href] });
+    if (rec && rec.kind === "image") return cardFor(rec);
+    if (rec && rec.frame && t.src) return frameFor(t, t.src);          // the indexer saw nothing against framing it
+    if (rec && !rec.frame && (rec.title || rec.text || rec.html)) return cardFor(rec);
+    if (rec && (rec.title || rec.text)) return cardFor(rec);           // framable on paper, but on the list above
+    return t.src ? frameFor(t, t.src) : null;                           // not looked up yet
+  }
+
+  // the pointer has rested on a link
+  function openPeek(t) {
+    if (t.ours || t.image) { showPeek(t, bodyFor(t), t.name); return; }
+    previews(t.root).then(function (found) {
+      if (peekWait !== t.link) return;  // the pointer has moved on
+      var rec = found[t.link.getAttribute("href")];
+      var body = bodyFor(t, rec);
+      if (body) showPeek(t, body, body.tagName !== "IFRAME" && rec && rec.site || t.name);
+    });
+  }
+
+  function showPeek(t, body, name) {
     clearTimeout(peekLeave);
     var root = t.root, box = peekBox(root);
     // a link inside a note or figure that's in the margin: the box goes right under (or over) it
@@ -345,33 +464,35 @@
     if (summoned && summoned.item !== host) release();
     if (peek && peek.host && peek.host !== host) peek.host.classList.remove("peek-host");
 
-    var name = box.querySelector(".peek-name"), open = box.querySelector(".peek-open");
-    name.textContent = t.name;
+    var open = box.querySelector(".peek-open");
+    box.querySelector(".peek-name").textContent = name;
     open.href = t.link.href;
     open.target = t.link.target;
     open.rel = t.link.rel;
-
-    var old = box.querySelector("iframe");
+    var old = box.querySelector(".peek-body");
     if (old) old.remove();
-    var frame = document.createElement("iframe");
-    frame.className = "peek-frame";
-    frame.title = "Preview: " + t.name;
-    // someone else's page may run its scripts, but may not take this page somewhere else
-    if (!t.ours) frame.setAttribute("sandbox", "allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-forms");
-    else frame.addEventListener("load", function () {
-      // one of this site's pages: name the box after the page rather than the link's words
-      try {
-        var title = tidy(frame.contentDocument.title.replace(/\s*[-·|]\s*Croissanthology\s*$/, ""));
-        if (title && frame.isConnected) name.textContent = title;
-      } catch (e) {}
-    });
-    frame.src = t.src;
-    box.appendChild(frame);
-
+    box.appendChild(body);
+    box.classList.toggle("card", body.tagName !== "IFRAME");  // a card is only as tall as what's in it
     box.classList.add("open");
-    fitPeek(root);
+
+    // a link a line or two away from the last one: stay put rather than hop
+    var was = peek && !peek.host && !host && peek.root === root ? parseFloat(box.style.top) : NaN;
+    peek = { root: root, link: t.link, host: host };
+    placePeek(was);
+    if (host) host.classList.add("peek-host");
+    root.classList.remove("releasing");
+    root.classList.add("summoning");
+  }
+
+  // level with the line of the link the pointer is on, with the whole box on screen
+  function placePeek(was) {
+    if (!peek) return;
+    var root = peek.root, box = peekEl, host = peek.host;
     var rbox = root.getBoundingClientRect();
-    var railTop = root.querySelector(".rail").getBoundingClientRect().top - rbox.top;
+    var r = root.querySelector(".rail").getBoundingClientRect();
+    box.style.left = (r.left - rbox.left) + "px";
+    box.style.width = r.width + "px";
+    var railTop = r.top - rbox.top;
     var h = box.offsetHeight;
     var viewTop = -rbox.top + 16, viewBottom = window.innerHeight - rbox.top - 16;
     var want;
@@ -381,31 +502,24 @@
       var above = hr.top - rbox.top - GAP - h;
       if (want + h > viewBottom) want = above >= viewTop ? above : Math.max(viewTop, viewBottom - h);
     } else {
-      // level with the line of the link the pointer is on, but with the whole box on screen
-      var rects = t.link.getClientRects(), line = rects[0] || t.link.getBoundingClientRect();
+      var rects = peek.link.getClientRects(), line = rects[0] || peek.link.getBoundingClientRect();
       for (var i = 0; i < rects.length; i++) if (pointerY >= rects[i].top - 2 && pointerY <= rects[i].bottom + 2) line = rects[i];
       var markTop = line.top - rbox.top;
       want = markTop - 4;
       if (want + h > viewBottom) want = Math.max(viewTop, viewBottom - h);
       want = Math.min(want, markTop);
-      // a link a line or two away from the last one: stay put rather than hop
-      var was = peek && !peek.host && peek.root === root ? parseFloat(box.style.top) : NaN;
       if (Math.abs(was - want) < 56 && was >= viewTop && was + h <= viewBottom) want = was;
     }
     want = Math.max(railTop, Math.min(want, root.offsetHeight - h));  // and inside the page, so it doesn't grow
     box.style.top = want + "px";
-    if (host) host.classList.add("peek-host");
-    root.classList.remove("releasing");
-    root.classList.add("summoning");
-    peek = { root: root, link: t.link, host: host };
   }
 
-  // put the box away; taking the iframe out stops whatever its page was doing
+  // put the box away; taking out what's in it stops whatever a framed page was doing
   function hidePeek() {
     clearTimeout(peekLeave);
     if (!peek) return;
-    var root = peek.root, frame = peekEl.querySelector("iframe");
-    if (frame) frame.remove();
+    var root = peek.root, body = peekEl.querySelector(".peek-body");
+    if (body) body.remove();
     if (peek.host) peek.host.classList.remove("peek-host");
     peekEl.classList.remove("open");
     peek = null;
@@ -423,7 +537,6 @@
     var canHover = window.matchMedia("(hover: hover)");
     document.addEventListener("mouseover", function (e) {
       if (!canHover.matches || layout !== "wide") return;
-      pointerY = e.clientY;
       if (peek && (peekEl.contains(e.target) || peek.link.contains(e.target))) clearTimeout(peekLeave);
       var t = peekTarget(e.target);
       var link = t && t.link;
@@ -431,8 +544,9 @@
       clearTimeout(peekTimer);
       peekWait = link;
       if (!link || (peek && peek.link === link)) return;
+      pointerY = e.clientY;
       // only once the pointer has rested on the link; passing over it loads nothing
-      peekTimer = setTimeout(function () { if (peekWait === link) showPeek(t); }, 240);
+      peekTimer = setTimeout(function () { if (peekWait === link) openPeek(t); }, 240);
     });
     document.addEventListener("mouseout", function (e) {
       if (!peek) return;

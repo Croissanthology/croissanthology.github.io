@@ -1,0 +1,65 @@
+name: Link previews
+
+# Looks up the outside links in the posts (Wikipedia leads, tweets, Substack posts, page titles,
+# and whether each page can be shown in a frame) and commits what it finds to previews/ and
+# _previews/. wide.js uses those files for the boxes that open in the margin on hover.
+#
+# It runs at night, hours away from the Mac's morning sync, so the two never push at the same
+# moment, and it only ever touches its own two folders. It can also be run by hand (Actions tab,
+# "Run workflow"). On other branches it runs when the indexer itself changes, to try it out.
+on:
+  schedule:
+    - cron: '17 11 * * *'
+  workflow_dispatch:
+    inputs:
+      limit:
+        description: 'Most links to look up in this run'
+        default: '500'
+  push:
+    branches-ignore: [main]
+    paths:
+      - 'scripts/previews/**'
+      - '.github/workflows/link-previews.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: link-previews-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  index:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - run: pip install --quiet requests beautifulsoup4
+
+      - name: Look up new and stale links
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python3 scripts/previews/index.py --limit "${{ inputs.limit || '500' }}"
+
+      - name: Commit what it found
+        run: |
+          git add _previews previews
+          if git diff --cached --quiet; then
+            echo "Nothing new."
+            exit 0
+          fi
+          git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
+            commit --quiet -m "Link previews: look up new links"
+          # someone else may have pushed meanwhile: put this commit on top of theirs and try again
+          for try in 1 2 3 4; do
+            if git push --quiet origin "HEAD:${{ github.ref_name }}"; then exit 0; fi
+            git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
+              pull --quiet --rebase origin "${{ github.ref_name }}"
+            sleep $((try * 5))
+          done
+          echo "::error::couldn't push the previews"; exit 1

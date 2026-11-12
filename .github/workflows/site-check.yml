@@ -36,6 +36,13 @@ jobs:
           grep -q 'class="book"' _site/index.html || { echo "::error::homepage did not get the Facing Pages layout"; exit 1; }
           n=$(ls -d _site/subslop/*/ 2>/dev/null | wc -l)
           echo "::notice::built ${n} subslop pages"
+          # every post page says where its link previews are, and that file is there
+          for d in _site/subslop/*/; do
+            slug=$(basename "$d")
+            grep -q 'class="book post"' "$d/index.html" || continue   # an old address that only redirects
+            grep -q "data-previews=\"/previews/${slug}.json\"" "$d/index.html" || { echo "::error::$slug doesn't point at its previews file"; exit 1; }
+            if [ -d _site/previews ]; then test -f "_site/previews/${slug}.json" || echo "::warning::no previews file for $slug yet"; fi
+          done
           for f in $(ls _site/subslop/*/index.html | head -200); do
             if grep -q '{{\|{%' "$f"; then echo "::error file=$f::unrendered Liquid in $f"; exit 1; fi
           done

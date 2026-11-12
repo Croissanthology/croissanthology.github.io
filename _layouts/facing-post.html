@@ -8,7 +8,7 @@ layout: facing
   The cover isn't shown on its own when the post already has it in its body (cover_in_body).
 {%- endcomment -%}
 {% assign dek = page.dek | markdownify | remove: '<p>' | remove: '</p>' | strip %}
-<article class="book post" data-wide-root data-plates="rail">
+<article class="book post" data-wide-root data-plates="rail" data-previews="{% assign bits = page.url | split: '/' %}{{ '/previews/' | append: bits[2] | append: '.json' | relative_url }}">
   <header class="runhead" data-vt="masthead"><a class="home" href="{{ '/' | relative_url }}">Croissanthology</a><span>{{ page.title }}</span></header>
   {% if page.cover and page.cover_in_body != true %}<figure class="plate cover" data-anchor=".post-head .post-title"><img src="{{ page.cover | relative_url }}" alt=""{% if page.cover_width %} width="{{ page.cover_width }}" height="{{ page.cover_height }}"{% endif %}></figure>{% endif %}
   <header class="post-head" data-vt="post-head">
