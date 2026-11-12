@@ -20,6 +20,12 @@
  * beside. Hovering that marker or a footnote number slides its figure or note level with it, over
  * the others, which stay where they are and dim. Moving away puts it back. On touch screens a tap
  * does the same, and a tap anywhere else puts it back.
+ *
+ * Peek (wide only, pointers that can hover): resting on a link to another page of this site shows
+ * that page in the rail, level with the link, over the notes and figures, which dim just as they
+ * do for a summon. The page is loaded in a sandboxed iframe with scripts off, so it arrives in its
+ * narrow layout, and with #peek on its address, so it trims itself: cover, title, subtitle, opening lines. Wikipedia links get a short text summary
+ * in the same place. Nothing is fetched until the pointer has rested on a link.
  */
 (function () {
   "use strict";
@@ -70,6 +76,7 @@
 
   function place() {
     if (summoned) release(false);
+    if (layout !== "wide") closePeek(); else if (peek) fitPeek(peek.root);
     document.querySelectorAll("[data-wide-root]").forEach(function (root) {
       var items = placed(root);
       if (layout !== "wide") {
@@ -161,9 +168,11 @@
     if (quick !== false) root.classList.add("releasing");
     placed(root).forEach(function (el) { el.style.transform = ""; el.classList.remove("summoned"); });
     summoned.trigger.classList.remove("hot");
-    root.classList.remove("summoning");
+    var item = summoned.item;
     summoned = null;
     pinned = false;
+    if (peek && peek.host === item) hidePeek();
+    if (!peek) root.classList.remove("summoning");
     setTimeout(function () { root.classList.remove("releasing"); }, 260);
   }
 
@@ -199,20 +208,23 @@
     trigger.classList.add("hot");
   }
 
+  // the pointer is on the summoned item, on its marker, or on a preview opened from a link inside the item
+  function inSummon(n) {
+    return summoned.trigger.contains(n) || summoned.item.contains(n) || !!(peek && peek.host === summoned.item && peekEl.contains(n));
+  }
+
   function wireSummon() {
     var finePointer = window.matchMedia("(hover: hover)");
     document.addEventListener("mouseover", function (e) {
       if (!finePointer.matches || layout !== "wide") return;
       var t = triggerFor(e.target);
       if (t) { summon(t.trigger, t.item); return; }
-      if (summoned && summoned.item.contains(e.target)) clearTimeout(leaveTimer);
+      if (summoned && inSummon(e.target)) clearTimeout(leaveTimer);
     });
     document.addEventListener("mouseout", function (e) {
       if (!summoned || pinned) return;
-      var to = e.relatedTarget;
-      if (to && (summoned.trigger.contains(to) || summoned.item.contains(to))) return;
-      var from = e.target;
-      if (!(summoned.trigger.contains(from) || summoned.item.contains(from))) return;
+      if (e.relatedTarget && inSummon(e.relatedTarget)) return;
+      if (!inSummon(e.target)) return;
       clearTimeout(leaveTimer);
       leaveTimer = setTimeout(release, 160);  // long enough to reach a link inside the note
     });
@@ -230,6 +242,260 @@
       if (summoned && !summoned.item.contains(e.target)) release();
     }, true);
     window.addEventListener("keydown", function (e) { if (e.key === "Escape") release(); });
+  }
+
+  /* --- peek: preview on hover --- */
+  var peek = null;        // what's showing: { root, link, host }
+  var peekEl = null;      // the one box previews are shown in, made on first use
+  var peekWait = null, peekTimer = 0, peekLeave = 0, peekSeq = 0, pointerY = 0;
+  var wiki = {};          // Wikipedia summaries already fetched, by API address
+  var OURS = /^(www\.)?croissanthology\.com$|^croissanthology\.github\.io$/;
+
+  function samePage(path) {
+    function norm(p) { return p.replace(/index\.html?$/, "").replace(/\/$/, ""); }
+    return norm(path) === norm(location.pathname);
+  }
+
+  // what, if anything, hovering this element should preview
+  function peekTarget(t) {
+    var a = t && t.closest && t.closest("a[href]");
+    if (!a || a.hasAttribute("download") || a.closest(".peek, .runhead, .fn-ref")) return null;
+    var root = a.closest("[data-wide-root]");
+    if (!root || !root.querySelector(".rail")) return null;
+    var u;
+    try { u = new URL(a.href); } catch (e) { return null; }
+    if (u.protocol !== "http:" && u.protocol !== "https:") return null;
+    var w = /^([a-z-]+)\.(?:m\.)?wikipedia\.org$/.exec(u.hostname);
+    if (w && u.pathname.indexOf("/wiki/") === 0 && u.pathname.length > 6) {
+      var title;
+      try { title = decodeURIComponent(u.pathname.slice(6)); } catch (e) { return null; }
+      return { link: a, root: root, kind: "wiki", src: "https://" + w[1] + ".wikipedia.org/api/rest_v1/page/summary/" + encodeURIComponent(title) };
+    }
+    var here = u.origin === location.origin || (OURS.test(u.hostname) && OURS.test(location.hostname));
+    if (!here || samePage(u.pathname)) return null;
+    if (/\.[a-z0-9]+$/i.test(u.pathname) && !/\.html?$/i.test(u.pathname)) return null;  // images, PDFs, feeds
+    return { link: a, root: root, kind: "page", src: location.origin + u.pathname + u.search };
+  }
+
+  function peekBox(root) {
+    if (!peekEl) {
+      peekEl = document.createElement("aside");
+      peekEl.className = "peek";
+      peekEl.setAttribute("aria-hidden", "true");  // it repeats a link that's already in the text
+      var go = document.createElement("a");
+      go.className = "peek-go";
+      go.tabIndex = -1;
+      peekEl.appendChild(go);
+    }
+    if (peekEl.parentNode !== root) root.appendChild(peekEl);
+    return peekEl;
+  }
+
+  function fitPeek(root) {
+    var box = root.getBoundingClientRect();
+    var r = root.querySelector(".rail").getBoundingClientRect();
+    peekEl.style.left = (r.left - box.left) + "px";
+    peekEl.style.width = r.width + "px";
+  }
+
+  // the page inside the iframe wears the reader's theme. This site's own pages trim themselves for the
+  // margin (facing.css, #peek:target); older pages keep their look but sit on this page's paper.
+  function dress(frame) {
+    try {
+      var d = frame.contentDocument, own = !!d.getElementById("peek");
+      var t = doc.getAttribute("data-theme");
+      if (!own && !t) t = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";  // older pages always carry one
+      if (t) d.documentElement.setAttribute("data-theme", t);
+      if (own) return;
+      var st = d.createElement("style");
+      st.textContent = "html,body{overflow:hidden;background:" + getComputedStyle(doc).getPropertyValue("--page").trim() + "!important}";
+      d.head.appendChild(st);
+    } catch (e) {}  // can't reach in: the page still shows, in the device's theme
+  }
+
+  // call back once the framed page can be shown: parsed and styled, without waiting for every image in it
+  function whenReady(frame, cb) {
+    var done = false, poll = 0;
+    function finish() {
+      if (done) return;
+      done = true;
+      clearInterval(poll);
+      cb();
+    }
+    frame.addEventListener("load", finish);
+    poll = setInterval(function () {
+      if (!frame.isConnected) { done = true; clearInterval(poll); return; }
+      try {
+        var d = frame.contentDocument;
+        if (!d || d.readyState === "loading" || !d.body || d.URL === "about:blank") return;
+        var sheets = d.querySelectorAll('link[rel="stylesheet"]');
+        for (var i = 0; i < sheets.length; i++) {
+          if (sheets[i].href.indexOf(location.origin) === 0 && sheets[i].media !== "print" && !sheets[i].sheet) return;
+        }
+        finish();
+      } catch (e) { clearInterval(poll); }  // can't look inside: the load event will do
+    }, 40);
+  }
+
+  function wikiCard(j) {
+    var card = document.createElement("div");
+    card.className = "peek-wiki";
+    function add(tag, cls, text) {
+      if (!text) return;
+      var el = document.createElement(tag);
+      el.className = cls;
+      el.textContent = text;
+      card.appendChild(el);
+    }
+    add("p", "peek-kicker", "Wikipedia");
+    if (j.thumbnail && j.thumbnail.source) {
+      var img = document.createElement("img");
+      img.alt = "";
+      img.src = j.thumbnail.source;
+      if (j.thumbnail.width) { img.width = j.thumbnail.width; img.height = j.thumbnail.height; }
+      card.appendChild(img);
+    }
+    add("p", "peek-title", j.title);
+    add("p", "peek-desc", j.description);
+    add("p", "peek-extract", j.extract);
+    return card;
+  }
+
+  // fetch what the link points to, out of sight; show it only if no later hover has overtaken it
+  function loadPeek(t) {
+    var seq = ++peekSeq;
+    var box = peekBox(t.root);
+    Array.prototype.slice.call(box.querySelectorAll(".loading")).forEach(function (el) { el.remove(); });
+    var cur = box.querySelector(".peek-body");
+    if (cur && cur.dataset.src === t.src) { showPeek(t, cur); return; }
+    if (!peek) fitPeek(t.root);  // so the page is laid out at the rail's width while it loads
+    function ready(body) {
+      if (seq !== peekSeq || peekWait !== t.link || !body.isConnected) { body.remove(); return; }
+      showPeek(t, body);
+    }
+    if (t.kind === "page") {
+      var frame = document.createElement("iframe");
+      frame.className = "peek-body loading";
+      frame.dataset.src = t.src;
+      frame.setAttribute("sandbox", "allow-same-origin");  // no scripts; same-origin only so dress() can reach in
+      frame.setAttribute("scrolling", "no");
+      frame.tabIndex = -1;
+      frame.title = "Preview";
+      frame.src = t.src + "#peek";  // lets the page's own stylesheet know it's being shown as a preview
+      box.insertBefore(frame, box.firstChild);
+      whenReady(frame, function () { dress(frame); ready(frame); });
+    } else {
+      var got = wiki[t.src] || (wiki[t.src] = fetch(t.src, { headers: { Accept: "application/json" } }).then(function (r) {
+        if (!r.ok) throw 0;
+        return r.json();
+      }));
+      got.then(function (j) {
+        if (seq !== peekSeq || peekWait !== t.link || !j || !j.extract) return;
+        var card = wikiCard(j);
+        card.classList.add("peek-body", "loading");
+        card.dataset.src = t.src;
+        box.insertBefore(card, box.firstChild);
+        ready(card);
+      }).catch(function () {});
+    }
+  }
+
+  function showPeek(t, body) {
+    clearTimeout(peekLeave);
+    var root = t.root, box = peekEl;
+    // a link inside a note or figure that's in the margin: the preview goes right under (or over) it
+    var host = t.link.closest(".note, figure.plate");
+    while (host && !host.style.top) host = host.parentElement.closest(".note, figure.plate");
+    if (summoned && summoned.item !== host) release();
+    if (peek && peek.host && peek.host !== host) peek.host.classList.remove("peek-host");
+
+    Array.prototype.slice.call(box.querySelectorAll(".peek-body")).forEach(function (el) { if (el !== body) el.remove(); });
+    body.classList.remove("loading");
+    box.classList.toggle("wiki", t.kind === "wiki");
+    var go = box.querySelector(".peek-go");
+    go.href = t.link.href;
+    go.target = t.link.target;
+    go.rel = t.link.rel;
+    fitPeek(root);
+
+    var rbox = root.getBoundingClientRect();
+    var railTop = root.querySelector(".rail").getBoundingClientRect().top - rbox.top;
+    var h = box.offsetHeight;
+    var viewTop = -rbox.top + 12, viewBottom = window.innerHeight - rbox.top - 12;
+    var want;
+    if (host) {
+      var hr = host.getBoundingClientRect();
+      want = hr.bottom - rbox.top + GAP;
+      var above = hr.top - rbox.top - GAP - h;
+      if (want + h > viewBottom && above >= Math.max(viewTop, railTop)) want = above;
+    } else {
+      // level with the line of the link the pointer is on, but kept on screen
+      var rects = t.link.getClientRects(), line = rects[0] || t.link.getBoundingClientRect();
+      for (var i = 0; i < rects.length; i++) if (pointerY >= rects[i].top - 2 && pointerY <= rects[i].bottom + 2) line = rects[i];
+      var markTop = line.top - rbox.top;
+      want = markTop - 4;
+      if (want + h > viewBottom) want = Math.max(viewTop, viewBottom - h);
+      want = Math.min(want, markTop, root.offsetHeight - h);
+      want = Math.max(railTop, want);
+      // a link a line or two away from the last one: stay put rather than hop
+      var was = peek && !peek.host && peek.root === root ? parseFloat(box.style.top) : NaN;
+      if (Math.abs(was - want) < 56 && was >= viewTop && was + h <= viewBottom) want = was;
+    }
+    box.style.top = want + "px";
+    if (host) host.classList.add("peek-host");
+    root.classList.remove("releasing");
+    root.classList.add("summoning");
+    box.classList.add("open");
+    peek = { root: root, link: t.link, host: host };
+  }
+
+  // put the preview away; anything on its way for the link under the pointer may still arrive
+  function hidePeek() {
+    clearTimeout(peekLeave);
+    if (!peek) return;
+    var root = peek.root;
+    if (peek.host) peek.host.classList.remove("peek-host");
+    peekEl.classList.remove("open");
+    peek = null;
+    if (!summoned) root.classList.remove("summoning");
+  }
+
+  // put it away and drop whatever was still loading
+  function closePeek() {
+    clearTimeout(peekTimer);
+    peekWait = null;
+    peekSeq++;
+    hidePeek();
+  }
+
+  function wirePeek() {
+    var canHover = window.matchMedia("(hover: hover)");
+    document.addEventListener("mouseover", function (e) {
+      if (!canHover.matches || layout !== "wide") return;
+      pointerY = e.clientY;
+      if (peek && (peekEl.contains(e.target) || peek.link.contains(e.target))) clearTimeout(peekLeave);
+      var t = peekTarget(e.target);
+      var link = t && t.link;
+      if (link === peekWait) return;
+      clearTimeout(peekTimer);
+      peekWait = link;
+      if (!link || (peek && peek.link === link)) return;
+      // only once the pointer has rested on the link; passing over it loads nothing
+      peekTimer = setTimeout(function () { if (peekWait === link) loadPeek(t); }, 240);
+    });
+    document.addEventListener("mouseout", function (e) {
+      if (!peek) return;
+      function inside(n) { return peekEl.contains(n) || peek.link.contains(n); }
+      if (e.relatedTarget && inside(e.relatedTarget)) return;
+      if (!inside(e.target)) return;
+      clearTimeout(peekLeave);
+      peekLeave = setTimeout(hidePeek, 320);  // long enough to cross the text to the margin
+    });
+    document.addEventListener("click", function (e) {
+      if (peek && !peekEl.contains(e.target)) closePeek();
+    }, true);
+    window.addEventListener("keydown", function (e) { if (e.key === "Escape") closePeek(); });
+    window.addEventListener("pageshow", closePeek);  // coming back with the back button
   }
 
   /* --- the switch --- */
@@ -290,6 +556,7 @@
     markFigures();
     wireNotes();
     wireSummon();
+    wirePeek();
     apply(wanted());
     // show the margin once, all at once, after the fonts that decide where everything goes
     var shown = false;

@@ -253,6 +253,41 @@ figure.plate iframe.owid { display: block; width: 100%; height: 600px; max-heigh
 [data-layout="wide"] .note.summoned .note-body, [data-layout="wide"] figure.plate.summoned { background: var(--page); box-shadow: 0 0 0 10px var(--page); }
 [data-layout="wide"] .note.summoned .note-body { color: var(--ink); }
 
+/* preview on hover (wide.js: peek): the linked page, in the margin beside its link. Like a summoned note it
+   sits on the page colour over the notes and figures, which dim; no card, no frame. The page inside is cut
+   off at a fixed height and fades out at the bottom. Clicking anywhere on it opens the page. */
+.peek { display: none; }
+[data-layout="wide"] .peek { display: block; position: absolute; top: 0; z-index: 3; height: min(27rem, calc(100vh - 24px)); overflow: hidden; visibility: hidden; pointer-events: none; background: var(--page); box-shadow: 0 0 0 10px var(--page); }
+[data-layout="wide"] .peek.open { visibility: visible; pointer-events: auto; }
+[data-layout="wide"] [data-wide-root].summoning :is(.note, figure.plate).peek-host { opacity: 1; }
+.peek-body { display: block; width: 100%; }
+.peek-body.loading { position: absolute; inset: 0 auto auto 0; visibility: hidden; }
+iframe.peek-body { height: 100%; border: 0; background: var(--page); }
+.peek-go { position: absolute; inset: 0; z-index: 1; }
+.peek:not(.wiki)::after { content: ""; position: absolute; inset: auto 0 0; height: 5rem; pointer-events: none; background: linear-gradient(color-mix(in srgb, var(--page) 0%, transparent), var(--page)); }
+[data-layout="wide"] .peek.wiki { height: auto; max-height: min(27rem, calc(100vh - 24px)); }
+.peek-wiki { font-size: .82em; line-height: 1.5; color: var(--ink-soft); }
+.peek-wiki::after { content: ""; display: block; clear: both; }
+.peek-wiki p { margin: 0; }
+.peek-wiki img { float: right; width: 6.5em; height: auto; margin: .3em 0 .4em 1em; border: 1px solid var(--rule); }
+.peek-kicker { font-family: var(--display); font-size: .82em; letter-spacing: .2em; text-transform: uppercase; color: var(--muted); }
+.peek-wiki .peek-title { font-size: 1.3em; line-height: 1.2; font-weight: 600; font-variant-caps: small-caps; color: var(--ink); margin-top: .25em; }
+.peek-desc { font-style: italic; color: var(--muted); }
+.peek-wiki .peek-extract { margin-top: .5em; text-wrap: pretty; }
+@media (prefers-reduced-motion: reduce) {
+  [data-layout="wide"] [data-wide-root] :is(.note, figure.plate) { transition: none; }
+}
+/* the page inside a preview: it's loaded as <page>#peek with scripts off, so it's in its narrow layout, and
+   the empty #peek element at the top of <body> is the target. Trimmed to fit a margin: no running head,
+   no outer padding, a band of the cover, a smaller title. */
+#peek:target ~ .book { padding: 0; max-width: none; font-size: 15px; }
+#peek:target ~ .book .runhead { display: none; }
+#peek:target ~ .book .cover { margin: 0; }
+#peek:target ~ .book .cover img { height: 9.5rem; object-fit: cover; }
+#peek:target ~ .book .post-head { padding-block: 1.1rem 1rem; gap: .45rem; }
+#peek:target ~ .book .post-title { font-size: 1.5rem; }
+#peek:target ~ .book .titling { margin-top: .4rem; }
+
 /* the margin shows up all at once, already in place, instead of piece by piece */
 [data-layout="wide"] [data-wide-root]:not(.ready) :is(.note, figure.plate) { visibility: hidden; }
 

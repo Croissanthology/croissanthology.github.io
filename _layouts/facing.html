@@ -66,6 +66,7 @@
     </script>
 </head>
 <body class="{% if page.substack_url %}reader{% else %}home{% endif %}">
+<span id="peek" hidden></span>{% comment %} target of <page>#peek, the address previews load (wide.js: peek; facing.css) {% endcomment %}
 {{ content }}
 {% if dropcap == 'pixel' %}<script src="{{ '/javascript/pixcaps.js' | relative_url }}"></script>
 {% endif %}{% if dropcap == 'cats' %}<script src="{{ '/javascript/catcaps.js' | relative_url }}"></script>
