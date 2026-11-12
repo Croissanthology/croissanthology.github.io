@@ -223,7 +223,7 @@ def tweet(url, p):
             a.decompose()
     when = soup.select("blockquote > a")
     handle = (data.get("author_url") or "").rstrip("/").rsplit("/", 1)[-1]
-    return tidy({"kind": "tweet", "site": "X", "by": squash(data.get("author_name")), "handle": "@" + handle if handle else "",
+    return tidy({"kind": "tweet", "site": "Twitter", "by": squash(data.get("author_name")), "handle": "@" + handle if handle else "",
                  "date": squash(when[-1].get_text()) if when else "", "text": clip(para.get_text(), 1200),
                  "more": "with an image or video" if media else ""})
 
