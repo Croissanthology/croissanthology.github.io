@@ -133,8 +133,8 @@ h1, h2, h3 { margin: 0; font-weight: 400; text-wrap: balance; }
 /* ------------------------------------------------ reader */
 .runhead { display: flex; justify-content: space-between; gap: 1rem; font-family: var(--display); font-size: .72rem; letter-spacing: .2em; text-transform: uppercase; color: var(--muted); padding-bottom: .9rem; border-bottom: 1px solid var(--rule); }
 .runhead a { text-decoration: none; }
-.runhead a.home { color: var(--berry); }
-.runhead a.home:hover { color: var(--berry); text-decoration: none; }
+.runhead a.home { color: var(--ink); }  /* the site name in ink, so the drop cap is the one red mark on the page */
+.runhead a.home:hover { color: var(--ink); text-decoration: none; }
 .runhead span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 /* title block, gwern-style: centred small-caps title, a tiny grey line of metadata, the subtitle in italics */
 .post-head { padding-block: 2.6rem 2rem; display: flex; flex-direction: column; align-items: center; gap: .7rem; text-align: center; }
