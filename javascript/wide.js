@@ -23,8 +23,8 @@
  *
  * Peek (wide only, pointers that can hover): resting on a link to another page of this site shows
  * that page in the rail, level with the link, over the notes and figures, which dim just as they
- * do for a summon. The page is loaded in a sandboxed iframe with scripts off, so it arrives in its
- * narrow layout, and with #peek on its address, so it trims itself: cover, title, subtitle, opening lines. Wikipedia links get a short text summary
+ * do for a summon. The page is fetched and its cover, title, subtitle and opening paragraphs are
+ * set here in the margin (no iframe). Wikipedia links get a short text summary
  * in the same place. Nothing is fetched until the pointer has rested on a link.
  */
 (function () {
@@ -248,12 +248,17 @@
   var peek = null;        // what's showing: { root, link, host }
   var peekEl = null;      // the one box previews are shown in, made on first use
   var peekWait = null, peekTimer = 0, peekLeave = 0, peekSeq = 0, pointerY = 0;
-  var wiki = {};          // Wikipedia summaries already fetched, by API address
+  var fetched = {};       // previews already made, by the address they were fetched from
   var OURS = /^(www\.)?croissanthology\.com$|^croissanthology\.github\.io$/;
+
+  // where this page's links resolve from (normally just its own address)
+  function baseURL() {
+    try { return new URL(document.baseURI); } catch (e) { return location; }
+  }
 
   function samePage(path) {
     function norm(p) { return p.replace(/index\.html?$/, "").replace(/\/$/, ""); }
-    return norm(path) === norm(location.pathname);
+    return norm(path) === norm(baseURL().pathname) || norm(path) === norm(location.pathname);
   }
 
   // what, if anything, hovering this element should preview
@@ -271,10 +276,11 @@
       try { title = decodeURIComponent(u.pathname.slice(6)); } catch (e) { return null; }
       return { link: a, root: root, kind: "wiki", src: "https://" + w[1] + ".wikipedia.org/api/rest_v1/page/summary/" + encodeURIComponent(title) };
     }
-    var here = u.origin === location.origin || (OURS.test(u.hostname) && OURS.test(location.hostname));
+    var base = baseURL();
+    var here = u.origin === base.origin || (OURS.test(u.hostname) && OURS.test(base.hostname));
     if (!here || samePage(u.pathname)) return null;
     if (/\.[a-z0-9]+$/i.test(u.pathname) && !/\.html?$/i.test(u.pathname)) return null;  // images, PDFs, feeds
-    return { link: a, root: root, kind: "page", src: location.origin + u.pathname + u.search };
+    return { link: a, root: root, kind: "page", src: base.origin + u.pathname + u.search };
   }
 
   function peekBox(root) {
@@ -298,43 +304,108 @@
     peekEl.style.width = r.width + "px";
   }
 
-  // the page inside the iframe wears the reader's theme. This site's own pages trim themselves for the
-  // margin (facing.css, #peek:target); older pages keep their look but sit on this page's paper.
-  function dress(frame) {
-    try {
-      var d = frame.contentDocument, own = !!d.getElementById("peek");
-      var t = doc.getAttribute("data-theme");
-      if (!own && !t) t = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";  // older pages always carry one
-      if (t) d.documentElement.setAttribute("data-theme", t);
-      if (own) return;
-      var st = d.createElement("style");
-      st.textContent = "html,body{overflow:hidden;background:" + getComputedStyle(doc).getPropertyValue("--page").trim() + "!important}";
-      d.head.appendChild(st);
-    } catch (e) {}  // can't reach in: the page still shows, in the device's theme
+  // a copy of a node from a fetched page, safe to set in this one: nothing that runs, no notes or figures,
+  // no ids to clash with this page's, and every address made absolute (the page's own were relative to it)
+  function borrow(node, from) {
+    var el = document.importNode(node, true);
+    Array.prototype.slice.call(el.querySelectorAll("script, style, link, iframe, object, embed, aside, figure, .fn-ref, .fig-refs, .pixcap, .catcap")).forEach(function (x) { x.remove(); });
+    Array.prototype.slice.call(el.querySelectorAll("sup")).forEach(function (x) { if (x.querySelector("a")) x.remove(); });  // footnote numbers on older pages
+    [el].concat(Array.prototype.slice.call(el.querySelectorAll("*"))).forEach(function (x) {
+      Array.prototype.slice.call(x.attributes).forEach(function (at) {
+        if (/^on|^id$|^style$|^srcset$/i.test(at.name)) x.removeAttribute(at.name);
+      });
+      ["src", "href"].forEach(function (k) {
+        var v = x.getAttribute(k);
+        if (!v) return;
+        try {
+          var abs = new URL(v, from);
+          if (!/^https?:$/.test(abs.protocol)) throw 0;
+          x.setAttribute(k, abs.href);
+        } catch (e) { x.removeAttribute(k); }
+      });
+      if (x.tagName === "A") x.tabIndex = -1;
+    });
+    return el;
   }
 
-  // call back once the framed page can be shown: parsed and styled, without waiting for every image in it
-  function whenReady(frame, cb) {
-    var done = false, poll = 0;
-    function finish() {
-      if (done) return;
-      done = true;
-      clearInterval(poll);
-      cb();
+  // the preview of one of this site's pages, built from its HTML: cover, title, date, subtitle, opening paragraphs
+  function pageCard(html, from) {
+    var d = new DOMParser().parseFromString(html, "text/html");
+    var card = document.createElement("div");
+    card.className = "peek-page";
+    function add(cls, src, asText) {
+      if (!src || !src.textContent.trim()) return null;
+      var el = document.createElement("p");
+      el.className = cls;
+      if (asText) el.textContent = src.textContent.trim();
+      else { var b = borrow(src, from); while (b.firstChild) el.appendChild(b.firstChild); }
+      card.appendChild(el);
+      return el;
     }
-    frame.addEventListener("load", finish);
-    poll = setInterval(function () {
-      if (!frame.isConnected) { done = true; clearInterval(poll); return; }
-      try {
-        var d = frame.contentDocument;
-        if (!d || d.readyState === "loading" || !d.body || d.URL === "about:blank") return;
-        var sheets = d.querySelectorAll('link[rel="stylesheet"]');
-        for (var i = 0; i < sheets.length; i++) {
-          if (sheets[i].href.indexOf(location.origin) === 0 && sheets[i].media !== "print" && !sheets[i].sheet) return;
+    function opening(ps) {
+      var text = document.createElement("div"), n = 0;
+      text.className = "peek-text";
+      for (var i = 0; i < ps.length && n < 3; i++) {
+        if (ps[i].textContent.trim().length < 2) continue;
+        var p = borrow(ps[i], from);
+        p.removeAttribute("class");
+        text.appendChild(p);
+        n++;
+      }
+      if (n) card.appendChild(text);
+      return n;
+    }
+    var post = d.querySelector(".book.post"), home = d.querySelector(".book .titling");
+    if (post) {
+      var cover = post.querySelector(".cover img");
+      if (cover && cover.getAttribute("src")) {
+        try {
+          var img = document.createElement("img");
+          img.className = "peek-cover";
+          img.alt = "";
+          img.src = new URL(cover.getAttribute("src"), from).href;
+          card.appendChild(img);
+        } catch (e) {}
+      }
+      if (!add("peek-title", post.querySelector(".post-title"), true)) return null;
+      add("peek-meta", post.querySelector(".post-head time"), true);
+      add("peek-dek", post.querySelector(".dek"));
+      opening(post.querySelectorAll(".flow > p"));
+    } else if (home) {
+      add("peek-title", home.querySelector("h1"), true);
+      if (!opening(d.querySelectorAll(".intro p"))) return null;
+    } else {
+      // an older page: its first heading and opening paragraphs, or nothing if it has no text to show
+      var where = d.querySelector("article, main") || d.body;
+      var ps = Array.prototype.slice.call(where.querySelectorAll("p")).filter(function (p) {
+        return !p.closest("nav, header, footer, aside, figure, blockquote, noscript, .sidenote, .marginnote") && p.textContent.trim().length > 40;
+      });
+      var h = d.querySelector("h1");
+      if (!add("peek-title", h, true) && d.title) {
+        var t = document.createElement("p");
+        t.className = "peek-title";
+        t.textContent = d.title.replace(/\s*[-·|]\s*Croissanthology\s*$/, "");
+        card.appendChild(t);
+      }
+      if (!opening(ps)) return null;
+    }
+    return card;
+  }
+
+  // a page's HTML and the address it really came from; follows one redirect stub (jekyll-redirect-from)
+  function getPage(src, hop) {
+    return fetch(src, { credentials: "same-origin" }).then(function (r) {
+      if (!r.ok) throw 0;
+      var from = r.url || src;
+      return r.text().then(function (html) {
+        var m = !hop && html.length < 3000 && /http-equiv=["']?refresh["']?[^>]*url=([^"'>\s]+)/i.exec(html);
+        if (m) {
+          var to = new URL(m[1], from);
+          if (to.origin === new URL(from).origin) return getPage(to.href, true);
         }
-        finish();
-      } catch (e) { clearInterval(poll); }  // can't look inside: the load event will do
-    }, 40);
+        return { html: html, from: from };
+      });
+    });
   }
 
   function wikiCard(j) {
@@ -368,36 +439,28 @@
     Array.prototype.slice.call(box.querySelectorAll(".loading")).forEach(function (el) { el.remove(); });
     var cur = box.querySelector(".peek-body");
     if (cur && cur.dataset.src === t.src) { showPeek(t, cur); return; }
-    if (!peek) fitPeek(t.root);  // so the page is laid out at the rail's width while it loads
     function ready(body) {
       if (seq !== peekSeq || peekWait !== t.link || !body.isConnected) { body.remove(); return; }
       showPeek(t, body);
     }
-    if (t.kind === "page") {
-      var frame = document.createElement("iframe");
-      frame.className = "peek-body loading";
-      frame.dataset.src = t.src;
-      frame.setAttribute("sandbox", "allow-same-origin");  // no scripts; same-origin only so dress() can reach in
-      frame.setAttribute("scrolling", "no");
-      frame.tabIndex = -1;
-      frame.title = "Preview";
-      frame.src = t.src + "#peek";  // lets the page's own stylesheet know it's being shown as a preview
-      box.insertBefore(frame, box.firstChild);
-      whenReady(frame, function () { dress(frame); ready(frame); });
-    } else {
-      var got = wiki[t.src] || (wiki[t.src] = fetch(t.src, { headers: { Accept: "application/json" } }).then(function (r) {
-        if (!r.ok) throw 0;
-        return r.json();
-      }));
-      got.then(function (j) {
-        if (seq !== peekSeq || peekWait !== t.link || !j || !j.extract) return;
-        var card = wikiCard(j);
-        card.classList.add("peek-body", "loading");
-        card.dataset.src = t.src;
-        box.insertBefore(card, box.firstChild);
-        ready(card);
-      }).catch(function () {});
+    var got = fetched[t.src];
+    if (!got) {
+      got = fetched[t.src] = t.kind === "page"
+        ? getPage(t.src).then(function (p) { return pageCard(p.html, p.from); })
+        : fetch(t.src, { headers: { Accept: "application/json" } }).then(function (r) {
+            if (!r.ok) throw 0;
+            return r.json();
+          }).then(function (j) { return j && j.extract ? wikiCard(j) : null; });
+      got.catch(function () { delete fetched[t.src]; });  // a failed fetch shows nothing, and may be tried again
     }
+    got.then(function (made) {
+      if (!made || seq !== peekSeq || peekWait !== t.link) return;
+      var card = made.cloneNode(true);
+      card.classList.add("peek-body", "loading");
+      card.dataset.src = t.src;
+      box.insertBefore(card, box.firstChild);
+      ready(card);
+    }).catch(function () {});
   }
 
   function showPeek(t, body) {
