@@ -344,8 +344,8 @@
       name.className = "peek-name";
       open.className = "peek-open";
       open.textContent = "open ↗";
+      bar.appendChild(open);  // the way out comes first, nearest the text
       bar.appendChild(name);
-      bar.appendChild(open);
       peekEl.appendChild(bar);
     }
     if (peekEl.parentNode !== root) root.appendChild(peekEl);
