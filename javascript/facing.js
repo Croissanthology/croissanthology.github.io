@@ -26,3 +26,14 @@
     apply(b.dataset.mode);
   });
 })();
+
+/* Links that leave the site open in a new tab, so the page you were reading stays where it was.
+   Links between posts still turn the page in place. */
+(function () {
+  "use strict";
+  document.querySelectorAll("a[href]").forEach(function (a) {
+    if (!/^https?:$/.test(a.protocol) || a.origin === location.origin || a.target) return;
+    a.target = "_blank";
+    a.rel = (a.rel ? a.rel + " " : "") + "noopener";
+  });
+})();
