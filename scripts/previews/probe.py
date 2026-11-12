@@ -32,10 +32,35 @@ show("profile page", "https://x.com/gwern")
 show("x robots", "https://x.com/robots.txt")
 for u in ("https://www.astralcodexten.com/p/against-against-handover", "https://www.theargumentmag.com/p/against-the-smartphone-theory-of", "https://importai.substack.com/p/import-ai-476-creativity-and-rsi", "https://thezvi.substack.com/p/claude-opus-45-is-the-best-model"):
     show("substack page", u)
-show("substack api", "https://www.astralcodexten.com/api/v1/posts/against-against-handover", headers={"Origin": "https://croissanthology.com"}, save="substack-post.json")
+r = show("substack api", "https://www.astralcodexten.com/api/v1/posts/against-against-handover", headers={"Origin": "https://croissanthology.com"})
+try:
+    d = r.json(); print("   substack keys:", sorted(d.keys())); print("   body_html len", len(d.get("body_html") or ""), "truncated:", repr(d.get("truncated_body_text")), "desc:", repr(d.get("description")))
+except Exception as e: print("   substack json error", e)
 show("substack robots", "https://www.astralcodexten.com/robots.txt", save="substack-robots.txt")
-show("substack embed", "https://www.astralcodexten.com/embed/p/against-against-handover")
+show("substack embed", "https://www.astralcodexten.com/embed/p/against-against-handover", save="substack-embed.html")
+show("tweet embed page", "https://platform.twitter.com/embed/Tweet.html?id=2110395820537217372&theme=dark&dnt=true", save="tweet-embed.html")
+show("platform robots", "https://platform.twitter.com/robots.txt")
+show("syndication robots", "https://syndication.twitter.com/robots.txt")
+show("publish robots", "https://publish.twitter.com/robots.txt")
+show("wiki summary", "https://en.wikipedia.org/api/rest_v1/page/summary/Toy_Story", headers={"Origin": "https://croissanthology.com"})
+show("wiki html redirect 2", "https://en.wikipedia.org/api/rest_v1/page/html/Jiro_dreams_of_sushi?redirect=true", headers={"Origin": "https://croissanthology.com"})
 show("wiki html", "https://en.wikipedia.org/api/rest_v1/page/html/Toy_Story", headers={"Origin": "https://croissanthology.com"}, save="wiki-Toy_Story.html")
 show("wiki html 2", "https://en.wikipedia.org/api/rest_v1/page/html/AT_Protocol", headers={"Origin": "https://croissanthology.com"}, save="wiki-AT_Protocol.html")
 show("wiki html redirect", "https://en.wikipedia.org/api/rest_v1/page/html/Mona_Lisa_(painting)?redirect=true", headers={"Origin": "https://croissanthology.com"})
 show("lesswrong", "https://www.lesswrong.com/posts/YoFLDnAmMoFj76HPN/preview-on-hover")
+
+# hand the saved answers back through the log (this machine's artifacts can't be reached from where they're read)
+import base64, gzip, re
+txt = open(f"{out}/substack-embed.html").read()
+print("   substack embed text:", re.sub(r"\s+", " ", re.sub(r"<script.*?</script>|<style.*?</style>|<[^>]+>", " ", txt, flags=re.S))[:900])
+txt = open(f"{out}/profile-gwern.html").read()
+m = re.search(r'__NEXT_DATA__" type="application/json">(.*?)</script>', txt, re.S)
+print("   profile next data:", (m.group(1)[:1500] if m else "none"), "| len", len(txt))
+for name in ("tweet-2110395820537217372.json", "tweet-1989854621532369121.json", "tweet-2119399591602753703.json"):
+    print("   ", name, open(f"{out}/{name}").read()[:1800])
+for name in ("wiki-Toy_Story.html", "wiki-AT_Protocol.html"):
+    b = base64.b64encode(gzip.compress(open(f"{out}/{name}", "rb").read(), 9)).decode()
+    print(f"@@BEGIN {name}")
+    for i in range(0, len(b), 4000):
+        print("@@" + b[i:i + 4000])
+    print(f"@@END {name}")
