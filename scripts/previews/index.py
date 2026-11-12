@@ -10,6 +10,7 @@ For each link it stores only what a preview needs:
   GitHub         repo description, or an issue's title and opening (GitHub's API)
   anything else  title, description and image from the page's own <meta> tags, and whether the
                  page allows being shown inside another page (X-Frame-Options / frame-ancestors)
+  images         a link straight to an image is just noted as one
 
 Files:
   _previews/links.json    everything it knows, by link, with the date it last looked (not published)
@@ -138,7 +139,7 @@ def https_only(url):
 
 
 def tidy(rec):
-    return {k: v for k, v in rec.items() if v not in ("", None, [], {})}
+    return {k: v for k, v in rec.items() if v not in ("", None, False, [], {})}
 
 
 def can_frame(headers):
@@ -305,14 +306,17 @@ def page(url, p):
 
     title = meta("og:title", "twitter:title") or squash(soup.title.get_text() if soup.title else "")
     host = p.hostname.removeprefix("www.")
-    if frame and urllib.parse.urlsplit(r.url).scheme == "https":
-        return {"kind": "page", "frame": True}            # the box will show the page itself; nothing else needed
-    if not title:
+    frame = frame and urllib.parse.urlsplit(r.url).scheme == "https"
+    if not title and not frame:
         raise Skip("no title, and it can't be framed")
     img = meta("og:image", "og:image:secure_url", "twitter:image")
     img = https_only(urllib.parse.urljoin(r.url, img)) if img else ""
-    return tidy({"kind": "page", "site": meta("og:site_name") or host, "title": clip(title, 200),
-                 "desc": clip(meta("og:description", "description", "twitter:description"), 500),
+    if re.search(r"favicon|logo|\.(svg|ico)(\?|$)", img, re.I):
+        img = ""                                          # a site's badge isn't a picture of the page
+    desc = clip(meta("og:description", "description", "twitter:description"), 500)
+    # frame: the box can show the page itself. The card is kept anyway, for when it turns out it can't.
+    return tidy({"kind": "page", "frame": frame, "site": meta("og:site_name") or host, "title": clip(title, 200),
+                 "desc": desc if desc.lower() != title.lower() else "",
                  "by": meta("author", "article:author") if not meta("author", "article:author").startswith("http") else "",
                  "date": nice_date(meta("article:published_time", "date")), "img": [img] if img else None})
 
@@ -364,6 +368,8 @@ def due(entry, url):
         age = (TODAY - datetime.date.fromisoformat(entry["at"])).days
     except (KeyError, ValueError):
         return True
+    if entry.get("rec") == {"kind": "page", "frame": True}:
+        return True                             # stored before framed pages kept their title too
     spread = zlib.crc32(url.encode()) % 10      # so they don't all come due on the same morning
     return age >= (FRESH_DAYS + spread if entry.get("rec") else RETRY_DAYS + spread % 3)
 
