@@ -1,7 +1,7 @@
 {
 "https://bloodontheclocktower.com/": {"kind":"page","site":"The Pandemonium Institute","title":"Blood on the Clocktower","desc":"Home of social deduction game Blood on the Clocktower. Find out more information about the game, make a pre-order, access the game's Wiki and Script Tool, read the latest news, and learn more about the team behind the game."},
-"https://gradual-disempowerment.ai/": {"kind":"page","frame":true},
-"https://metr.org/time-horizons/": {"kind":"page","frame":true},
-"https://waitbutwhy.com/2015/01/artificial-intelligence-revolution-1.html": {"kind":"page","frame":true},
-"https://www.amazon.com/dp/B07TZP8WWZ?plpRedirect=mhFallback&ref=clp_hp_h_pc": {"kind":"page","frame":true}
+"https://gradual-disempowerment.ai/": {"kind":"page","frame":true,"site":"gradual-disempowerment.ai","title":"Gradual Disempowerment"},
+"https://metr.org/time-horizons/": {"kind":"page","frame":true,"site":"metr.org","title":"Task-Completion Time Horizons of Frontier AI Models","desc":"Our measurements of the time horizons for public frontier language models."},
+"https://waitbutwhy.com/2015/01/artificial-intelligence-revolution-1.html": {"kind":"page","frame":true,"site":"Wait But Why","title":"The AI Revolution: The Road to Superintelligence","desc":"Part 1 of 2: \"The Road to Superintelligence\". Artificial Intelligence — the topic everyone in the world should be talking about.","by":"Tim Urban","date":"22 Jan 2015","img":["https://waitbutwhy.com/wp-content/uploads/2015/01/G1.jpg"]},
+"https://www.amazon.com/dp/B07TZP8WWZ?plpRedirect=mhFallback&ref=clp_hp_h_pc": {"kind":"page","site":"amazon.com","title":"Amazon.com: Unitree G1 Humanoid Robot（No Secondary Development） : Toys & Games","desc":"Buy Unitree G1 Humanoid Robot（No Secondary Development）: Robots - Amazon.com ✓ FREE DELIVERY possible on eligible purchases"}
 }
