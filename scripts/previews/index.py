@@ -459,6 +459,8 @@ def due(entry, url):
         return True
     if entry.get("v", 1) < VERSION and ((entry.get("rec") or {}).get("kind") in ("tweet", "post") or entry.get("skip") == "not a tweet"):
         return True                             # stored before tweets kept their pictures and profiles got a card
+    if (entry.get("rec") or {}).get("kind") == "profile":
+        return True                             # made from what's already known, without asking anyone: always fresh
     spread = zlib.crc32(url.encode()) % 10      # so they don't all come due on the same morning
     return age >= (FRESH_DAYS + spread if entry.get("rec") else RETRY_DAYS + spread % 3)
 
@@ -493,7 +495,9 @@ def main():
 
     def learn(rec):
         if rec.get("kind") == "tweet" and rec.get("site") == "Twitter" and rec.get("handle"):
-            people.setdefault(rec["handle"].lstrip("@").lower(), {k: rec.get(k) for k in ("by", "handle", "avatar")})
+            who = rec["handle"].lstrip("@").lower()
+            if rec.get("avatar") or who not in people:
+                people[who] = {k: rec.get(k) for k in ("by", "handle", "avatar")}
     for e in master.values():
         learn(e.get("rec") or {})
 
