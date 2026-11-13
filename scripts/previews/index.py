@@ -4,8 +4,10 @@ something better than "refused to connect".
 
 For each link it stores only what a preview needs:
   Wikipedia      the article's lead section, description and a small thumbnail (Wikipedia's API)
-  tweets         text, author and date (publish.twitter.com/oembed, the official embed service)
-  Bluesky posts  text, author, date, images (Bluesky's public API)
+  tweets         text, author, avatar, date, pictures, quoted tweet (the service Twitter's own embed
+                 script asks; if that fails, publish.twitter.com/oembed, which has the words only)
+  profiles       Twitter gives other sites no bio: the handle, plus name and avatar if a tweet has shown them
+  Bluesky posts  text, author, avatar, date, images (Bluesky's public API)
   Substack       title, subtitle, cover, author, date, opening (Substack's public post API)
   GitHub         repo description, or an issue's title and opening (GitHub's API)
   anything else  title, description and image from the page's own <meta> tags, and whether the
@@ -51,6 +53,7 @@ GAP = 1.5                           # seconds between two requests to the same s
 TIMEOUT = 15
 MAX_PAGE = 400_000                  # bytes of a page read for its <meta> tags
 TODAY = datetime.date.today()
+VERSION = 2                         # raise it when what's stored for tweets or posts changes, and they're looked up again
 
 session = requests.Session()
 session.headers.update({"User-Agent": UA, "Accept-Language": "en"})
@@ -202,10 +205,72 @@ def wikipedia(url, p):
                  "html": lead, "img": img})
 
 
+def embed_token(tweet_id):
+    """The token Twitter's own embed script sends with a tweet's number: (id / 1e15 * pi) in base 36, zeros and dot dropped."""
+    x = int(tweet_id) / 1e15 * 3.141592653589793
+    whole, frac, digits = int(x), x - int(x), "0123456789abcdefghijklmnopqrstuvwxyz"
+    out = ""
+    while whole:
+        whole, r = divmod(whole, 36)
+        out = digits[r] + out
+    for _ in range(8):
+        frac *= 36
+        out += digits[int(frac)]
+        frac -= int(frac)
+    return out.replace("0", "") or "a"
+
+
+def tweet_text(d):
+    """A tweet's words: the picture's short link dropped, other short links spelled out."""
+    text = d.get("text") or ""
+    ents = d.get("entities") or {}
+    for m in (ents.get("media") or []) + (d.get("mediaDetails") or []):
+        text = text.replace(m.get("url") or "\0", "")
+    for u in ents.get("urls") or []:
+        text = text.replace(u.get("url") or "\0", u.get("display_url") or u.get("expanded_url") or "")
+    text = re.sub(r"https://t\.co/\w+\s*$", "", text)       # what's left at the end points at a quoted tweet or a card
+    return html.unescape(text).strip()
+
+
+def tweet_who(d):
+    u = d.get("user") or {}
+    return {"by": squash(u.get("name")), "handle": "@" + u["screen_name"] if u.get("screen_name") else "",
+            "avatar": https_only(u.get("profile_image_url_https"))}
+
+
 def tweet(url, p):
     m = re.fullmatch(r"/([A-Za-z0-9_]+)/status(?:es)?/(\d+).*", p.path)
     if not m:
-        raise Skip("not a tweet")
+        return profile(url, p)
+    # First the service Twitter's own embed script asks (cdn.syndication.twimg.com): it has the pictures,
+    # the quoted tweet and the avatar. If that fails, the older oEmbed service, which has the words only.
+    try:
+        d = get("https://cdn.syndication.twimg.com/tweet-result?" + urllib.parse.urlencode(
+            {"id": m.group(2), "token": embed_token(m.group(2)), "lang": "en"}), check_robots=False).json()
+        if d.get("__typename") != "Tweet" or not d.get("user"):
+            raise Skip("no tweet in the answer")
+    except (Skip, ValueError):
+        return tweet_oembed(m)
+    media = d.get("mediaDetails") or []
+    shots = [https_only(x.get("media_url_https")) for x in media if x.get("type") == "photo"]
+    moving = [x for x in media if x.get("type") in ("video", "animated_gif")]
+    poster = https_only(moving[0].get("media_url_https")) if moving else ""
+    q = d.get("quoted_tweet") or {}
+    quoted = tidy(dict(tweet_who(q), text=clip(tweet_text(q), 500), avatar="")) if q.get("user") else None
+    text = tweet_text(d)
+    if d.get("note_tweet") and not text.endswith("…"):
+        text += "…"                                           # a long tweet: the embed service only gives its opening
+    card = (d.get("card") or {}).get("binding_values") or {}
+    link = tidy({"title": squash((card.get("title") or {}).get("string_value")),
+                 "site": squash((card.get("domain") or {}).get("string_value"))})
+    return tidy(dict(tweet_who(d), kind="tweet", site="Twitter", date=nice_date(d.get("created_at")), text=clip(text, 1500),
+                     replying="@" + d["in_reply_to_screen_name"] if d.get("in_reply_to_screen_name") else "",
+                     imgs=[x for x in shots if x][:4], poster=poster,
+                     video="GIF" if moving and moving[0].get("type") == "animated_gif" else "video" if moving else "",
+                     quoted=quoted, link=link if link.get("title") else None))
+
+
+def tweet_oembed(m):
     canon = f"https://twitter.com/{m.group(1)}/status/{m.group(2)}"
     api = "https://publish.twitter.com/oembed?" + urllib.parse.urlencode(
         {"url": canon, "omit_script": "1", "dnt": "1", "hide_thread": "1", "lang": "en"})
@@ -228,6 +293,22 @@ def tweet(url, p):
                  "more": "with an image or video" if media else ""})
 
 
+NOT_PEOPLE = {"home", "i", "search", "explore", "settings", "hashtag", "intent", "share", "compose", "messages",
+              "notifications", "login", "signup", "tos", "privacy", "about", "jobs", "download"}
+people = {}     # handle -> name and avatar, from the tweets already looked up (filled in by main)
+
+
+def profile(url, p):
+    """Someone's profile. Twitter gives other sites no bio, so the card is who they are, as far as their
+    tweets linked from the posts have shown, and the way to the profile."""
+    m = re.fullmatch(r"/([A-Za-z0-9_]{1,15})/?", p.path)
+    if not m or m.group(1).lower() in NOT_PEOPLE:
+        raise Skip("not a tweet")
+    seen = people.get(m.group(1).lower(), {})
+    return tidy({"kind": "profile", "site": "Twitter", "by": seen.get("by"), "handle": "@" + (seen.get("handle") or m.group(1)).lstrip("@"),
+                 "avatar": seen.get("avatar")})
+
+
 def bluesky(url, p):
     m = re.fullmatch(r"/profile/([^/]+)/post/([A-Za-z0-9]+)/?", p.path)
     if not m:
@@ -240,6 +321,7 @@ def bluesky(url, p):
         raise Skip("empty post")
     imgs = [https_only(i.get("thumb")) for i in (post.get("embed") or {}).get("images", [])]
     return tidy({"kind": "tweet", "site": "Bluesky", "by": squash(author.get("displayName")) or author.get("handle"),
+                 "avatar": https_only(author.get("avatar")),
                  "handle": "@" + author["handle"] if author.get("handle") else "", "date": nice_date(record.get("createdAt")),
                  "text": clip(record.get("text"), 1200), "imgs": [i for i in imgs if i][:4]})
 
@@ -252,9 +334,16 @@ def substack(url, p):
     if not data.get("title"):
         raise Skip("no title")
     by = ", ".join(b.get("name", "") for b in data.get("publishedBylines") or [] if b.get("name"))
+    opening = data.get("truncated_body_text") or ""
+    if len(opening) < 80 and data.get("body_html"):
+        # no excerpt given: take the first few paragraphs' worth (only the opening is kept, never the article)
+        paras = [squash(x.get_text()) for x in BeautifulSoup(data["body_html"], "html.parser").find_all("p", limit=12)]
+        opening = "\n".join(x for x in paras if len(x) > 20)
+    if len(opening) < 20 and len(squash(data.get("description"))) > 20:
+        opening = data["description"]
     return tidy({"kind": "post", "site": p.hostname.removeprefix("www."), "title": squash(data.get("title")),
                  "desc": squash(data.get("subtitle")), "by": by, "date": nice_date(data.get("post_date")),
-                 "text": clip(data.get("truncated_body_text") or data.get("description")),
+                 "text": clip(opening),
                  "img": [https_only(data.get("cover_image"))] if https_only(data.get("cover_image")) else None})
 
 
@@ -368,8 +457,10 @@ def due(entry, url):
         age = (TODAY - datetime.date.fromisoformat(entry["at"])).days
     except (KeyError, ValueError):
         return True
-    if entry.get("rec") == {"kind": "page", "frame": True}:
-        return True                             # stored before framed pages kept their title too
+    if entry.get("v", 1) < VERSION and ((entry.get("rec") or {}).get("kind") in ("tweet", "post") or entry.get("skip") == "not a tweet"):
+        return True                             # stored before tweets kept their pictures and profiles got a card
+    if (entry.get("rec") or {}).get("kind") == "profile":
+        return True                             # made from what's already known, without asking anyone: always fresh
     spread = zlib.crc32(url.encode()) % 10      # so they don't all come due on the same morning
     return age >= (FRESH_DAYS + spread if entry.get("rec") else RETRY_DAYS + spread % 3)
 
@@ -396,16 +487,31 @@ def main():
     todo = [] if args.offline else [u for u in wanted if due(master.get(u), u)][:args.limit]
     print(f"{len(posts)} posts, {len(wanted)} outside links, {len(todo)} to look up", flush=True)
 
+    # tweets before profiles, so a profile's card can borrow the name and avatar its tweets came with
+    def is_profile(u):
+        p = urllib.parse.urlsplit(u)
+        return (p.hostname or "").removeprefix("www.") in ("x.com", "twitter.com") and "/status" not in p.path
+    todo.sort(key=is_profile)
+
+    def learn(rec):
+        if rec.get("kind") == "tweet" and rec.get("site") == "Twitter" and rec.get("handle"):
+            who = rec["handle"].lstrip("@").lower()
+            if rec.get("avatar") or who not in people:
+                people[who] = {k: rec.get(k) for k in ("by", "handle", "avatar")}
+    for e in master.values():
+        learn(e.get("rec") or {})
+
     counts, skips = {}, {}
     for i, url in enumerate(todo, 1):
         try:
             rec = look_up(url)
-            master[url] = {"at": TODAY.isoformat(), "rec": rec}
+            master[url] = {"at": TODAY.isoformat(), "v": VERSION, "rec": rec}
+            learn(rec)
             what = rec["kind"] + (" (framed)" if rec.get("frame") else "")
             counts[what] = counts.get(what, 0) + 1
             print(f"[{i}/{len(todo)}] {what}: {url}", flush=True)
         except Skip as why:
-            master[url] = {"at": TODAY.isoformat(), "skip": str(why)}
+            master[url] = {"at": TODAY.isoformat(), "v": VERSION, "skip": str(why)}
             skips[str(why)] = skips.get(str(why), 0) + 1
             print(f"[{i}/{len(todo)}] skipped, {why}: {url}", flush=True)
         except Exception as e:      # one odd page mustn't stop the rest

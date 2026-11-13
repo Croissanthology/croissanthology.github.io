@@ -1,21 +1,19 @@
 {
  "date": "2026-11-12",
- "looked_up": 115,
+ "looked_up": 6,
  "this_run": {
-  "page (framed)": 112,
-  "page": 2
+  "profile": 6
  },
- "skipped_this_run": {
-  "couldn't connect (ConnectionError)": 1
- },
+ "skipped_this_run": {},
  "all_links": {
   "tweet": 52,
   "wiki": 56,
   "page": 42,
   "page (framed)": 112,
   "post": 10,
-  "no preview": 53,
+  "no preview": 47,
   "repo": 4,
+  "profile": 6,
   "image": 4
  },
  "sites_that_refused": []
