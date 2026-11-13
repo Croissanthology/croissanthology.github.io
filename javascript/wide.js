@@ -25,13 +25,18 @@
  * the link, over the notes and figures, which dim just as they do for a summon. What's in the box
  * depends on the link:
  *   another page of this site, or a site that allows it    the real page, in an iframe that scrolls
- *   Wikipedia                                               the article's lead, set in this site's type
- *   a tweet, a Bluesky post, a Substack post, GitHub        a small card: who, when, what it says
+ *   Wikipedia                                               the lead at once, then the whole article, fetched
+ *                                                           from Wikipedia and set in this site's type
+ *   a tweet, a Bluesky post, a profile                      the same card tweets get inside a post
+ *   a Substack post, GitHub                                 a small card: who, when, how it opens
  *   an image                                                the image
  *   a page that refuses to be framed                        its title, description and picture
  * The cards come from previews/<post>.json, which scripts/previews/index.py builds ahead of time
  * (it also notes which pages can be framed). That file is fetched the first time it's needed.
- * Nothing loads until the pointer has rested on a link.
+ * A link inside the box (in a Wikipedia article, or in one of this site's pages shown there) opens
+ * right under it, the two sharing the box. Go deeper and the pair slides along: always the pane you
+ * came from and the one you opened, with "back" to step up. Nothing loads until the pointer has
+ * rested on a link.
  */
 (function () {
   "use strict";
@@ -264,11 +269,21 @@
   var OURS = /^(www\.)?croissanthology\.com$|^croissanthology\.github\.io$/;
   var IMAGES = /\.(png|jpe?g|gif|webp|avif)$/i;
   var FILES = /\.(svg|ico|pdf|zip|gz|mp3|m4a|wav|ogg|mp4|mov|webm|json|xml|rss|csv|txt|epub|docx?|xlsx?|pptx?)$/i;
+  // what a Wikipedia article is shown without: boxes, tables, pictures, footnote marks, and its closing lists
+  var WIKI_JUNK = "style, link, meta, script, table, figure, img, audio, video, .infobox, .navbox, .sidebar, .hatnote, .ambox, " +
+    ".metadata, .mw-editsection, .mw-ref, .reference, .reflist, .refbegin, .noprint, .mw-empty-elt, .thumb, .gallery, .navbar, .shortdescription";
+  var WIKI_ENDS = /^(see also|notes|references|footnotes|citations|sources|works cited|bibliography|further reading|external links)$/i;
+  var WIKI_OTHER = /^(File|Special|Category|Help|Talk|Wikipedia|User|Template|Portal|Draft|Module|MediaWiki):/i;
 
   var peek = null;        // what's showing: { root, link, host }
   var peekEl = null;      // the one box, made on first use and reused
-  var peekWait = null, peekTimer = 0, peekLeave = 0, pointerY = 0;
-  var known = null;       // this post's previews file, once asked for (a promise)
+  var peekWait = null, peekTimer = 0, peekLeave = 0, pointerY = 0, asked = 0;
+  var swapped = false;    // the box's contents just changed under the pointer; where the pointer is isn't known until it moves
+  var deep = false;       // the box has held two panes since it opened
+  var stale = false, anchor = null;  // after such a change, a link that lands under a still pointer mustn't open: wait for the pointer to move
+  var trail = [];         // what the box holds, oldest first; the last two are shown: { pane, body, name, href, target, rel }
+  var files = {};         // previews files already asked for, by address (promises)
+  var articles = {};      // Wikipedia articles already fetched (promises)
 
   // where this page's links resolve from (normally just its own address)
   function baseURL() {
@@ -282,24 +297,23 @@
 
   function tidy(text) { return (text || "").replace(/\s+/g, " ").trim(); }
 
-  // what the indexer found for this post's links, by href; fetched once, on the first hover that needs it
-  function previews(root) {
-    if (!known) {
-      var at = root.getAttribute("data-previews");
-      known = !at ? Promise.resolve({}) : fetch(new URL(at, baseURL()).href)
-        .then(function (r) { return r.ok ? r.json() : {}; })
-        .catch(function () { return {}; });
+  // what the indexer found for a post's links, by href; fetched once, on the first hover that needs it
+  function previewsAt(at) {
+    if (!at) return Promise.resolve({});
+    if (!files[at]) {
+      files[at] = fetch(at).then(function (r) { return r.ok ? r.json() : {}; }).catch(function () { return {}; });
     }
-    return known;
+    return files[at];
   }
 
-  // what hovering this element might show: { link, root, ours, src, name, image }
+  function previewsOf(root) {
+    var at = root.getAttribute("data-previews");
+    return at ? new URL(at, baseURL()).href : "";
+  }
+
+  // what a link might show: { link, root, ours, src, name, image, wiki, short }
   // (src is the address to frame, or "" when the page can't be framed and only a card will do)
-  function peekTarget(t) {
-    var a = t && t.closest && t.closest("a[href]");
-    if (!a || a.hasAttribute("download") || a.closest(".peek, .runhead, .fn-ref")) return null;
-    var root = a.closest("[data-wide-root]");
-    if (!root || !root.querySelector(".rail")) return null;
+  function targetOf(a, root) {
     var u;
     try { u = new URL(a.href); } catch (e) { return null; }
     if (u.protocol !== "http:" && u.protocol !== "https:") return null;
@@ -318,12 +332,19 @@
     } else if (u.protocol !== "https:" || FILES.test(u.pathname)) {
       // a plain http page can't be shown inside an https one, and a file isn't a page
     } else if ((m = /^([a-z-]+)\.(?:m\.)?(wikipedia|wiktionary)\.org$/.exec(u.hostname))) {
-      // Wikipedia not looked up yet, and Wiktionary: the phone version, which fits a narrow box
+      // the phone version fits a narrow box: Wiktionary always gets it, Wikipedia only if its article can't be fetched
       out.src = "https://" + m[1] + ".m." + m[2] + ".org" + u.pathname + u.search + u.hash;
+      if (m[2] === "wikipedia" && u.pathname.indexOf("/wiki/") === 0 && u.pathname.length > 6 && !WIKI_OTHER.test(u.pathname.slice(6))) {
+        try { out.wiki = { lang: m[1], title: decodeURIComponent(u.pathname.slice(6)) }; out.name = "Wikipedia"; } catch (e) {}
+      }
     } else if (/^(m\.|music\.)?youtube\.com$/.test(host) && u.pathname === "/watch" && u.searchParams.get("v")) {
       out.src = "https://www.youtube-nocookie.com/embed/" + encodeURIComponent(u.searchParams.get("v"));
     } else if (host === "youtu.be" && u.pathname.length > 1) {
       out.src = "https://www.youtube-nocookie.com/embed/" + encodeURIComponent(u.pathname.slice(1).split("/")[0]);
+    } else if (/\.substack\.com$/.test(host) && /^\/p\/[^/]+\/?$/.test(u.pathname)) {
+      // Substack won't let its posts be framed, but it offers this small embed of each one
+      out.src = "https://" + u.hostname + "/embed" + u.pathname.replace(/\/$/, "");
+      out.short = true;
     } else {
       out.src = u.href;
       for (var i = 0; i < NO_FRAME.length; i++) {
@@ -334,22 +355,84 @@
     return out;
   }
 
+  // the same, for whatever is under the pointer. Links inside the box count too (nested: they open in the box).
+  function peekTarget(el) {
+    var a = el && el.closest && el.closest("a[href]");
+    if (!a || a.hasAttribute("download") || a.closest(".runhead, .fn-ref, .peek-bar")) return null;
+    if (a.closest(".bsky")) return null;  // a tweet or Bluesky card already in the margin is its own preview
+    var root = a.closest("[data-wide-root]");
+    if (!root || !root.querySelector(".rail")) return null;
+    var t = targetOf(a, root);
+    var pane = a.closest(".peek-pane");
+    if (t && pane) {
+      t.nested = true;
+      for (var i = 0; i < trail.length; i++) if (trail[i].pane === pane) t.from = i;  // which pane the link is in
+    }
+    return t;
+  }
+
   function peekBox(root) {
     if (!peekEl) {
       peekEl = document.createElement("aside");
       peekEl.className = "peek";
       peekEl.setAttribute("aria-label", "Preview");
-      var bar = document.createElement("header"), name = document.createElement("span"), open = document.createElement("a");
-      bar.className = "peek-bar";
-      name.className = "peek-name";
-      open.className = "peek-open";
-      open.textContent = "open ↗";
-      bar.appendChild(open);  // the way out comes first, nearest the text
-      bar.appendChild(name);
-      peekEl.appendChild(bar);
     }
     if (peekEl.parentNode !== root) root.appendChild(peekEl);
     return peekEl;
+  }
+
+  // one thing in the box: a small top line (open, back, what it is), then the page or card itself
+  function makePane(entry) {
+    var pane = document.createElement("div"), bar = document.createElement("header");
+    var name = document.createElement("span"), open = document.createElement("a"), back = document.createElement("button");
+    pane.className = "peek-pane";
+    bar.className = "peek-bar";
+    name.className = "peek-name";
+    open.className = "peek-open";
+    open.textContent = "open ↗";
+    back.className = "peek-back";
+    back.type = "button";
+    back.hidden = true;
+    back.addEventListener("click", stepBack);
+    bar.appendChild(open);  // the way out comes first, nearest the text
+    bar.appendChild(back);
+    bar.appendChild(name);
+    pane.appendChild(bar);
+    pane.appendChild(entry.body);
+    return pane;
+  }
+
+  // The box shows the last two things on the trail, one above the other, sharing its height: where you came from
+  // and what you opened from it. Anything older is kept, out of sight, for "back". So however deep the trail
+  // goes, the margin holds the same two panes in the same space.
+  function layoutPeek() {
+    var n = trail.length, last = trail[n - 1];
+    trail.forEach(function (e, i) {
+      var hide = i < n - 2, pane = e.pane, back = pane.querySelector(".peek-back"), open = pane.querySelector(".peek-open");
+      if (hide && !pane.classList.contains("under")) e.scroll = e.body.scrollTop;  // a hidden card forgets how far it was scrolled
+      pane.classList.toggle("under", hide);
+      pane.querySelector(".peek-name").textContent = e.name;
+      open.href = e.href;
+      open.target = e.target;
+      open.rel = e.rel;
+      back.hidden = !(i === n - 1 && i > 0);
+      back.textContent = "← back" + (i > 1 ? " · " + (i + 1) + " deep" : "");
+      if (!hide && e.scroll) { e.body.scrollTop = e.scroll; e.scroll = 0; }
+    });
+    if (n > 1) deep = true;  // once it has held two it keeps that height, so it never shrinks away from under the pointer
+    peekEl.classList.toggle("two", deep);
+    peekEl.classList.toggle("card", !deep && last.body.tagName !== "IFRAME");  // alone, a card is only as tall as what's in it
+    peekEl.classList.toggle("short", !deep && !!last.short);
+    if (peek) fitPeek();
+  }
+
+  // "back": drop the newest pane; the one before it comes back into view, as it was left
+  function stepBack() {
+    if (trail.length < 2) return;
+    clearTimeout(peekLeave);
+    swapped = stale = true; anchor = null;
+    trail.pop().pane.remove();
+    layoutPeek();
   }
 
   // the real page, in an iframe
@@ -359,23 +442,21 @@
     frame.title = "Preview: " + t.name;
     // someone else's page may run its scripts, but may not take this page somewhere else
     if (!t.ours) frame.setAttribute("sandbox", "allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-forms");
-    else frame.addEventListener("load", function () {
-      // one of this site's pages: name the box after the page rather than the link's words
-      try {
-        var title = tidy(frame.contentDocument.title.replace(/\s*[-·|]\s*Croissanthology\s*$/, ""));
-        if (title && frame.isConnected) peekEl.querySelector(".peek-name").textContent = title;
-      } catch (e) {}
-    });
     frame.src = src;
     return frame;
   }
 
-  // text from the previews file with only its harmless tags kept (it was cleaned when it was stored; this is the second lock)
-  function plain(html) {
-    var t = document.createElement("template");
-    t.innerHTML = html;
-    Array.prototype.slice.call(t.content.querySelectorAll("*")).forEach(function (el) {
-      if (/^(P|B|I|EM|STRONG|SUB|SUP|UL|OL|LI|BR)$/.test(el.tagName)) {
+  // a piece of someone else's HTML with only its harmless tags kept and every attribute dropped. With wiki set
+  // (a language code), links to other Wikipedia articles are kept too, pointed at Wikipedia.
+  function plain(holder, wiki) {
+    Array.prototype.slice.call(holder.querySelectorAll("*")).forEach(function (el) {
+      var href = el.tagName === "A" && wiki && el.getAttribute("rel") === "mw:WikiLink" ? el.getAttribute("href") || "" : "";
+      if (/^\.\/[^#]/.test(href) && !WIKI_OTHER.test(href.slice(2))) {
+        while (el.attributes.length) el.removeAttribute(el.attributes[0].name);
+        el.href = "https://" + wiki + ".wikipedia.org/wiki/" + href.slice(2);
+        el.target = "_blank";
+        el.rel = "noopener";
+      } else if (/^(P|B|I|EM|STRONG|SUB|SUP|UL|OL|LI|DL|DT|DD|BLOCKQUOTE|H3|H4|BR)$/.test(el.tagName)) {
         while (el.attributes.length) el.removeAttribute(el.attributes[0].name);
       } else if (/^(SCRIPT|STYLE)$/.test(el.tagName)) {
         el.remove();
@@ -384,7 +465,128 @@
         el.remove();
       }
     });
-    return t.content;
+    Array.prototype.slice.call(holder.querySelectorAll("p, li, h3, h4")).forEach(function (el) {
+      if (!el.textContent.trim()) el.remove();
+    });
+    return holder;
+  }
+
+  // a whole Wikipedia article, fetched from Wikipedia when a box needs it: { title, lead, sections: [{ title, body }] }
+  function wikiArticle(w) {
+    var key = w.lang + ":" + w.title;
+    if (!articles[key]) {
+      articles[key] = fetch("https://" + w.lang + ".wikipedia.org/api/rest_v1/page/html/" + encodeURIComponent(w.title.replace(/ /g, "_")))
+        .then(function (r) { if (!r.ok) throw 0; return r.text(); })
+        .then(function (html) {
+          var d = new DOMParser().parseFromString(html, "text/html");
+          var art = { title: tidy(d.title), lead: null, sections: [] };
+          Array.prototype.slice.call(d.querySelectorAll(WIKI_JUNK)).forEach(function (el) { el.remove(); });
+          Array.prototype.slice.call(d.body.children).forEach(function (sec) {
+            if (sec.tagName !== "SECTION") return;
+            var h = sec.querySelector("h2");
+            if (h && h.parentNode !== sec) h = null;
+            var title = h ? tidy(h.textContent) : "";
+            if (h) h.remove();
+            if (h && WIKI_ENDS.test(title)) return;
+            var body = plain(sec, w.lang);
+            if (!body.textContent.trim()) return;
+            if (!h && !art.lead) art.lead = body;
+            else if (h) art.sections.push({ title: title, body: body });
+          });
+          if (!art.lead && !art.sections.length) throw 0;
+          return art;
+        });
+      articles[key].catch(function () { delete articles[key]; });
+    }
+    return articles[key];
+  }
+
+  // put the article into its card: the lead (now with its links), then each section, closed, under its title
+  function growWiki(card, art) {
+    function pour(from, into) {
+      Array.prototype.slice.call(from.childNodes).forEach(function (n) { into.appendChild(document.importNode(n, true)); });
+    }
+    var text = card.querySelector(".peek-text");
+    if (!text) {
+      text = document.createElement("div");
+      text.className = "peek-text";
+      card.appendChild(text);
+    }
+    if (art.lead) {
+      while (text.firstChild) text.removeChild(text.firstChild);
+      pour(art.lead, text);
+    }
+    if (art.sections.length) {
+      var rest = document.createElement("div");
+      rest.className = "peek-secs";
+      art.sections.forEach(function (sec) {
+        var d = document.createElement("details"), sum = document.createElement("summary"), body = document.createElement("div");
+        sum.textContent = sec.title;
+        body.className = "peek-text";
+        pour(sec.body, body);
+        d.appendChild(sum);
+        d.appendChild(body);
+        d.addEventListener("toggle", fitPeek);
+        rest.appendChild(d);
+      });
+      card.appendChild(rest);
+    }
+    if (card.isConnected) fitPeek();
+  }
+
+  function picture(card, cls, src, w, h) {
+    if (!/^https:\/\//.test(src || "")) return null;
+    var img = document.createElement("img");
+    img.className = cls;
+    img.alt = "";
+    img.referrerPolicy = "no-referrer";
+    if (w && h) { img.width = w; img.height = h; }
+    img.addEventListener("load", function () { if (card.isConnected) fitPeek(); });  // the box may have grown
+    img.addEventListener("error", function () { img.remove(); if (card.isConnected) fitPeek(); });
+    img.src = src;
+    return img;
+  }
+
+  // a tweet, a Bluesky post or a profile, in the same markup (and so the same look) as the tweets inside a post
+  function tweetCard(card, rec) {
+    function el(tag, cls, text) {
+      var e = document.createElement(tag);
+      e.className = cls;
+      if (text) e.textContent = text;
+      return e;
+    }
+    function who(r, tag) {
+      var w = el(tag, "who"), face = r.avatar && picture(card, "avatar", r.avatar, 36, 36);
+      if (face) w.appendChild(face);
+      w.appendChild(el("span", "name", r.by || ""));
+      w.appendChild(document.createTextNode(" "));
+      w.appendChild(el("span", "handle", r.handle || ""));
+      return w;
+    }
+    var bq = el("blockquote", "bsky");
+    bq.appendChild(who(rec, "p"));
+    if (rec.replying) bq.appendChild(el("p", "reply", "Replying to " + rec.replying));
+    if (rec.text) bq.appendChild(el("p", "said", rec.text));
+    var shots = (rec.imgs || []).concat(rec.poster ? [rec.poster] : []);
+    if (shots.length) {
+      var row = el("span", "shots");
+      shots.forEach(function (src) { var img = picture(card, "", src); if (img) row.appendChild(img); });
+      bq.appendChild(row);
+    }
+    if (rec.video) bq.appendChild(el("p", "video", "▶ " + rec.video));
+    if (rec.link) bq.appendChild(el("p", "video", "↗ " + [rec.link.title, rec.link.site].filter(Boolean).join(" · ")));
+    if (rec.quoted) {
+      var q = el("span", "quoted");
+      q.appendChild(who(rec.quoted, "span"));
+      q.appendChild(el("span", "said", rec.quoted.text || ""));
+      bq.appendChild(q);
+    }
+    if (rec.more) bq.appendChild(el("p", "video", rec.more));
+    bq.appendChild(el("p", "when", rec.kind === "profile"
+      ? rec.site + " keeps profiles to itself: open it to see the rest"
+      : [rec.site, rec.date].filter(Boolean).join(" · ")));
+    card.appendChild(bq);
+    return card;
   }
 
   // a card set in this site's own type, from what the indexer stored (or just the image, for an image link)
@@ -399,84 +601,122 @@
       card.appendChild(el);
       return el;
     }
-    function picture(cls, src, w, h) {
-      if (!/^https:\/\//.test(src || "")) return;
-      var img = document.createElement("img");
-      img.className = cls;
-      img.alt = "";
-      img.referrerPolicy = "no-referrer";
-      if (w && h) { img.width = w; img.height = h; }
-      img.addEventListener("load", function () { if (card.isConnected) placePeek(); });  // it may have grown
-      img.addEventListener("error", function () { img.remove(); if (card.isConnected) placePeek(); });
-      img.src = src;
-      card.appendChild(img);
+    function show(cls, src, w, h) {
+      var img = picture(card, cls, src, w, h);
+      if (img) card.appendChild(img);
     }
     var img = rec.img || [];
-    if (rec.kind === "image") { picture("peek-image", img[0]); return card; }
-    picture(rec.kind === "wiki" ? "peek-thumb" : "peek-cover", img[0], img[1], img[2]);
+    if (rec.kind === "image") { show("peek-image", img[0]); return card; }
+    if (rec.kind === "tweet" || rec.kind === "profile") return tweetCard(card, rec);
+    show(rec.kind === "wiki" ? "peek-thumb" : "peek-cover", img[0], img[1], img[2]);
     add("peek-title", rec.title);
     add("peek-desc", rec.desc);
     add("peek-by", [rec.by, rec.handle, rec.date].filter(Boolean).join(" · "));
     if (rec.html || rec.text) {
       var text = document.createElement("div");
       text.className = "peek-text";
-      if (rec.html) text.appendChild(plain(rec.html));
-      else rec.text.split("\n").forEach(function (line) {
+      if (rec.html) {
+        var t = document.createElement("template");
+        t.innerHTML = rec.html;  // cleaned when it was stored; plain() is the second lock
+        text.appendChild(plain(t.content));
+      } else rec.text.split("\n").forEach(function (line) {
         var p = document.createElement("p");
         p.textContent = line;
         text.appendChild(p);
       });
       card.appendChild(text);
     }
-    (rec.imgs || []).forEach(function (src) { picture("peek-shot", src); });
+    (rec.imgs || []).forEach(function (src) { show("peek-shot", src); });
     add("peek-more", rec.more);
     return card;
   }
 
-  // what to put in the box for this link, given what the indexer found (rec, possibly nothing). null: no box.
+  // Wikipedia: the stored lead at once, the rest of the article when it arrives. With nothing stored (a link
+  // inside another article, say) the box waits for the article, and failing that shows Wikipedia's phone page.
+  function wikiCard(t, rec) {
+    var whole = wikiArticle(t.wiki);
+    if (rec) {
+      var card = cardFor(rec);
+      whole.then(function (art) { growWiki(card, art); }).catch(function () {});
+      return card;
+    }
+    return whole.then(function (art) {
+      var made = cardFor({ kind: "wiki", title: art.title.replace(/ - Wikipedia$/, "") });
+      growWiki(made, art);
+      return made;
+    }).catch(function () { return frameFor(t, t.src); });
+  }
+
+  // what to put in the box for this link, given what the indexer found (rec, possibly nothing).
+  // null: no box. For Wikipedia it may be a promise.
   function bodyFor(t, rec) {
     if (t.ours) return frameFor(t, t.src);
     if (t.image) return cardFor({ kind: "image", img: [t.link.href] });
     if (rec && rec.kind === "image") return cardFor(rec);
-    if (rec && rec.frame && t.src) return frameFor(t, t.src);          // the indexer saw nothing against framing it
+    if (t.wiki) return wikiCard(t, rec && rec.kind === "wiki" ? rec : null);
+    if (rec && rec.kind === "profile") return cardFor(rec);
+    if (rec && rec.frame && t.src && !t.short) return frameFor(t, t.src);  // the indexer saw nothing against framing it
     if (rec && !rec.frame && (rec.title || rec.text || rec.html)) return cardFor(rec);
     if (rec && (rec.title || rec.text)) return cardFor(rec);           // framable on paper, but on the list above
     return t.src ? frameFor(t, t.src) : null;                           // not looked up yet
   }
 
-  // the pointer has rested on a link
-  function openPeek(t) {
-    if (t.ours || t.image) { showPeek(t, bodyFor(t), t.name); return; }
-    previews(t.root).then(function (found) {
-      if (peekWait !== t.link) return;  // the pointer has moved on
-      var rec = found[t.link.getAttribute("href")];
-      var body = bodyFor(t, rec);
-      if (body) showPeek(t, body, body.tagName !== "IFRAME" && rec && rec.site || t.name);
+  // the pointer has rested on a link. found: the previews file to look it up in (a promise); key: its href there.
+  function openPeek(t, found, key, stillWanted) {
+    var mine = ++asked;
+    function show(body, rec) {
+      if (!body || mine !== asked || !stillWanted() || (t.nested && !peek)) return;  // overtaken, or the pointer has moved on
+      showPeek(t, body, body.tagName !== "IFRAME" && rec && rec.site || t.name);
+    }
+    if (t.ours || t.image) { show(bodyFor(t)); return; }
+    found.then(function (recs) {
+      var rec = recs[key];
+      Promise.resolve(bodyFor(t, rec)).then(function (body) { show(body, rec); });
     });
   }
 
   function showPeek(t, body, name) {
     clearTimeout(peekLeave);
     var root = t.root, box = peekBox(root);
+    var entry = { body: body, name: name, href: t.link.href, target: t.link.target, rel: t.link.rel, short: t.short };
+    entry.pane = makePane(entry);
+    if (t.ours) body.addEventListener("load", function () {
+      // one of this site's pages: name the pane after the page rather than the link's words
+      try {
+        var title = tidy(body.contentDocument.title.replace(/\s*[-·|]\s*Croissanthology\s*$/, ""));
+        if (title) { entry.name = title; entry.pane.querySelector(".peek-name").textContent = title; }
+      } catch (e) {}
+    });
+
+    if (t.nested && peek) {
+      // a link inside the box: what it opens goes right under the pane it's in. Anything that pane had
+      // opened before is replaced, and the pane above it steps out of sight.
+      if (t.from == null || t.from >= trail.length) return;
+      while (trail.length > t.from + 1) trail.pop().pane.remove();
+      if (trail.length >= 40) trail.shift().pane.remove();
+      swapped = stale = true; anchor = null;
+      trail.push(entry);
+      box.appendChild(entry.pane);
+      layoutPeek();
+      return;
+    }
+
     // a link inside a note or figure that's in the margin: the box goes right under (or over) it
     var host = t.link.closest(".note, figure.plate");
     while (host && !host.style.top) host = host.parentElement.closest(".note, figure.plate");
     if (summoned && summoned.item !== host) release();
     if (peek && peek.host && peek.host !== host) peek.host.classList.remove("peek-host");
 
-    var open = box.querySelector(".peek-open");
-    box.querySelector(".peek-name").textContent = name;
-    open.href = t.link.href;
-    open.target = t.link.target;
-    open.rel = t.link.rel;
-    var old = box.querySelector(".peek-body");
-    if (old) old.remove();
-    box.appendChild(body);
-    box.classList.toggle("card", body.tagName !== "IFRAME");  // a card is only as tall as what's in it
+    trail.forEach(function (old) { old.pane.remove(); });
+    trail = [entry];
+    deep = false;
+    box.appendChild(entry.pane);
     box.classList.add("open");
+    var was = peek && !peek.host && !host && peek.root === root ? parseFloat(box.style.top) : NaN;
+    peek = null;  // (so layoutPeek leaves the placing to placePeek, below)
+    layoutPeek();
 
     // a link a line or two away from the last one: stay put rather than hop
-    var was = peek && !peek.host && !host && peek.root === root ? parseFloat(box.style.top) : NaN;
     peek = { root: root, link: t.link, host: host };
     placePeek(was);
     if (host) host.classList.add("peek-host");
@@ -514,12 +754,25 @@
     box.style.top = want + "px";
   }
 
+  // what's in the box has changed size: the box stays where it is, moving up only as far as it must to stay on screen
+  function fitPeek() {
+    if (!peek) return;
+    var root = peek.root, rbox = root.getBoundingClientRect();
+    var railTop = root.querySelector(".rail").getBoundingClientRect().top - rbox.top;
+    var top = parseFloat(peekEl.style.top) || 0, h = peekEl.offsetHeight;
+    var viewTop = -rbox.top + 16, viewBottom = window.innerHeight - rbox.top - 16;
+    if (top + h > viewBottom) top = Math.max(viewTop, viewBottom - h);
+    peekEl.style.top = Math.max(railTop, Math.min(top, root.offsetHeight - h)) + "px";
+  }
+
   // put the box away; taking out what's in it stops whatever a framed page was doing
   function hidePeek() {
     clearTimeout(peekLeave);
     if (!peek) return;
-    var root = peek.root, body = peekEl.querySelector(".peek-body");
-    if (body) body.remove();
+    var root = peek.root;
+    trail.forEach(function (old) { old.pane.remove(); });
+    trail = [];
+    swapped = deep = stale = false;
     if (peek.host) peek.host.classList.remove("peek-host");
     peekEl.classList.remove("open");
     peek = null;
@@ -530,35 +783,98 @@
   function closePeek() {
     clearTimeout(peekTimer);
     peekWait = null;
+    asked++;
     hidePeek();
+  }
+
+  // This page is itself being shown in a box on another of the site's pages: that page's wide.js, if so.
+  function upstairs() {
+    try {
+      var f = window.frameElement, up = window.parent.FacingPages;
+      return f && f.classList.contains("peek-frame") && up && up.nest ? up : null;
+    } catch (e) { return null; }
+  }
+
+  // ...and a link in it has been rested on: ask the page upstairs to open it in the box, on top of this one
+  function askUpstairs(e, up) {
+    var a = e.target.closest && e.target.closest("a[href]");
+    if (a === peekWait) return;
+    clearTimeout(peekTimer);
+    peekWait = a;
+    if (!a || a.hasAttribute("download") || a.closest(".runhead, .fn-ref, .bsky") || !/^https?:$/.test(a.protocol)) return;
+    if (a.origin === location.origin && a.pathname === location.pathname) return;  // a link within this page
+    var root = a.closest("[data-wide-root]");
+    peekTimer = setTimeout(function () {
+      if (peekWait !== a) return;
+      up.nest({ frame: window.frameElement, href: a.href, key: a.getAttribute("href"), text: tidy((a.querySelector(".own-title") || a).textContent),
+                target: a.target, rel: a.rel, previews: root ? previewsOf(root) : "" });
+    }, 600);
+  }
+
+  // (upstairs) a page shown in the box passes on a link of its own
+  function nest(info) {
+    if (!peek || layout !== "wide") return;
+    var a = document.createElement("a");
+    a.href = info.href;
+    a.target = info.target || "";
+    a.rel = info.rel || "";
+    a.textContent = info.text || "";
+    var t = targetOf(a, peek.root);
+    if (!t) return;
+    t.nested = true;
+    for (var i = 0; i < trail.length; i++) if (trail[i].body === info.frame) t.from = i;  // which pane that page is in
+    openPeek(t, previewsAt(info.previews), info.key, function () { return true; });
+  }
+
+  // the pointer has left the link and the box: put the box away, after long enough to cross the text to the margin.
+  // The pointer being in the box (or the page inside it) keeps it, and so does a change of contents under a still pointer.
+  function leaveSoon() {
+    clearTimeout(peekLeave);
+    peekLeave = setTimeout(function () {
+      if (!peek || swapped || peekEl.matches(":hover") || peek.link.matches(":hover")) return;
+      hidePeek();
+    }, 320);
   }
 
   function wirePeek() {
     var canHover = window.matchMedia("(hover: hover)");
-    document.addEventListener("mouseover", function (e) {
-      if (!canHover.matches || layout !== "wide") return;
+    function hover(e) {
+      if (!canHover.matches) return;
+      if (layout !== "wide") {
+        var up = upstairs();
+        if (up) askUpstairs(e, up);
+        return;
+      }
+      if (stale) {
+        // the box has just changed, and a link may simply have appeared under the pointer: it has to move first
+        if (!anchor) anchor = [e.clientX, e.clientY];
+        else if (Math.abs(e.clientX - anchor[0]) + Math.abs(e.clientY - anchor[1]) >= 6) stale = false;
+      }
       if (peek && (peekEl.contains(e.target) || peek.link.contains(e.target))) clearTimeout(peekLeave);
+      else if (peek && swapped) leaveSoon();  // it moved, and it's outside
+      swapped = false;
       var t = peekTarget(e.target);
       var link = t && t.link;
       if (link === peekWait) return;
       clearTimeout(peekTimer);
       peekWait = link;
-      if (!link || (peek && peek.link === link)) return;
-      pointerY = e.clientY;
-      // only once the pointer has rested on the link; passing over it loads nothing
-      peekTimer = setTimeout(function () { if (peekWait === link) openPeek(t); }, 240);
-    });
+      if (!link || (peek && peek.link === link) || (t.nested && !peek)) return;
+      if (stale && t.nested) { peekWait = null; return; }  // (it has only just appeared under the pointer)
+      if (!t.nested) pointerY = e.clientY;
+      // only once the pointer has rested on the link; passing over it loads nothing.
+      // Inside the box the wait is longer, so reading with the pointer on the text doesn't turn the page.
+      peekTimer = setTimeout(function () {
+        if (peekWait === link) openPeek(t, previewsAt(previewsOf(t.root)), link.getAttribute("href"), function () { return peekWait === link; });
+      }, t.nested ? 600 : 240);
+    }
+    document.addEventListener("mouseover", hover);
+    document.addEventListener("mousemove", function (e) { if (stale && peek) hover(e); });
     document.addEventListener("mouseout", function (e) {
       if (!peek) return;
       function inside(n) { return peekEl.contains(n) || peek.link.contains(n); }
       if (e.relatedTarget && inside(e.relatedTarget)) return;
       if (!inside(e.target)) return;
-      clearTimeout(peekLeave);
-      // long enough to cross the text to the margin; the pointer being in the box (or the page inside it) keeps it
-      peekLeave = setTimeout(function () {
-        if (peek && (peekEl.matches(":hover") || peek.link.matches(":hover"))) return;
-        hidePeek();
-      }, 320);
+      leaveSoon();
     });
     document.addEventListener("click", function (e) {
       if (peek && !peekEl.contains(e.target)) closePeek();
@@ -651,5 +967,5 @@
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
   else boot();
 
-  window.FacingPages = { place: place, layout: function () { return layout; } };
+  window.FacingPages = { place: place, layout: function () { return layout; }, nest: nest };
 })();

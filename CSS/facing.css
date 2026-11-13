@@ -171,7 +171,7 @@ figure.plate img { display: block; width: 100%; height: auto; border: 1px solid 
 figure.plate iframe.owid { display: block; width: 100%; height: 600px; max-height: 80vh; border: 1px solid var(--rule); background: #fff; }
 .post .cover { margin: 1.3rem 0 0; }
 .post .cover img { border: 0; }
-.flow .bsky {
+:is(.flow, .peek-card) .bsky {
   margin: 0; padding: .8em 1em .75em; border: 1px solid var(--rule); border-radius: 10px; font-style: normal;
   background: color-mix(in srgb, var(--page) 86%, var(--lav) 14%); color: var(--ink);
   font-size: .86em; line-height: 1.45; display: flex; flex-direction: column; gap: .3em;
@@ -260,11 +260,19 @@ figure.plate iframe.owid { display: block; width: 100%; height: 600px; max-heigh
 .peek { display: none; }
 [data-layout="wide"] .peek.open { display: flex; flex-direction: column; position: absolute; top: 0; z-index: 3; height: min(38rem, calc(100vh - 2rem)); background: var(--page); box-shadow: 0 0 0 10px var(--page); }
 [data-layout="wide"] .peek.open.card { height: auto; max-height: min(28rem, calc(100vh - 2rem)); }  /* a card is as tall as what it says */
+[data-layout="wide"] .peek.open.short { height: min(24rem, calc(100vh - 2rem)); }  /* Substack's own small embed */
+/* a link inside the box opens under it: two panes share the box's full height, however deep the trail goes */
+[data-layout="wide"] .peek.open.two { height: min(38rem, calc(100vh - 2rem)); max-height: none; gap: .9rem; }
+.peek-pane { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
+.peek.two .peek-pane { flex: 1 1 0; }
+.peek-pane.under { display: none; }  /* further back on the trail; "back" brings it into view as it was left */
 [data-layout="wide"] [data-wide-root].summoning :is(.note, figure.plate).peek-host { opacity: 1; }
 .peek-bar { flex: none; display: flex; justify-content: flex-start; align-items: baseline; gap: 1.2em; padding-bottom: .5rem; font: 500 .72rem/1.3 var(--sans); color: var(--muted); }
 .peek-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .peek-open { flex: none; color: var(--accent-ink); text-decoration: none; }
-.peek-open:hover { text-decoration: underline; }
+.peek-open:hover, .peek-back:hover { text-decoration: underline; }
+.peek-back { flex: none; color: var(--accent-ink); }
+.peek-back[hidden] { display: none; }
 .peek-frame { flex: 1 1 auto; min-height: 0; width: 100%; border: 1px solid var(--rule); }
 .peek-card { flex: 0 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: .1rem .5rem .2rem 0; border-top: 1px solid var(--rule); padding-top: .6rem; font-size: .82em; line-height: 1.5; color: var(--ink-soft); }
 .peek-card::after { content: ""; display: block; clear: both; }
@@ -281,8 +289,21 @@ figure.plate iframe.owid { display: block; width: 100%; height: 600px; max-heigh
 .peek-text p { text-wrap: pretty; }
 .peek-text p + p { text-indent: 1.3em; }
 .peek-text :is(ul, ol) { margin: .3em 0; padding-left: 1.4em; }
-.peek-card.k-tweet .peek-text { font-size: 1.08em; color: var(--ink); hyphens: manual; }
-.peek-card.k-tweet .peek-text p + p { text-indent: 0; margin-top: .5em; }
+.peek-text a { text-decoration-color: color-mix(in srgb, var(--accent) 45%, transparent); }  /* a Wikipedia article is mostly links: keep them quiet */
+.peek-text blockquote { margin: .4em 1.3em; font-style: italic; }
+.peek-text :is(h3, h4) { margin: .7em 0 .15em; font-size: 1em; font-weight: 600; font-style: italic; text-align: left; }
+.peek-text dl { margin: .3em 0; }
+.peek-text dd { margin-left: 1.3em; }
+/* the rest of a Wikipedia article: each section closed under its title, to open or leave */
+.peek-secs { clear: both; margin-top: .8em; }
+.peek-secs details { border-top: 1px dotted color-mix(in srgb, var(--heading) 70%, transparent); }
+.peek-secs summary { padding: .3em 0; cursor: pointer; font-weight: 600; font-variant-caps: small-caps; letter-spacing: .01em; color: var(--heading); }
+.peek-secs details[open] > summary { color: var(--ink); }
+.peek-secs .peek-text { margin: 0 0 .7em; }
+/* tweets, Bluesky posts and profiles wear the same card as tweets inside a post (.bsky, above) */
+.peek-card:is(.k-tweet, .k-profile) { border-top: 0; padding-top: 0; }
+.peek-card .bsky { font-size: 1.04em; }
+.bsky .when { margin: 0; font-size: .86em; color: var(--muted); }
 .peek-more { margin-top: .5em; font-size: .9em; font-style: italic; color: var(--muted); }
 @media (prefers-reduced-motion: reduce) {
   [data-layout="wide"] [data-wide-root] :is(.note, figure.plate) { transition: none; }
