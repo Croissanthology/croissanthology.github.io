@@ -1,20 +1,24 @@
 {
- "date": "2026-11-12",
- "looked_up": 115,
+ "date": "2026-11-18",
+ "looked_up": 17,
  "this_run": {
-  "page (framed)": 112,
-  "page": 2
+  "page": 3,
+  "post": 1
  },
  "skipped_this_run": {
-  "couldn't connect (ConnectionError)": 1
+  "couldn't connect (ReadTimeout)": 3,
+  "couldn't connect (ConnectionError)": 2,
+  "not a page (application/pdf)": 3,
+  "handled on the page": 4,
+  "not a tweet": 1
  },
  "all_links": {
   "tweet": 52,
   "wiki": 56,
-  "page": 42,
+  "page": 45,
   "page (framed)": 112,
-  "post": 10,
-  "no preview": 53,
+  "post": 11,
+  "no preview": 49,
   "repo": 4,
   "image": 4
  },
