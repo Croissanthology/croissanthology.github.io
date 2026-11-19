@@ -1,26 +1,34 @@
 {
- "date": "2026-11-18",
- "looked_up": 17,
+ "date": "2026-11-19",
+ "looked_up": 15,
  "this_run": {
-  "page": 3,
-  "post": 1
+  "page (framed)": 1
  },
  "skipped_this_run": {
+  "status 405": 1,
+  "no title, and it can't be framed": 1,
+  "refused (403)": 5,
   "couldn't connect (ReadTimeout)": 3,
-  "couldn't connect (ConnectionError)": 2,
-  "not a page (application/pdf)": 3,
-  "handled on the page": 4,
-  "not a tweet": 1
+  "not a post": 1,
+  "not a tweet": 1,
+  "handled on the page": 1,
+  "not a page (application/pdf)": 1
  },
  "all_links": {
   "tweet": 52,
   "wiki": 56,
   "page": 45,
-  "page (framed)": 112,
+  "page (framed)": 113,
   "post": 11,
-  "no preview": 49,
+  "no preview": 48,
   "repo": 4,
   "image": 4
  },
- "sites_that_refused": []
+ "sites_that_refused": [
+  "gizmodo.com",
+  "importai.substack.com",
+  "lesswrong.substack.com",
+  "marginalrevolution.com",
+  "www.metaculus.com"
+ ]
 }
