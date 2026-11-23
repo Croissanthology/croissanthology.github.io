@@ -1,0 +1,332 @@
+<title>The 2% Wind</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one reading column like a lab notebook; mono labels in the margin voice; charts sit in the column as plates. */
+:root{
+  --bg:#f6f6fa; --plate:#fcfcfb; --ink:#14131a; --ink2:#4d4b57; --muted:#858290; --rule:#dcdae6; --grid:#e6e4ee;
+  --accent:#6250d6; --wash:#eceafa;
+  --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --s4:#eda100; --s5:#e87ba4;
+  --good:#006300; --bad:#b32a2a; --mid:#8a6100;
+  --display:"Space Grotesk",system-ui,sans-serif; --body:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif; --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#111016; --plate:#1a1a1f; --ink:#f0eff4; --ink2:#c2c0cc; --muted:#8c8997; --rule:#2e2c38; --grid:#27252f;
+  --accent:#9d92ee; --wash:#221f38;
+  --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500; --s5:#d55181;
+  --good:#3fc03f; --bad:#ee7a7a; --mid:#e0a92b; color-scheme:dark } }
+:root[data-theme="dark"]{
+  --bg:#111016; --plate:#1a1a1f; --ink:#f0eff4; --ink2:#c2c0cc; --muted:#8c8997; --rule:#2e2c38; --grid:#27252f;
+  --accent:#9d92ee; --wash:#221f38;
+  --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500; --s5:#d55181;
+  --good:#3fc03f; --bad:#ee7a7a; --mid:#e0a92b; color-scheme:dark }
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.62}
+.wrap{max-width:720px;margin:0 auto;padding-block:48px 96px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(2rem,6vw,3.1rem);line-height:1.05;margin:.3em 0 .5em;text-wrap:balance}
+h2{font-family:var(--display);font-weight:700;font-size:1.55rem;line-height:1.2;margin:2.6em 0 .5em;text-wrap:balance}
+h3{font-family:var(--display);font-weight:500;font-size:1.1rem;margin:1.6em 0 .3em}
+p{margin:.8em 0}
+a{color:var(--accent)}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.lede{font-size:1.15rem;color:var(--ink2)}
+.answer{border-left:3px solid var(--accent);background:var(--wash);padding:14px 18px;margin:1.4em 0}
+.answer p{margin:.5em 0}
+ol.three{padding-left:1.2em}
+ol.three li{margin:.6em 0}
+.plate{background:var(--plate);border:1px solid var(--rule);padding:16px 14px 10px;margin:1.4em 0}
+.plate h4{font-family:var(--display);font-weight:500;font-size:1rem;margin:0 0 2px}
+.plate .sub{font-size:.85rem;color:var(--ink2);margin:0 0 8px}
+.legend{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:.8rem;color:var(--ink2);margin:6px 0}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:14px;height:3px;display:inline-block;border-radius:2px}
+.chart{position:relative}
+.chart svg{display:block;width:100%;height:auto;overflow:visible}
+.chart text{font-family:var(--body);font-size:11px;fill:var(--muted);font-variant-numeric:tabular-nums}
+.tip{position:absolute;pointer-events:none;background:var(--plate);border:1px solid var(--rule);padding:6px 8px;font-size:.78rem;line-height:1.35;color:var(--ink);white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.12);z-index:2}
+.tip b{font-weight:600}
+.tip i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px}
+details{font-size:.82rem;color:var(--ink2);margin-top:6px}
+summary{cursor:pointer;font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.tw{overflow-x:auto}
+table{border-collapse:collapse;font-size:.86rem;width:100%;font-variant-numeric:tabular-nums}
+th,td{text-align:left;padding:6px 10px 6px 0;border-bottom:1px solid var(--rule);vertical-align:top}
+th{font-family:var(--mono);font-weight:500;font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+td.n,th.n{text-align:right;padding-right:14px}
+.v{font-family:var(--mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;white-space:nowrap}
+.v.ok{color:var(--good)} .v.no{color:var(--bad)} .v.mix{color:var(--mid)}
+.note{font-size:.88rem;color:var(--ink2)}
+code{font-family:var(--mono);font-size:.85em;background:var(--wash);padding:1px 4px}
+.formula{font-family:var(--mono);font-size:.9rem;background:var(--plate);border:1px solid var(--rule);padding:12px 14px;overflow-x:auto;white-space:nowrap}
+hr{border:0;border-top:1px solid var(--rule);margin:3em 0}
+</style>
+
+<div class="wrap">
+<div class="eyebrow">Nov 23, 2026 · for the necessity essay · 5 models, 1 data test, 1 literature review, 1 hostile review of all of it</div>
+<h1>Why a 2% breeze beats being needed</h1>
+<p class="lede">You asked why Sally the Netflix exec, whom nobody needs, is freer than a serf, whom everybody needs, and whether the “wind of 2% growth” can be shown with math. Seven Opus 5.5 agents built and ran models, tested the story on real country data, and read the economics. An eighth then attacked the models. This is what came back, including the parts that went against your hunch and the parts the attack knocked down.</p>
+
+<div class="answer">
+<p><strong>The short answer.</strong> Being needed tells you how much you are worth to someone. It says nothing about who gets to keep that worth. What decides that is whether a <em>second, independent</em> party also wants you and whether you can afford to walk over to them. The serf is needed by one lord who can stop him leaving. Sally is barely needed by any one firm, but two hundred of them would hire her and none can stop her going.</p>
+<p>Growth is not the active ingredient. Growth that simply makes everyone proportionally richer changed nothing in the models, and in real autocracies growth has bought longer lives and no extra freedom. Growth protects people when it has one of three specific shapes, listed below, and history suggests even those work only where leaving and organising are already protected. “2%” is poetry: no model gave it a stable meaning.</p>
+<p><strong>How much to trust this.</strong> The models are illustrations of mechanisms, with invented parameters. The reviewer’s main charge is fair: each model lets growth help only through a channel its author built in, so the models show these mechanisms are coherent and cannot show they are the whole story. The data test and the history in section 7 are the parts that touch the real world.</p>
+</div>
+
+<h3>The three shapes of growth that do the work</h3>
+<ol class="three">
+<li><strong>It arrives as new independent bidders.</strong> New firms, new trades, new places to go. This keeps the count of parties who want you above one. Growth that goes to employers who already exist leaves your bargaining position exactly where no growth leaves it.</li>
+<li><strong>It can only be made by people who are left alone.</strong> Field labour can be forced. Invention, starting things, and picking your own niche cannot, and they wither under supervision. A ruler who wants that kind of growth has to rent out freedom to get it, provided he is patient and his promises are believed.</li>
+<li><strong>It reaches small players regardless of their size.</strong> If new value is open to anyone, concentration stops. If new value flows in proportion to what you already hold, or favours the big, the big baddie arrives on schedule or faster.</li>
+</ol>
+<p>Your sentence “the empowerment is in the plurality itself” survives. Your sentence “2% growth keeps us up and running” survives only as shorthand for those three, with institutions underneath. The claim that Chinese citizens are “empowered” did not survive contact with the data: they are much better off, and no freer.</p>
+
+<h2>1. “Needed” and “empowered” are two different numbers</h2>
+<p>One agent turned both words into things a computer can calculate. <em>Necessity</em>: how much output disappears if you, or everyone like you, stops. <em>Empowerment</em>: how many distinguishable futures your own choices can reliably bring about over the next three moves, measured in bits (3 bits is 8 futures). That second definition is an existing one from robotics research (Klyubin, Polani and Nehaniv, 2005). It then built ten characters in the same small world of 60 positions.</p>
+<div class="plate">
+<h4>Ten characters: how needed, how free</h4>
+<p class="sub">Across the ten, the two numbers are uncorrelated (rank correlation +0.01). Hover a dot for details.</p>
+<div class="chart" id="c-scatter"></div>
+<details><summary>Show numbers</summary><div class="tw" id="t-scatter"></div></details>
+</div>
+<p>The serf, the slave and the rubber-stamp approver sit bottom right: indispensable and stuck. Sally sits top left. The present-day AI assistant lands where you and Fable guessed, needed for a lot of output and with almost no say. With ten hand-written characters the correlation itself proves nothing; the author’s choices set it. The agent’s explanation of why there need be no correlation is the useful part: necessity is computed from <em>who produces what</em>, empowerment from <em>who controls the moves</em>. Those are separate facts about a world. Nothing forces them to line up.</p>
+<p>It also tested your guess that “many depend on us” is what makes necessity empowering. Adding dependents raised the character’s necessity fourfold and left their empowerment flat at 3.6 bits. It rose (to 5.5) only when three things were all true: you can credibly withhold, they cannot replace you, and they cannot force you. The reviewer points out this is written into the code as a rule and so is a definition, not a discovery. It is still a good definition. The serf fails the third condition. Sally fails the second. An LLM today fails all three.</p>
+<p class="note">Caveat: the characters are hand-built, so the decimals illustrate and do not prove. This measure also counts futures, not good futures: the comfortable pet scores like the slave.</p>
+
+<h2>2. What you keep is set by who else wants you</h2>
+<p>The bargaining agent put a subsistence job and Sally’s job into the same model and swapped only the institutions around them. Wages are in multiples of bare subsistence. Nobody in this table is coerced; the only thing that changes is whether the buyers compete.</p>
+<div class="plate">
+<h4>Same two jobs, two kinds of world</h4>
+<div class="tw"><table>
+<tr><th>Job</th><th>World</th><th class="n">Produces</th><th class="n">Is paid</th><th class="n">Independent bidders in reach</th></tr>
+<tr><td>Field hand’s (irreplaceable, near-subsistence output)</td><td>8 manors, lords act as one</td><td class="n">1.30</td><td class="n">1.13</td><td class="n">0</td></tr>
+<tr><td>Field hand’s</td><td>200 independent employers</td><td class="n">1.36</td><td class="n">1.32</td><td class="n">194</td></tr>
+<tr><td>Sally’s (95% replaceable, high output)</td><td>8 workplaces, owners act as one</td><td class="n">4.01</td><td class="n">1.07</td><td class="n">0</td></tr>
+<tr><td>Sally’s</td><td>200 independent employers</td><td class="n">4.18</td><td class="n">3.86</td><td class="n">199</td></tr>
+</table></div>
+</div>
+<p>Put Sally’s job under a cartel and she is paid subsistence, the same as the field hand, while producing four times as much. Her replaceability, which is the thing that makes her “unnecessary”, becomes a weapon against her the moment there is only one buyer. Her freedom was never a property of her job. These numbers follow directly from the pay formula below, so read the table as the formula made visible.</p>
+<p>The same agent reproduced an old result from economic history (Domar, 1970): when labour gets <em>scarcer</em>, and so more necessary, lords gain more from tying it down. After a simulated Black Death, wages rose from 1.08 to 1.28 where lords could not hold a cartel together, and serfdom came back where a state enforced one for them. That is roughly western versus eastern Europe after 1350. High necessity plus buyers who can coordinate is the recipe for bondage.</p>
+<p>The agent’s candidate formula, which you can quote as the formal version of your thesis:</p>
+<div class="formula">pay = floor + ½ × (1 − replaceability) × (worth to current employer − floor)<br>floor = max( living off your own plot , best bid from an independent party − cost of leaving )</div>
+<p>Necessity sets the ceiling. Outside options set the floor. An outside option is just your necessity to a <em>second</em> party who does not coordinate with the first. That is the precise sense in which the empowerment is in the plurality.</p>
+
+<h3>Where growth comes in</h3>
+<p>Then the experiment you asked for: the same economy over 60 years, with employers slowly buying each other out, under no growth, 2% growth that arrives as new employers, and 2% growth that goes to the employers already there.</p>
+<div class="plate">
+<h4>Independent employers within a worker’s reach</h4>
+<p class="sub">Average count over 60 simulated years. Moving is costly; each owner has a 5% yearly chance of being bought out.</p>
+<div class="legend" id="l-entry"></div>
+<div class="chart" id="c-entry"></div>
+<details><summary>Show numbers</summary><div class="tw" id="t-entry"></div></details>
+</div>
+<p>The orange and blue lines are the same line, and the share of output workers keep falls with them from 98% to 79%. With entry, options hold up and the kept share stays at 97%.</p>
+<p>The reviewer’s correction matters here. This is a race between entry and mergers, and growth is incidental. With no growth and no mergers, workers keep 98% forever. The fall to 79% is produced entirely by owners buying each other out, and “growth as entry” just adds enough new owners to cancel that. The two identical lines are identical by construction, because costs were scaled up with the economy. When the cost of moving and the value of your own plot stay fixed while incumbents grow, workers’ share falls further than with no growth at all, to 58%. So the finding is: <strong>what protects you is new independent bidders appearing faster than old ones merge.</strong> Growth can deliver that. It can also deliver the opposite.</p>
+
+<h2>3. Zero-sum does make a big baddie. Plain growth does not stop him.</h2>
+<p>Your sentence was: “if you’re in a zero-sum system you genuinely are going to find yourself disempowered by a big baddie.” This is close to a theorem. Take a thousand equal traders. Each round, pairs bet 10% of the poorer one’s wealth on a fair coin. Nobody cheats.</p>
+<div class="plate">
+<h4>Share of all wealth held by the richest 1%</h4>
+<p class="sub">1,000 traders, fair coin-flip trades, 100,000 rounds. Horizontal axis is on a log scale.</p>
+<div class="legend" id="l-yard"></div>
+<div class="chart" id="c-yard"></div>
+<details><summary>Show numbers</summary><div class="tw" id="t-yard"></div></details>
+</div>
+<p>With no growth the richest 1% end with 99.8% of everything. This is a known mathematical result about such exchanges and not a discovery of this run. Add growth in which everyone gets 1% richer each round in proportion to what they have, and the line is identical. That too is arithmetic: a pie where every slice grows by the same percentage is still a zero-sum fight over shares. Growth that favours size gets to total concentration a hundred times faster than no growth.</p>
+<p>What stops it is new value that reaches people regardless of their size (the top 1% hold 2.9%). The agent showed this is algebraically the same thing as redistribution, and that newcomers displacing incumbents does a similar job even with no growth at all. So “growth” was standing in for <em>access</em>. How well it works depends on how fast the open-access value arrives compared with how fast trading concentrates wealth: at a hundredth of the rate shown, the top 1% still end with about a third.</p>
+<p>A second model let villagers split effort between making, grabbing and guarding, with grabbers able to form gangs. Whether a dominant gang formed depended on whether size wins fights, and hardly on growth: at zero growth the largest gang held 2%, 9%, 49% of wealth as the advantage of size went from weak to strong. Growth helped smoothly, with no threshold: going from a pie shrinking 5% a year to one growing 5% cut effort spent grabbing from 45% to 30%. A shrinking pie hurt more than a growing one helped. Growth worked there for one reason: it keeps the pile of old wealth worth stealing small next to the stream of new output. The reviewer notes this model gave growth very little grip to begin with, and that its “dominant gang” held wealth only in proportion to its headcount, so it shows gangs forming and does not show them extracting.</p>
+
+<h2>4. The ruler’s sum, and where “2%” comes from</h2>
+<p>This is the one model that produces a growth threshold at all. A ruler sets how much to take and how tightly to control. Field work can be forced. Invention cannot, is smothered by control, and is the only source of growth. He cannot sign a binding promise, but if he grabs what people have built, nobody trusts him again.</p>
+<div class="plate">
+<h4>Freedom the ruler chooses to allow, by how much growth is on offer</h4>
+<p class="sub">Freedom = 1 − control. Ruler discounts the future at 4% a year. Lines differ in how long he expects to stay in power.</p>
+<div class="legend" id="l-ruler"></div>
+<div class="chart" id="c-ruler"></div>
+<details><summary>Show numbers</summary><div class="tw" id="t-ruler"></div></details>
+</div>
+<p>There is no gentle slope. Below a threshold he runs a coercive regime (control 0.88, takes 54%). Above it he lets go completely (control 0, takes 27%). Half-measures are his worst option, because moderate control kills invention without forcing much work. For a patient, secure ruler the threshold lands between 1.5% and 2.75%, which is where your 2% would sit. That is as far as it goes. The threshold roughly doubles if invention is costlier, if subjects are less patient, or if revolt is easier, and for a ruler who expects 14 years or fewer no growth rate in the range is enough. The reviewer also notes the all-or-nothing jump comes partly from how the model is set up: coercion only pays once it pushes effort past what people would do voluntarily, so the ruler is always choosing between two regimes.</p>
+<p>Two ablations show what is carrying the result. Make the same growth <em>forceable</em>, and he chooses full control at every growth rate. Make his promises worthless, and he stays coercive even at 20% growth. So the wind blows only when growth has to pass through people’s uncoerced choices and the ruler can be believed. That is also the model’s account of North Korea: give the Kim-like ruler a long, secure horizon and he liberalises in the model, nukes and outside rents included. Outside military threat mostly made rulers <em>more</em> coercive, since squeezing pays now and growth pays later.</p>
+<p>The serf appears here too: at zero growth, necessity reads 1.00, freedom 0.12, and what he keeps after the cost of forced work is 2% of output.</p>
+
+<h2>5. “What about the Chinese?”</h2>
+<p>The regimes agent put four stylised countries into one model in which a leader pays off a coalition and funds himself from three sources: taxing free skilled work, rents that need nobody, and forced labour.</p>
+<div class="plate">
+<h4>What disciplines a ruler nobody voted for, ranked</h4>
+<div class="tw"><table>
+<tr><th>Constraint</th><th>How strong in the model</th><th>What automation does to it</th></tr>
+<tr><td>His revenue comes from free, mobile people</td><td>Strongest. Citizens get 0.42 of the best achievable, against 0.18 when revenue is rents</td><td>Disappears</td></tr>
+<tr><td>People and money can leave</td><td>Second</td><td>Worthless once leavers take no revenue with them</td></tr>
+<tr><td>Many power centres (provinces, courts, firms)</td><td>Large for elected rulers (0.41 → 0.84), modest for unelected</td><td>Survives only if the centres are not automated too</td></tr>
+<tr><td>Fear of revolt</td><td>Sets a floor</td><td>Collapses with automated security forces</td></tr>
+<tr><td>Rival elites</td><td>Helps elites, not ordinary people</td><td>Unchanged</td></tr>
+</table></div>
+</div>
+<p>So the model’s answer is: the Chinese state has needed a hundred million people to start firms and move to cities of their own accord, and you cannot order that. The same model says the tax base is worth about half of what elections are worth, and elections added 0.35–0.45 almost everywhere. The single change that turned China-like into North-Korea-like was the revenue mix moving to forced labour.</p>
+<p>Two weaknesses. The 0.42 against 0.18 gap rests on a stack of assumptions; strip out emigration, revolt and the boost public goods give to output and it shrinks to 0.20 against 0.05, or disappears if squeezing people costs the ruler little output. And the model wrongly ranks Gulf citizens below Chinese ones. The reviewer’s diagnosis: real Gulf rulers buy loyalty in advance with subsidies (“no taxation, no representation”) and their citizens are a small privileged group sitting on top of migrant labour. The model has neither. A ruler who does not need you can still find it cheaper to pay you than to fight you.</p>
+<p><strong>Then the data.</strong> A separate agent tested the story on about 160 countries since 1960 (V-Dem, Penn World Table, WID). Several big sources were blocked from this container, so it used GitHub mirrors; World Bank rents and union density are missing.</p>
+<div class="plate">
+<h4>The story against real countries</h4>
+<div class="tw"><table>
+<tr><th>Claim</th><th>Verdict</th><th>Key number</th></tr>
+<tr><td>States funded by resources and not by their people treat people worse, even among autocracies</td><td><span class="v mix">◐ Mixed</span></td><td>Holds between countries (−0.11 civil liberties on a 0–1 scale at Gulf levels). Vanishes when you follow one country over time</td></tr>
+<tr><td>Growth in autocracies is followed by better lives</td><td><span class="v ok">✓ Supported</span></td><td>+0.48 years of life expectancy per extra point of growth, 1990–2019</td></tr>
+<tr><td>Growth in autocracies is followed by more freedom</td><td><span class="v no">✕ Not supported</span></td><td>+0.005 civil liberties per point (noise). China: 5.8% a year, civil liberties −0.01</td></tr>
+<tr><td>Stagnation is followed by loss of freedom</td><td><span class="v no">✕ Not supported</span></td><td>+0.001</td></tr>
+<tr><td>Economic plurality goes with freedom at equal income</td><td><span class="v mix">◐ Mostly not</span></td><td>True across all countries, gone inside autocracies</td></tr>
+</table></div>
+</div>
+<p>This is the finding I would least want you to miss. The wind seems to buy <em>welfare</em> and being left alone economically. It does not seem to buy <em>voice</em>. China scores 9 out of 100 on Freedom House against North Korea’s 3. Its citizens are far richer and healthier than they were, and that is real, but “empowered” is doing two jobs in your draft. The between-country patterns also look more like how a state was born than like a dial anyone can turn.</p>
+<p>The formal agent found the same split from the other side. One vote among a million gives you 0.0000005 bits of control over the result. But protection adds up per head: an elected ruler in the model was deterred from targeting even a single person, while an autocrat who fears only mass revolt was deterred from targeting no group smaller than the revolt threshold. Power to bring things about, and protection from having things done to you, are different quantities. Elections supply almost none of the first and a great deal of the second. That may be what Jared meant by “backstop”.</p>
+
+<h2>6. What happens when the machines make the growth</h2>
+<p>Both the ruler model and the regimes model were given a dial: the share of growth, or of revenue, that no longer needs people.</p>
+<div class="plate">
+<h4>Ruler model: turning the AI dial</h4>
+<p class="sub">Growth available is 4% a year. Humans still do all the field work, so they stay fully necessary throughout.</p>
+<div class="legend" id="l-ai"></div>
+<div class="chart" id="c-ai"></div>
+<details><summary>Show numbers</summary><div class="tw" id="t-ai"></div></details>
+</div>
+<p>Nothing happens, and then everything happens. Where the drop falls is not meaningful: the reviewer re-ran it and the cliff sits at 0% of growth from machines when 3% growth is on offer, 46% at 4%, 94% at 6%. Ignore the 46. The grey line is the one for your essay: <strong>necessity reads 100% the whole way across.</strong> People were exactly as needed the day after as the day before. A society watching “are humans still necessary?” as its warning light would see nothing, because what changed was where the growth came from. In a variant where machines also take the field work, necessity does fall to zero, what people keep falls to 7%, and control <em>relaxes</em>, because there is nothing left worth forcing. That is your pet future, arrived at by arithmetic.</p>
+<div class="plate">
+<h4>Regimes model: citizens’ welfare as revenue stops needing them</h4>
+<p class="sub">Welfare as a share of the best this economy could give its citizens.</p>
+<div class="legend" id="l-auto"></div>
+<div class="chart" id="c-auto"></div>
+<details><summary>Show numbers</summary><div class="tw" id="t-auto"></div></details>
+</div>
+<p>North Korea-like and Gulf-like citizens barely notice, because their rulers already did not need their work. China-like citizens lose most. The democracy is the dramatic case. If the electorate cannot be shrunk, votes keep paying even when labour is worth nothing (0.84 to 0.67), because a challenger can still win by offering the majority a share of the machine rents. If it can be shrunk, the ruler cuts it from 53% to 28% of the population at 20% automation and welfare drops with it. The level at which that happens is extremely sensitive to what rigging is assumed to cost, anywhere from immediately to never, so treat “20%” as a mechanism and not a forecast. The model also assumes machine output becomes rent the state collects. A world where AI output is privately and widely owned, or taxed like labour, was never on the menu, and that is exactly the world your mentors argue for.</p>
+
+<h2 id="redteam">7. What a hostile reviewer found</h2>
+<p>An eighth agent read all the code, re-ran pieces with changed assumptions, and was asked to find what is wrong. Its specific corrections are folded into the sections above. Its three general charges:</p>
+<ol class="three">
+<li><strong>The shared story is assumed, not tested.</strong> In each model growth can help only through a door the author built: invention that cannot be forced, new firms, equal access, new positions. No model lets growth also make coercion pay better. So five models agreeing is weaker evidence than it looks. They also each measure “empowerment” differently (share kept, freedom, bits, welfare).</li>
+<li><strong>The models leave out arms and organisation.</strong> Historically, ordinary people gained power when rulers needed them collectively and with weapons in hand, and when they organised: the rowers of the Athenian fleet, the mass-conscription wars that came before universal suffrage and progressive taxes, the unions. That is <em>collective</em> necessity, the very thing these models wave away as a free-rider problem. It is the strongest point in favour of your original word.</li>
+<li><strong>Plurality and uncoerced production are results as much as causes.</strong> They come from laws, military technology and prior institutions. Growth seems to protect people only once exit and organisation are already legal.</li>
+</ol>
+<div class="plate">
+<h4>Cases that cut against “growth plus many buyers protects you”</h4>
+<div class="tw"><table>
+<tr><th>Case</th><th>What happened</th></tr>
+<tr><td>Eastern Europe’s second serfdom</td><td>Came with a grain-export boom. Growth and many foreign buyers produced more coercion</td></tr>
+<tr><td>The US cotton South</td><td>Booming output, many competing planters, intensifying slavery. Exit was closed by law</td></tr>
+<tr><td>Gulf kafala system</td><td>High growth, many employers, and a worker’s right to leave tied to one sponsor</td></tr>
+<tr><td>Britain, 1790s–1840s</td><td>Industrial growth with flat wages, and laws banning workers from combining</td></tr>
+<tr><td>Stalin’s USSR; China since 2012</td><td>Fast growth alongside the Gulag; growth alongside tighter surveillance</td></tr>
+<tr><td>The Nordic countries</td><td>Workers empowered through a few centralised bargainers, the opposite of many small bidders</td></tr>
+<tr><td>Norway, Botswana</td><td>Resource rents without disempowerment, because the institutions were there first</td></tr>
+</table></div>
+</div>
+<p>Notice what the cotton South and kafala have in common with the serf: plenty of people want you, and you are not allowed to walk to them. Many bidders did nothing without the right to leave. And notice the Nordic case: organised voice can substitute for exit. So the formula from section 2 needs a second term your essay could supply. The floor under a person is set by exit <em>or</em> by collective voice, and both are things a legal order grants and can revoke.</p>
+
+<h2>8. Is this already economics?</h2>
+<p>Mostly yes, under other names. There is no single “disempowerment curve”, but the pieces are old and respectable:</p>
+<div class="tw"><table>
+<tr><th>Your phrase</th><th>Their name for it</th><th>Who</th></tr>
+<tr><td>The ruler who lets the wind blow</td><td>Stationary bandit, encompassing interest</td><td>Olson 1993; McGuire &amp; Olson 1996</td></tr>
+<tr><td>Serfs were necessary and not empowered</td><td>The serfdom hypothesis; labour coercion and outside options</td><td>Domar 1970; Acemoglu &amp; Wolitzky 2011</td></tr>
+<tr><td>Who the ruler has to keep happy</td><td>Selectorate theory</td><td>Bueno de Mesquita, Smith, Siverson, Morrow 2003</td></tr>
+<tr><td>States that don’t need their people</td><td>Resource curse, rentier state; for AI, the intelligence curse</td><td>Ross 2001 (contested by Haber &amp; Menaldo 2011); Drago &amp; Laine</td></tr>
+<tr><td>The soft wind of incentives</td><td>“Implicit alignment” of social systems with human interests</td><td>Kulveit et al., Gradual Disempowerment, 2025</td></tr>
+<tr><td>Leaving as power</td><td>Exit, voice and loyalty; mobile capital and representation</td><td>Hirschman 1970; Bates &amp; Lien 1985</td></tr>
+<tr><td>Fair trades produce an oligarch</td><td>Yard-sale model, wealth condensation</td><td>Chakraborti 2002; Boghosian et al. 2017</td></tr>
+<tr><td>Growth makes people decent</td><td>The moral consequences of economic growth</td><td>Friedman 2005</td></tr>
+</table></div>
+<p>The closest things to literal disempowerment curves: US labour share of income (about 66% in 1947, 52.8% in mid-2026 per BLS, a record low), union density (OECD average 30% in 1985, 15% now), and V-Dem’s democracy score for the average world citizen, which is back at 1978 levels. On causation the honest state of play is that democracy fairly reliably raises growth, while growth causing democracy is contested and mostly shows up as helping existing democracies survive. That matches your own caveat, “when you don’t begin from a state of complete autocracy”.</p>
+<p class="note">The literature agent could not open intelligence-curse.ai, arxiv.org or gwern.net from this container and relied on search excerpts for those; check its summaries of your mentors’ work against the originals. Full review with links: <code>06-literature/LITERATURE.md</code>.</p>
+
+<h2>9. What I would take into the essay</h2>
+<ol class="three">
+<li><strong>Replace “necessary” with “wanted by more than one party who can’t coordinate, and free to go to them”.</strong> It explains the serf, Sally, the king, the rubber-stamper and the LLM with one sentence, and it tells you what to build: second bidders and cheap exit. Administrative necessity (the rubber stamp) fails this test, which is a cleaner reason to reject it than its unpleasantness.</li>
+<li><strong>Say which growth.</strong> The wind is real when new value arrives as new entrants, has to be coaxed and cannot be commanded, and is open to small players. Each of those is a design target for an AI transition. “Keep GDP rising” is not.</li>
+<li><strong>Split empowerment in two.</strong> Power-to (options, reach, the 8 bits Sally has) and protection-from (nobody can move you without your consent). Markets and growth supply the first. Votes and many power centres supply the second. China has gained a lot of the first and little of the second. A pet future offers neither; an augmentation race offers the first and attacks the second.</li>
+<li><strong>Necessity is a lagging indicator.</strong> In the ruler model people were still 100% necessary on the day their freedom went. What moved was where the <em>growth</em> came from. If you want one new image for the essay, that cliff may be it.</li>
+<li><strong>Your instrumentalisation worry has a formal face.</strong> In the bargaining model, being highly necessary to buyers who can coordinate raises their reward for blocking your exit. Necessity without plurality invites capture. That is your central tension, derived.</li>
+<li><strong>Do not drop necessity. Split it.</strong> Individual necessity did almost nothing in any model. Collective necessity, with the ability to act together, is what the history says moved rulers, and it is what the models handled worst. An essay that says “individual necessity is a trap, collective necessity plus the right to leave is the thing” would be saying something the models, the data and the counterexamples all allow.</li>
+<li><strong>Be careful with the wind.</strong> The honest version is that the wind fills a sail somebody already rigged: laws that let people leave, combine, own and enter. In an AI transition the sail is the thing to protect.</li>
+</ol>
+
+<hr>
+<p class="note"><strong>Where everything is.</strong> Branch <code>ccr-7d10d5f8-wmnni3</code>, folder <code>research/growth-empowerment/</code>. Each numbered folder has the model’s code (one Python file that regenerates everything), a <code>results.json</code> with the numbers behind every chart here, and more figures than are shown on this page. All model parameters are invented for illustration and none are estimated from data; the models show which mechanisms can produce the pattern, and the data test is the only part that speaks about the real world. The reviewer’s scratch runs are in <code>08-redteam/</code>.</p>
+</div>
+
+<script>
+const D={"yard":{"t":[1,2,3,4,5,6,7,9,10,13,15,19,23,28,34,41,50,60,73,89,108,131,160,194,236,287,349,424,515,626,761,925,1124,1366,1661,2019,2454,2982,3625,4406,5356,6510,7912,9617,11690,14208,17270,20991,25514,31012,37694,45816,55688,67688,82272,100000],"s":{"No growth":[0.011,0.012,0.013,0.014,0.015,0.016,0.017,0.018,0.018,0.019,0.02,0.022,0.023,0.025,0.026,0.028,0.031,0.033,0.034,0.036,0.04,0.043,0.047,0.053,0.057,0.062,0.071,0.081,0.086,0.101,0.111,0.123,0.141,0.159,0.183,0.207,0.248,0.266,0.293,0.326,0.377,0.418,0.483,0.559,0.623,0.675,0.738,0.783,0.827,0.873,0.916,0.942,0.97,0.984,0.991,0.998],"New value open to everyone equally":[0.011,0.012,0.013,0.014,0.015,0.016,0.017,0.018,0.018,0.019,0.019,0.021,0.022,0.023,0.024,0.025,0.026,0.026,0.027,0.027,0.029,0.029,0.029,0.029,0.03,0.029,0.028,0.029,0.028,0.029,0.029,0.03,0.03,0.03,0.03,0.028,0.03,0.029,0.029,0.029,0.028,0.029,0.03,0.029,0.031,0.029,0.029,0.029,0.029,0.03,0.03,0.03,0.03,0.03,0.03,0.029],"New value favours the big":[0.011,0.012,0.013,0.014,0.015,0.016,0.017,0.018,0.018,0.02,0.021,0.023,0.024,0.027,0.029,0.032,0.035,0.04,0.044,0.051,0.06,0.074,0.099,0.142,0.23,0.392,0.599,0.789,0.91,0.969,0.992,0.998,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0],"Newcomers displace incumbents":[0.02,0.029,0.038,0.047,0.056,0.064,0.072,0.087,0.095,0.095,0.096,0.097,0.097,0.097,0.097,0.097,0.096,0.097,0.097,0.098,0.099,0.1,0.098,0.099,0.099,0.1,0.1,0.098,0.1,0.098,0.1,0.098,0.098,0.098,0.097,0.098,0.099,0.097,0.099,0.098,0.1,0.099,0.1,0.097,0.099,0.099,0.099,0.098,0.098,0.099,0.098,0.098,0.098,0.098,0.098,0.099]}},"yard_prop_last":0.9981,"ruler":{"g":[0.0,0.25,0.5,0.75,1.0,1.25,1.5,1.75,2.0,2.25,2.5,2.75,3.0,3.25,3.5,3.75,4.0,4.25,4.5,4.75,5.0],"s":{"tenure ~100y (h=1%)":[0.12,0.12,0.12,0.12,0.12,0.12,0.12,0.12,0.12,0.12,0.12,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0],"tenure ~33y (h=3%)":[0.12,0.12,0.12,0.12,0.12,0.12,0.12,0.12,0.12,0.12,0.12,0.12,0.12,0.12,0.12,0.12,1.0,1.0,1.0,1.0,1.0],"tenure ~14y (h=7%)":[0.12,0.12,0.12,0.12,0.12,0.12,0.12,0.12,0.12,0.12,0.12,0.12,0.12,0.12,0.12,0.12,0.12,0.12,0.12,0.12,0.12],"tenure ~7y (h=15%)":[0.12,0.12,0.12,0.12,0.12,0.12,0.12,0.12,0.12,0.12,0.12,0.12,0.12,0.12,0.12,0.12,0.12,0.12,0.12,0.12,0.12]},"kept":{"tenure ~100y (h=1%)":[0.46,0.46,0.46,0.46,0.46,0.46,0.46,0.46,0.46,0.46,0.46,0.72,0.72,0.73,0.73,0.73,0.73,0.73,0.73,0.733,0.742],"tenure ~33y (h=3%)":[0.46,0.46,0.46,0.46,0.46,0.46,0.46,0.46,0.46,0.46,0.46,0.46,0.46,0.46,0.46,0.46,0.72,0.72,0.73,0.733,0.742],"tenure ~14y (h=7%)":[0.46,0.46,0.46,0.46,0.46,0.46,0.46,0.46,0.46,0.46,0.46,0.46,0.46,0.46,0.46,0.46,0.46,0.46,0.46,0.46,0.46],"tenure ~7y (h=15%)":[0.46,0.46,0.46,0.46,0.46,0.46,0.46,0.46,0.46,0.46,0.46,0.46,0.46,0.46,0.46,0.46,0.46,0.46,0.46,0.46,0.46]}},"ai":{"phi":[0.0,2.0,4.0,6.0,8.0,10.0,12.0,14.0,16.0,18.0,20.0,22.0,24.0,26.0,28.0,30.0,32.0,34.0,36.0,38.0,40.0,42.0,44.0,46.0,48.0,50.0,52.0,54.0,56.0,58.0,60.0,62.0,64.0,66.0,68.0,70.0,72.0,74.0,76.0,78.0,80.0,82.0,84.0,86.0,88.0,90.0,92.0,94.0,96.0,98.0,100.0],"freedom":[1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,0.12,0.12,0.12,0.12,0.12,0.12,0.12,0.12,0.12,0.12,0.12,0.12,0.12,0.12,0.12,0.12,0.12,0.12,0.12,0.12,0.12,0.12,0.12,0.12,0.12,0.12,0.12,0.12],"kept":[0.73,0.73,0.73,0.73,0.73,0.73,0.73,0.73,0.73,0.73,0.72,0.72,0.72,0.72,0.72,0.72,0.72,0.72,0.72,0.72,0.72,0.72,0.72,0.46,0.46,0.46,0.46,0.46,0.46,0.46,0.46,0.46,0.46,0.46,0.46,0.46,0.46,0.46,0.46,0.46,0.46,0.46,0.46,0.46,0.46,0.46,0.46,0.46,0.46,0.46,0.46],"necessity":[1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0]},"ai2":{"mu":[0.0,4.0,8.0,12.0,16.0,20.0,24.0,28.0,32.0,36.0,40.0,44.0,48.0,52.0,56.0,60.0,64.0,68.0,72.0,76.0,80.0,84.0,88.0,92.0,96.0,100.0],"freedom":[0.12,0.14,0.18,0.2,0.24,0.26,0.3,0.34,0.36,0.4,0.42,0.46,0.48,0.52,0.54,0.52,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5],"kept":[0.46,0.451,0.435,0.425,0.407,0.395,0.376,0.356,0.343,0.323,0.309,0.289,0.276,0.257,0.245,0.205,0.182,0.161,0.143,0.127,0.113,0.101,0.092,0.084,0.079,0.075],"necessity":[1.0,0.954,0.904,0.854,0.8,0.747,0.689,0.629,0.576,0.516,0.465,0.407,0.36,0.307,0.265,0.207,0.168,0.131,0.098,0.07,0.048,0.03,0.016,0.007,0.002,0.0]},"entry":{"No growth":{"share":[0.979,0.979,0.979,0.979,0.979,0.978,0.978,0.976,0.972,0.972,0.97,0.97,0.969,0.969,0.968,0.968,0.964,0.964,0.964,0.964,0.964,0.964,0.964,0.96,0.958,0.957,0.957,0.957,0.931,0.926,0.923,0.919,0.919,0.918,0.911,0.911,0.911,0.902,0.902,0.9,0.9,0.9,0.9,0.875,0.875,0.853,0.841,0.831,0.815,0.815,0.815,0.815,0.802,0.802,0.802,0.791,0.791,0.791,0.791,0.791,0.791],"bid":[6.74,6.58,6.42,6.27,6.13,5.8,5.59,5.37,5.2,5.2,4.68,4.38,4.32,4.1,3.92,3.85,3.67,3.67,3.67,3.56,3.42,3.33,3.33,2.98,2.66,2.54,2.54,2.46,1.98,1.79,1.69,1.53,1.53,1.38,1.3,1.17,1.17,1.1,1.1,1.05,1.01,1.01,1.01,0.79,0.72,0.57,0.49,0.42,0.3,0.3,0.3,0.3,0.22,0.22,0.22,0.14,0.14,0.14,0.14,0.14,0.14],"wage":[1.8,1.8,1.8,1.8,1.79,1.79,1.79,1.79,1.78,1.78,1.78,1.78,1.78,1.78,1.77,1.77,1.77,1.77,1.77,1.77,1.77,1.77,1.77,1.76,1.76,1.75,1.75,1.75,1.71,1.7,1.69,1.69,1.69,1.68,1.67,1.67,1.67,1.66,1.66,1.65,1.65,1.65,1.65,1.61,1.6,1.56,1.54,1.52,1.5,1.5,1.5,1.5,1.47,1.47,1.47,1.45,1.45,1.45,1.45,1.45,1.45]},"2% growth as new employers":{"share":[0.979,0.979,0.979,0.978,0.978,0.979,0.981,0.981,0.982,0.982,0.982,0.983,0.981,0.981,0.981,0.981,0.982,0.981,0.982,0.982,0.982,0.982,0.981,0.981,0.981,0.981,0.98,0.981,0.981,0.981,0.98,0.979,0.979,0.98,0.98,0.98,0.981,0.98,0.98,0.981,0.98,0.981,0.981,0.98,0.98,0.98,0.978,0.978,0.978,0.979,0.978,0.978,0.977,0.976,0.976,0.977,0.976,0.976,0.976,0.975,0.974],"bid":[6.74,6.81,7.04,6.99,7.21,7.17,7.49,7.52,7.65,7.67,7.74,7.93,8.12,8.0,8.1,7.93,8.19,8.03,8.18,7.83,8.15,8.29,8.43,8.63,8.55,8.78,8.68,8.91,8.92,9.26,9.28,9.41,9.37,9.42,9.18,8.91,8.68,8.81,8.71,8.98,8.69,8.99,9.11,9.29,9.01,9.35,9.35,9.29,9.39,9.01,9.15,8.6,8.59,8.57,8.79,8.84,8.98,9.13,9.43,9.38,9.29],"wage":[1.8,1.82,1.87,1.9,1.95,1.99,2.05,2.08,2.14,2.17,2.23,2.27,2.34,2.38,2.44,2.48,2.53,2.57,2.64,2.67,2.75,2.79,2.88,2.96,2.99,3.07,3.1,3.19,3.23,3.3,3.34,3.44,3.49,3.58,3.63,3.72,3.78,3.89,3.94,4.05,4.1,4.21,4.27,4.37,4.43,4.55,4.69,4.75,4.87,4.93,5.07,5.12,5.25,5.34,5.49,5.56,5.72,5.8,5.96,6.04,6.2]},"2% growth to existing employers":{"share":[0.979,0.979,0.979,0.979,0.979,0.978,0.978,0.976,0.972,0.972,0.97,0.97,0.969,0.969,0.968,0.968,0.964,0.964,0.964,0.964,0.964,0.964,0.964,0.96,0.958,0.957,0.957,0.957,0.931,0.926,0.923,0.919,0.919,0.918,0.911,0.911,0.911,0.902,0.902,0.9,0.9,0.9,0.9,0.875,0.875,0.853,0.841,0.831,0.815,0.815,0.815,0.815,0.802,0.802,0.802,0.791,0.791,0.791,0.791,0.791,0.791],"bid":[6.74,6.58,6.42,6.27,6.13,5.8,5.59,5.37,5.2,5.2,4.68,4.38,4.32,4.1,3.92,3.85,3.67,3.67,3.67,3.56,3.42,3.33,3.33,2.98,2.66,2.54,2.54,2.46,1.98,1.79,1.69,1.53,1.53,1.38,1.3,1.17,1.17,1.1,1.1,1.05,1.01,1.01,1.01,0.79,0.72,0.57,0.49,0.42,0.3,0.3,0.3,0.3,0.22,0.22,0.22,0.14,0.14,0.14,0.14,0.14,0.14],"wage":[1.8,1.83,1.87,1.91,1.94,1.98,2.02,2.06,2.09,2.13,2.17,2.21,2.25,2.3,2.34,2.39,2.43,2.48,2.53,2.58,2.63,2.68,2.73,2.78,2.83,2.88,2.94,3.0,2.97,3.02,3.07,3.11,3.18,3.23,3.28,3.34,3.41,3.44,3.51,3.58,3.65,3.72,3.79,3.76,3.84,3.81,3.84,3.87,3.87,3.95,4.03,4.11,4.12,4.2,4.29,4.31,4.4,4.48,4.57,4.67,4.76]}},"sally":{"serf_role__manorial_institutions":{"necessity_marginal_product":1.301,"necessity_unrecoverable_loss_to_employer_share":0.0048,"necessity_share_of_whole_economy":0.0006,"retained_share_of_marginal_product":0.8949,"mean_independent_bidders_in_reach":0.0,"mean_positions_in_reach":6.8867,"mean_wage":1.1331},"serf_role__plural_institutions":{"necessity_marginal_product":1.3566,"necessity_unrecoverable_loss_to_employer_share":0.1254,"necessity_share_of_whole_economy":0.0006,"retained_share_of_marginal_product":0.9792,"mean_independent_bidders_in_reach":193.7087,"mean_positions_in_reach":193.7087,"mean_wage":1.3194},"sally_role__manorial_institutions":{"necessity_marginal_product":4.006,"necessity_unrecoverable_loss_to_employer_share":0.0002,"necessity_share_of_whole_economy":0.0,"retained_share_of_marginal_product":0.2707,"mean_independent_bidders_in_reach":0.0,"mean_positions_in_reach":7.0,"mean_wage":1.0742},"sally_role__plural_institutions":{"necessity_marginal_product":4.177,"necessity_unrecoverable_loss_to_employer_share":0.0063,"necessity_share_of_whole_economy":0.0,"retained_share_of_marginal_product":0.927,"mean_independent_bidders_in_reach":199.0,"mean_positions_in_reach":199.0,"mean_wage":3.8593}},"chars":{"hunter-gatherer":{"E":5.17,"E_worst":5.0,"exposure":0.0,"shapley_share":0.05,"class_necessity":1.0},"serf":{"E":0.88,"E_worst":0.0,"exposure":1.0,"shapley_share":0.03,"class_necessity":0.85},"slave":{"E":0.13,"E_worst":0.0,"exposure":2.0,"shapley_share":0.05,"class_necessity":0.95},"ward or pet":{"E":0.01,"E_worst":0.0,"exposure":1.58,"shapley_share":0.0,"class_necessity":0.0},"constitutional king":{"E":1.0,"E_worst":1.0,"exposure":0.0,"shapley_share":0.23,"class_necessity":0.2},"rubber-stamp approver":{"E":0.86,"E_worst":0.0,"exposure":2.0,"shapley_share":0.5,"class_necessity":1.0},"AI assistant":{"E":1.5,"E_worst":0.0,"exposure":1.0,"shapley_share":0.45,"class_necessity":0.3},"Sally (Netflix exec)":{"E":6.0,"E_worst":5.47,"exposure":1.0,"shapley_share":0.01,"class_necessity":0.1},"citizen (voter)":{"E":4.82,"E_worst":4.26,"exposure":0.95,"shapley_share":0.03,"class_necessity":1.0},"autocrat":{"E":5.88,"E_worst":0.0,"exposure":1.0,"shapley_share":0.27,"class_necessity":0.3}},"auto":{"alpha":[0.0,5.0,10.0,15.0,20.0,25.0,30.0,35.0,40.0,45.0,50.0,55.0,60.0,65.0,70.0,75.0,80.0,85.0,90.0,95.0,100.0],"s":{"USA-like":[0.843,0.85,0.845,0.85,0.529,0.528,0.527,0.522,0.518,0.514,0.512,0.507,0.502,0.498,0.493,0.488,0.484,0.48,0.338,0.312,0.296],"China-like":[0.475,0.474,0.474,0.474,0.474,0.473,0.473,0.464,0.464,0.464,0.412,0.412,0.372,0.363,0.333,0.311,0.297,0.298,0.299,0.3,0.285],"NK-like":[0.14,0.14,0.133,0.133,0.133,0.126,0.127,0.12,0.121,0.121,0.115,0.116,0.116,0.117,0.117,0.117,0.118,0.118,0.119,0.119,0.12],"Gulf-like":[0.216,0.216,0.216,0.216,0.216,0.216,0.226,0.226,0.227,0.227,0.227,0.228,0.228,0.228,0.229,0.229,0.23,0.244,0.244,0.245,0.245]},"usa_noshrink":[0.843,0.85,0.845,0.85,0.855,0.859,0.853,0.847,0.841,0.812,0.735,0.73,0.725,0.72,0.716,0.711,0.706,0.701,0.682,0.677,0.671],"usa_W":[0.533,0.533,0.533,0.533,0.283,0.283,0.283,0.283,0.283,0.283,0.283,0.283,0.283,0.283,0.283,0.283,0.283,0.283,0.158,0.158,0.158]}};
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const S=['--s1','--s2','--s3','--s4','--s5'];
+const NS='http://www.w3.org/2000/svg';
+function el(t,a,p){const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e}
+function ticks(lo,hi,n){const st=(hi-lo)/n;return Array.from({length:n+1},(_,i)=>lo+i*st)}
+function table(id,head,rows){const t=document.getElementById(id);if(!t)return;t.innerHTML='<table><tr>'+head.map((h,i)=>`<th class="${i?'n':''}">${h}</th>`).join('')+'</tr>'+rows.map(r=>'<tr>'+r.map((c,i)=>`<td class="${i?'n':''}">${c}</td>`).join('')+'</tr>').join('')+'</table>'}
+function legend(id,series){const l=document.getElementById(id);if(!l)return;l.innerHTML=series.map(s=>`<span><i style="background:var(${s.c});${s.dash?'background:repeating-linear-gradient(90deg,var('+s.c+') 0 4px,transparent 4px 7px)':''}"></i>${s.name}</span>`).join('')}
+function line(o){
+  const host=document.getElementById(o.id),W=680,H=o.h||300,m={l:44,r:o.r||16,t:10,b:38};
+  const svg=el('svg',{viewBox:`0 0 ${W} ${H}`,role:'img','aria-label':o.label},host);
+  const xs=o.x,x0=o.log?Math.log10(xs[0]):xs[0],x1=o.log?Math.log10(xs[xs.length-1]):xs[xs.length-1];
+  const X=v=>m.l+((o.log?Math.log10(v):v)-x0)/(x1-x0)*(W-m.l-m.r),y0=o.y0||0,y1=o.y1,Y=v=>H-m.b-(v-y0)/(y1-y0)*(H-m.t-m.b);
+  ticks(y0,y1,o.yn||4).forEach(t=>{el('line',{x1:m.l,x2:W-m.r,y1:Y(t),y2:Y(t),stroke:'var(--grid)','stroke-width':1},svg);el('text',{x:m.l-6,y:Y(t)+4,'text-anchor':'end'},svg).textContent=o.yf(t)});
+  o.xt.forEach(t=>{el('text',{x:X(t),y:H-m.b+16,'text-anchor':'middle'},svg).textContent=o.xf(t)});
+  el('text',{x:(m.l+W-m.r)/2,y:H-4,'text-anchor':'middle'},svg).textContent=o.xl;
+  el('line',{x1:m.l,x2:W-m.r,y1:Y(y0),y2:Y(y0),stroke:'var(--rule)','stroke-width':1},svg);
+  o.series.forEach(s=>{let d='';s.y.forEach((v,i)=>{const px=X(xs[i]),py=Y(v);d+=i?(o.step?`H${px}V${py}`:`L${px} ${py}`):`M${px} ${py}`});
+    el('path',{d,fill:'none',stroke:`var(${s.c})`,'stroke-width':2,'stroke-linejoin':'round','stroke-dasharray':s.dash?'5 4':''},svg)});
+  const cross=el('line',{y1:m.t,y2:H-m.b,stroke:'var(--muted)','stroke-width':1,visibility:'hidden'},svg);
+  const dots=o.series.map(s=>el('circle',{r:4,fill:`var(${s.c})`,stroke:'var(--plate)','stroke-width':2,visibility:'hidden'},svg));
+  const tip=document.createElement('div');tip.className='tip';tip.hidden=true;host.appendChild(tip);
+  const hit=el('rect',{x:m.l,y:m.t,width:W-m.l-m.r,height:H-m.t-m.b,fill:'transparent'},svg);
+  function move(ev){const r=svg.getBoundingClientRect(),px=(ev.clientX-r.left)/r.width*W;let bi=0,bd=1e9;xs.forEach((v,i)=>{const d=Math.abs(X(v)-px);if(d<bd){bd=d;bi=i}});
+    cross.setAttribute('x1',X(xs[bi]));cross.setAttribute('x2',X(xs[bi]));cross.setAttribute('visibility','visible');
+    dots.forEach((c,k)=>{c.setAttribute('cx',X(xs[bi]));c.setAttribute('cy',Y(o.series[k].y[bi]));c.setAttribute('visibility','visible')});
+    tip.innerHTML=`<b>${o.xtip(xs[bi])}</b><br>`+o.series.map(s=>`<i style="background:var(${s.c})"></i>${s.name}: <b>${o.yf(s.y[bi])}</b>`).join('<br>');tip.hidden=false;
+    const left=X(xs[bi])/W*r.width;tip.style.top='8px';if(left>r.width/2){tip.style.left='';tip.style.right=(r.width-left+10)+'px'}else{tip.style.right='';tip.style.left=(left+10)+'px'}}
+  function out(){tip.hidden=true;cross.setAttribute('visibility','hidden');dots.forEach(c=>c.setAttribute('visibility','hidden'))}
+  hit.addEventListener('pointermove',move);hit.addEventListener('pointerdown',move);hit.addEventListener('pointerleave',out);
+  if(o.lid)legend(o.lid,o.series);
+  if(o.tid){const idx=o.rows||xs.map((_,i)=>i);table(o.tid,[o.xl,...o.series.map(s=>s.name)],idx.map(i=>[o.xtip(xs[i]),...o.series.map(s=>o.yf(s.y[i]))]))}
+}
+const pct=v=>Math.round(v*100)+'%',f2=v=>(+v).toFixed(2);
+
+// 1 scatter
+(function(){const host=document.getElementById('c-scatter'),W=680,H=380,m={l:48,r:20,t:14,b:44};
+  const svg=el('svg',{viewBox:`0 0 ${W} ${H}`,role:'img','aria-label':'Scatter of class necessity against empowerment for ten characters'},host);
+  const X=v=>m.l+v*(W-m.l-m.r),Y=v=>H-m.b-v/7*(H-m.t-m.b);
+  [0,1,2,3,4,5,6,7].forEach(t=>{el('line',{x1:m.l,x2:W-m.r,y1:Y(t),y2:Y(t),stroke:'var(--grid)'},svg);el('text',{x:m.l-6,y:Y(t)+4,'text-anchor':'end'},svg).textContent=t});
+  [0,.25,.5,.75,1].forEach(t=>el('text',{x:X(t),y:H-m.b+16,'text-anchor':'middle'},svg).textContent=pct(t));
+  el('text',{x:(m.l+W-m.r)/2,y:H-6,'text-anchor':'middle'},svg).textContent='Necessity: output lost if everyone like you stops';
+  const yl=el('text',{x:12,y:(H-m.b+m.t)/2,'text-anchor':'middle',transform:`rotate(-90 12 ${(H-m.b+m.t)/2})`},svg);yl.textContent='Empowerment (bits)';
+  const off={'serf':[0,18,'middle'],'slave':[-9,4,'end'],'rubber-stamp approver':[6,-12,'end'],'citizen (voter)':[-8,4,'end'],'hunter-gatherer':[-8,-8,'end'],'autocrat':[8,-8],'AI assistant':[8,14],'constitutional king':[-4,-10,'end'],'ward or pet':[8,-8],'Sally (Netflix exec)':[8,-8]};
+  const tip=document.createElement('div');tip.className='tip';tip.hidden=true;host.appendChild(tip);const rows=[];
+  for(const k in D.chars){const c=D.chars[k],px=X(c.class_necessity),py=Y(c.E),o=off[k]||[8,4];
+    el('circle',{cx:px,cy:py,r:5,fill:'var(--s1)',stroke:'var(--plate)','stroke-width':2},svg);
+    const t=el('text',{x:px+o[0],y:py+o[1],'text-anchor':o[2]||'start'},svg);t.textContent=k;t.style.fill='var(--ink2)';
+    const h=el('circle',{cx:px,cy:py,r:14,fill:'transparent'},svg);
+    h.addEventListener('pointerenter',()=>{const r=svg.getBoundingClientRect();tip.innerHTML=`<b>${k}</b><br>Empowerment: <b>${c.E} bits</b><br>If others turn hostile: <b>${c.E_worst} bits</b><br>Class necessity: <b>${pct(c.class_necessity)}</b><br>Individual share of output: <b>${pct(c.shapley_share)}</b>`;tip.hidden=false;const l=px/W*r.width;tip.style.top=(py/H*r.height+12)+'px';if(l>r.width/2){tip.style.left='';tip.style.right=(r.width-l+8)+'px'}else{tip.style.right='';tip.style.left=(l+8)+'px'}});
+    h.addEventListener('pointerleave',()=>tip.hidden=true);
+    rows.push([k,c.E,c.E_worst,pct(c.class_necessity),pct(c.shapley_share)])}
+  table('t-scatter',['Character','Empowerment (bits)','If others hostile','Class necessity','Individual share'],rows)})();
+
+// 2 entry
+(function(){const e=D.entry,n=Object.keys(e),yrs=e[n[0]].bid.map((_,i)=>i);
+  line({id:'c-entry',lid:'l-entry',tid:'t-entry',label:'Independent employers in reach over 60 years',x:yrs,xt:[0,10,20,30,40,50,60],xf:v=>v,xtip:v=>'Year '+v,xl:'Year',y1:10,yn:5,yf:f2,rows:[0,10,20,30,40,50,60],
+   series:[{name:n[1],y:e[n[1]].bid,c:'--s3'},{name:n[2],y:e[n[2]].bid,c:'--s2'},{name:n[0],y:e[n[0]].bid,c:'--s1',dash:1}]})})();
+
+// 3 yard sale
+(function(){const y=D.yard,n=Object.keys(y.s);
+  line({id:'c-yard',lid:'l-yard',tid:'t-yard',label:'Top 1 percent wealth share over time under four kinds of growth',x:y.t,log:1,xt:[1,10,100,1000,10000,100000],xf:v=>v.toLocaleString(),xtip:v=>'Round '+v.toLocaleString(),xl:'Rounds of trading',y1:1,yn:4,yf:pct,rows:[0,8,20,31,43,55],
+   series:[{name:n[0]+' (and proportional growth: identical)',y:y.s[n[0]],c:'--s1'},{name:n[2],y:y.s[n[2]],c:'--s2'},{name:n[3],y:y.s[n[3]],c:'--s4'},{name:n[1],y:y.s[n[1]],c:'--s3'}]})})();
+
+// 4 ruler
+(function(){const r=D.ruler,n=Object.keys(r.s);
+  line({id:'c-ruler',lid:'l-ruler',tid:'t-ruler',label:'Freedom allowed by ruler against growth rate, by expected tenure',x:r.g,step:1,xt:[0,1,2,3,4,5],xf:v=>v+'%',xtip:v=>v+'% growth',xl:'Growth available per year, if people are left free to produce it',y1:1,yn:4,yf:f2,rows:[0,4,8,10,11,12,16,20],
+   series:[{name:'Expects ~100 years',y:r.s[n[0]],c:'--s1'},{name:'Expects ~33 years',y:r.s[n[1]],c:'--s2'},{name:'Expects ~14 years or fewer',y:r.s[n[2]],c:'--s3'}]})})();
+
+// 5 ai dial
+(function(){const a=D.ai;
+  line({id:'c-ai',lid:'l-ai',tid:'t-ai',label:'Freedom, share kept and necessity as machines supply more of growth',x:a.phi,step:1,xt:[0,20,40,60,80,100],xf:v=>v+'%',xtip:v=>v+'% of growth from machines',xl:'Share of growth supplied by machines',y1:1,yn:4,yf:f2,rows:[0,10,20,22,23,25,35,50],
+   series:[{name:'Freedom',y:a.freedom,c:'--s1'},{name:'Share of output people keep',y:a.kept,c:'--s2'},{name:'Necessity',y:a.necessity,c:'--muted',dash:1}]})})();
+
+// 6 automation by regime
+(function(){const a=D.auto;
+  line({id:'c-auto',lid:'l-auto',tid:'t-auto',label:'Citizen welfare by regime as revenue is automated',x:a.alpha,xt:[0,20,40,60,80,100],xf:v=>v+'%',xtip:v=>v+'% automated',xl:'Share of the free-work economy taken over by machines',y1:1,yn:4,yf:f2,rows:[0,3,4,8,12,16,18,20],
+   series:[{name:'USA-like, electorate can be shrunk',y:a.s['USA-like'],c:'--s1'},{name:'USA-like, electorate fixed',y:a.usa_noshrink,c:'--s1',dash:1},{name:'China-like',y:a.s['China-like'],c:'--s2'},{name:'Gulf-like',y:a.s['Gulf-like'],c:'--s3'},{name:'North Korea-like',y:a.s['NK-like'],c:'--s4'}]})})();
+</script>
