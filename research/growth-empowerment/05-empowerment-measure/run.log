@@ -18,3 +18,17 @@ growth
   growth shrinking 2%/period: Sally=6.20->2.61, citizen=4.87->1.57, serf (lord keeps control)=0.86->0.66, serf (lord must compete for labour)=0.86->0.66, n_positions=60.00->21.67, Sally affordable neighbours=7.33->0.67
   ablation {'positions grow, wealth frozen': 8.139746983058572, 'wealth grows, positions frozen': 6.2779200320010675}
 plurality
+  plurality grid (many routes) {'noise, independent each attempt': [2.85, 2.85, 2.85, 2.85, 2.85, 2.85], "noise, each gatekeeper's mood lasts": [3.21, 3.14, 2.83, 2.75, 2.65, 2.53], 'one hostile gatekeeper (worst one)': [0.0, 2.22, 3.65, 4.1, 4.34, 4.34], 'each gatekeeper hostile w.p. 0.2 (average)': [3.72, 3.96, 4.06, 4.16, 4.21, 4.22], 'chance of losing half your options or more (rho=0.2)': [0.2, 0.26, 0.18, 0.13, 0.09, 0.08], 'all gates open (reference)': [4.64, 4.64, 4.64, 4.64, 4.64, 4.64]}
+  plurality tree (one route to each place) {'noise, independent each attempt': [1.83, 1.83, 1.83, 1.83, 1.83, 1.83], "noise, each gatekeeper's mood lasts": [2.16, 1.85, 1.69, 1.58, 1.54, 1.46], 'one hostile gatekeeper (worst one)': [0.0, 0.51, 1.02, 1.33, 1.63, 1.73], 'each gatekeeper hostile w.p. 0.2 (average)': [2.6, 2.52, 2.53, 2.47, 2.49, 2.47], 'chance of losing half your options or more (rho=0.2)': [0.2, 0.28, 0.29, 0.31, 0.3, 0.32], 'all gates open (reference)': [3.25, 3.25, 3.25, 3.25, 3.25, 3.25]}
+voter
+  voter q=0.5: individual capacity 4.59e-07 bits; pivot prob 0.000798; block 10k: 1.000 bits
+  voter q=0.505: individual capacity 0 bits; pivot prob 0; block 10k: 0.355 bits
+  protection: democracy deterrence per head: single person 3.85, 1% group 4.15, 30% group 2.80; autocracy 0 below 0.25
+dependence
+  dependence [all three hold]: 3.61 3.61 3.61 4.77 5.32 5.48 5.41
+  dependence [cannot credibly withhold (overridden)]: 3.61 3.61 3.61 3.61 3.61 3.61 3.61
+  dependence [can be replaced]: 3.61 3.61 3.61 3.61 3.61 3.61 3.61
+  dependence [can be forced to work]: 3.61 3.61 3.61 3.61 3.61 3.61 3.61
+  dependence [wealth buys nothing]: 5.90 5.90 5.90 6.39 6.52 6.52 6.49
+  dependence necessity: [0.091, 0.125, 0.154, 0.2, 0.263, 0.333, 0.395]
+done in 310.8 s
