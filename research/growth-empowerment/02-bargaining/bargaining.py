@@ -400,7 +400,7 @@ def part2(pool):
     a.plot(Ks, beta0, "k--", lw=1.2, label="moving cost 2, employer sets terms (β=0)")
     a.set_xscale("log"); a.set_xlabel("number of independent employers (same total land)")
     a.set_ylabel("what workers keep: net wage ÷ net value of their work")
-    a.set_title("What workers keep rises with the number of bidders")
+    a.set_title("What workers keep vs number of employers")
     a.legend(fontsize=7.5, frameon=False)
     a = ax[1]
     for mi, mm in enumerate(ms):
@@ -408,7 +408,8 @@ def part2(pool):
     a.set_xscale("log"); a.set_yscale("symlog", linthresh=1)
     a.set_xlabel("number of independent employers")
     a.set_ylabel("independent employers a worker can reach")
-    a.set_title("Options actually reachable (moving cost caps them)")
+    a.set_title("Rival employers actually within reach")
+    a.set_ylim(bottom=0)
     a.legend(fontsize=7.5, frameon=False)
     a = ax[2]
     for key, col, ls, lab in [("contiguous_m2", C["blue"], "-", "neighbours merge, moving cost 2"),
@@ -517,11 +518,11 @@ def part3(pool):
            "series": {}, "final_values": {}}
     for key in agg:
         lab = f"{key[0]}_g{int(round(key[1]*100))}pct_merge{key[2]}_movecost{key[4]:g}" + ("" if key[3] else "_absolute_costs")
-        out["series"][lab] = {fld: np.round(avg(key, fld), 4).tolist() for fld in fields}
+        out["series"][lab] = {fld: np.round(avg(key, fld), 3).tolist() for fld in fields[:6]}
         out["final_values"][lab] = {fld: round(float(avg(key, fld)[-1]), 4) for fld in fields}
     RESULTS["part3_growth"] = out
 
-    style = {("static", 0.0): (C["gray"], "-", "no growth"),
+    style = {("static", 0.0): (C["gray"], "-", "no growth (hidden under red: identical)"),
              ("entry", 0.02): (C["green"], "-", "2% growth via new employers"),
              ("entry", 0.05): (C["teal"], "-", "5% growth via new employers"),
              ("incumbent", 0.02): (C["orange"], "--", "2% growth to existing employers"),
@@ -613,8 +614,8 @@ def part4(pool):
                    "plural_institutions": "200 independent employers, moving cost 0.5"},
         "table": tab}
     fig, ax = plt.subplots(1, 3, figsize=(14, 4.3))
-    order = [("serf", "manorial", "Serf\n(serf job, manor)"), ("sally", "plural", "Sally\n(exec job, open market)"),
-             ("serf", "plural", "Serf's job,\nopen market"), ("sally", "manorial", "Sally's job,\nlords' cartel")]
+    order = [("serf", "manorial", "Serf\non manor"), ("sally", "plural", "Sally\nopen market"),
+             ("serf", "plural", "serf job,\nopen market"), ("sally", "manorial", "Sally's job,\nlords' cartel")]
     cols = [C["red"], C["green"], C["teal"], C["orange"]]
     labels = [o[2] for o in order]
     vals = [tab[f"{r}_role__{i}_institutions"] for r, i, _ in order]
@@ -686,8 +687,8 @@ def part5():
         "wage_individual_bargaining": ref[5], "wage_if_class_bargains_collectively": ref[6],
         "gain_per_worker_per_year_if_success": ref[4],
         "group_sizes": ns.tolist(), "selective_incentive_per_striker": np.round(sigmas, 3).tolist(),
-        "success_prob_pessimistic_eq[repression][sigma][n]": {str(r): np.round(grids[r][0], 3).tolist() for r in reps},
-        "success_prob_optimistic_eq[repression][sigma][n]": {str(r): np.round(grids[r][1], 3).tolist() for r in reps},
+        "success_prob_pessimistic_eq[repression][sigma][n]": {str(r): np.round(grids[r][0], 2).tolist() for r in reps},
+        "success_prob_optimistic_eq[repression][sigma][n]": {str(r): np.round(grids[r][1], 2).tolist() for r in reps},
         "min_private_reward_for_success_from_pessimistic_start[repression][n]": need,
         "no_private_reward_no_repression_success_if_strike_expected[tau][n]":
             {str(t): [round(float(p[3]), 3) for p in piv_only[t]] for t in taus},
@@ -708,6 +709,7 @@ def part5():
         a.set_ylabel("private reward per striker\n(share of a year's wage)")
         a.set_title(f"Repression cost {r:g} yr's wage. Shade: success if expected;\nabove red line: succeeds even if not expected", fontsize=9)
         fig.colorbar(im, ax=a, fraction=0.046)
+    fig.subplots_adjust(wspace=0.45)
     savefig(fig, "fig5_collective_action.png")
     return RESULTS["part5_collective_action"]
 
@@ -724,7 +726,7 @@ if __name__ == "__main__":
     print("part5 min reward:", p5["min_private_reward_for_success_from_pessimistic_start[repression][n]"])
     RESULTS["runtime_seconds"] = round(time.time() - t0, 1)
     with open(os.path.join(HERE, "results.json"), "w") as fh:
-        json.dump(RESULTS, fh, indent=1)
+        json.dump(RESULTS, fh, separators=(",", ":"))
     print(json.dumps({"black_death": bd, "domar_ablation": abl}, indent=1))
     print("part3 finals:", json.dumps(p3["final_values"], indent=1))
     print("part4:", json.dumps(p4, indent=1))

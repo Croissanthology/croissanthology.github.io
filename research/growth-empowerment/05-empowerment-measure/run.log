@@ -1,0 +1,20 @@
+self-test
+  {'bsc_capacity_p0.11': 0.500084041835472, 'grid_E3': 4.392317422778761, 'grid_log2_reachable': 4.392317422778761}
+characters
+  hunter-gatherer          E3=5.17 worst=5.00 exposure=0.00 marg=0.050 shapley=0.050 class=1.00
+  serf                     E3=0.88 worst=0.00 exposure=1.00 marg=0.028 shapley=0.028 class=0.85
+  slave                    E3=0.13 worst=0.00 exposure=2.00 marg=0.047 shapley=0.047 class=0.95
+  ward or pet              E3=0.01 worst=0.00 exposure=1.58 marg=0.000 shapley=0.000 class=0.00
+  constitutional king      E3=1.00 worst=1.00 exposure=0.00 marg=0.200 shapley=0.233 class=0.20
+  rubber-stamp approver    E3=0.86 worst=0.00 exposure=2.00 marg=1.000 shapley=0.500 class=1.00
+  AI assistant             E3=1.50 worst=0.00 exposure=1.00 marg=0.300 shapley=0.450 class=0.30
+  Sally (Netflix exec)     E3=6.00 worst=5.47 exposure=1.00 marg=0.000 shapley=0.013 class=0.10
+  citizen (voter)          E3=4.82 worst=4.26 exposure=0.95 marg=0.000 shapley=0.033 class=1.00
+  autocrat                 E3=5.88 worst=0.00 exposure=1.00 marg=0.300 shapley=0.267 class=0.30
+  correlations {'shapley_share': {'spearman': 0.09090909090909088, 'pearson': -0.1936660804792425}, 'marginal': {'spearman': 0.0, 'pearson': -0.21495345791487386}, 'class_necessity': {'spearman': 0.012309149097933273, 'pearson': -0.02454159724607984}, 'exposure_vs_E': {'spearman': -0.6482593132545565, 'pearson': -0.4376880241416349}}
+growth
+  growth growing 2%/period: Sally=6.20->8.17, citizen=4.87->7.59, serf (lord keeps control)=0.86->1.06, serf (lord must compete for labour)=0.86->4.92, n_positions=60.00->164.33, Sally affordable neighbours=7.33->18.67
+  growth flat 0%: Sally=6.20->6.20, citizen=4.87->4.87, serf (lord keeps control)=0.86->0.86, serf (lord must compete for labour)=0.86->0.86, n_positions=60.00->60.00, Sally affordable neighbours=7.33->7.33
+  growth shrinking 2%/period: Sally=6.20->2.61, citizen=4.87->1.57, serf (lord keeps control)=0.86->0.66, serf (lord must compete for labour)=0.86->0.66, n_positions=60.00->21.67, Sally affordable neighbours=7.33->0.67
+  ablation {'positions grow, wealth frozen': 8.139746983058572, 'wealth grows, positions frozen': 6.2779200320010675}
+plurality

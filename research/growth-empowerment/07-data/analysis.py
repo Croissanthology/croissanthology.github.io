@@ -81,6 +81,10 @@ def load_all():
     for other in (pwt, wid, tax, eci, en):
         df = df.merge(other, on=["iso", "year"], how="left")
     df = df.sort_values(["iso", "year"]).reset_index(drop=True)
+    # PWT fills missing labour shares with a constant; drop runs of >=3 identical values (imputed, not measured)
+    run_id = (df.labsh != df.groupby("iso").labsh.shift()).cumsum()
+    run_len = df.groupby(["iso", run_id]).labsh.transform("size")
+    df.loc[run_len >= 3, "labsh"] = np.nan
     df["lgdp"] = np.log(df.gdppc)
     # resource income (Haber-Menaldo, production x world price, per capita) relative to PPP GDP per capita.
     # A rough share: numerator at market prices, denominator PPP, so read it as an index, in % points.

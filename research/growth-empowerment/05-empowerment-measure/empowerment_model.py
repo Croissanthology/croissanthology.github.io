@@ -595,28 +595,28 @@ def run_voter(N=1_000_001):
         res[f"prob_block_changes_outcome_q{q}"] = piv
         print(f"  voter q={q}: individual capacity {caps[0]:.3g} bits; pivot prob {piv[0]:.3g}; "
               f"block 10k: {caps[ms.index(10000)]:.3f} bits")
-    # Protection: will a ruler expropriate a group of fraction f?
+    # Protection: how much can a ruler gain from expropriating a group of fraction f before
+    # the expected loss of office outweighs it?  The ruler takes the group's wealth (worth
+    # f * L, in units of the value of office) iff f * L > P(lose | f) - P(lose | 0).
+    # So the group is safe for every loot ratio L below  deterrence(f) = (P(lose|f) - P(lose|0)) / f.
     fs = np.logspace(-6, -0.3, 60)
-    gain_over_office = 2.0     # taking everything from everyone is worth 2x the value of office
-    delta, sigma, swing = 0.03, 0.03, 0.9
+    delta, sigma, tau = 0.03, 0.03, 0.25
     p0 = norm.cdf(-delta / sigma)
-    dem = []
-    for f in fs:
-        share = 0.5 + delta - f * swing * (0.5 + delta)     # victims switch to the challenger
-        pl = norm.cdf(-(share - 0.5) / sigma)
-        dem.append(bool(f * gain_over_office > (pl - p0)))
-    tau = 0.25    # autocracy: removed only if victims exceed a revolt threshold
-    aut = [bool(f * gain_over_office > (1.0 if f > tau else 0.0)) for f in fs]
-    res["protection"] = {"group_fraction": list(fs), "democracy_ruler_would_expropriate": dem,
-                         "autocracy_ruler_would_expropriate": aut,
-                         "params": {"gain_over_office": gain_over_office, "incumbent_lead": delta,
-                                    "swing_noise_sd": sigma, "victims_switching": swing,
-                                    "autocracy_revolt_threshold": tau}}
-    fstar_dem = min((f for f, d in zip(fs, dem) if not d), default=None)
-    res["protection"]["democracy_smallest_protected_fraction"] = fstar_dem
-    res["protection"]["autocracy_smallest_protected_fraction"] = min((f for f, d in zip(fs, aut) if not d), default=None)
-    # ablation: elections where the victims do not vote on it (swing=0)
-    print(f"  protection: democracy protects groups >= {fstar_dem:.3g}; autocracy protects groups > {tau}")
+    def dem_deterrence(f, swing):
+        share = 0.5 + delta - f * swing * (0.5 + delta)       # victims switch to the challenger
+        return (norm.cdf(-(share - 0.5) / sigma) - p0) / f
+    pr = {"group_fraction": list(fs),
+          "democracy_safe_up_to_loot_ratio": [dem_deterrence(f, 0.9) for f in fs],
+          "democracy_victims_dont_vote_on_it": [dem_deterrence(f, 0.0) for f in fs],
+          "autocracy_safe_up_to_loot_ratio": [(1.0 if f > tau else 0.0) / f for f in fs],
+          "single_person_democracy": dem_deterrence(1 / N, 0.9),
+          "params": {"incumbent_lead": delta, "aggregate_swing_sd": sigma, "victims_switching": 0.9,
+                     "autocracy_revolt_threshold": tau,
+                     "note": "loot ratio = value of taking everything from everyone / value of staying in office"}}
+    res["protection"] = pr
+    print(f"  protection: democracy deterrence per head: single person {pr['single_person_democracy']:.2f}, "
+          f"1% group {dem_deterrence(0.01, 0.9):.2f}, 30% group {dem_deterrence(0.3, 0.9):.2f}; "
+          f"autocracy 0 below {tau}")
     return res
 
 
@@ -653,6 +653,7 @@ def dependence(G, Ds=(0, 1, 2, 4, 8, 16, 32)):
                                 B_effects=[("none", 1.0, lambda s: s)])
         Es.append(empowerment_avg(step, (home, 0), A, B))
     res["all three hold, but wealth buys no positions"] = Es
+    print("  dependence [wealth buys nothing]: " + " ".join(f"{e:.2f}" for e in Es))
     # necessity of the focal agent as D grows (each dependent produces 1 unit using the agent's output)
     # game: v(S) = [focal in S] * (1 + #dependents in S) + #independent workers in S (10 of them)
     # marginal share = (D+1)/(D+11); Shapley value of focal = 1 + D/2 (each dependent's unit split 50/50)
@@ -674,7 +675,8 @@ def figures(R):
         x = [ch[n][key] for n in names]; y = [ch[n]["E"] for n in names]
         ax.scatter(x, y, s=46, color=COL[0], edgecolor="white", linewidth=1.5, zorder=3)
         for n, xi, yi in zip(names, x, y):
-            ax.annotate(short[n], (xi, yi), xytext=(5, 4), textcoords="offset points", fontsize=8.5, color=INK)
+            ax.annotate(short[n], (xi, yi), xytext=(5, -11) if n == "ward or pet" else (5, 4),
+                        textcoords="offset points", fontsize=8.5, color=INK)
         ax.set_xlabel(lab); ax.set_ylabel("Empowerment over 3 steps (bits)")
         c = R["correlations"][key]
         ax.set_title(f"rank correlation {c['spearman']:+.2f}", fontsize=10, color=INK2, loc="left")
@@ -718,10 +720,12 @@ def figures(R):
                     linestyle="--" if i == 0 else "-", label=m)
         ax.set_xscale("log", base=2); ax.set_xticks(ks); ax.set_xticklabels(ks)
         ax.set_xlabel("number of independent gatekeepers"); ax.set_title(gname, loc="left", fontsize=10)
-    axes[0].set_ylabel("Empowerment over 3 steps (bits)"); axes[1].legend(frameon=False, fontsize=8)
+    axes[0].set_ylabel("Empowerment over 3 steps (bits)")
+    h, l = axes[0].get_legend_handles_labels()
+    fig.legend(h, l, loc="lower center", ncol=3, frameon=False, fontsize=8.5)
     fig.suptitle("Many gatekeepers matter only if some may be hostile, and more when there are other routes",
                  fontsize=11, x=0.01, ha="left")
-    fig.tight_layout(); fig.savefig(os.path.join(HERE, "fig4_plurality.png"), dpi=150); plt.close(fig)
+    fig.tight_layout(rect=(0, 0.12, 1, 1)); fig.savefig(os.path.join(HERE, "fig4_plurality.png"), dpi=150); plt.close(fig)
 
     # Fig 5: voter
     V = R["voter"]; m = V["coalition_sizes"]
@@ -734,11 +738,15 @@ def figures(R):
     axes[0].set_ylabel("control over who wins (bits)"); axes[0].legend(frameon=False, fontsize=8.5)
     axes[0].set_title("Power to bring about: tiny alone, 1 bit as a bloc", loc="left", fontsize=10)
     pr = V["protection"]; f = pr["group_fraction"]
-    axes[1].step(f, [1 - d for d in pr["democracy_ruler_would_expropriate"]], where="post", color=COL[0], label="with elections")
-    axes[1].step(f, [1 - a for a in pr["autocracy_ruler_would_expropriate"]], where="post", color=COL[1], label="autocracy (revolt only)")
-    axes[1].set_xscale("log"); axes[1].set_yticks([0, 1]); axes[1].set_yticklabels(["ruler would\nexpropriate", "protected"])
-    axes[1].set_xlabel("fraction of citizens a ruler targets"); axes[1].legend(frameon=False, fontsize=8.5)
-    axes[1].set_title("Protection: elections shield any group bigger than a few %", loc="left", fontsize=10)
+    axes[1].plot(f, pr["democracy_safe_up_to_loot_ratio"], color=COL[0], label="with elections")
+    axes[1].plot(f, np.maximum(pr["autocracy_safe_up_to_loot_ratio"], 1e-3), color=COL[1], label="autocracy (removed only by mass revolt)")
+    axes[1].plot(f, np.maximum(pr["democracy_victims_dont_vote_on_it"], 1e-3), color=COL[2], linestyle=":",
+                 label="elections, but victims don't vote on it")
+    axes[1].set_xscale("log"); axes[1].set_yscale("log"); axes[1].set_ylim(1e-3, 1e3)
+    axes[1].set_xlabel("fraction of citizens a ruler targets")
+    axes[1].set_ylabel("largest loot (in units of office value)\nat which the ruler still holds back")
+    axes[1].legend(frameon=False, fontsize=8.5)
+    axes[1].set_title("Protection: elections deter per head, even for small groups", loc="left", fontsize=10)
     fig.tight_layout(); fig.savefig(os.path.join(HERE, "fig5_voter.png"), dpi=150); plt.close(fig)
 
     # Fig 6: dependence
