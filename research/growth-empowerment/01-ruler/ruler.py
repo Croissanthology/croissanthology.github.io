@@ -57,7 +57,13 @@ def stage(tau, c, p, vA=None):
     of A (from their expectation of future policy); default: they expect (tau, c) forever."""
     mu = p["mu"]
     ev = (1 - tau) * (1 - mu)
-    e = np.clip(np.maximum(ev, c), 0, 1)
+    # control lets the ruler force effort up to c; he only does so when it raises his take
+    # (forcing pointless work would only raise the revolt payment)
+    ef = np.clip(np.maximum(ev, c), 0, 1)
+    def _net(e_):
+        u_ = (1 - tau) * (1 - mu) * e_ - e_ ** 2 / 2
+        return tau * (1 - mu) * e_ - np.maximum(0, p["theta"] * (1 - c) - u_)
+    e = np.where(_net(ef) >= _net(ev), ef, ev)
     u0 = (1 - tau) * (1 - mu) * e - e ** 2 / 2          # field net utility
     if vA is None:
         vA = np.maximum(u0, 0) / (1 - p["beta_s"])
@@ -283,22 +289,31 @@ def main():
     print("Q2 done", round(time.time() - t0, 1))
 
     # ---- Q3: outside threat + revolt (China vs North Korea)
+    # rival starts ahead (revenue 0.5 vs ~0.36 for a squeezed economy), grows 2%/yr
+    T3 = dict(g=0.05, SR0=0.5, gR=0.02)
     scen3 = {
-        "Dynasty, rival threat, catch-up potential 5% (China-like)": P(g=0.05, h=0.02, lam=0.15, gR=0.02),
-        "Same but nukes (threat off)": P(g=0.05, h=0.02, lam=0.0),
-        "Short horizon (h=15%), rival threat": P(g=0.05, h=0.15, lam=0.15),
-        "Nukes + short horizon + outside rents (North Korea-like)": P(g=0.05, h=0.15, lam=0.0, N=0.15),
-        "Nukes + long horizon + outside rents": P(g=0.05, h=0.02, lam=0.0, N=0.15),
-        "Threat + short horizon + outside rents": P(g=0.05, h=0.15, lam=0.15, N=0.15),
+        "China-like: long-lived party, tech race with rivals": P(h=0.02, lam=0.2, strength="tech", **T3),
+        "China-like but military power = tax revenue": P(h=0.02, lam=0.2, strength="revenue", **T3),
+        "Long-lived party, no threat": P(h=0.02, lam=0.0, **T3),
+        "North Korea-like: short horizon, nukes, outside rents": P(h=0.12, lam=0.0, N=0.15, **T3),
+        "North Korea-like without nukes (tech threat)": P(h=0.12, lam=0.2, N=0.15, strength="tech", **T3),
+        "North Korea-like with a long horizon": P(h=0.02, lam=0.0, N=0.15, **T3),
+        "Medium horizon (h=5%), no threat": P(h=0.05, lam=0.0, **T3),
+        "Medium horizon (h=5%), strong tech threat": P(h=0.05, lam=0.4, strength="tech", **T3),
     }
     q3 = {k: threat_solve(v) for k, v in scen3.items()}
-    lams = [0.0, 0.05, 0.1, 0.15, 0.2, 0.3]
-    h0s = [0.01, 0.03, 0.05, 0.08, 0.12, 0.2]
-    grid_free = [[threat_solve(P(g=0.05, h=h0, lam=l))["freedom"] for l in lams] for h0 in h0s]
-    grid_share = [[threat_solve(P(g=0.05, h=h0, lam=l))["share_kept"] for l in lams] for h0 in h0s]
-    res["q3_threat"] = {"scenarios": q3, "sweep": {"threat_lam": lams, "base_hazard_h0": h0s,
-                        "freedom[h0][lam]": grid_free, "share_kept[h0][lam]": grid_share,
-                        "g": 0.05, "rival_growth": 0.02}}
+    lams = [0.0, 0.05, 0.1, 0.2, 0.3, 0.4]
+    h0s = [0.01, 0.02, 0.03, 0.04, 0.05, 0.07, 0.1, 0.15]
+    sweep = {"threat_lam": lams, "base_hazard_h0": h0s, "g": 0.05, "rival_growth": 0.02}
+    for stn in ["tech", "revenue"]:
+        rows = [[threat_solve(P(h=h0, lam=l, strength=stn, **T3)) for l in lams] for h0 in h0s]
+        sweep[f"freedom[h0][lam] strength={stn}"] = [[x["freedom"] for x in rw] for rw in rows]
+        sweep[f"share_kept[h0][lam] strength={stn}"] = [[x["share_kept"] for x in rw] for rw in rows]
+    res["q3_threat"] = {"scenarios": q3, "sweep": sweep,
+                        "notes": "hazard = h0 + lam*max(0, 1 - own strength/rival strength); strength=tech: "
+                                 "own productivity vs rival's (rival starts equal); strength=revenue: ruler's "
+                                 "tax take (+ rents) vs rival's 0.5 at t=0. Outside rents N add to ruler income "
+                                 "and to revenue-strength."}
     print("Q3 done", round(time.time() - t0, 1))
 
     # ---- Q4: AI dial
@@ -322,13 +337,14 @@ def main():
     # ---- Q5: scatter
     sc = {}
     sc["Serf (no growth to be had)"] = solve(P(g=0.0, h=0.03), "reputation")
-    sc["Dynasty, 2% growth"] = solve(P(g=0.02, h=0.01), "reputation")
+    sc["Dynasty (r=4%), 2% growth"] = solve(P(g=0.02, h=0.01), "reputation")
     sc["Dynasty, 4% growth"] = solve(P(g=0.04, h=0.01), "reputation")
     sc["Short-tenure ruler, 4% growth"] = solve(P(g=0.04, h=0.15), "reputation")
     sc["No credible promises, 4% growth"] = solve(P(g=0.04, h=0.01), "markov")
     sc["Forceable growth, 4%"] = solve(P(g=0.04, h=0.01, forceable_growth=True), "reputation")
-    sc["China-like"] = q3["Dynasty, rival threat, catch-up potential 5% (China-like)"]
-    sc["North Korea-like"] = q3["Nukes + short horizon + outside rents (North Korea-like)"]
+    sc["Patient dynasty (r=2%), 2% growth"] = solve(P(g=0.02, h=0.01, r=0.02), "reputation")
+    sc["China-like"] = q3["China-like: long-lived party, tech race with rivals"]
+    sc["North Korea-like"] = q3["North Korea-like: short horizon, nukes, outside rents"]
     sc["AI makes 50% of growth"] = solve(P(g=0.04, h=0.02, phi=0.5), "reputation")
     sc["AI makes 100% of growth"] = solve(P(g=0.04, h=0.02, phi=1.0), "reputation")
     sc["AI: all growth + 60% of field work"] = solve(P(g=0.04, h=0.02, phi=1.0, mu=0.6), "reputation")
@@ -359,12 +375,12 @@ def figures(res):
         ax[j].set_xlabel("growth achievable through subjects' free initiative (%/yr)")
         ax[j].set_ylim(-0.02, 1.02)
     ax[0].set_ylabel("solid: share subjects keep   dotted: freedom (1 - control)")
-    ax[0].legend(fontsize=8, loc="center right")
+    ax[0].legend(fontsize=8, loc="upper left")
     fig.suptitle("How much the ruler leaves his subjects, as possible growth rises (ruler discount 4%/yr)")
     fig.tight_layout(); fig.savefig("fig1_growth_sweep.png", dpi=150); plt.close(fig)
 
     # Fig 1b: thresholds
-    fig, ax = plt.subplots(figsize=(6.5, 4.2))
+    fig, ax = plt.subplots(figsize=(7.5, 4.6))
     th = res["q1_threshold_g_vs_hazard"]
     hz = np.array(th["hazard_h"]) * 100
     for i, (rl, ys) in enumerate(th["threshold_g_by_mode_and_r"]["reputation"].items()):
@@ -373,10 +389,11 @@ def figures(res):
     for i, (rl, ys) in enumerate(th["threshold_g_by_mode_and_r"]["commitment"].items()):
         y = np.array([np.nan if v is None else v * 100 for v in ys])
         ax.plot(hz, y, "s--", color=COL[i], lw=1.2, label=f"commitment, {rl}")
-    ax.axhline(2, color=MUTED, lw=1); ax.text(hz.max(), 2.2, "2%", color=MUTED, ha="right")
+    ax.axhline(2, color=MUTED, lw=1); ax.text(12, 2.25, "2% growth", color=MUTED)
+    ax.set_xlim(-0.5, 20.5); ax.set_ylim(0, 17)
     ax.set_xlabel("ruler's yearly chance of losing power (%)")
     ax.set_ylabel("growth needed before ruler loosens control (%/yr)")
-    ax.set_title("The growth threshold depends on the ruler's horizon")
+    ax.set_title("Growth needed to make loosening worthwhile", fontsize=10)
     ax.legend(fontsize=7); fig.tight_layout(); fig.savefig("fig1b_threshold.png", dpi=150); plt.close(fig)
 
     # Fig 2: serf + ablation
@@ -397,20 +414,20 @@ def figures(res):
 
     # Fig 3: threat heatmap
     sw = res["q3_threat"]["sweep"]
-    fig, ax = plt.subplots(1, 2, figsize=(11, 4.2))
-    for j, key in enumerate(["share_kept[h0][lam]", "freedom[h0][lam]"]):
-        im = ax[j].imshow(np.array(sw[key]), origin="lower", cmap="Blues", vmin=0, vmax=1, aspect="auto")
+    fig, ax = plt.subplots(1, 2, figsize=(11, 4.4))
+    for j, stn in enumerate(["tech", "revenue"]):
+        M = np.array(sw[f"freedom[h0][lam] strength={stn}"])
+        ax[j].imshow(M, origin="lower", cmap="Blues", vmin=0, vmax=1, aspect="auto")
         ax[j].set_xticks(range(len(sw["threat_lam"]))); ax[j].set_xticklabels([f"{l:.2f}" for l in sw["threat_lam"]])
         ax[j].set_yticks(range(len(sw["base_hazard_h0"]))); ax[j].set_yticklabels([f"{h*100:.0f}%" for h in sw["base_hazard_h0"]])
-        ax[j].set_xlabel("extra yearly risk of falling if out-produced by rival")
+        ax[j].set_xlabel("extra yearly risk of falling when weaker than rival (at full gap)")
         ax[j].set_ylabel("ruler's baseline yearly risk of losing power"); ax[j].grid(False)
-        ax[j].set_title({0: "Share subjects keep", 1: "Freedom (1 - control)"}[j])
-        for a in range(len(sw["base_hazard_h0"])):
-            for b_ in range(len(sw["threat_lam"])):
-                v = sw[key][a][b_]
-                ax[j].text(b_, a, f"{v:.2f}", ha="center", va="center", fontsize=7,
-                           color="white" if v > 0.55 else INK)
-    fig.suptitle("Rival states and the ruler's horizon (5% growth possible, rival grows 2%)")
+        ax[j].set_title({"tech": "Strength = technology level", "revenue": "Strength = tax revenue"}[stn])
+        for a in range(M.shape[0]):
+            for b_ in range(M.shape[1]):
+                ax[j].text(b_, a, f"{M[a, b_]:.2f}", ha="center", va="center", fontsize=7,
+                           color="white" if M[a, b_] > 0.55 else INK)
+    fig.suptitle("Freedom left to subjects (1 - control): rivals vs the ruler's horizon (5% growth possible)")
     fig.tight_layout(); fig.savefig("fig3_threat.png", dpi=150); plt.close(fig)
 
     # Fig 4: AI dial
@@ -430,20 +447,24 @@ def figures(res):
     ax[1].set_ylim(-0.02, 1.05); ax[1].set_title("Machines then take over field work too"); ax[1].legend(fontsize=8)
     fig.tight_layout(); fig.savefig("fig4_ai_dial.png", dpi=150); plt.close(fig)
 
-    # Fig 5: scatter
+    # Fig 5: scatter (points with identical coordinates share one stacked label)
     sc = res["q5_scatter"]
-    fig, ax = plt.subplots(figsize=(8.5, 6))
-    for i, (lab, v) in enumerate(sc.items()):
-        ax.scatter(v["necessity"], v["empowerment_index"], s=70, color=COL[i % 8],
-                   edgecolor="white", linewidth=1.5, zorder=3, marker="os^D"[i // 8 % 4])
-        ax.annotate(lab, (v["necessity"], v["empowerment_index"]), fontsize=7.5, xytext=(6, 3),
-                    textcoords="offset points", color=INK)
+    groups = {}
+    for lab, v in sc.items():
+        key = (round(v["necessity"] * 20) / 20, round(v["empowerment_index"] * 20) / 20)  # 0.05 bins
+        groups.setdefault(key, []).append(lab)
+    fig, ax = plt.subplots(figsize=(9, 6.2))
+    for i, ((x, y), labs) in enumerate(sorted(groups.items())):
+        ax.scatter(x, y, s=80, color=COL[i % 8], edgecolor="white", linewidth=1.5, zorder=3)
+        dx = -8 if x > 0.6 else 8
+        dy = -22 if 0.6 < x < 0.95 else 0
+        ax.annotate("\n".join(labs), (x, y), fontsize=7.5, xytext=(dx, dy), textcoords="offset points",
+                    ha="right" if dx < 0 else "left", va="center", color=INK)
     ax.set_xlabel("necessity: share of output lost if subjects stop (30-year horizon)")
-    ax.set_ylabel("empowerment: average of share kept and freedom")
-    ax.set_xlim(-0.03, 1.15); ax.set_ylim(-0.03, 1.03)
+    ax.set_ylabel("empowerment: average of share kept and freedom (1 - control)")
+    ax.set_xlim(-0.05, 1.08); ax.set_ylim(0, 1)
     ax.set_title("Being needed and being empowered are different things")
     fig.tight_layout(); fig.savefig("fig5_necessity_vs_empowerment.png", dpi=150); plt.close(fig)
-
 
 if __name__ == "__main__":
     main()

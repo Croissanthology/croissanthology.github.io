@@ -266,28 +266,26 @@ def claim_A(df, R):
 # ----------------------------------------------------------------------------- claim B
 def build_windows(df, step=5, span=10):
     """For each country and anchor year t: growth over [t-span, t], outcome change over [t, t+span]."""
-    p = df.set_index(["iso", "year"])
-    rows = []
-    for t in range(1970, 2016, step):
-        for iso in df.iso.unique():
-            def g(var, yr):
-                try:
-                    return p.at[(iso, yr), var]
-                except KeyError:
-                    return np.nan
-            gp0, gp1 = g("gdppc_na", t - span), g("gdppc_na", t)
-            gf1 = g("gdppc_na", min(t + span, 2019))
-            row = {"iso": iso, "year": t, "name": g("name", t), "regime": g("regime", t),
-                   "lgdp": g("lgdp", t), "lres_share": g("lres_share", t), "taxcap": g("taxcap", t),
-                   "growth_past": 100 * (np.log(gp1) - np.log(gp0)) / span if gp0 > 0 and gp1 > 0 else np.nan,
-                   "growth_future": 100 * (np.log(gf1) - np.log(gp1)) / (min(t + span, 2019) - t) if gp1 > 0 and gf1 > 0 and t < 2019 else np.nan}
-            for y in ["civlib", "clphy", "clpol", "lifeex", "educ", "lchmor", "polyarchy"]:
-                y0, y1, ym = g(y, t), g(y, t + span), g(y, t - span)
-                row[y + "_0"] = y0
-                row["d_" + y] = y1 - y0
-                row["dpast_" + y] = y0 - ym
-            rows.append(row)
-    w = pd.DataFrame(rows).dropna(subset=["growth_past", "regime"])
+    ys = ["civlib", "clphy", "clpol", "lifeex", "educ", "lchmor", "polyarchy"]
+    base = df[["iso", "year", "name", "regime", "lgdp", "lres_share", "taxcap", "gdppc_na"] + ys]
+    def at(offset, cols):
+        s = base[["iso", "year"] + cols].copy()
+        s["year"] = s["year"] - offset   # value observed at (year+offset), keyed by anchor year
+        return s.rename(columns={c: f"{c}@{offset}" for c in cols})
+    w = base[base.year.isin(range(1970, 2016, step))]
+    w = w.merge(at(-span, ["gdppc_na"] + ys), on=["iso", "year"], how="left")
+    w = w.merge(at(span, ys), on=["iso", "year"], how="left")
+    # future growth: up to t+10, but GDP ends in 2019
+    fut = base[["iso", "year", "gdppc_na"]].rename(columns={"year": "yf", "gdppc_na": "gdp_f"})
+    w["yf"] = np.minimum(w.year + span, 2019)
+    w = w.merge(fut, on=["iso", "yf"], how="left")
+    w["growth_past"] = 100 * (np.log(w.gdppc_na) - np.log(w[f"gdppc_na@{-span}"])) / span
+    w["growth_future"] = 100 * (np.log(w.gdp_f) - np.log(w.gdppc_na)) / (w.yf - w.year)
+    for y in ys:
+        w[y + "_0"] = w[y]
+        w["d_" + y] = w[f"{y}@{span}"] - w[y]
+        w["dpast_" + y] = w[y] - w[f"{y}@{-span}"]
+    w = w.replace([np.inf, -np.inf], np.nan).dropna(subset=["growth_past", "regime"])
     w["autoc"] = w.regime <= 1
     w["closed"] = w.regime == 0
     w["stagnant"] = (w.growth_past <= 0).astype(float)
@@ -296,12 +294,7 @@ def build_windows(df, step=5, span=10):
 
 def claim_B(df, R):
     print("\n=== CLAIM B: growth in autocracies ===")
-    cache = os.path.join(CACHE, "windows.csv")
-    if os.path.exists(cache):
-        w = pd.read_csv(cache)
-    else:
-        w = build_windows(df)
-        w.to_csv(cache, index=False)
+    w = build_windows(df)
     B = {"design": "Anchor years t = 1970,1975,...,2015. Predictor: average annual growth of real GDP per capita (PWT, national-accounts) over the 10 years BEFORE t. Outcome: change over the 10 years AFTER t. Controls: log income at t and outcome level at t; period fixed effects; SEs clustered by country.",
          "results": {}}
     for y in ["civlib", "clphy", "clpol", "lifeex", "educ", "lchmor"]:
@@ -352,7 +345,48 @@ def claim_B(df, R):
     print("fast growth & civlib fell:", B["fast_growth_but_freedom_fell"][:6])
     print("share fast autoc windows w/ gain", B["share_fast_growth_autocratic_windows_with_civlib_gain"], len(fast),
           "| stagnant", B["share_stagnant_autocratic_windows_with_civlib_gain"], len(slow))
+    # long-difference: one observation per country that was an autocracy at the start
+    LD = {}
+    ld_tables = {}
+    for (t0, t1) in [(1990, 2019), (1970, 2000)]:
+        a = df[df.year == t0].set_index("iso"); b = df[df.year == t1].set_index("iso")
+        ld = pd.DataFrame({"name": a.name, "autoc0": a.autoc, "lgdp0": a.lgdp,
+                           "growth": 100 * (np.log(b.gdppc_na) - np.log(a.gdppc_na)) / (t1 - t0)})
+        for y in ["civlib", "lifeex", "lchmor", "polyarchy"]:
+            ld[y + "0"] = a[y]; ld["d_" + y] = b[y] - a[y]
+        ld = ld[ld.autoc0 == True].dropna(subset=["growth", "d_civlib", "lgdp0"])
+        LD[f"{t0}-{t1}"] = {}
+        for y in ["civlib", "lifeex", "lchmor", "polyarchy"]:
+            dd = ld.dropna(subset=["d_" + y, y + "0"])
+            m = smf.ols(f"d_{y} ~ growth + lgdp0 + {y}0", data=dd).fit(cov_type="HC1")
+            LD[f"{t0}-{t1}"][y] = {"coef": float(m.params.growth), "se": float(m.bse.growth),
+                                    "p": float(m.pvalues.growth), "n_countries": int(m.nobs)}
+            print(f"long diff {t0}-{t1} growth -> d_{y}: {m.params.growth:+.4f} (se {m.bse.growth:.4f}, p={m.pvalues.growth:.3f}, n={int(m.nobs)})")
+        ld_tables[f"{t0}-{t1}"] = ld
+    B["long_difference_autocracies"] = LD
+    ld = ld_tables["1990-2019"]
+    B["long_difference_points_1990_2019"] = [{"iso": i, "name": r["name"], "growth_pct": round(r.growth, 2),
+                                              "d_civlib": round(r.d_civlib, 3), "d_lifeex": round(r.d_lifeex, 2)}
+                                             for i, r in ld.iterrows()]
     R["B"] = B
+    fig, axes = plt.subplots(1, 2, figsize=(12, 5))
+    for ax, y, lab in [(axes[0], "d_civlib", "Change in civil liberties 1990-2019"),
+                       (axes[1], "d_lifeex", "Change in life expectancy 1990-2019 (years)")]:
+        dd = ld.dropna(subset=[y])
+        ax.scatter(dd.growth, dd[y], s=18, c="#d1495b", alpha=.7)
+        mm = smf.ols(f"{y} ~ growth", data=dd).fit()
+        xs = np.linspace(dd.growth.min(), dd.growth.max(), 50)
+        ax.plot(xs, mm.params.Intercept + mm.params.growth * xs, c="k")
+        for iso in ["CHN", "VNM", "RWA", "SGP", "SAU", "PRK", "ETH", "LAO", "KHM", "MYS", "BLR", "IDN", "KOR", "TWN", "ZWE", "MMR", "IRN", "EGY", "CUB", "VEN"]:
+            if iso in dd.index:
+                ax.annotate(dd.loc[iso, "name"], (dd.loc[iso, "growth"], dd.loc[iso, y]), fontsize=7)
+        ax.axhline(0, c="grey", lw=.5)
+        ax.set_xlabel("Avg annual GDP-per-person growth 1990-2019 (%)")
+        ax.set_title(lab, fontsize=10)
+    fig.suptitle(f"Countries that were autocracies in 1990 ({len(ld)}): growth vs. what happened to their people", fontsize=11)
+    fig.tight_layout()
+    fig.savefig(os.path.join(HERE, "fig_B_long_run_autocracies.png"), dpi=150)
+    plt.close(fig)
 
     # figure: binned scatter in autocracies
     fig, axes = plt.subplots(1, 3, figsize=(15, 4.8))
@@ -401,7 +435,7 @@ def claim_C(df, R):
     g = C["robustness_eci_with_resource_control"]
     print("ROB eci+res: all", fmt(g["pooled_yearFE_all"]), "| autoc", fmt(g["pooled_yearFE_autocracies"]))
     # small states trade more for mechanical reasons; drop countries under 5 million people
-    C["robustness_open_exclude_small"] = spec_grid(d[d.pop_pwt >= 5], "civlib", "lopen")
+    C["robustness_open_exclude_small"] = spec_grid(d[d.pop_pwt >= 5e6], "civlib", "lopen")
     g = C["robustness_open_exclude_small"]
     print("ROB open, pop>=5m: all", fmt(g["pooled_yearFE_all"]), "| autoc", fmt(g["pooled_yearFE_autocracies"]))
     # outliers in autocracies: high complexity but low liberty, cross-section 1990-2016
@@ -449,7 +483,7 @@ def claim_D(df, R):
         name = s.name.iloc[0].replace(" of America", "")
         ser = {}
         for col, lab, c, scale in [("civlib", "civil liberties (V-Dem, 0-1)", "#222222", 1),
-                                   ("labsh", "labour share of GDP (PWT)", "#3a78b5", 1),
+                                   ("labsh", "labour share of GDP (PWT)", "#3a78b5", .01),
                                    ("bottom50", "bottom-50% income share (WID)", "#2a9d8f", .01),
                                    ("top1", "top-1% income share (WID)", "#d1495b", .01)]:
             t = s[["year", col]].dropna()
@@ -504,5 +538,5 @@ if __name__ == "__main__":
     claim_C(df, R)
     claim_D(df, R)
     with open(os.path.join(HERE, "results.json"), "w") as f:
-        json.dump(compact(R), f, indent=1, default=str)
+        json.dump(compact(R), f, separators=(",", ":"), default=str)
     print("results.json bytes", os.path.getsize(os.path.join(HERE, "results.json")))

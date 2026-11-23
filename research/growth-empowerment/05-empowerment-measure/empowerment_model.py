@@ -294,9 +294,9 @@ def characters(G):
                              A=[f"answer {i}" for i in range(8)], B=[("prompt", 0.5), ("no prompt", 0.5)])
 
     # Sally: well-connected position, savings, can afford many positions
-    C["Sally (Netflix exec)"] = dict(home=hub, k0=2, **dict(zip(["step", "A", "B"], free_agent(
-        G, hub, 6, keep=1.0, B_effects=[("none", 0.95), ("tax", 0.05)] and
-        [("none", 0.95, lambda s: s), ("tax", 0.05, lambda s: (s[0], max(0, s[1] - 1)))]))))
+    C["Sally (Netflix exec)"] = dict(home=hub, k0=1, **dict(zip(["step", "A", "B"], free_agent(
+        G, hub, 6, keep=1.0,
+        B_effects=[("none", 0.95, lambda s: s), ("tax", 0.05, lambda s: (s[0], max(0, s[1] - 1)))]))))
 
     # Citizen with a vote: median position, modest wealth, taxed
     C["citizen (voter)"] = dict(home=median, k0=1, **dict(zip(["step", "A", "B"], free_agent(
@@ -304,7 +304,7 @@ def characters(G):
         B_effects=[("none", 0.9, lambda s: s), ("tax", 0.1, lambda s: (s[0], max(0, s[1] - 1)))]))))
 
     # Autocrat: ignores prices and gates, can tax (+2), can be deposed by a coup
-    C["autocrat"] = dict(home=hub, k0=2, **dict(zip(["step", "A", "B"], free_agent(
+    C["autocrat"] = dict(home=hub, k0=1, **dict(zip(["step", "A", "B"], free_agent(
         G, hub, 99, keep=1.0, ignore_prices=True, ignore_gates=True, save_gain=2, K=8,
         B_effects=[("none", 0.97, lambda s: s), ("coup", 0.03, lambda s: ("deposed", 0))]))))
     return C
@@ -367,11 +367,6 @@ PRODUCTION = {  # (types: name, count, role, quality), roles: need, share, kind.
     "autocrat": ([("autocrat", 1, "ruler", 1), ("rival", 1, "ruler", 0.7), ("economy", 12, "econ", 1)],
                  {"ruler": (1, 1.0, "veto"), "econ": (12, 1.0, "add")}, 0),
 }
-
-
-def class_necessity_note(name, nec):
-    # for Sally / citizen the 'class' is the focal type only (Sally alone); report the whole role instead
-    return nec
 
 
 # ---------------------------------------------------------------- part 0: characters
@@ -659,13 +654,10 @@ def dependence(G, Ds=(0, 1, 2, 4, 8, 16, 32)):
         Es.append(empowerment_avg(step, (home, 0), A, B))
     res["all three hold, but wealth buys no positions"] = Es
     # necessity of the focal agent as D grows (each dependent produces 1 unit using the agent's output)
-    nec = []
-    for D in Ds:
-        types = [("focal", 1, "input", 1)] + ([("dependent", D, "dep", 1)] if D else [])
-        roles = {"input": (1, 1.0, "veto"), "dep": (max(D, 1), 1.0, "add")} if D else {"input": (1, 1.0, "add")}
-        if D:
-            types.append(("own work", 1, "own", 1)); roles["own"] = (1, 1.0 / (D + 1), "add")
-        nec.append(necessity(types, roles, 0)["shapley_share"])
+    # game: v(S) = [focal in S] * (1 + #dependents in S) + #independent workers in S (10 of them)
+    # marginal share = (D+1)/(D+11); Shapley value of focal = 1 + D/2 (each dependent's unit split 50/50)
+    res["focal marginal share"] = [(D + 1) / (D + 11) for D in Ds]
+    nec = [(1 + D / 2) / (D + 11) for D in Ds]
     res["focal Shapley share"] = nec
     print("  dependence necessity:", [round(x, 3) for x in nec])
     return res
@@ -722,7 +714,7 @@ def figures(R):
           "one hostile gatekeeper (worst one)", "each gatekeeper hostile w.p. 0.2 (average)"]
     for ax, gname in zip(axes, ["grid (many routes)", "tree (one route to each place)"]):
         for i, m in enumerate(ms):
-            ax.plot(ks, [P[gname][m][str(k)] for k in ks], marker="o", ms=4, color=[INK2] + COL[:4][i - 1:i] if i else INK2,
+            ax.plot(ks, [P[gname][m][str(k)] for k in ks], marker="o", ms=4, color=([INK2] + COL[:4])[i],
                     linestyle="--" if i == 0 else "-", label=m)
         ax.set_xscale("log", base=2); ax.set_xticks(ks); ax.set_xticklabels(ks)
         ax.set_xlabel("number of independent gatekeepers"); ax.set_title(gname, loc="left", fontsize=10)

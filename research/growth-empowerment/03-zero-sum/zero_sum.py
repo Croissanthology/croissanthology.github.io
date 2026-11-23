@@ -77,7 +77,7 @@ def yard_sale(variant, rate=0.0, alpha=1.0, zeta=0.0, seed=0, T=T1, rec=REC, N=N
         wi, wj = w[i], w[j]
         d = F * np.minimum(wi, wj)
         if zeta > 0:
-            pwin = 0.5 + 0.5 * zeta * (wi - wj) / (wi + wj)
+            pwin = 0.5 + 0.5 * zeta * (wi - wj) / np.maximum(wi + wj, 1e-300)
         else:
             pwin = 0.5
         sgn = np.where(rng.random(half) < pwin, 1.0, -1.0)
@@ -416,8 +416,8 @@ def part3():
         for g in [0.0, 0.02]:
             de = dl * (1 + g)
             row[f"effective_patience_g={g}"] = round(de, 4)
-            row[f"future_weight_d_over_1minus_d_g={g}"] = round(de / (1 - de), 1) if de < 1 else float("inf")
-            row[f"max_players_grab_the_pie_g={g}"] = round(1 / (1 - de), 1) if de < 1 else float("inf")
+            row[f"future_weight_d_over_1minus_d_g={g}"] = round(de / (1 - de), 1) if de < 1 else None  # None = no limit
+            row[f"max_players_grab_the_pie_g={g}"] = round(1 / (1 - de), 1) if de < 1 else None  # None = no limit
         table.append(row)
     out["realistic_discounting"] = table
 
@@ -429,7 +429,7 @@ def part3():
         for g in [0.0, 0.02]:
             de = (1 + g) / (1 + rho + theta * g)
             row[f"effective_patience_g={g}"] = round(de, 4)
-            row[f"max_players_g={g}"] = round(1 / (1 - de), 1) if de < 1 else float("inf")
+            row[f"max_players_g={g}"] = round(1 / (1 - de), 1) if de < 1 else None  # None = no limit
         ram.append(row)
     out["if_interest_rate_rises_with_growth_rho_2pct"] = ram
     return out

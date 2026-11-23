@@ -303,15 +303,17 @@ class Market:
         reach = bid > self.b
         reach[np.arange(self.W), j] = False
         reach_rival = reach & ~same
-        n_pos = reach_rival.sum(axis=1)
+        n_pos = reach.sum(axis=1)          # all other workplaces she could take, whoever owns them
         # distinct independent owners in reach
         n_own = np.array([len(np.unique(self.owner[reach_rival[i]])) for i in range(self.W)])
         Y = self.f(n).sum()
         e = emp
         out = {
-            "retained_share_of_marginal_product": float(gross[e].sum() / mp_here[e].sum()) if e.any() else np.nan,
-            "labour_share_of_output": float((gross[e].sum() + self.b * (~e).sum()) / (Y + self.b * (~e).sum())),
-            "mean_wage": float(np.where(e, gross, self.b).mean()),
+            # what she keeps, net of her own moving/commuting cost, out of the net value her work creates
+            "retained_share_of_marginal_product": float(u[e].sum() / v[e].sum()) if e.any() else np.nan,
+            "labour_share_of_output": float((u[e].sum() + self.b * (~e).sum()) /
+                                            (Y - (self.m * D[np.arange(self.W), j])[e].sum() + self.b * (~e).sum())),
+            "mean_wage": float(np.where(e, u, self.b).mean()),
             "mean_marginal_product": float(mp_here[e].mean()) if e.any() else np.nan,
             "mean_independent_bidders_in_reach": float(np.where(e, n_own, 0).mean()),
             "mean_positions_in_reach": float(np.where(e, n_pos, 0).mean()),
@@ -329,7 +331,7 @@ class Market:
         return out
 
 
-W_ABM = 400
+W_ABM = 1000
 L_PER_WORKER = (2.0 / ALPHA) ** (1 / (1 - ALPHA))   # competitive MP = 2 x home production
 B_HOME = 1.0
 
@@ -357,7 +359,8 @@ def part2(pool):
     jobs += [(K, K, m, s, 0.0, "contiguous") for K in Ks for m in [2.0] for s in seeds]          # beta ablation
     Kc = 24
     Gs = [24, 12, 8, 6, 4, 3, 2, 1]
-    jobs += [(Kc, G, 2.0, s, BETA, lay) for G in Gs for s in seeds for lay in ["contiguous", "random"]]
+    CM = [2.0, 8.0]
+    jobs += [(Kc, G, cm, s, BETA, lay) for G in Gs for s in seeds for lay in ["contiguous", "random"] for cm in CM]
     res = pool.map(run_static, jobs)
     agg = {}
     for args, met in res:
@@ -369,9 +372,10 @@ def part2(pool):
     grid_pos = [[mean((K, K, m, BETA, "contiguous"), "mean_positions_in_reach") for K in Ks] for m in ms]
     grid_lab = [[mean((K, K, m, BETA, "contiguous"), "labour_share_of_output") for K in Ks] for m in ms]
     beta0 = [mean((K, K, 2.0, 0.0, "contiguous"), "retained_share_of_marginal_product") for K in Ks]
-    coll = {lay: [mean((Kc, G, 2.0, BETA, lay), "retained_share_of_marginal_product") for G in Gs] for lay in ["contiguous", "random"]}
-    coll_b = {lay: [mean((Kc, G, 2.0, BETA, lay), "mean_independent_bidders_in_reach") for G in Gs] for lay in ["contiguous", "random"]}
-    coll_p = {lay: [mean((Kc, G, 2.0, BETA, lay), "mean_positions_in_reach") for G in Gs] for lay in ["contiguous", "random"]}
+    LAY = [(lay, cm) for lay in ["contiguous", "random"] for cm in CM]
+    coll = {f"{lay}_m{cm:g}": [mean((Kc, G, cm, BETA, lay), "retained_share_of_marginal_product") for G in Gs] for lay, cm in LAY}
+    coll_b = {f"{lay}_m{cm:g}": [mean((Kc, G, cm, BETA, lay), "mean_independent_bidders_in_reach") for G in Gs] for lay, cm in LAY}
+    coll_p = {f"{lay}_m{cm:g}": [mean((Kc, G, cm, BETA, lay), "mean_positions_in_reach") for G in Gs] for lay, cm in LAY}
     # pooled worker-level relation: retained share vs independent bidders (m=2)
     RESULTS["part2_labour_market"] = {
         "params": {"workers": W_ABM, "alpha": ALPHA, "beta": BETA, "home_production": B_HOME,
@@ -395,7 +399,7 @@ def part2(pool):
         a.plot(Ks, grid_share[mi], "o-", color=cols[mi], ms=3.5, label=f"moving cost {mm:g}")
     a.plot(Ks, beta0, "k--", lw=1.2, label="moving cost 2, employer sets terms (β=0)")
     a.set_xscale("log"); a.set_xlabel("number of independent employers (same total land)")
-    a.set_ylabel("wage ÷ worker's own marginal product")
+    a.set_ylabel("what workers keep: net wage ÷ net value of their work")
     a.set_title("What workers keep rises with the number of bidders")
     a.legend(fontsize=7.5, frameon=False)
     a = ax[1]
@@ -407,19 +411,16 @@ def part2(pool):
     a.set_title("Options actually reachable (moving cost caps them)")
     a.legend(fontsize=7.5, frameon=False)
     a = ax[2]
-    for lay, ls in [("contiguous", "-"), ("random", "--")]:
-        a.plot(Gs, coll[lay], "o" + ls, color=C["blue"], ms=4, label=f"wage share, {'neighbouring' if lay=='contiguous' else 'scattered'} sites merge")
-    a2 = a.twinx()
-    for lay, ls in [("contiguous", "-"), ("random", "--")]:
-        a2.plot(Gs, coll_p[lay], "s" + ls, color=C["orange"], ms=3, label=f"positions in reach ({'neighbouring' if lay=='contiguous' else 'scattered'})")
-    a2.set_ylabel("rival positions in reach", color=C["orange"])
-    a.set_xscale("log"); a.set_xticks(Gs); a.set_xticklabels(Gs)
+    for key, col, ls, lab in [("contiguous_m2", C["blue"], "-", "neighbours merge, moving cost 2"),
+                              ("random_m2", C["blue"], ":", "scattered merge, moving cost 2"),
+                              ("contiguous_m8", C["red"], "-", "neighbours merge, moving cost 8"),
+                              ("random_m8", C["red"], ":", "scattered merge, moving cost 8")]:
+        a.plot(Gs, coll[key], "o" + ls, color=col, ms=4, label=lab)
+    a.set_xscale("log"); a.set_xticks(Gs); a.set_xticklabels(Gs); a.invert_xaxis()
     a.set_xlabel(f"independent owners of the same {Kc} workplaces")
-    a.set_ylabel("wage ÷ marginal product", color=C["blue"])
-    a.set_title("Same jobs, fewer owners: mergers / no-poach")
-    h1, l1 = a.get_legend_handles_labels(); h2, l2 = a2.get_legend_handles_labels()
-    a.legend(h1 + h2, l1 + l2, fontsize=7, frameon=False, loc="lower right")
-    a2.spines["right"].set_visible(True)
+    a.set_ylabel("what workers keep (net)")
+    a.set_title("Same jobs, fewer owners (mergers / no-poach)")
+    a.legend(fontsize=7.5, frameon=False, loc="lower left")
     savefig(fig, "fig2_labour_market_plurality.png")
     return RESULTS["part2_labour_market"]
 
@@ -430,14 +431,14 @@ K0 = 30
 
 
 def run_growth(args):
-    mode, g, mu, seed, scale_with_growth = args
+    mode, g, mu, seed, scale_with_growth, m_start = args
     rng = np.random.default_rng(seed)
     z = list(rng.random(K0))
     Ltot0 = L_PER_WORKER * W_ABM
     L = list(np.full(K0, Ltot0 / K0))
     owner = list(range(K0))
     next_owner = K0
-    m0, b0 = 2.0, B_HOME
+    m0, b0 = m_start, B_HOME
     mk = Market(W_ABM, z, L, owner, m0, b0, rng=rng)
     mk.equilibrate()
     series = []
@@ -492,14 +493,14 @@ def part3(pool):
     print("Part 3: growth")
     seeds = [21, 22, 23, 24]
     main_modes = [("static", 0.0), ("entry", 0.02), ("entry", 0.05), ("incumbent", 0.02), ("incumbent", 0.05)]
-    jobs = [(mo, g, 0.05, s, True) for mo, g in main_modes for s in seeds]
-    jobs += [(mo, g, mu, s, True) for mo, g in [("static", 0.0), ("entry", 0.02), ("entry", 0.05)]
+    jobs = [(mo, g, 0.05, s, True, m0) for mo, g in main_modes for s in seeds for m0 in [2.0, 8.0]]
+    jobs += [(mo, g, mu, s, True, 8.0) for mo, g in [("static", 0.0), ("entry", 0.02), ("entry", 0.05)]
              for mu in [0.0, 0.02, 0.1] for s in seeds[:2]]
-    jobs += [(mo, g, 0.05, s, False) for mo, g in main_modes for s in seeds[:2]]      # absolute costs ablation
+    jobs += [(mo, g, 0.05, s, False, 8.0) for mo, g in main_modes for s in seeds[:2]]      # absolute costs ablation
     res = pool.map(run_growth, jobs)
     agg = {}
     for args, ser in res:
-        agg.setdefault((args[0], args[1], args[2], args[4]), []).append(ser)
+        agg.setdefault((args[0], args[1], args[2], args[4], args[5]), []).append(ser)
     fields = ["retained_share_of_marginal_product", "mean_independent_bidders_in_reach", "mean_positions_in_reach",
               "owner_HHI", "n_owners", "mean_wage", "labour_share_of_output", "share_with_zero_independent_bidders",
               "n_sites"]
@@ -511,48 +512,55 @@ def part3(pool):
                       "note": ("growth g raises potential output by g per year in every growing scenario; 'entry' delivers it "
                                "as new independent employers, 'incumbent' as bigger existing employers. In the main runs "
                                "moving cost and home production scale with potential output (pure test of plurality); the "
-                               "'absolute_costs' runs hold them fixed.")}, "series": {}, "final_values": {}}
+                               "'absolute_costs' runs hold them fixed. Every year each owner is bought out with probability "
+                               "'merge' by a size-weighted acquirer, preferring nearby targets.")},
+           "series": {}, "final_values": {}}
     for key in agg:
-        lab = f"{key[0]}_g{int(key[1]*100)}pct_merge{key[2]}" + ("" if key[3] else "_absolute_costs")
+        lab = f"{key[0]}_g{int(round(key[1]*100))}pct_merge{key[2]}_movecost{key[4]:g}" + ("" if key[3] else "_absolute_costs")
         out["series"][lab] = {fld: np.round(avg(key, fld), 4).tolist() for fld in fields}
         out["final_values"][lab] = {fld: round(float(avg(key, fld)[-1]), 4) for fld in fields}
     RESULTS["part3_growth"] = out
 
-    fig, ax = plt.subplots(2, 2, figsize=(12.5, 8.6))
     style = {("static", 0.0): (C["gray"], "-", "no growth"),
              ("entry", 0.02): (C["green"], "-", "2% growth via new employers"),
              ("entry", 0.05): (C["teal"], "-", "5% growth via new employers"),
              ("incumbent", 0.02): (C["orange"], "--", "2% growth to existing employers"),
              ("incumbent", 0.05): (C["red"], "--", "5% growth to existing employers")}
     tt = np.arange(T_GROW + 1)
-    panels = [("retained_share_of_marginal_product", "wage ÷ marginal product", "What workers keep"),
-              ("mean_independent_bidders_in_reach", "independent employers within reach", "Real outside options"),
-              ("owner_HHI", "concentration of employment (HHI, 1 = one owner)", "Does concentration re-form?"),
-              ("mean_wage", "average wage (home production at year 0 = 1)", "Absolute wage")]
-    for a, (fld, yl, ti) in zip(ax.flat, panels):
+    fig, ax = plt.subplots(2, 3, figsize=(16, 8.6))
+    panels = [(ax[0, 0], 8.0, True, "retained_share_of_marginal_product", "what workers keep (net)", "What workers keep (moving cost 8)"),
+              (ax[0, 1], 8.0, True, "mean_independent_bidders_in_reach", "independent employers within reach", "Real outside options (moving cost 8)"),
+              (ax[0, 2], 8.0, True, "owner_HHI", "employment concentration (1 = one owner)", "Does concentration re-form? (moving cost 8)"),
+              (ax[1, 0], 2.0, True, "retained_share_of_marginal_product", "what workers keep (net)", "What workers keep (moving cost 2)"),
+              (ax[1, 1], 8.0, True, "mean_wage", "average net wage (year-0 home production = 1)", "Absolute wage (moving cost 8)"),
+              (ax[1, 2], 8.0, False, "retained_share_of_marginal_product", "what workers keep (net)",
+               "Ablation: moving cost and home\nproduction fixed in absolute terms")]
+    for a, m0, sc, fld, yl, ti in panels:
         for (mo, g), (col, ls, lab) in style.items():
-            a.plot(tt, avg((mo, g, 0.05, True), fld), color=col, ls=ls, lw=2, label=lab)
-        a.set_xlabel("year"); a.set_ylabel(yl); a.set_title(ti)
+            a.plot(tt, avg((mo, g, 0.05, sc, m0), fld), color=col, ls=ls, lw=2, label=lab)
+        a.set_xlabel("year"); a.set_ylabel(yl); a.set_title(ti, fontsize=10)
         if fld == "mean_wage":
             a.set_yscale("log")
     ax[0, 0].legend(fontsize=8, frameon=False)
+    fig.tight_layout()
     savefig(fig, "fig3_growth_entry_vs_incumbents.png")
 
-    # ablation figure: merger hazard
+    # ablation figure: merger hazard (moving cost 8)
     fig, ax = plt.subplots(1, 2, figsize=(12, 4.2))
     mus = [0.0, 0.02, 0.05, 0.1]
-    for (mo, g), (col, ls, lab) in [(k, style[k]) for k in [("static", 0.0), ("entry", 0.02), ("entry", 0.05)]]:
-        ax[0].plot(mus, [avg((mo, g, mu, True), "retained_share_of_marginal_product")[-1] for mu in mus], "o-", color=col, label=lab)
-        ax[1].plot(mus, [avg((mo, g, mu, True), "mean_independent_bidders_in_reach")[-1] for mu in mus], "o-", color=col, label=lab)
+    for (mo, g) in [("static", 0.0), ("entry", 0.02), ("entry", 0.05)]:
+        col, ls, lab = style[(mo, g)]
+        ax[0].plot(mus, [avg((mo, g, mu, True, 8.0), "retained_share_of_marginal_product")[-1] for mu in mus], "o-", color=col, label=lab)
+        ax[1].plot(mus, [avg((mo, g, mu, True, 8.0), "mean_independent_bidders_in_reach")[-1] for mu in mus], "o-", color=col, label=lab)
     for mo, g in [("incumbent", 0.02), ("incumbent", 0.05)]:
         col, ls, lab = style[(mo, g)]
-        ax[0].plot([0.05], [avg((mo, g, 0.05, True), "retained_share_of_marginal_product")[-1]], "D", color=col, label=lab)
-        ax[1].plot([0.05], [avg((mo, g, 0.05, True), "mean_independent_bidders_in_reach")[-1]], "D", color=col, label=lab)
-    ax[0].set_ylabel("wage ÷ marginal product after 60 years"); ax[1].set_ylabel("independent employers in reach after 60 years")
+        ax[0].plot([0.05], [avg((mo, g, 0.05, True, 8.0), "retained_share_of_marginal_product")[-1]], "D", color=col, label=lab)
+        ax[1].plot([0.05], [avg((mo, g, 0.05, True, 8.0), "mean_independent_bidders_in_reach")[-1]], "D", color=col, label=lab)
+    ax[0].set_ylabel("what workers keep, year 60"); ax[1].set_ylabel("independent employers in reach, year 60")
     for a in ax:
-        a.set_xlabel("yearly chance an owner is bought out (consolidation speed)")
-    ax[0].set_title("Entry only protects workers if it outpaces mergers")
-    ax[1].set_title("Options after 60 years")
+        a.set_xlabel("yearly chance each owner is bought out")
+    ax[0].set_title("Consolidation speed vs growth-by-entry (moving cost 8)")
+    ax[1].set_title("Outside options after 60 years")
     ax[0].legend(fontsize=8, frameon=False)
     savefig(fig, "fig3b_merger_speed_ablation.png")
     return out
@@ -562,7 +570,7 @@ def part3(pool):
 def run_world(args):
     role, inst, seed = args
     rng = np.random.default_rng(seed)
-    W = 400
+    W = W_ABM
     # role: how productive & how replaceable the person is
     mp_target, rho = {"serf": (1.3, 0.0), "sally": (4.0, 0.95)}[role]
     Lpw = (mp_target / ALPHA) ** (1 / (1 - ALPHA))
@@ -626,78 +634,79 @@ def part4(pool):
 # =====================================================================================
 # PART 5. Collective necessity vs individual necessity: strike with free riders
 # =====================================================================================
-def strike_equilibria(n, sigma, repression, q_star=0.5, H=5.0, mp=2.0, b=1.0, beta=BETA, cost_sd=0.5):
+def strike_equilibria(n, sigma, repression, q_star=0.5, H=5.0, mp=2.0, b=1.0, beta=BETA, cost_sd=0.5, tau=0.25):
     """Monopsony, exit blocked. Individually each worker bargains on her marginal product;
     collectively (if the strike succeeds) the class bargains on the average product (its threat
     is to withdraw ALL labour). Gain to every worker if it succeeds: Delta*H (public good).
-    Worker i strikes iff  sigma + Pr(pivotal) * Delta*H  >=  c_i,  c_i = lost wage * lognormal + repression.
+    Worker i strikes iff  sigma + Pr(pivotal) * Delta*H  >=  c_i,  c_i = tau * yearly wage * lognormal + repression.
     Returns (lowest, highest) stable participation rate and probability of success at each."""
     ap = mp / ALPHA
     w_ind = b + beta * (mp - b)
     w_col = b + beta * (ap - b)
     Delta = w_col - w_ind
     kstar = int(np.ceil(q_star * n))
-    dist = lognorm(s=cost_sd, scale=w_ind * np.exp(-cost_sd ** 2 / 2))
+    dist = lognorm(s=cost_sd, scale=tau * w_ind * np.exp(-cost_sd ** 2 / 2))
 
-    def F(q):
-        piv = binom.pmf(kstar - 1, n - 1, q)
-        return dist.cdf(max(1e-12, sigma + piv * Delta * H - repression))
-
-    qs = np.linspace(0, 1, 2001)
-    Fq = np.array([F(q) for q in qs]) - qs
-    def iterate(q):
-        for _ in range(500):
-            q2 = F(q)
-            if abs(q2 - q) < 1e-9:
-                break
-            q = 0.5 * q + 0.5 * q2
-        return q
-    lo, hi = iterate(0.0), iterate(1.0)
+    qs = np.linspace(0, 1, 4001)
+    piv = binom.pmf(kstar - 1, n - 1, qs)
+    Fq = dist.cdf(np.maximum(1e-12, sigma + piv * Delta * H - repression))
+    h = Fq - qs
+    # best-response dynamics started from "nobody strikes" converge to the first crossing from above,
+    # started from "everybody strikes" to the last crossing
+    lo = qs[np.argmax(h <= 0)] if (h <= 0).any() else 1.0
+    hi = qs[len(qs) - 1 - np.argmax((h >= 0)[::-1])] if (h >= 0).any() else 0.0
     succ = lambda q: float(binom.sf(kstar - 1, n, q))
     return lo, hi, succ(lo), succ(hi), Delta, w_ind, w_col
 
 
 def part5():
     print("Part 5: collective action")
-    ns = np.unique(np.round(np.logspace(np.log10(5), 5, 26)).astype(int))
-    sigmas = np.linspace(0, 2.0, 26)
-    reps = [0.0, 1.0]
+    ns = np.unique(np.round(np.logspace(np.log10(5), 5, 31)).astype(int))
+    sigmas = np.linspace(0, 1.0, 41)
+    reps = [0.0, 0.5]
     grids = {}
     for r in reps:
         lo_g = np.zeros((len(sigmas), len(ns))); hi_g = np.zeros_like(lo_g)
         for i, sg in enumerate(sigmas):
             for jn, nn in enumerate(ns):
-                lo, hi, slo, shi, Delta, w_ind, w_col = strike_equilibria(int(nn), sg, r)
+                lo, hi, slo, shi, *_ = strike_equilibria(int(nn), sg, r)
                 lo_g[i, jn], hi_g[i, jn] = slo, shi
         grids[r] = (lo_g, hi_g)
-    # pivot-only line: success prob with no selective incentive, no repression
-    piv_only = [strike_equilibria(int(nn), 0.0, 0.0) for nn in ns]
+    taus = [0.1, 0.25, 1.0]
+    piv_only = {tau: [strike_equilibria(int(nn), 0.0, 0.0, tau=tau) for nn in ns] for tau in taus}
+    ref = piv_only[0.25][0]
+    # smallest private reward that makes the strike succeed even from pessimistic expectations
+    need = {str(r): [float(sigmas[np.argmax(grids[r][0][:, jn] >= 0.5)]) if (grids[r][0][:, jn] >= 0.5).any() else None
+                     for jn in range(len(ns))] for r in reps}
     RESULTS["part5_collective_action"] = {
         "params": {"monopsony_exit_blocked": True, "marginal_product": 2.0, "average_product": 2.0 / ALPHA,
                    "home_production": 1.0, "beta": BETA, "success_threshold_share_striking": 0.5,
-                   "years_of_gain_if_success": 5, "cost_of_striking": "one year's wage x lognormal(sd 0.5) + repression"},
-        "wage_individual_bargaining": piv_only[0][5], "wage_if_class_bargains_collectively": piv_only[0][6],
-        "gain_per_worker_per_year_if_success": piv_only[0][4],
+                   "years_of_gain_if_success": 5,
+                   "cost_of_striking": "tau x one year's individual wage x lognormal(sd 0.5) + repression; main tau=0.25"},
+        "wage_individual_bargaining": ref[5], "wage_if_class_bargains_collectively": ref[6],
+        "gain_per_worker_per_year_if_success": ref[4],
         "group_sizes": ns.tolist(), "selective_incentive_per_striker": np.round(sigmas, 3).tolist(),
         "success_prob_pessimistic_eq[repression][sigma][n]": {str(r): np.round(grids[r][0], 3).tolist() for r in reps},
         "success_prob_optimistic_eq[repression][sigma][n]": {str(r): np.round(grids[r][1], 3).tolist() for r in reps},
-        "no_incentive_no_repression": {"n": ns.tolist(),
-                                       "success_pessimistic": [round(p[2], 3) for p in piv_only],
-                                       "success_optimistic": [round(p[3], 3) for p in piv_only]},
+        "min_private_reward_for_success_from_pessimistic_start[repression][n]": need,
+        "no_private_reward_no_repression_success_if_strike_expected[tau][n]":
+            {str(t): [round(float(p[3]), 3) for p in piv_only[t]] for t in taus},
+        "note": "with no private reward, if nobody expects a strike, nobody strikes at any group size (success 0)",
     }
-    fig, ax = plt.subplots(1, 3, figsize=(15, 4.3))
+    fig, ax = plt.subplots(1, 3, figsize=(15.5, 4.3))
     a = ax[0]
-    a.plot(ns, [p[2] for p in piv_only], "o-", color=C["red"], ms=3, label="if nobody expects a strike")
-    a.plot(ns, [p[3] for p in piv_only], "o-", color=C["green"], ms=3, label="if everybody expects a strike")
+    for tau, col in zip(taus, [C["green"], C["blue"], C["red"]]):
+        a.plot(ns, [p[3] for p in piv_only[tau]], "o-", color=col, ms=3,
+               label=f"striking costs {tau:g} of a year's wage")
     a.set_xscale("log"); a.set_xlabel("number of workers who must act together"); a.set_ylabel("chance the strike succeeds")
-    a.set_title("No selective rewards, no repression:\nonly small groups act (Olson)")
+    a.set_title("No private reward: only small groups act,\nand only if everyone already expects a strike", fontsize=10)
     a.legend(fontsize=8, frameon=False)
     for a, r in zip(ax[1:], reps):
         im = a.pcolormesh(ns, sigmas, grids[r][1], cmap="Greens", vmin=0, vmax=1, shading="auto")
-        a.contour(ns, sigmas, grids[r][0], levels=[0.5], colors=C["red"], linewidths=1.5)
+        a.contour(ns, sigmas, grids[r][0], levels=[0.5], colors=C["red"], linewidths=1.8)
         a.set_xscale("log"); a.set_xlabel("number of workers who must act together")
-        a.set_ylabel("private reward per striker\n(union benefit, shame on scabs)")
-        a.set_title(f"Success chance, repression cost {r:g}\n(shade: if expected; red line: 50% even if not expected)", fontsize=9.5)
+        a.set_ylabel("private reward per striker\n(share of a year's wage)")
+        a.set_title(f"Repression cost {r:g} yr's wage. Shade: success if expected;\nabove red line: succeeds even if not expected", fontsize=9)
         fig.colorbar(im, ax=a, fraction=0.046)
     savefig(fig, "fig5_collective_action.png")
     return RESULTS["part5_collective_action"]
@@ -712,6 +721,7 @@ if __name__ == "__main__":
         p3 = part3(pool)
         p4 = part4(pool)
     p5 = part5()
+    print("part5 min reward:", p5["min_private_reward_for_success_from_pessimistic_start[repression][n]"])
     RESULTS["runtime_seconds"] = round(time.time() - t0, 1)
     with open(os.path.join(HERE, "results.json"), "w") as fh:
         json.dump(RESULTS, fh, indent=1)
