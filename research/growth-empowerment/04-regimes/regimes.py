@@ -61,7 +61,10 @@ def solve(p, mech=("P1", "P2", "P3", "P4")):
     wf = (WF if p["allow_sub"] else WF[:1])[None, None, None, None, :]
 
     comp = (1 - 1 / n)
-    eps = (p["eps0"] + p["capmob"] * p["E"]) * (1 + (p["lam"] * comp if "P1" in mech else 0))
+    eps = p["eps0"] + p["capmob"] * p["E"]
+    # P1: provinces compete for the mobile base. Output does not vanish, it relocates; so a
+    # province facing elasticity eps*(1+lam*(1-1/n)) can extract at most its own Laffer rate.
+    t_cap = 1 / (1 + eps * (1 + (p["lam"] * comp if "P1" in mech else 0)))
     lnn = np.log(n) if "P2" in mech else 0.0
     leak = p["leak0"] * (1 - (p["tour"] * comp if "P4" in mech else 0))
     s = 1 + p["gamma"] * np.log1p(g / p["g0"])
@@ -89,7 +92,7 @@ def solve(p, mech=("P1", "P2", "P3", "P4")):
     subcost = p["sig_s"] * (1 + p["nu"] * lnn) * subfrac
     Urev = p["b"] + (1 - p["mu"]) * (p["A1"] * w1 + p["theta"] * y2)
     psi = p["psi0"] * (1 - cp) ** p["rho"]
-    ok = (uN >= psi * Urev) & (cp >= p["c_sub"] * subfrac - 1e-9)
+    ok = (uN >= psi * Urev) & (cp >= p["c_sub"] * subfrac - 1e-9) & (t <= t_cap + 1e-9)
     resid = R - g - x - K - subcost
     viable = bool(np.any(np.broadcast_to(ok & (resid >= 0), np.broadcast_shapes(resid.shape, ok.shape))))
     if viable:                       # ruler must also balance the budget; if impossible, report best try
@@ -111,9 +114,11 @@ def solve(p, mech=("P1", "P2", "P3", "P4")):
     out["necessity"] = (1 - out["m"]) * (out["t"] * out["y1"] + p["A3"] * w3 * out["c_e"]) / max(out["R"], 1e-9)
     removal = min(1.0, out["W_eff"] / 0.5)
     escape = p["E"] * (1 - out["c_e"])
-    out["voice_exit"] = 1 - (1 - removal) * (1 - out["psi"]) * (1 - escape)
+    out["revolt_threat"] = float(min(1.0, out["psi"] * Urev / max(out["uN"], 1e-9)) if out["psi"] > 0 else 0.0)
+    # chance-like index of being able to remove or escape the ruler: vote, credible revolt, exit
+    out["voice_exit"] = 1 - (1 - removal) * (1 - 0.5 * out["psi"]) * (1 - escape)
     # benevolent benchmark with the same technology (no control, all revenue returned)
-    ref = (p["A1"] * w1 * (1 - TG[:, None]) ** eps * (1 + p["gamma"] * np.log1p(GG[None, :] / p["g0"])) * (1 - leak)
+    ref = (p["A1"] * w1 * (1 - TG[:, None]) ** eps * (1 + p["gamma"] * np.log1p(GG[None, :] / p["g0"]))
            + p["A2"] * w2 + p["b"] + p["a"] * np.log1p(GG[None, :] / p["g0"]) - GG[None, :]).max()
     out["welfare_ref"] = float(ref)
     out["welfare_norm"] = float(np.clip(out["welfare"] / ref, 0, 1))
@@ -143,8 +148,8 @@ t0 = time.time()
 # util is private goods (cost W) or public goods (cost 1/v'(g)); so g* = a*W - g0 when nothing else matters.
 chk = []
 for Wv in [0.005, 0.02, 0.05, 0.1, 0.2, 0.35, 0.5]:
-    o = solve(P(W=Wv, w=(0.0, 1.0, 0.0), gamma=0.0, psi0=0.0, allow_sub=False, n=1, E=0.0))
-    chk.append(dict(W=Wv, g_model=o["g"], g_formula=max(0, BASE["a"] * Wv - BASE["g0"]),
+    o = solve(P(W=Wv, w=(0.0, 1.0, 0.0), gamma=0.0, psi0=0.0, allow_sub=False, n=1, E=0.0, rho_c=0.0))
+    chk.append(dict(W=Wv, g_model=o["g"], g_formula=max(0, BASE["a"] * BASE["beta0"] * Wv - BASE["g0"]),
                     leader_keeps_share=o["resid"] / o["R"]))
 R["check_selectorate"] = chk
 
