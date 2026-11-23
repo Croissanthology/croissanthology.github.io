@@ -42,7 +42,7 @@ TF, CF = TG.ravel(), CG.ravel()
 
 BASE = dict(g=0.02, r=0.04, h=0.02, beta_s=0.95, kappa=5.0, eta=1.0, m=0.15,
             theta=0.15, omega=2.0, phi=0.0, mu=0.0, forceable_growth=False,
-            lam=0.0, gR=0.02, SR0=0.25, N=0.0)
+            lam=0.0, gR=0.02, SR0=0.25, N=0.0, strength="revenue")
 
 COL = ["#2a78d6", "#eb6834", "#1baf7a", "#eda100", "#e87ba4", "#008300", "#6250d6", "#e34948"]
 INK, MUTED, GRID = "#1a1a19", "#6b6a63", "#e1e0d9"
@@ -168,7 +168,13 @@ def threat_solve(p, T=T_HOR, Tcheck=120, mode="reputation"):
     logA = np.outer(np.log1p(st["G"]), t)                       # (pol, T)
     A = np.exp(logA)
     pay = st["R"][:, None] * A + N
-    h = np.clip(h0 + lam * np.maximum(0, 1 - pay / SR[None, :]), 0, 1)
+    tech = p["strength"] == "tech"
+    # strength = revenue (army bought from taxes) or = technology level A (rival starts at A=1)
+    if tech:
+        AR = (1 + p["gR"]) ** t
+        h = np.clip(h0 + lam * np.maximum(0, 1 - A / AR[None, :]), 0, 1)
+    else:
+        h = np.clip(h0 + lam * np.maximum(0, 1 - pay / SR[None, :]), 0, 1)
     V = np.zeros_like(A)
     nxt = np.zeros(len(TF))
     for k in range(T - 1, -1, -1):
@@ -186,7 +192,10 @@ def threat_solve(p, T=T_HOR, Tcheck=120, mode="reputation"):
     for k in range(T - 1, -1, -1):
         Ag = np.exp(grid)
         payk = RM * Ag + N
-        hk = np.clip(h0 + lam * np.maximum(0, 1 - payk / SR[k]), 0, 1)
+        if tech:
+            hk = np.clip(h0 + lam * np.maximum(0, 1 - Ag / (1 + p["gR"]) ** k), 0, 1)
+        else:
+            hk = np.clip(h0 + lam * np.maximum(0, 1 - payk / SR[k]), 0, 1)
         Wn = np.interp(grid + np.log1p(GM), grid, W[k + 1])
         W[k] = payk + bet * (1 - hk) * Wn
     Rdev = static_best(p)

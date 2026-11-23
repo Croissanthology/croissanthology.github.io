@@ -184,6 +184,10 @@ print("grid done", round(time.time() - t0, 1))
 # ----------------------------------------------------------------------------- 2. cases
 cases = {k: solve(P(**v)) for k, v in CASES.items()}
 R["cases"] = cases
+# post hoc sensitivity (added after seeing Gulf-like rank below China-like on welfare): suppose the
+# ruler's coalition is a broad share of citizens (tribal / family networks) rather than a tiny elite
+R["gulf_broad_coalition_sensitivity"] = {f"W={Wv},S={Sv}": solve(P(**{**CASES["Gulf-like"], "W": Wv, "S": Sv}))
+                                         for Wv, Sv in [(0.05, 0.2), (0.15, 0.3), (0.3, 0.5)]}
 # which single parameter moves China toward NK?
 ch, nk = CASES["China-like"], CASES["NK-like"]
 swap = {}
