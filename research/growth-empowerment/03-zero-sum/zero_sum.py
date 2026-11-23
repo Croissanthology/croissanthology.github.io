@@ -489,6 +489,7 @@ def figures(r1, r2, r3):
     for ax in axs:
         ax.set_xlabel("growth of the pie per year (%)")
         ax.axvline(0, color="grey", lw=0.6)
+        ax.set_ylim(bottom=0)
     axs[0].legend(fontsize=8, frameon=False)
     fig.suptitle("Make-or-grab world: what changes as the pie shrinks or grows (patience: 5% chance of exit per year)")
     fig.tight_layout()
@@ -507,6 +508,7 @@ def figures(r1, r2, r3):
     for ax in axs:
         ax.set_xlabel("growth of the pie per year (%)")
         ax.axvline(0, color="grey", lw=0.6)
+        ax.set_ylim(bottom=0)
     axs[0].legend(fontsize=8, frameon=False)
     fig.suptitle("Patience, and what happens if old wealth cannot be grabbed (size edge 1.3)")
     fig.tight_layout()

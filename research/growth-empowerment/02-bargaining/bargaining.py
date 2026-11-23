@@ -574,9 +574,9 @@ def run_world(args):
     # role: how productive & how replaceable the person is
     mp_target, rho = {"serf": (1.3, 0.0), "sally": (4.0, 0.95)}[role]
     Lpw = (mp_target / ALPHA) ** (1 / (1 - ALPHA))
-    if inst == "manorial":     # 8 manors, all lords in one cartel, leaving is very costly
-        K, G, m = 8, 1, 50.0
-    else:                      # 200 independent employers, cheap to move
+    if inst == "manorial":     # 8 workplaces, all owned by one lord / bound by one cartel
+        K, G, m = 8, 1, 0.5
+    else:                      # 200 independent employers
         K, G, m = 200, 200, 0.5
     z = np.sort(rng.random(K)); L = np.full(K, Lpw * W / K)
     owner = (np.arange(K) * G) // K
@@ -609,7 +609,7 @@ def part4(pool):
     RESULTS["part4_sally_vs_serf"] = {
         "params": {"serf_role": "competitive marginal product 1.3 x subsistence, irreplaceable (rho=0)",
                    "sally_role": "competitive marginal product 4 x subsistence, 95% replaceable (rho=0.95)",
-                   "manorial_institutions": "8 workplaces, 1 owner (lords' cartel), moving cost 50",
+                   "manorial_institutions": "8 workplaces, 1 owner (lords' cartel), moving cost 0.5",
                    "plural_institutions": "200 independent employers, moving cost 0.5"},
         "table": tab}
     fig, ax = plt.subplots(1, 3, figsize=(14, 4.3))
@@ -618,7 +618,7 @@ def part4(pool):
     cols = [C["red"], C["green"], C["teal"], C["orange"]]
     labels = [o[2] for o in order]
     vals = [tab[f"{r}_role__{i}_institutions"] for r, i, _ in order]
-    for a, k, ti, fmt in [(ax[0], "necessity_unrecoverable_loss_to_employer_share", "Necessity: share of employer's output\nlost if she vanishes (log)", "{:.1e}"),
+    for a, k, ti, fmt in [(ax[0], "necessity_share_of_whole_economy", "Necessity: share of the whole economy's\noutput lost if she vanishes, after replacing her (log)", "{:.1e}"),
                           (ax[1], "retained_share_of_marginal_product", "Empowerment: wage ÷ own\nmarginal product", "{:.2f}"),
                           (ax[2], "mean_independent_bidders_in_reach", "Empowerment: independent\nemployers she could go to", "{:.0f}")]:
         v = [x[k] for x in vals]

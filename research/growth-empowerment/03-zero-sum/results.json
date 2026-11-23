@@ -2878,8 +2878,8 @@
     "future_weight_d_over_1minus_d_g=0.0": 50.0,
     "max_players_grab_the_pie_g=0.0": 51.0,
     "effective_patience_g=0.02": 1.0,
-    "future_weight_d_over_1minus_d_g=0.02": Infinity,
-    "max_players_grab_the_pie_g=0.02": Infinity
+    "future_weight_d_over_1minus_d_g=0.02": null,
+    "max_players_grab_the_pie_g=0.02": null
    },
    {
     "discount_rate": 0.03,
@@ -2928,7 +2928,7 @@
     "effective_patience_g=0.0": 0.9804,
     "max_players_g=0.0": 51.0,
     "effective_patience_g=0.02": 1.0,
-    "max_players_g=0.02": Infinity
+    "max_players_g=0.02": null
    },
    {
     "theta": 1.0,

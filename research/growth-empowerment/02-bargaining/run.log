@@ -1,0 +1,347 @@
+Part 1: manor
+Part 2: labour market sweep
+Part 3: growth
+Part 4: Sally vs serf
+Part 5: collective action
+part5 min reward: {'0.0': [0.125, 0.15000000000000002, 0.17500000000000002, 0.2, 0.225, 0.225, 0.25, 0.25, 0.275, 0.275, 0.30000000000000004, 0.30000000000000004, 0.30000000000000004, 0.30000000000000004, 0.325, 0.325, 0.325, 0.325, 0.325, 0.325, 0.325, 0.325, 0.325, 0.325, 0.35000000000000003, 0.35000000000000003, 0.35000000000000003, 0.35000000000000003, 0.35000000000000003, 0.35000000000000003, 0.35000000000000003], '0.5': [0.625, 0.65, 0.675, 0.7000000000000001, 0.7250000000000001, 0.7250000000000001, 0.75, 0.75, 0.775, 0.775, 0.8, 0.8, 0.8, 0.8, 0.8250000000000001, 0.8250000000000001, 0.8250000000000001, 0.8250000000000001, 0.8250000000000001, 0.8250000000000001, 0.8250000000000001, 0.8250000000000001, 0.8250000000000001, 0.8250000000000001, 0.8500000000000001, 0.8500000000000001, 0.8500000000000001, 0.8500000000000001, 0.8500000000000001, 0.8500000000000001, 0.8500000000000001]}
+{
+ "black_death": {
+  "west": {
+   "enforcement_penalty_on_defecting_lord": 5.0,
+   "regime_before": "free",
+   "regime_after": "free",
+   "serf_wage_before": 1.0834020122404895,
+   "serf_wage_after": 1.2807766141580061,
+   "serf_MP_before": 1.1084020122404894,
+   "serf_MP_after": 1.305776614158006,
+   "lord_income_before": 45.46495724780948,
+   "lord_income_after": 35.38251226871536,
+   "defection_gain_before": 4.168330893917556,
+   "defection_gain_after": 11.232692723444401
+  },
+  "east": {
+   "enforcement_penalty_on_defecting_lord": 200.0,
+   "regime_before": "free",
+   "regime_after": "serfdom",
+   "serf_wage_before": 1.0834020122404895,
+   "serf_wage_after": 1.152888307079003,
+   "serf_MP_before": 1.1084020122404894,
+   "serf_MP_after": 1.305776614158006,
+   "lord_income_before": 45.46495724780948,
+   "lord_income_after": 36.45183163861144,
+   "defection_gain_before": 4.168330893917556,
+   "defection_gain_after": 11.232692723444401
+  }
+ },
+ "domar_ablation": {
+  "kappa_0.2_coerce_pays_N60": false,
+  "kappa_0.2_coerce_pays_N40": true,
+  "kappa_0.6_coerce_pays_N60": false,
+  "kappa_0.6_coerce_pays_N40": false
+ }
+}
+part3 finals: {
+ "static_g0pct_merge0.05_movecost2": {
+  "retained_share_of_marginal_product": 0.8624,
+  "mean_independent_bidders_in_reach": 0.8958,
+  "mean_positions_in_reach": 27.618,
+  "owner_HHI": 0.931,
+  "n_owners": 2.0,
+  "mean_wage": 1.6863,
+  "labour_share_of_output": 0.5152,
+  "share_with_zero_independent_bidders": 0.2883,
+  "n_sites": 30.0
+ },
+ "static_g0pct_merge0.05_movecost8": {
+  "retained_share_of_marginal_product": 0.7907,
+  "mean_independent_bidders_in_reach": 0.145,
+  "mean_positions_in_reach": 6.7413,
+  "owner_HHI": 0.9338,
+  "n_owners": 1.75,
+  "mean_wage": 1.4503,
+  "labour_share_of_output": 0.4617,
+  "share_with_zero_independent_bidders": 0.855,
+  "n_sites": 30.0
+ },
+ "entry_g2pct_merge0.05_movecost2": {
+  "retained_share_of_marginal_product": 0.9834,
+  "mean_independent_bidders_in_reach": 26.9312,
+  "mean_positions_in_reach": 103.4562,
+  "owner_HHI": 0.2227,
+  "n_owners": 29.25,
+  "mean_wage": 6.4353,
+  "labour_share_of_output": 0.6022,
+  "share_with_zero_independent_bidders": 0.0,
+  "n_sites": 121.0
+ },
+ "entry_g2pct_merge0.05_movecost8": {
+  "retained_share_of_marginal_product": 0.9739,
+  "mean_independent_bidders_in_reach": 9.2895,
+  "mean_positions_in_reach": 26.2588,
+  "owner_HHI": 0.1244,
+  "n_owners": 28.5,
+  "mean_wage": 6.1985,
+  "labour_share_of_output": 0.5923,
+  "share_with_zero_independent_bidders": 0.0,
+  "n_sites": 121.0
+ },
+ "entry_g5pct_merge0.05_movecost2": {
+  "retained_share_of_marginal_product": 0.9762,
+  "mean_independent_bidders_in_reach": 62.4495,
+  "mean_positions_in_reach": 133.8835,
+  "owner_HHI": 0.0242,
+  "n_owners": 76.75,
+  "mean_wage": 37.1658,
+  "labour_share_of_output": 0.6123,
+  "share_with_zero_independent_bidders": 0.0,
+  "n_sites": 263.0
+ },
+ "entry_g5pct_merge0.05_movecost8": {
+  "retained_share_of_marginal_product": 0.9708,
+  "mean_independent_bidders_in_reach": 20.2915,
+  "mean_positions_in_reach": 32.9723,
+  "owner_HHI": 0.0294,
+  "n_owners": 75.0,
+  "mean_wage": 35.7621,
+  "labour_share_of_output": 0.6029,
+  "share_with_zero_independent_bidders": 0.0,
+  "n_sites": 263.0
+ },
+ "incumbent_g2pct_merge0.05_movecost2": {
+  "retained_share_of_marginal_product": 0.8624,
+  "mean_independent_bidders_in_reach": 0.8958,
+  "mean_positions_in_reach": 27.618,
+  "owner_HHI": 0.931,
+  "n_owners": 2.0,
+  "mean_wage": 5.5328,
+  "labour_share_of_output": 0.5152,
+  "share_with_zero_independent_bidders": 0.2883,
+  "n_sites": 30.0
+ },
+ "incumbent_g2pct_merge0.05_movecost8": {
+  "retained_share_of_marginal_product": 0.7907,
+  "mean_independent_bidders_in_reach": 0.145,
+  "mean_positions_in_reach": 6.7413,
+  "owner_HHI": 0.9338,
+  "n_owners": 1.75,
+  "mean_wage": 4.7586,
+  "labour_share_of_output": 0.4617,
+  "share_with_zero_independent_bidders": 0.855,
+  "n_sites": 30.0
+ },
+ "incumbent_g5pct_merge0.05_movecost2": {
+  "retained_share_of_marginal_product": 0.8624,
+  "mean_independent_bidders_in_reach": 0.8958,
+  "mean_positions_in_reach": 27.618,
+  "owner_HHI": 0.931,
+  "n_owners": 2.0,
+  "mean_wage": 31.4989,
+  "labour_share_of_output": 0.5152,
+  "share_with_zero_independent_bidders": 0.2883,
+  "n_sites": 30.0
+ },
+ "incumbent_g5pct_merge0.05_movecost8": {
+  "retained_share_of_marginal_product": 0.7907,
+  "mean_independent_bidders_in_reach": 0.145,
+  "mean_positions_in_reach": 6.7413,
+  "owner_HHI": 0.9338,
+  "n_owners": 1.75,
+  "mean_wage": 27.0911,
+  "labour_share_of_output": 0.4617,
+  "share_with_zero_independent_bidders": 0.855,
+  "n_sites": 30.0
+ },
+ "static_g0pct_merge0.0_movecost8": {
+  "retained_share_of_marginal_product": 0.9822,
+  "mean_independent_bidders_in_reach": 6.657,
+  "mean_positions_in_reach": 6.657,
+  "owner_HHI": 0.0355,
+  "n_owners": 30.0,
+  "mean_wage": 1.7955,
+  "labour_share_of_output": 0.572,
+  "share_with_zero_independent_bidders": 0.0,
+  "n_sites": 30.0
+ },
+ "static_g0pct_merge0.02_movecost8": {
+  "retained_share_of_marginal_product": 0.9494,
+  "mean_independent_bidders_in_reach": 2.082,
+  "mean_positions_in_reach": 6.657,
+  "owner_HHI": 0.4067,
+  "n_owners": 8.0,
+  "mean_wage": 1.7351,
+  "labour_share_of_output": 0.5528,
+  "share_with_zero_independent_bidders": 0.0225,
+  "n_sites": 30.0
+ },
+ "static_g0pct_merge0.1_movecost8": {
+  "retained_share_of_marginal_product": 0.7735,
+  "mean_independent_bidders_in_reach": 0.0,
+  "mean_positions_in_reach": 6.657,
+  "owner_HHI": 1.0,
+  "n_owners": 1.0,
+  "mean_wage": 1.414,
+  "labour_share_of_output": 0.4505,
+  "share_with_zero_independent_bidders": 1.0,
+  "n_sites": 30.0
+ },
+ "entry_g2pct_merge0.0_movecost8": {
+  "retained_share_of_marginal_product": 0.9781,
+  "mean_independent_bidders_in_reach": 25.8565,
+  "mean_positions_in_reach": 25.8565,
+  "owner_HHI": 0.015,
+  "n_owners": 121.0,
+  "mean_wage": 6.1907,
+  "labour_share_of_output": 0.5936,
+  "share_with_zero_independent_bidders": 0.0,
+  "n_sites": 121.0
+ },
+ "entry_g2pct_merge0.02_movecost8": {
+  "retained_share_of_marginal_product": 0.9748,
+  "mean_independent_bidders_in_reach": 18.1355,
+  "mean_positions_in_reach": 26.084,
+  "owner_HHI": 0.0237,
+  "n_owners": 67.0,
+  "mean_wage": 6.1899,
+  "labour_share_of_output": 0.593,
+  "share_with_zero_independent_bidders": 0.0,
+  "n_sites": 121.0
+ },
+ "entry_g2pct_merge0.1_movecost8": {
+  "retained_share_of_marginal_product": 0.9604,
+  "mean_independent_bidders_in_reach": 3.673,
+  "mean_positions_in_reach": 25.6315,
+  "owner_HHI": 0.4431,
+  "n_owners": 14.0,
+  "mean_wage": 6.0894,
+  "labour_share_of_output": 0.5822,
+  "share_with_zero_independent_bidders": 0.0,
+  "n_sites": 121.0
+ },
+ "entry_g5pct_merge0.0_movecost8": {
+  "retained_share_of_marginal_product": 0.9689,
+  "mean_independent_bidders_in_reach": 32.41,
+  "mean_positions_in_reach": 32.41,
+  "owner_HHI": 0.0146,
+  "n_owners": 263.0,
+  "mean_wage": 35.6253,
+  "labour_share_of_output": 0.6026,
+  "share_with_zero_independent_bidders": 0.0,
+  "n_sites": 263.0
+ },
+ "entry_g5pct_merge0.02_movecost8": {
+  "retained_share_of_marginal_product": 0.9705,
+  "mean_independent_bidders_in_reach": 26.6315,
+  "mean_positions_in_reach": 32.19,
+  "owner_HHI": 0.0195,
+  "n_owners": 141.5,
+  "mean_wage": 35.4205,
+  "labour_share_of_output": 0.6017,
+  "share_with_zero_independent_bidders": 0.0,
+  "n_sites": 263.0
+ },
+ "entry_g5pct_merge0.1_movecost8": {
+  "retained_share_of_marginal_product": 0.9705,
+  "mean_independent_bidders_in_reach": 11.405,
+  "mean_positions_in_reach": 32.3995,
+  "owner_HHI": 0.1294,
+  "n_owners": 39.0,
+  "mean_wage": 35.1229,
+  "labour_share_of_output": 0.5999,
+  "share_with_zero_independent_bidders": 0.0,
+  "n_sites": 263.0
+ },
+ "static_g0pct_merge0.05_movecost8_absolute_costs": {
+  "retained_share_of_marginal_product": 0.7735,
+  "mean_independent_bidders_in_reach": 0.0,
+  "mean_positions_in_reach": 6.657,
+  "owner_HHI": 1.0,
+  "n_owners": 1.0,
+  "mean_wage": 1.414,
+  "labour_share_of_output": 0.4505,
+  "share_with_zero_independent_bidders": 1.0,
+  "n_sites": 30.0
+ },
+ "entry_g2pct_merge0.05_movecost8_absolute_costs": {
+  "retained_share_of_marginal_product": 0.9829,
+  "mean_independent_bidders_in_reach": 27.492,
+  "mean_positions_in_reach": 119.9205,
+  "owner_HHI": 0.1299,
+  "n_owners": 28.5,
+  "mean_wage": 6.4204,
+  "labour_share_of_output": 0.6022,
+  "share_with_zero_independent_bidders": 0.0,
+  "n_sites": 121.0
+ },
+ "entry_g5pct_merge0.05_movecost8_absolute_costs": {
+  "retained_share_of_marginal_product": 0.9783,
+  "mean_independent_bidders_in_reach": 72.0,
+  "mean_positions_in_reach": 262.0,
+  "owner_HHI": 0.0267,
+  "n_owners": 73.0,
+  "mean_wage": 37.7816,
+  "labour_share_of_output": 0.6167,
+  "share_with_zero_independent_bidders": 0.0,
+  "n_sites": 263.0
+ },
+ "incumbent_g2pct_merge0.05_movecost8_absolute_costs": {
+  "retained_share_of_marginal_product": 0.5783,
+  "mean_independent_bidders_in_reach": 0.0,
+  "mean_positions_in_reach": 29.0,
+  "owner_HHI": 1.0,
+  "n_owners": 1.0,
+  "mean_wage": 3.6947,
+  "labour_share_of_output": 0.3448,
+  "share_with_zero_independent_bidders": 1.0,
+  "n_sites": 30.0
+ },
+ "incumbent_g5pct_merge0.05_movecost8_absolute_costs": {
+  "retained_share_of_marginal_product": 0.7477,
+  "mean_independent_bidders_in_reach": 1.0,
+  "mean_positions_in_reach": 29.0,
+  "owner_HHI": 0.8803,
+  "n_owners": 2.0,
+  "mean_wage": 27.9234,
+  "labour_share_of_output": 0.4502,
+  "share_with_zero_independent_bidders": 0.5,
+  "n_sites": 30.0
+ }
+}
+part4: {
+ "serf_role__manorial_institutions": {
+  "necessity_marginal_product": 1.3010041717290843,
+  "necessity_unrecoverable_loss_to_employer_share": 0.004807762683181918,
+  "necessity_share_of_whole_economy": 0.0006009663199900485,
+  "retained_share_of_marginal_product": 0.8948943711928458,
+  "mean_independent_bidders_in_reach": 0.0,
+  "mean_positions_in_reach": 6.886666666666667,
+  "mean_wage": 1.133108537349025
+ },
+ "serf_role__plural_institutions": {
+  "necessity_marginal_product": 1.3566219637905093,
+  "necessity_unrecoverable_loss_to_employer_share": 0.1253582219348203,
+  "necessity_share_of_whole_economy": 0.0006266605629613485,
+  "retained_share_of_marginal_product": 0.9791812441581165,
+  "mean_independent_bidders_in_reach": 193.70866666666666,
+  "mean_positions_in_reach": 193.70866666666666,
+  "mean_wage": 1.3193836262132408
+ },
+ "sally_role__manorial_institutions": {
+  "necessity_marginal_product": 4.006040179265125,
+  "necessity_unrecoverable_loss_to_employer_share": 0.0002403857513302422,
+  "necessity_share_of_whole_economy": 3.004819571939757e-05,
+  "retained_share_of_marginal_product": 0.27067639786778824,
+  "mean_independent_bidders_in_reach": 0.0,
+  "mean_positions_in_reach": 7.0,
+  "mean_wage": 1.074216479118834
+ },
+ "sally_role__plural_institutions": {
+  "necessity_marginal_product": 4.177011361512585,
+  "necessity_unrecoverable_loss_to_employer_share": 0.006265517042268882,
+  "necessity_share_of_whole_economy": 3.132758521134443e-05,
+  "retained_share_of_marginal_product": 0.9269832672291015,
+  "mean_independent_bidders_in_reach": 199.0,
+  "mean_positions_in_reach": 199.0,
+  "mean_wage": 3.8592759473303797
+ }
+}
+runtime 132.1

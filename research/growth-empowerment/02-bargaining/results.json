@@ -16121,18 +16121,18 @@
   "params": {
    "serf_role": "competitive marginal product 1.3 x subsistence, irreplaceable (rho=0)",
    "sally_role": "competitive marginal product 4 x subsistence, 95% replaceable (rho=0.95)",
-   "manorial_institutions": "8 workplaces, 1 owner (lords' cartel), moving cost 50",
+   "manorial_institutions": "8 workplaces, 1 owner (lords' cartel), moving cost 0.5",
    "plural_institutions": "200 independent employers, moving cost 0.5"
   },
   "table": {
    "serf_role__manorial_institutions": {
-    "necessity_marginal_product": 2.1549649333540484,
-    "necessity_unrecoverable_loss_to_employer_share": 0.017039908489874835,
-    "necessity_share_of_whole_economy": 0.002129670308293207,
-    "retained_share_of_marginal_product": 0.8031651541904803,
+    "necessity_marginal_product": 1.3010041717290843,
+    "necessity_unrecoverable_loss_to_employer_share": 0.004807762683181918,
+    "necessity_share_of_whole_economy": 0.0006009663199900485,
+    "retained_share_of_marginal_product": 0.8948943711928458,
     "mean_independent_bidders_in_reach": 0.0,
-    "mean_positions_in_reach": 0.09166666666666666,
-    "mean_wage": 1.0921432497606982
+    "mean_positions_in_reach": 6.886666666666667,
+    "mean_wage": 1.133108537349025
    },
    "serf_role__plural_institutions": {
     "necessity_marginal_product": 1.3566219637905093,
@@ -16144,13 +16144,13 @@
     "mean_wage": 1.3193836262132408
    },
    "sally_role__manorial_institutions": {
-    "necessity_marginal_product": 4.545984346614873,
-    "necessity_unrecoverable_loss_to_employer_share": 0.00033732205232063706,
-    "necessity_share_of_whole_economy": 4.215965303232134e-05,
-    "retained_share_of_marginal_product": 0.34579123346738605,
+    "necessity_marginal_product": 4.006040179265125,
+    "necessity_unrecoverable_loss_to_employer_share": 0.0002403857513302422,
+    "necessity_share_of_whole_economy": 3.004819571939757e-05,
+    "retained_share_of_marginal_product": 0.27067639786778824,
     "mean_independent_bidders_in_reach": 0.0,
-    "mean_positions_in_reach": 0.468,
-    "mean_wage": 1.0363797659077758
+    "mean_positions_in_reach": 7.0,
+    "mean_wage": 1.074216479118834
    },
    "sally_role__plural_institutions": {
     "necessity_marginal_product": 4.177011361512585,
@@ -21848,5 +21848,5 @@
   },
   "note": "with no private reward, if nobody expects a strike, nobody strikes at any group size (success 0)"
  },
- "runtime_seconds": 155.2
+ "runtime_seconds": 132.1
 }
