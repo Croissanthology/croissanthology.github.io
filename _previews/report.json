@@ -1,16 +1,13 @@
 {
- "date": "2026-11-20",
- "looked_up": 21,
+ "date": "2026-11-24",
+ "looked_up": 13,
  "this_run": {},
  "skipped_this_run": {
-  "robots.txt says no": 3,
-  "handled on the page": 2,
-  "not a tweet": 5,
-  "refused (403)": 7,
-  "status 404": 1,
-  "not a post": 1,
-  "not a page (application/pdf)": 1,
-  "couldn't connect (ReadTimeout)": 1
+  "couldn't connect (ReadTimeout)": 3,
+  "couldn't connect (ConnectionError)": 2,
+  "not a page (application/pdf)": 3,
+  "handled on the page": 4,
+  "not a tweet": 1
  },
  "all_links": {
   "tweet": 52,
@@ -22,12 +19,5 @@
   "repo": 4,
   "image": 4
  },
- "sites_that_refused": [
-  "josephheath.substack.com",
-  "openai.com",
-  "thezvi.substack.com",
-  "vishalblog.substack.com",
-  "www.forbes.com",
-  "www.patreon.com"
- ]
+ "sites_that_refused": []
 }
